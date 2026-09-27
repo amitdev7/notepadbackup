@@ -1,0 +1,42 @@
+[
+  {
+    "id": "zenithsui-cloud",
+    "ownerUserId": "system",
+    "provider": "zenithsui-cloud",
+    "displayName": "Zenithsui Community Cloud",
+    "description": "Default fast cloud storage for collaborative wireframes and scratchpads.",
+    "status": "connected",
+    "configurationMetadata": {
+      "engine": "Zenithsui Native Cloud Store",
+      "schemaVersion": 1,
+      "tablesCount": 5,
+      "status": "operational"
+    },
+    "assignedWorkspaceIds": [
+      "personal-workspace"
+    ],
+    "isDefault": true,
+    "createdAt": 1786333638784,
+    "updatedAt": 1788925638784,
+    "lastTestedAt": 1788925638784
+  },
+  {
+    "id": "nezukos-box",
+    "ownerUserId": "system",
+    "provider": "supabase",
+    "displayName": "Nezuko's Box (Supabase)",
+    "description": "Pre-configured Supabase project with real-time sync and asset store.",
+    "status": "connected",
+    "configurationMetadata": {
+      "supabaseUrl": "https://mhyzfqvuywpxlyyghvyz.supabase.co",
+      "schemaVersion": 1,
+      "tablesCount": 5,
+      "status": "operational"
+    },
+    "assignedWorkspaceIds": [],
+    "isDefault": false,
+    "createdAt": 1787716038784,
+    "updatedAt": 1788925638784,
+    "lastTestedAt": 1788925638784
+  }
+]

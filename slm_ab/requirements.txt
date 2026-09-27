@@ -1,0 +1,15 @@
+# Zenithsui A/B SLM Pipeline Requirements
+# Zero external dependencies required.
+# Fully compatible with Python >= 3.8 using standard library modules only:
+# - math
+# - json
+# - os
+# - sys
+# - random
+# - typing
+# - dataclasses
+# - statistics
+# - time
+# - hashlib
+# - pathlib
+# - unittest

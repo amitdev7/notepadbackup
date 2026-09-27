@@ -1,0 +1,199 @@
+[
+  {
+    "id": "team-design",
+    "name": "Product Design Team",
+    "slug": "product-design-team",
+    "description": "Core product design team for wireframing, architecture, and UI flows.",
+    "ownerId": "owner_nezuko",
+    "databaseIds": [
+      "nezukos-box",
+      "primary-db"
+    ],
+    "createdAt": 1785794926669,
+    "updatedAt": 1788214126669,
+    "members": [
+      {
+        "userId": "owner_nezuko",
+        "name": "Workspace Admin",
+        "email": "admin@zenithsui.com",
+        "role": "owner",
+        "joinedAt": 1785794926669
+      },
+      {
+        "userId": "team_editor_1",
+        "name": "Design Lead",
+        "email": "designer@zenithsui.com",
+        "role": "admin",
+        "joinedAt": 1786658926669
+      },
+      {
+        "userId": "team_member_jordan",
+        "name": "Jordan (UI Designer)",
+        "email": "jordan@zenithsui.com",
+        "role": "member",
+        "joinedAt": 1787522926669
+      },
+      {
+        "userId": "team_viewer_chris",
+        "name": "Chris (Stakeholder)",
+        "email": "chris@zenithsui.com",
+        "role": "viewer",
+        "joinedAt": 1787954926669
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-client",
+    "name": "Client Project Workspace",
+    "slug": "client-project",
+    "description": "Dedicated collaboration space for client reviews and shared mockups.",
+    "ownerId": "owner_primary",
+    "databaseIds": [],
+    "createdAt": 1787090926669,
+    "updatedAt": 1788300526669,
+    "members": [
+      {
+        "userId": "owner_primary",
+        "name": "Community Admin",
+        "email": "community@zenithsui.com",
+        "role": "owner",
+        "joinedAt": 1787090926669
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387638755-1831a0",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_sWPbKgGPTy",
+    "databaseIds": [],
+    "createdAt": 1788387638756,
+    "updatedAt": 1788387638756,
+    "members": [
+      {
+        "userId": "usr_sWPbKgGPTy",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387638756
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387643010-1cf74d",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace-1",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_u_ge3-5UD_",
+    "databaseIds": [],
+    "createdAt": 1788387643010,
+    "updatedAt": 1788387643010,
+    "members": [
+      {
+        "userId": "usr_u_ge3-5UD_",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387643010
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387648592-da44da",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace-2",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_eAs7EkSkR2",
+    "databaseIds": [],
+    "createdAt": 1788387648592,
+    "updatedAt": 1788387648592,
+    "members": [
+      {
+        "userId": "usr_eAs7EkSkR2",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387648592
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387665099-bfb38d",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace-3",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_cBLeZVTZ-L",
+    "databaseIds": [],
+    "createdAt": 1788387665099,
+    "updatedAt": 1788387665099,
+    "members": [
+      {
+        "userId": "usr_cBLeZVTZ-L",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387665099
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387707648-af1113",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace-4",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_XCtdoSZv54",
+    "databaseIds": [],
+    "createdAt": 1788387707648,
+    "updatedAt": 1788387707648,
+    "members": [
+      {
+        "userId": "usr_XCtdoSZv54",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387707648
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788387717188-7b1ac9",
+    "name": "Test User's Workspace",
+    "slug": "test-user-s-workspace-5",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_YW6aQzIVBk",
+    "databaseIds": [],
+    "createdAt": 1788387717188,
+    "updatedAt": 1788387717188,
+    "members": [
+      {
+        "userId": "usr_YW6aQzIVBk",
+        "name": "Test User",
+        "role": "owner",
+        "joinedAt": 1788387717188
+      }
+    ],
+    "invitations": []
+  },
+  {
+    "id": "team-1788655816489-a21f59",
+    "name": "Professor Smith's Workspace",
+    "slug": "professor-smith-s-workspace",
+    "description": "Personal collaborative space for wireframes, diagrams, and sketches.",
+    "ownerId": "usr_4kXCeXB8e8",
+    "databaseIds": [],
+    "createdAt": 1788655816489,
+    "updatedAt": 1788655816489,
+    "members": [
+      {
+        "userId": "usr_4kXCeXB8e8",
+        "name": "Professor Smith",
+        "role": "owner",
+        "joinedAt": 1788655816489
+      }
+    ],
+    "invitations": []
+  }
+]
