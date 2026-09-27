@@ -1,17 +1,21 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js"
 import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
+import type { ServerStoredDoc, ServerFileMeta } from "./server-documents"
 
-const SUPABASE_URL = process.env.SUPABASE_URL || "https://prcodeitlnlqqjxykvmr.supabase.co"
-const SUPABASE_ANON_KEY =
-  process.env.SUPABASE_ANON_KEY ||
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByY29kZWl0bG5scXFqeHlrdm1yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwOTUxMTUsImV4cCI6MjEwMzY3MTExNX0.pHHxmoyqePhKl8cO1y9vChlmUnGJIwFkY-nmxdsFjIw"
+export type { ServerStoredDoc, ServerFileMeta } from "./server-documents"
+
+const SUPABASE_URL = process.env.SUPABASE_URL || ""
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || ""
 
 let supabaseInstance: SupabaseClient | null = null
 
 export function getSupabase(): SupabaseClient | null {
   if (supabaseInstance) return supabaseInstance
   try {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return null
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      console.error("[Supabase] Missing SUPABASE_URL or SUPABASE_ANON_KEY env — running in local fallback mode (fail-closed, no cloud).")
+      return null
+    }
     supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: {
         persistSession: false,
@@ -25,54 +29,9 @@ export function getSupabase(): SupabaseClient | null {
   }
 }
 
-export interface ServerStoredDoc {
-  id: string
-  name: string
-  nodes: Record<string, unknown>
-  order: string[]
-  updatedAt: number
-  dbId?: string
-  look?: unknown
-  hasPassword?: boolean
-  passwordHash?: string
-  passwordSalt?: string
-  ownerSessionId?: string
-}
-
-export interface ServerFileMeta {
-  id: string
-  name: string
-  updatedAt: number
-  dbId?: string
-  hasPassword?: boolean
-}
-
 const fallbackSupabaseMemoryStore = new Map<string, ServerStoredDoc>()
 
-// Helper to persist fallback store to disk for server restarts
-function persistNezukoDiskStore(): void {
-  try {
-    writeJsonSnapshot("db_files_nezukos_box.json", Array.from(fallbackSupabaseMemoryStore.values()))
-  } catch (err) {
-    console.warn("[Supabase] Failed to persist Nezuko store to disk:", err)
-  }
-}
-
-// Hydrate from disk
-function initNezukoStore(): void {
-  if (fallbackSupabaseMemoryStore.size > 0) return
-  const saved = readJsonSnapshot<ServerStoredDoc[]>("db_files_nezukos_box.json", [])
-  if (saved && saved.length > 0) {
-    for (const doc of saved) {
-      fallbackSupabaseMemoryStore.set(doc.id, doc)
-    }
-  }
-  if (!fallbackSupabaseMemoryStore.has(initialSeedDoc.id)) {
-    fallbackSupabaseMemoryStore.set(initialSeedDoc.id, initialSeedDoc)
-  }
-}
-
-// Seed initial document for Nezuko's Box
+// Seed initial document for Nezuko's Box (declared before store init to avoid use-before-declaration)
 const initialSeedDoc: ServerStoredDoc = {
   id: "nezuko-starter-doc",
   name: "Nezuko's Box Canvas",
@@ -94,7 +53,7 @@ const initialSeedDoc: ServerStoredDoc = {
       kind: "card",
       props: {
         title: "Database Connected",
-        description: "prcodeitlnlqqjxykvmr.supabase.co",
+        description: "Cloud database connected",
       },
       x: 90,
       y: 220,
@@ -123,6 +82,29 @@ const initialSeedDoc: ServerStoredDoc = {
     font: "hand",
     grid: true,
   },
+}
+
+// Helper to persist fallback store to disk for server restarts
+function persistNezukoDiskStore(): void {
+  try {
+    writeJsonSnapshot("db_files_nezukos_box.json", Array.from(fallbackSupabaseMemoryStore.values()))
+  } catch (err) {
+    console.warn("[Supabase] Failed to persist Nezuko store to disk:", err)
+  }
+}
+
+// Hydrate from disk
+function initNezukoStore(): void {
+  if (fallbackSupabaseMemoryStore.size > 0) return
+  const saved = readJsonSnapshot<ServerStoredDoc[]>("db_files_nezukos_box.json", [])
+  if (saved && saved.length > 0) {
+    for (const doc of saved) {
+      fallbackSupabaseMemoryStore.set(doc.id, doc)
+    }
+  }
+  if (!fallbackSupabaseMemoryStore.has(initialSeedDoc.id)) {
+    fallbackSupabaseMemoryStore.set(initialSeedDoc.id, initialSeedDoc)
+  }
 }
 
 initNezukoStore()

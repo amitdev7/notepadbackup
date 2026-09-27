@@ -100,39 +100,40 @@ function initDefaultDatabases() {
       ],
     })
   }
+
+  if (!serverDatabaseRegistry.has("zenithsui-cloud")) {
+    serverDatabaseRegistry.set("zenithsui-cloud", {
+      id: "zenithsui-cloud",
+      name: "Zenithsui Community Cloud",
+      description: "Default fast cloud storage for collaborative wireframes and scratchpads.",
+      ownerId: "owner_primary",
+      createdAt: Date.now() - 14 * 86400000,
+      isPublic: true,
+      members: [
+        {
+          userId: "owner_primary",
+          name: "Community Admin",
+          email: "community@zenithsui.com",
+          role: "owner",
+          addedAt: Date.now() - 14 * 86400000,
+        },
+      ],
+    })
+  }
 }
 
 // Ensure default databases are seeded
 initDefaultDatabases()
 
 /**
- * Get or create a database record
+ * Get an existing database record. Unknown/unconfigured dbIds return null (DENY by default).
  */
-export function getDatabaseRecord(dbId: string): DatabaseRecord {
+export function getDatabaseRecord(dbId: string): DatabaseRecord | null {
   initDefaultDatabases()
-  let record = serverDatabaseRegistry.get(dbId)
-  if (!record) {
-    record = {
-      id: dbId,
-      name: dbId.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-      description: "Custom shared workspace database.",
-      ownerId: "owner_default",
-      createdAt: Date.now(),
-      isPublic: true,
-      members: [
-        {
-          userId: "owner_default",
-          name: "Database Owner",
-          email: "owner@workspace.local",
-          role: "owner",
-          addedAt: Date.now(),
-        },
-      ],
-    }
-    serverDatabaseRegistry.set(dbId, record)
-    persistDatabases()
-  }
-  return record
+  const record = serverDatabaseRegistry.get(dbId)
+  if (record) return record
+  // Unknown/unconfigured dbIds default DENY — no auto-created public records.
+  return null
 }
 
 /**
@@ -141,6 +142,7 @@ export function getDatabaseRecord(dbId: string): DatabaseRecord {
  */
 export function getEffectiveUserRole(dbId: string, userId: string): DatabaseRole | null {
   const db = getDatabaseRecord(dbId)
+  if (!db) return null
   
   // 1. Check if database belongs to a team
   const team = getTeamForDatabase(dbId)
@@ -231,6 +233,9 @@ export function addDatabaseMember(
   }
 
   const db = getDatabaseRecord(dbId)
+  if (!db) {
+    return { success: false, error: "Database not found or access denied." }
+  }
   const targetUserId = newMember.userId || `user_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`
 
   // Check if member already exists
@@ -272,6 +277,9 @@ export function updateDatabaseMemberRole(
   }
 
   const db = getDatabaseRecord(dbId)
+  if (!db) {
+    return { success: false, error: "Database not found or access denied." }
+  }
   const member = db.members.find((m) => m.userId === targetUserId)
   if (!member) {
     return { success: false, error: "Member not found in database." }
@@ -304,6 +312,9 @@ export function removeDatabaseMember(
   }
 
   const db = getDatabaseRecord(dbId)
+  if (!db) {
+    return { success: false, error: "Database not found or access denied." }
+  }
   const memberIndex = db.members.findIndex((m) => m.userId === targetUserId)
   if (memberIndex === -1) {
     return { success: false, error: "Member not found in database." }

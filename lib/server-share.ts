@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------------------
 
 import { nanoid } from "nanoid"
-import { getRawDoc, getStore, persistDbFiles, type ServerStoredDoc } from "@/app/api/database/[dbId]/files/route"
+import { getRawDoc, getStore, persistDbFiles, type ServerStoredDoc } from "@/lib/server-documents"
 import { checkDatabaseAccess } from "./database-auth"
 import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 import { findBoardByIdAcrossWorkspaces, saveBoardRecord } from "./server-workspaces"
@@ -122,9 +122,30 @@ function getDocKey(dbId: string, fileId: string): string {
 
 /**
  * Generate a random non-guessable, URL-safe public ID (e.g., "7xK29mAbq").
+ * nanoid(10) ~60-bit entropy, kept short for clean links.
+ * Collision-checked against the existing publicId index by callers.
  */
 export function generatePublicId(): string {
   return nanoid(10)
+}
+
+/**
+ * Generate a publicId that does not collide with any existing share.
+ * Must be called after hydrateShares().
+ */
+function generateUniquePublicId(): string {
+  for (let i = 0; i < 10; i++) {
+    const candidate = nanoid(10)
+    if (!publicIdIndex.has(candidate) && !publicShares.has(candidate)) {
+      return candidate
+    }
+  }
+  // Extremely unlikely fallback: longer ID guarantees uniqueness
+  let fallback = nanoid(16)
+  while (publicIdIndex.has(fallback) || publicShares.has(fallback)) {
+    fallback = nanoid(16)
+  }
+  return fallback
 }
 
 /**
@@ -147,7 +168,7 @@ export async function getOrCreatePageShare(
   let share = shareRegistry.get(key) || shareRegistry.get(fileId)
 
   if (!share) {
-    const publicId = generatePublicId()
+    const publicId = generateUniquePublicId()
     const targetMode = initialConfig?.mode || "public-view"
     const targetEnabled = initialConfig?.enabled !== undefined ? initialConfig.enabled : true
     share = {
@@ -338,7 +359,7 @@ export async function regenerateSharePublicId(
   }
 
   // Generate new unique ID
-  const newPublicId = generatePublicId()
+  const newPublicId = generateUniquePublicId()
   share.publicId = newPublicId
   share.updatedAt = Date.now()
 
@@ -577,7 +598,8 @@ export async function verifySharePassword(
     }
   }
 
-  // Check share password or doc password
+  // Check share password or doc password.
+  // For password-edit mode with no configured password, REJECT — never issue a token.
   const targetHash = share.passwordHash
   const targetSalt = share.passwordSalt
 
@@ -587,8 +609,15 @@ export async function verifySharePassword(
     const rawDoc = await getRawDoc(dbId, fileId)
     if (rawDoc?.passwordHash && rawDoc?.passwordSalt) {
       isValid = verifyPassword(password, rawDoc.passwordHash, rawDoc.passwordSalt)
+    } else if (share.mode === "password-edit") {
+      return {
+        success: false,
+        locked: false,
+        attemptsLeft: attemptStatus.attemptsLeft,
+        error: "No edit password is configured for this shared page.",
+      }
     } else {
-      // No password required
+      // No password required (public-view / private member path)
       isValid = true
     }
   } else {
@@ -621,12 +650,15 @@ export async function verifySharePassword(
 
 /**
  * Save or sync a public share document snapshot directly by public ID.
- * Guarantees resilience even across cold serverless containers and multi-tier restarts.
+ * Auth-guarded: password-protected or private shares require a valid edit token.
+ * Never force-enables a share and never overwrites a protected share anonymously.
+ * Normalizes snapshot to always include look/updatedAt.
  */
 export async function savePublicShareSnapshot(
   publicId: string,
   doc: ServerStoredDoc,
-  mode: ShareMode = "public-view"
+  mode: ShareMode = "public-view",
+  opts?: { editToken?: string }
 ): Promise<boolean> {
   if (!publicId || !doc) return false
   hydrateShares()
@@ -636,9 +668,46 @@ export async function savePublicShareSnapshot(
     if (key) share = shareRegistry.get(key)
   }
 
+  const { verifyEditToken } = await import("./security")
+
+  // Guard: if an existing share is password-protected or private, require valid token
+  if (share) {
+    const shareProtected =
+      share.mode === "password-edit" ||
+      share.mode === "private" ||
+      !!share.hasPassword ||
+      !!share.passwordHash
+    let docProtected = false
+    try {
+      const rawDoc = await getRawDoc(share.dbId, share.fileId)
+      docProtected = !!(rawDoc as any)?.hasPassword || !!(rawDoc as any)?.passwordHash
+    } catch {
+      // ignore
+    }
+    const snapProtected = !!(share.snapshot as any)?.hasPassword
+    if (shareProtected || docProtected || snapProtected) {
+      const token = opts?.editToken || ""
+      const check = verifyEditToken(token, share.dbId, share.fileId)
+      if (!check.valid) return false
+    }
+  } else {
+    // No existing share: refuse to create password-edit/private shares anonymously
+    if (mode === "password-edit" || mode === "private") return false
+  }
+
   const fileId = share?.fileId || doc.id || `file_${publicId}`
   const dbId = share?.dbId || "nezukos-box"
   const docKey = getDocKey(dbId, fileId)
+
+  const normalizedSnapshot: ServerStoredDoc = {
+    ...(doc as ServerStoredDoc),
+    id: (doc as any).id || fileId,
+    name: (doc as any).name || "Wireframe",
+    nodes: (doc as any).nodes || {},
+    order: (doc as any).order || [],
+    updatedAt: (doc as any).updatedAt || Date.now(),
+    look: (doc as any).look ?? share?.snapshot?.look ?? "rough",
+  } as ServerStoredDoc
 
   if (!share) {
     share = {
@@ -652,11 +721,11 @@ export async function savePublicShareSnapshot(
       createdBy: "anonymous",
       createdAt: Date.now(),
       updatedAt: Date.now(),
-      snapshot: doc,
+      snapshot: normalizedSnapshot,
     }
   } else {
-    share.snapshot = doc
-    share.enabled = true
+    // Never force enabled=true, never change mode here — snapshot sync only
+    share.snapshot = normalizedSnapshot
     share.updatedAt = Date.now()
   }
 
@@ -668,7 +737,7 @@ export async function savePublicShareSnapshot(
 
   // Also update store
   const store = getStore(dbId)
-  store.set(fileId, doc)
+  store.set(fileId, normalizedSnapshot)
 
   return true
 }

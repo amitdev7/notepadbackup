@@ -6,11 +6,12 @@
 // ---------------------------------------------------------------------------
 
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 
 const CWD_ATTACHMENTS_DIR = path.join(process.cwd(), ".zenithsui_data", "attachments")
-const TMP_ATTACHMENTS_DIR = path.join("/tmp", ".zenithsui_data", "attachments")
+const TMP_ATTACHMENTS_DIR = path.join(os.tmpdir(), ".zenithsui_data", "attachments")
 
 function getWritableAttachmentsDir(): string {
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {

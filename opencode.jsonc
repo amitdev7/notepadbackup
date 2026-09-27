@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  // Fix for: "The referenced name `#/$defs/Config` in function_response.response
+  // does not match to a display_name in the function_response.parts."
+  //
+  // The plain `gemini-3-8-flash` route in 9router forwards raw JSON tool results
+  // containing `$ref: #/$defs/...` (e.g. reading/fetching JSON schemas) straight
+  // into Gemini's function_response.response, which Gemini rejects with 400
+  // INVALID_ARGUMENT. The `ag/gemini-3-flash-agent` route handles the same tool
+  // round-trip correctly (verified 2026-09-27: raw $ref payload OK).
+  //
+  // This keeps the `9router/gemini-3-8-flash` reference unchanged everywhere
+  // (agents, commands, sessions) and only swaps the upstream model ID.
+  "providers": {
+    "9router": {
+      "models": {
+        "gemini-3-8-flash": {
+          "modelID": "ag/gemini-3-flash-agent",
+          "name": "Gemini 3.8 Flash",
+          "limit": {
+            "context": 1000000,
+            "output": 66000
+          }
+        },
+        "gemini-3-8-flash-high": {
+          "modelID": "ag/gemini-3.8-flash-high",
+          "name": "Gemini 3.8 Flash High",
+          "limit": {
+            "context": 1000000,
+            "output": 66000
+          }
+        }
+      }
+    }
+  }
+}

@@ -5,7 +5,7 @@
 import { randomBytes } from "crypto"
 import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 import { listTeamRecords, getTeamRecord } from "./server-teams"
-import { getStore, persistDbFiles } from "@/app/api/database/[dbId]/files/route"
+import { getStore, persistDbFiles } from "@/lib/server-documents"
 import type {
   WorkspaceRecord,
   WorkspaceClientSummary,

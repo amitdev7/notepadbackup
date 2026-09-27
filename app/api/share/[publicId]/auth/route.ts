@@ -3,13 +3,11 @@ import { verifySharePassword } from "@/lib/server-share"
 
 export const dynamic = "force-dynamic"
 
-function getSessionId(req: NextRequest): string {
-  return (
-    req.headers.get("x-session-id") ||
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("x-real-ip") ||
-    "zenithsui-share-session"
-  )
+function getClientKey(req: NextRequest, publicId: string): string {
+  // Rate-limit keyed by client IP + publicId (not client-supplied session alone).
+  const forwarded = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+  const ip = forwarded || req.headers.get("x-real-ip") || "unknown-ip"
+  return `${ip}:${publicId}`
 }
 
 export async function POST(
@@ -17,7 +15,7 @@ export async function POST(
   context: { params: Promise<{ publicId: string }> }
 ) {
   const { publicId } = await context.params
-  const sessionId = getSessionId(req)
+  const rateKey = getClientKey(req, publicId)
 
   try {
     const body = await req.json()
@@ -27,7 +25,7 @@ export async function POST(
       return NextResponse.json({ error: "Password is required" }, { status: 400 })
     }
 
-    const result = await verifySharePassword(publicId, password, sessionId)
+    const result = await verifySharePassword(publicId, password, rateKey)
 
     if (!result.success) {
       const status = result.locked ? 429 : 401

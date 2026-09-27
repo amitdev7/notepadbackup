@@ -1,5 +1,5 @@
-import type { ServerStoredDoc } from "@/app/api/database/[dbId]/files/route"
-import { getRawDoc, getStore, persistDbFiles } from "@/app/api/database/[dbId]/files/route"
+import type { ServerStoredDoc } from "@/lib/server-documents"
+import { getRawDoc, getStore, persistDbFiles } from "@/lib/server-documents"
 import { saveSupabaseDoc } from "@/lib/supabase-server"
 import { verifyEditToken } from "@/lib/security"
 import { createPageVersion } from "@/lib/server-versions"

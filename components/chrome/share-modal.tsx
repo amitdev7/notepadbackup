@@ -15,7 +15,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import type { ShareMode } from "@/lib/database"
-import { encodeSharePayload, cacheLocalShare } from "@/lib/share-payload"
+import { cacheLocalShare } from "@/lib/share-payload"
 import {
   ShareNetwork as ShareIcon,
   Globe as GlobeIcon,
@@ -51,15 +51,15 @@ export function ShareModal() {
   const [successNotice, setSuccessNotice] = useState<string | null>(null)
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false)
 
-  // Build resilient doc snapshot and URL-safe payload
+  // Build resilient doc snapshot for local cache fallback only.
+  // NOTE: no per-keystroke server sync here — saves happen only on explicit
+  // Save/regenerate/revoke actions via the store (updateShareSettings/revokeShare).
   const docSnapshot = useMemo(() => ({
     id: docId,
     name: fileName,
     nodes,
     order,
   }), [docId, fileName, nodes, order])
-
-  const payload = useMemo(() => encodeSharePayload(docSnapshot), [docSnapshot])
 
   // Synchronize local form state with store's shareConfig whenever it updates
   useEffect(() => {
@@ -68,12 +68,6 @@ export function ShareModal() {
       setEnabled(shareConfig.enabled !== false)
       if (shareConfig.publicId) {
         cacheLocalShare(shareConfig.publicId, docSnapshot)
-        // Background sync to server so clean URLs also work
-        void fetch(`/api/share/${encodeURIComponent(shareConfig.publicId)}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ doc: docSnapshot, mode: shareConfig.mode || "public-view" }),
-        }).catch(() => {})
       }
     }
   }, [shareConfig, docSnapshot])
@@ -82,7 +76,8 @@ export function ShareModal() {
 
   const origin = typeof window !== "undefined" ? window.location.origin : ""
   const publicId = shareConfig?.publicId || ""
-  const shareUrl = publicId ? `${origin}/p/${publicId}${payload ? `#d=${payload}` : ""}` : ""
+  // Clean short link — never generate legacy #d= payload fragments
+  const shareUrl = publicId ? `${origin}/p/${publicId}` : ""
 
   const handleCopyLink = async () => {
     if (!shareUrl) return

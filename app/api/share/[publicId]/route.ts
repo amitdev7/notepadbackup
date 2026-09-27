@@ -32,13 +32,21 @@ export async function POST(
   try {
     const { publicId } = await context.params
     const body = await req.json().catch(() => ({}))
-    const { doc, mode } = body
+    const { doc } = body
 
     if (!doc || typeof doc !== "object") {
       return NextResponse.json({ error: "Missing document payload" }, { status: 400 })
     }
 
-    const saved = await savePublicShareSnapshot(publicId, doc, mode || "public-view")
+    // Auth-guarded: protected/private shares require a valid edit token.
+    const editToken = req.headers.get("x-zenithsui-edit-token") || ""
+    const saved = await savePublicShareSnapshot(publicId, doc, "public-view", { editToken })
+    if (!saved) {
+      return NextResponse.json(
+        { error: "Valid edit token required to sync this shared page." },
+        { status: 403 }
+      )
+    }
     return NextResponse.json({ success: saved })
   } catch (err) {
     return NextResponse.json(

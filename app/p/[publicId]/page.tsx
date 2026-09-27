@@ -3,25 +3,34 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Dedicated Share Viewer Route (/p/[publicId])
 //
-// Access Modes:
+// Access Modes (authoritative, resolved from the server):
 //   - Public (View-Only)
 //   - Password Protected (View + Password Required to Edit)
 //   - Private (Access restricted)
 //
-// Integrated with:
-//   - Database and shared registry
-//   - Read-only enforcement / Password authorization
-//   - Live Realtime synchronization
-//   - Export (PDF, PNG, SVG, JSON)
-//   - Napkin / Rough sketch design fidelity
+// Loading strategy (server-first):
+//   - URL hash (#d=...) and localStorage cache are ONLY an instant,
+//     strictly read-only placeholder until the server confirms.
+//   - Legacy #d= hashes are still readable for backward compat but are
+//     never generated here (no sync POSTs, no hash writing).
+//   - resolvePublicShareClient is authoritative for mode / doc / ids.
+//
+// Realtime (only when the server confirms + SSE connects):
+//   - EventSource GET /api/share/[publicId]/realtime?token= for init/patch.
+//   - Outbound diffs POST to /api/share/[publicId]/realtime with
+//     x-zenithsui-edit-token. "Live synced" notice only while SSE is up,
+//     otherwise the viewer stays view-only.
 // ---------------------------------------------------------------------------
 
-import { useEffect, useState, use } from "react"
+import { useEffect, useRef, useState, use } from "react"
 import Link from "next/link"
 import { useSquig } from "@/lib/store"
 import {
   resolvePublicShareClient,
   verifySharePasswordClient,
+  storeEditToken,
+  getStoredEditToken,
+  getClientSessionId,
   type ShareMode,
 } from "@/lib/database"
 import {
@@ -29,6 +38,10 @@ import {
   cacheLocalShare,
   getLocalShareCache,
 } from "@/lib/share-payload"
+import {
+  applyCollaborationOps,
+  type CollaborationOp,
+} from "@/lib/collaboration-types"
 import { Canvas } from "@/components/canvas/canvas"
 import { LeftRail } from "@/components/chrome/left-rail"
 import { LibraryPanel } from "@/components/chrome/library-panel"
@@ -73,6 +86,95 @@ interface PageProps {
   params: Promise<{ publicId: string }> | { publicId: string }
 }
 
+// ---------------------------------------------------------------------------
+// Local snapshot + diff helpers for share-realtime mutations.
+// The viewer never invents server state: diffs are computed against the last
+// server-confirmed (or just-acknowledged) snapshot and POSTed as collab ops.
+// ---------------------------------------------------------------------------
+
+interface ShareSnapshot {
+  nodes: Record<string, any>
+  order: string[]
+  name: string
+  look: { theme: unknown; paper: unknown; font: unknown; grid: unknown }
+}
+
+function snapshotOf(s: any): ShareSnapshot {
+  return {
+    nodes: s?.nodes ?? {},
+    order: Array.isArray(s?.order) ? [...s.order] : [],
+    name: s?.fileName ?? s?.name ?? "",
+    look: {
+      theme: s?.theme,
+      paper: s?.paper,
+      font: s?.font,
+      grid: s?.grid,
+    },
+  }
+}
+
+function diffShareOps(last: ShareSnapshot | null, cur: any): CollaborationOp[] {
+  if (!last) return []
+  const ops: CollaborationOp[] = []
+  const lastNodes: Record<string, any> = last.nodes || {}
+  const curNodes: Record<string, any> = cur?.nodes || {}
+
+  const removed = Object.keys(lastNodes).filter((id) => !curNodes[id])
+  if (removed.length) ops.push({ type: "remove-nodes", ids: removed })
+
+  const added = Object.keys(curNodes)
+    .filter((id) => !lastNodes[id])
+    .map((id) => curNodes[id])
+    .filter(Boolean)
+  if (added.length) ops.push({ type: "add-nodes", nodes: added as any })
+
+  const patches: Record<string, any> = {}
+  for (const id of Object.keys(curNodes)) {
+    if (!lastNodes[id]) continue
+    try {
+      if (JSON.stringify(lastNodes[id]) !== JSON.stringify(curNodes[id])) {
+        patches[id] = curNodes[id]
+      }
+    } catch {
+      patches[id] = curNodes[id]
+    }
+  }
+  if (Object.keys(patches).length) {
+    ops.push({ type: "update-nodes", patches } as CollaborationOp)
+  }
+
+  const lastOrder = last.order || []
+  const curOrder = Array.isArray(cur?.order) ? cur.order : []
+  try {
+    if (JSON.stringify(lastOrder) !== JSON.stringify(curOrder)) {
+      ops.push({ type: "reorder-nodes", order: [...curOrder] })
+    }
+  } catch {
+    // ignore order diff errors
+  }
+
+  const curName = cur?.fileName ?? cur?.name ?? ""
+  if ((last.name ?? "") !== (curName ?? "")) {
+    ops.push({ type: "set-filename", name: curName })
+  }
+
+  const curLook = {
+    theme: cur?.theme,
+    paper: cur?.paper,
+    font: cur?.font,
+    grid: cur?.grid,
+  }
+  try {
+    if (JSON.stringify(last.look) !== JSON.stringify(curLook)) {
+      ops.push({ type: "set-look", look: curLook as any })
+    }
+  } catch {
+    // ignore look diff errors
+  }
+
+  return ops
+}
+
 export default function SharedPageViewer({ params }: PageProps) {
   const resolvedParams =
     params && typeof (params as any).then === "function"
@@ -85,6 +187,8 @@ export default function SharedPageViewer({ params }: PageProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [shareMode, setShareMode] = useState<ShareMode>("public-view")
   const [unlocked, setUnlocked] = useState(false)
+  const [shareDbId, setShareDbId] = useState<string | null>(null)
+  const [shareFileId, setShareFileId] = useState<string | null>(null)
 
   // Password Unlock Modal State
   const [unlockModalOpen, setUnlockModalOpen] = useState(false)
@@ -102,11 +206,18 @@ export default function SharedPageViewer({ params }: PageProps) {
   const fileName = useSquig((s) => s.fileName)
   const setNotice = useSquig((s) => s.setNotice)
 
+  // Realtime bookkeeping (refs only — no visual changes).
+  const sseRef = useRef<EventSource | null>(null)
+  const sseConnectedRef = useRef(false)
+  const applyingRemote = useRef(false)
+  const revisionRef = useRef(0)
+  const lastSynced = useRef<ShareSnapshot | null>(null)
+
   useEffect(() => {
     hydrate()
   }, [hydrate])
 
-  // Load document on initial mount with instant multi-tier fallback
+  // Load document: instant read-only placeholder, then authoritative server GET.
   useEffect(() => {
     let mounted = true
     async function loadSharedDoc() {
@@ -114,35 +225,12 @@ export default function SharedPageViewer({ params }: PageProps) {
       setErrorStatus(null)
       setErrorMessage(null)
 
-      // Tier 1: Check URL hash for self-contained wireframe payload (#d=...)
-      if (typeof window !== "undefined" && window.location.hash) {
-        const docFromHash = decodeSharePayload(window.location.hash)
-        if (docFromHash && docFromHash.nodes) {
-          const loaded = loadDoc(JSON.stringify(docFromHash))
-          if (loaded && mounted) {
-            setReadOnly(true)
-            useSquig.setState({
-              selectedDbId: "nezukos-box",
-              permissionRole: "viewer",
-            })
-            setLoading(false)
-            cacheLocalShare(publicId, docFromHash)
-
-            // Background async sync to server so clean URLs also work
-            void fetch(`/api/share/${encodeURIComponent(publicId)}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ doc: docFromHash, mode: "public-view" }),
-            }).catch(() => {})
-            return
-          }
-        }
-      }
-
-      // Tier 2: Check local browser cache for immediate tab-to-tab rendering
-      const cached = getLocalShareCache(publicId) as any
-      if (cached && cached.nodes) {
-        const loaded = loadDoc(JSON.stringify(cached))
+      // Instant placeholder ONLY (legacy #d= hash, then local cache).
+      // Strictly read-only; the server GET below overwrites it. Nothing is
+      // ever POSTed back and no hashes are generated here.
+      const showPlaceholder = (doc: any): boolean => {
+        if (!doc || !doc.nodes) return false
+        const loaded = loadDoc(JSON.stringify(doc))
         if (loaded && mounted) {
           setReadOnly(true)
           useSquig.setState({
@@ -150,38 +238,35 @@ export default function SharedPageViewer({ params }: PageProps) {
             permissionRole: "viewer",
           })
           setLoading(false)
+          return true
+        }
+        return false
+      }
 
-          // Background async sync to server
-          void fetch(`/api/share/${encodeURIComponent(publicId)}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ doc: cached, mode: "public-view" }),
-          }).catch(() => {})
-          return
+      let placeholderShown = false
+      if (typeof window !== "undefined" && window.location.hash) {
+        const docFromHash = decodeSharePayload(window.location.hash)
+        if (showPlaceholder(docFromHash)) {
+          placeholderShown = true
+          try {
+            cacheLocalShare(publicId, docFromHash as any)
+          } catch {
+            // ignore cache errors
+          }
+        }
+      }
+      if (!placeholderShown) {
+        const cached = getLocalShareCache(publicId) as any
+        if (cached && cached.nodes) {
+          showPlaceholder(cached)
         }
       }
 
-      // Tier 3: Fetch from server API
+      // Authoritative: server-first GET resolves mode / ids / document.
       const res = await resolvePublicShareClient(publicId)
       if (!mounted) return
 
       if (!res.success || !res.doc) {
-        // Fallback: check if local storage has any last edited document
-        try {
-          const temp = localStorage.getItem("zenithsui:temp_fork")
-          if (temp) {
-            const parsed = JSON.parse(temp)
-            if (parsed && parsed.nodes) {
-              loadDoc(temp)
-              setReadOnly(true)
-              setLoading(false)
-              return
-            }
-          }
-        } catch {
-          // ignore
-        }
-
         setErrorStatus(res.status || 404)
         setErrorMessage(res.error || "Shared wireframe not found or access is restricted.")
         setLoading(false)
@@ -189,17 +274,30 @@ export default function SharedPageViewer({ params }: PageProps) {
       }
 
       setShareMode(res.mode || "public-view")
-      cacheLocalShare(publicId, res.doc)
-
-      // Ingest document into canvas store
-      const loaded = loadDoc(JSON.stringify(res.doc))
-      if (loaded) {
-        setReadOnly(true)
-        useSquig.setState({
-          selectedDbId: res.dbId || "nezukos-box",
-          permissionRole: "viewer",
-        })
+      setShareDbId(res.dbId || null)
+      setShareFileId(res.fileId || null)
+      try {
+        cacheLocalShare(publicId, res.doc)
+      } catch {
+        // ignore cache errors
       }
+
+      // Ingest the server-confirmed document into the canvas store.
+      applyingRemote.current = true
+      try {
+        const loaded = loadDoc(JSON.stringify(res.doc))
+        if (loaded && mounted) {
+          setReadOnly(true)
+          useSquig.setState({
+            selectedDbId: res.dbId || "nezukos-box",
+            permissionRole: "viewer",
+          })
+        }
+      } finally {
+        applyingRemote.current = false
+      }
+      revisionRef.current = 0
+      lastSynced.current = snapshotOf(useSquig.getState())
 
       setLoading(false)
     }
@@ -213,6 +311,293 @@ export default function SharedPageViewer({ params }: PageProps) {
     }
   }, [publicId, loadDoc])
 
+  // Realtime inbound: SSE patch stream for this share link.
+  useEffect(() => {
+    if (!publicId || !shareDbId || !shareFileId) return
+    const dbId = shareDbId
+    const fileId = shareFileId
+    let closed = false
+    let es: EventSource | null = null
+
+    const applyInitDoc = (msg: any) => {
+      if (msg?.revision != null && typeof msg.revision === "number") {
+        revisionRef.current = msg.revision
+        useSquig.setState({ collabRevision: msg.revision })
+      }
+      if (msg?.doc && msg.doc.nodes) {
+        applyingRemote.current = true
+        try {
+          const st = useSquig.getState()
+          const order = Array.isArray(msg.doc.order)
+            ? msg.doc.order.filter((id: string) => msg.doc.nodes[id])
+            : Object.keys(msg.doc.nodes)
+          useSquig.setState({
+            fileName: msg.doc.name || st.fileName,
+            nodes: msg.doc.nodes,
+            order,
+            collabRevision: revisionRef.current,
+          } as any)
+          if (msg.doc.look) {
+            try {
+              useSquig.setState(msg.doc.look as any)
+            } catch {
+              // ignore look errors
+            }
+          }
+          lastSynced.current = snapshotOf(useSquig.getState())
+        } finally {
+          applyingRemote.current = false
+        }
+      }
+      // The server derives role from the edit token: trust it.
+      if (msg?.role === "editor" || msg?.role === "owner") {
+        useSquig.setState({ permissionRole: msg.role, isReadOnly: false })
+        setUnlocked(true)
+      } else if (msg?.role === "viewer") {
+        useSquig.setState({ permissionRole: "viewer", isReadOnly: true })
+        setUnlocked(false)
+      }
+    }
+
+    const applyPatchOps = (ops: CollaborationOp[], revision: number) => {
+      if (!Array.isArray(ops) || !ops.length) return
+      applyingRemote.current = true
+      try {
+        const st = useSquig.getState()
+        const updated = applyCollaborationOps(
+          {
+            id: (st.docId as string) || fileId,
+            name: st.fileName,
+            nodes: st.nodes as any,
+            order: st.order,
+            updatedAt: Date.now(),
+            look: {
+              theme: (st as any).theme,
+              paper: (st as any).paper,
+              font: (st as any).font,
+              grid: (st as any).grid,
+            },
+          } as any,
+          ops
+        )
+        useSquig.setState({
+          nodes: updated.nodes as any,
+          order: updated.order,
+          fileName: updated.name,
+          collabRevision: revision,
+        } as any)
+        if (updated.look) {
+          try {
+            useSquig.setState(updated.look as any)
+          } catch {
+            // ignore look errors
+          }
+        }
+        lastSynced.current = snapshotOf(useSquig.getState())
+      } finally {
+        applyingRemote.current = false
+      }
+    }
+
+    const catchUpMissed = async () => {
+      try {
+        const r = await fetch(
+          `/api/share/${encodeURIComponent(publicId)}/realtime?since=${revisionRef.current}`,
+          { headers: { "x-session-id": getClientSessionId() } }
+        )
+        const data = await r.json().catch(() => ({}))
+        if (!r.ok || closed) return
+        if (data?.fullSync && data?.doc?.nodes) {
+          if (typeof data.revision === "number") revisionRef.current = data.revision
+          applyingRemote.current = true
+          try {
+            loadDoc(JSON.stringify(data.doc))
+            useSquig.setState({ collabRevision: revisionRef.current } as any)
+            lastSynced.current = snapshotOf(useSquig.getState())
+          } finally {
+            applyingRemote.current = false
+          }
+        } else if (Array.isArray(data?.patches) && data.patches.length) {
+          for (const h of data.patches) {
+            if (closed) break
+            if (typeof h?.revision === "number") revisionRef.current = h.revision
+            applyPatchOps(h?.ops || [], revisionRef.current)
+          }
+        }
+      } catch {
+        // retry on the next patch or reconnect
+      }
+    }
+
+    try {
+      const token = getStoredEditToken(dbId, fileId) || ""
+      const clientId = getClientSessionId()
+      const url =
+        `/api/share/${encodeURIComponent(publicId)}/realtime` +
+        `?token=${encodeURIComponent(token)}&clientId=${encodeURIComponent(clientId)}`
+      es = new EventSource(url)
+      sseRef.current = es
+
+      es.addEventListener("init", (ev) => {
+        try {
+          const msg = JSON.parse((ev as MessageEvent).data)
+          if (closed) return
+          applyInitDoc(msg)
+        } catch {
+          // ignore malformed init
+        }
+      })
+
+      es.addEventListener("patch", (ev) => {
+        try {
+          const msg = JSON.parse((ev as MessageEvent).data)
+          if (closed) return
+          if (msg.clientId && msg.clientId === getClientSessionId()) {
+            if (typeof msg.revision === "number") {
+              revisionRef.current = Math.max(revisionRef.current, msg.revision)
+              useSquig.setState({ collabRevision: revisionRef.current } as any)
+            }
+            return
+          }
+          if (
+            typeof msg.revision === "number" &&
+            msg.revision > revisionRef.current + 1 &&
+            revisionRef.current > 0
+          ) {
+            void catchUpMissed()
+            return
+          }
+          if (typeof msg.revision === "number") revisionRef.current = msg.revision
+          applyPatchOps(msg.ops || [], revisionRef.current)
+        } catch {
+          // ignore malformed patch
+        }
+      })
+
+      es.onopen = () => {
+        if (closed) return
+        if (!sseConnectedRef.current) {
+          sseConnectedRef.current = true
+          setNotice("Live synced — you are viewing the latest version.")
+        }
+      }
+      es.onerror = () => {
+        if (sseConnectedRef.current) {
+          sseConnectedRef.current = false
+          setNotice("View-only — live connection lost. Reconnecting…")
+        }
+      }
+    } catch {
+      sseConnectedRef.current = false
+    }
+
+    return () => {
+      closed = true
+      sseConnectedRef.current = false
+      try {
+        es?.close()
+      } catch {
+        // ignore
+      }
+      if (sseRef.current === es) sseRef.current = null
+    }
+  }, [publicId, shareDbId, shareFileId, unlocked, loadDoc, setNotice])
+
+  // Realtime outbound: POST local diffs while unlocked with the edit token.
+  useEffect(() => {
+    if (!unlocked || !shareDbId || !shareFileId) return
+    const dbId = shareDbId
+    const fileId = shareFileId
+    let timer: ReturnType<typeof setTimeout> | null = null
+    let sending = false
+    let disposed = false
+
+    lastSynced.current = snapshotOf(useSquig.getState())
+
+    const flushMutations = async () => {
+      if (disposed || sending || applyingRemote.current) return
+      const st = useSquig.getState()
+      if (st.isReadOnly) return
+      const ops = diffShareOps(lastSynced.current, {
+        nodes: st.nodes,
+        order: st.order,
+        fileName: st.fileName,
+        theme: (st as any).theme,
+        paper: (st as any).paper,
+        font: (st as any).font,
+        grid: (st as any).grid,
+      })
+      if (!ops.length) {
+        lastSynced.current = snapshotOf(st)
+        return
+      }
+      sending = true
+      try {
+        const token = getStoredEditToken(dbId, fileId) || ""
+        const clientId = getClientSessionId()
+        const res = await fetch(`/api/share/${encodeURIComponent(publicId)}/realtime`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-session-id": clientId,
+            "x-zenithsui-edit-token": token,
+          },
+          body: JSON.stringify({
+            type: "mutate",
+            dbId,
+            fileId,
+            clientId,
+            baseRevision: revisionRef.current,
+            ops,
+            timestamp: Date.now(),
+          }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (disposed) return
+        if (res.ok && (data.success || typeof data.revision === "number")) {
+          if (typeof data.revision === "number") {
+            revisionRef.current = data.revision
+            useSquig.setState({ collabRevision: data.revision } as any)
+          }
+          lastSynced.current = snapshotOf(useSquig.getState())
+        } else if (res.status === 403) {
+          useSquig.setState({ isReadOnly: true })
+          setUnlocked(false)
+          useSquig.getState().setNotice("Edit access was revoked. View-only mode.")
+        }
+      } catch {
+        // keep lastSynced as-is so the next change retries the diff
+      } finally {
+        sending = false
+      }
+    }
+
+    const unsub = useSquig.subscribe((s, prev) => {
+      if (disposed || applyingRemote.current) return
+      if ((s as any).isReadOnly) return
+      const changed =
+        (s as any).nodes !== (prev as any).nodes ||
+        (s as any).order !== (prev as any).order ||
+        (s as any).fileName !== (prev as any).fileName ||
+        (s as any).theme !== (prev as any).theme ||
+        (s as any).paper !== (prev as any).paper ||
+        (s as any).font !== (prev as any).font ||
+        (s as any).grid !== (prev as any).grid
+      if (!changed) return
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        timer = null
+        void flushMutations()
+      }, 500)
+    })
+
+    return () => {
+      disposed = true
+      if (timer) clearTimeout(timer)
+      unsub()
+    }
+  }, [unlocked, shareDbId, shareFileId, publicId])
+
   // Password Unlock Handler
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -224,15 +609,23 @@ export default function SharedPageViewer({ params }: PageProps) {
     try {
       const res = await verifySharePasswordClient(publicId, passwordInput)
       if (res.success && res.token) {
+        if (shareDbId && shareFileId) {
+          storeEditToken(shareDbId, shareFileId, res.token)
+        }
         setUnlocked(true)
         setReadOnly(false)
         useSquig.setState({
           permissionRole: "editor",
           isReadOnly: false,
         })
+        lastSynced.current = snapshotOf(useSquig.getState())
         setUnlockModalOpen(false)
         setPasswordInput("")
-        setNotice("Editing unlocked! Live changes are now synced.")
+        setNotice(
+          sseConnectedRef.current
+            ? "Editing unlocked! Live changes are now synced."
+            : "Editing unlocked (view-only — waiting for live sync)."
+        )
       } else {
         setUnlockError(res.error || "Incorrect password")
         setAttemptsLeft(res.attemptsLeft ?? null)
@@ -537,4 +930,3 @@ export default function SharedPageViewer({ params }: PageProps) {
     </main>
   )
 }
-

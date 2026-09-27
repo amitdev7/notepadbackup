@@ -4,6 +4,7 @@
 
 import { createCipheriv, createDecipheriv, randomBytes, createHash } from "node:crypto"
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 
 const ALGORITHM = "aes-256-gcm"
@@ -11,7 +12,7 @@ const IV_LENGTH = 16 // 128-bit initialization vector
 const AUTH_TAG_LENGTH = 16
 
 const CWD_DATA_DIR = path.join(process.cwd(), ".zenithsui_data")
-const TMP_DATA_DIR = path.join("/tmp", ".zenithsui_data")
+const TMP_DATA_DIR = path.join(os.tmpdir(), ".zenithsui_data")
 
 function getWritableKeyPath(): string {
   const dir = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME ? TMP_DATA_DIR : CWD_DATA_DIR
