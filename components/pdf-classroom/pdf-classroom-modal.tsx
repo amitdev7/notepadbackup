@@ -93,6 +93,11 @@ export function PdfClassroomModal() {
   }, [drawColor])
   const [penWeight, setPenWeight] = useState(2.5)
   const [isWhiteboard, setIsWhiteboard] = useState(false)
+  const whiteboardIntent = useSquig((s) => s.classroomWhiteboard)
+  // A "whiteboard" entry lands on the scratchpad instead of the slide.
+  useEffect(() => {
+    if (activeId) setIsWhiteboard(whiteboardIntent)
+  }, [activeId, whiteboardIntent])
   const [showRuler, setShowRuler] = useState(false)
   const [showGrid, setShowGrid] = useState(false)
   const [thumbnailsOpen, setThumbnailsOpen] = useState(false)
@@ -140,12 +145,16 @@ export function PdfClassroomModal() {
     }
   }, [node?.id])
 
-  // Sync annotations to node on page change or close
+  // Sync annotations to node on page change or close. Reads the CURRENT node
+  // from the store (never the render-closed one) so rapid page turns can't
+  // clobber another page's just-persisted annotations.
   const persistAnnotations = useCallback(
     (newAnn: PdfPageAnnotation[], targetPage: number) => {
-      if (!node) return
-      const currentMap = node.annotationsByPage || {}
-      updateNode(node.id, {
+      const st = useSquig.getState()
+      const fresh = (activeId ? st.nodes[activeId] : undefined) as PdfNode | undefined
+      if (!fresh) return
+      const currentMap = fresh.annotationsByPage || {}
+      st.updateNode(fresh.id, {
         currentPage: targetPage,
         annotationsByPage: {
           ...currentMap,
@@ -153,7 +162,7 @@ export function PdfClassroomModal() {
         },
       })
     },
-    [node, updateNode]
+    [activeId]
   )
 
   // Load high-resolution page

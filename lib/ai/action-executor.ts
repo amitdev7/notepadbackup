@@ -213,6 +213,21 @@ export class AIActionExecutor {
             case "createMindMap": {
               const startX = typeof action.startX === "number" ? action.startX : defaultStartX
               const startY = typeof action.startY === "number" ? action.startY : defaultStartY
+              // Normalize LLM-shaped branches: strings, subBranches alias, missing.
+              const rawBranches: unknown[] = Array.isArray(action.branches) ? action.branches : []
+              const branches = (rawBranches.length ? rawBranches : ["Branch 1", "Branch 2"]).map((b: any) => {
+                if (typeof b === "string") return { title: b, subTopics: [] as string[] }
+                const subs = Array.isArray(b?.subTopics)
+                  ? b.subTopics
+                  : Array.isArray(b?.subBranches)
+                    ? b.subBranches
+                    : []
+                return {
+                  title: String(b?.title ?? "Branch"),
+                  subTopics: subs.map((s: unknown) => String(s ?? "")),
+                }
+              })
+              const rootTopic = String((action as any).rootTopic ?? "Mind Map")
 
               // 1. Root Node
               const rootId = nanoid(8)
@@ -238,7 +253,7 @@ export class AIActionExecutor {
                 y: startY + 22,
                 w: 190,
                 h: 30,
-                text: action.rootTopic,
+                text: rootTopic,
                 fontSize: 18,
                 bold: true,
                 align: "center",
@@ -247,9 +262,9 @@ export class AIActionExecutor {
               createdNodeIds.push(rootTextId)
 
               // 2. Branches
-              let branchY = startY - (action.branches.length * 100) / 2 + 30
-              for (let bIdx = 0; bIdx < action.branches.length; bIdx++) {
-                const branch = action.branches[bIdx]
+              let branchY = startY - (branches.length * 100) / 2 + 30
+              for (let bIdx = 0; bIdx < branches.length; bIdx++) {
+                const branch = branches[bIdx]
                 const branchX = startX + 320
                 const branchId = nanoid(8)
 
@@ -329,10 +344,17 @@ export class AIActionExecutor {
             case "createFlowchart": {
               const startX = typeof action.startX === "number" ? action.startX : defaultStartX
               let curY = typeof action.startY === "number" ? action.startY : defaultStartY
+              // Normalize LLM-shaped steps: strings, missing ids, "step" alias.
+              const rawSteps: unknown[] = Array.isArray(action.steps) ? action.steps : []
+              const steps = (rawSteps.length ? rawSteps : ["Step 1", "Step 2"]).map((s: any, i: number) => {
+                if (typeof s === "string") return { id: `step-${i}`, label: s, kind: "process" }
+                const kind = s?.kind === "step" ? "process" : (s?.kind ?? "process")
+                return { id: String(s?.id ?? `step-${i}`), label: String(s?.label ?? "Step"), kind }
+              })
 
               const stepIdMap: Record<string, { id: string; x: number; y: number; w: number; h: number }> = {}
 
-              for (const step of action.steps) {
+              for (const step of steps) {
                 const id = nanoid(8)
                 const w = step.kind === "decision" ? 180 : 160
                 const h = step.kind === "decision" ? 80 : 60
@@ -589,8 +611,12 @@ export class AIActionExecutor {
                 store.setSelection(action.nodeIds)
               }
               if (typeof store.duplicateSelected === "function") {
-                const newIds = store.duplicateSelected(action.offset || 20)
-                createdNodeIds.push(...newIds)
+                // duplicateSelected clones with its own offset and selects the
+                // clones — collect whatever became selected (fresh read: the
+                // `store` snapshot above is stale after mutations).
+                store.duplicateSelected()
+                const after = useSquig.getState().selection as string[]
+                if (Array.isArray(after)) createdNodeIds.push(...after)
               }
               break
             }
@@ -683,9 +709,12 @@ export class AIActionExecutor {
 
               // If src not yet generated, trigger background request to /api/ai/image/generate
               if (!action.src && typeof window !== "undefined") {
+                const controller = new AbortController()
+                const timeout = setTimeout(() => controller.abort(), 90000)
                 fetch("/api/ai/image/generate", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
+                  signal: controller.signal,
                   body: JSON.stringify({
                     prompt,
                     aspectRatio: action.aspectRatio || "1:1",
@@ -693,8 +722,9 @@ export class AIActionExecutor {
                     height: h,
                   }),
                 })
-                  .then((r) => r.json())
+                  .then((r) => r.json().catch(() => ({})))
                   .then((res) => {
+                    clearTimeout(timeout)
                     if (res && res.imageUrl) {
                       useSquig.getState().updateNode(id, {
                         src: res.imageUrl,
@@ -703,10 +733,18 @@ export class AIActionExecutor {
                         naturalW: res.width || w,
                         naturalH: res.height || h,
                       })
+                      if (res.source && res.source !== "gemini") {
+                        useSquig.getState().setNotice("Image rendered as a sketch placeholder (AI image unavailable)")
+                      }
+                    } else if (res && res.error) {
+                      useSquig.getState().setNotice(`Image: ${res.error}`)
                     }
                   })
                   .catch((err) => {
-                    console.error("[AIActionExecutor] Async image generation failed:", err)
+                    clearTimeout(timeout)
+                    if ((err as any)?.name !== "AbortError") {
+                      console.error("[AIActionExecutor] Async image generation failed:", err)
+                    }
                   })
               }
               break

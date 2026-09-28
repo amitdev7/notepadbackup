@@ -5,7 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import type { FontMode, Look, PaperShade, ThemeName } from "./theme"
-import type { SquigNode, Viewport } from "./types"
+import type { SquigNode, Viewport, PdfPageAnnotation } from "./types"
 import { normalizeFill } from "./types"
 import { DEFAULT_LOOK, THEMES } from "./theme"
 
@@ -32,16 +32,25 @@ export type ValidationResult =
   | { success: true; doc: ZenithsuiDocument }
   | { success: false; error: string }
 
-const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image", "pdf"])
+const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image", "pdf", "file"])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
 
 function validPoints(v: unknown): v is [number, number][] {
   return (
     Array.isArray(v) &&
-    v.length > 0 &&
+    v.length >= 1 &&
     v.every((p) => Array.isArray(p) && p.length === 2 && num(p[0]) && num(p[1]))
   )
+}
+
+function validAnnotationsMap(v: unknown): Record<number, PdfPageAnnotation[]> | undefined {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return undefined
+  const out: Record<number, PdfPageAnnotation[]> = {}
+  for (const [k, list] of Object.entries(v as Record<string, unknown>)) {
+    if (Array.isArray(list)) out[Number(k)] = list as PdfPageAnnotation[]
+  }
+  return out
 }
 
 /** Sanitize an individual node from an untrusted document */
@@ -93,6 +102,7 @@ export function sanitizeNode(id: string, v: unknown): SquigNode | null {
         ...baseNode,
         type: "draw",
         points: n.points,
+        strokes: Array.isArray(n.strokes) && n.strokes.every(validPoints) ? n.strokes : undefined,
         stroke: n.stroke === "light" || n.stroke === "heavy" ? n.stroke : "regular",
         dashed: Boolean(n.dashed),
         color: str(n.color) ? n.color : undefined,
@@ -154,10 +164,22 @@ export function sanitizeNode(id: string, v: unknown): SquigNode | null {
         attachmentId: str(n.attachmentId) ? n.attachmentId : undefined,
         naturalW: num(n.naturalW) ? n.naturalW : undefined,
         naturalH: num(n.naturalH) ? n.naturalH : undefined,
-        annotations: n.annotations && typeof n.annotations === "object" ? (n.annotations as Record<number, any>) : undefined,
-        rotations: n.rotations && typeof n.rotations === "object" ? (n.rotations as Record<number, number>) : undefined,
+        annotations: validAnnotationsMap(n.annotations),
+        annotationsByPage: validAnnotationsMap(n.annotationsByPage),
+        rotations: n.rotations && typeof n.rotations === "object" && !Array.isArray(n.rotations) ? (n.rotations as Record<number, number>) : undefined,
         viewMode: n.viewMode === "page" || n.viewMode === "card" ? n.viewMode : undefined,
         whiteboardNotes: n.whiteboardNotes && typeof n.whiteboardNotes === "object" ? (n.whiteboardNotes as Record<string, any>) : undefined,
+      }
+
+    case "file":
+      return {
+        ...baseNode,
+        type: "file",
+        src: str(n.src) ? n.src : "",
+        name: str(n.name) ? n.name : "attachment",
+        fileSize: num(n.fileSize) ? n.fileSize : undefined,
+        attachmentId: str(n.attachmentId) ? n.attachmentId : undefined,
+        mimeType: str(n.mimeType) ? n.mimeType : undefined,
       }
 
     default:
@@ -188,17 +210,21 @@ export function validateZenithsuiDocument(raw: unknown): ValidationResult {
     return { success: false, error: "Document payload must be an object." }
   }
 
-  // Schema version guard
-  const incomingSchema = typeof parsed.schemaVersion === "number" ? parsed.schemaVersion : (parsed.version as number) || 1
-  if (incomingSchema > CURRENT_SCHEMA_VERSION && typeof parsed.schemaVersion === "number") {
+  // Schema version guard — coerce strings ("2") so they can't slip past.
+  const incomingSchema = Number(
+    typeof parsed.schemaVersion === "number" || typeof parsed.schemaVersion === "string"
+      ? parsed.schemaVersion
+      : (parsed.version as number)
+  ) || 1
+  if (incomingSchema > CURRENT_SCHEMA_VERSION) {
     return {
       success: false,
       error: `This document was created with a newer version of Zenithsui (schema v${incomingSchema}). Please update Zenithsui to open this file.`,
     }
   }
 
-  // Basic structure check
-  if (!parsed.nodes || typeof parsed.nodes !== "object") {
+  // Basic structure check — arrays are objects too, but never a nodes map.
+  if (!parsed.nodes || typeof parsed.nodes !== "object" || Array.isArray(parsed.nodes)) {
     return { success: false, error: "Document is missing a valid 'nodes' map." }
   }
   if (!Array.isArray(parsed.order)) {
@@ -240,7 +266,7 @@ export function validateZenithsuiDocument(raw: unknown): ValidationResult {
   
   const rawLook = parsed.look as Partial<Look> | undefined
   const look: Look = {
-    theme: rawLook?.theme && rawLook.theme in THEMES ? rawLook.theme as ThemeName : DEFAULT_LOOK.theme,
+    theme: rawLook?.theme && Object.prototype.hasOwnProperty.call(THEMES, rawLook.theme) ? rawLook.theme as ThemeName : DEFAULT_LOOK.theme,
     paper: rawLook?.paper && ["white", "subtle", "shaded"].includes(rawLook.paper) ? rawLook.paper as PaperShade : DEFAULT_LOOK.paper,
     font: rawLook?.font && ["hand", "sans", "serif"].includes(rawLook.font) ? rawLook.font as FontMode : DEFAULT_LOOK.font,
     grid: typeof rawLook?.grid === "boolean" ? rawLook.grid : DEFAULT_LOOK.grid,
@@ -249,11 +275,12 @@ export function validateZenithsuiDocument(raw: unknown): ValidationResult {
   let viewport: Viewport | undefined = undefined
   if (parsed.viewport && typeof parsed.viewport === "object") {
     const vp = parsed.viewport as Record<string, unknown>
-    if (num(vp.x) && num(vp.y) && num(vp.zoom)) {
+    if (num(vp.x) && num(vp.y) && num(vp.zoom) && (vp.zoom as number) > 0) {
       viewport = { x: vp.x, y: vp.y, zoom: vp.zoom }
     }
   }
 
+  const meta = (parsed.metadata ?? {}) as Record<string, unknown>
   const doc: ZenithsuiDocument = {
     app: "zenithsui",
     schemaVersion: CURRENT_SCHEMA_VERSION,
@@ -263,9 +290,7 @@ export function validateZenithsuiDocument(raw: unknown): ValidationResult {
     order: cleanOrder,
     viewport,
     metadata: {
-      exportedAt: str((parsed.metadata as Record<string, unknown>)?.exportedAt)
-        ? (parsed.metadata as Record<string, unknown>).exportedAt as string
-        : new Date().toISOString(),
+      exportedAt: str(meta.exportedAt) ? (meta.exportedAt as string) : new Date().toISOString(),
       appVersion: "1.0.0",
     },
   }

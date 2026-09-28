@@ -51,6 +51,19 @@ export function getVersionsForFile(dbId: string, fileId: string): PageVersion[] 
 }
 
 /**
+ * Permanently drop all versions for a deleted file and persist the store.
+ * Safe to call when none exist.
+ */
+export function deleteVersionsForFile(dbId: string, fileId: string): boolean {
+  ensureVersionStoreLoaded(dbId)
+  const fileMap = globalVersionStores[dbId]
+  if (!fileMap.has(fileId)) return false
+  fileMap.delete(fileId)
+  persistVersionStore(dbId)
+  return true
+}
+
+/**
  * Creates a deterministic content hash/signature to prevent creating
  * duplicate versions if no meaningful nodes/properties changed.
  */

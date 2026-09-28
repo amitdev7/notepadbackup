@@ -22,6 +22,7 @@ import {
 } from "@phosphor-icons/react"
 import rough from "roughjs"
 import { useSquig } from "@/lib/store"
+import { DEFAULT_ELEMENT_DEFAULTS } from "@/lib/element-defaults"
 import { cn } from "@/lib/utils"
 import {
   type ElementTypeKey,
@@ -85,8 +86,9 @@ export function ColorSizeStudioModal() {
   const [customFillHex, setCustomFillHex] = useState("")
   const canvasRef = useRef<SVGSVGElement>(null)
 
-  const currentTab = activeTab || "rectangle"
-  const currentConfig = elementDefaults[currentTab]
+  const currentTab = (activeTab as keyof typeof DEFAULT_ELEMENT_DEFAULTS) || "rectangle"
+  const currentConfig =
+    (elementDefaults as any)[currentTab] ?? (DEFAULT_ELEMENT_DEFAULTS as any)[currentTab] ?? {}
 
   // Render Rough.js sketch preview
   useEffect(() => {
@@ -235,7 +237,7 @@ export function ColorSizeStudioModal() {
             <button
               key={preset.id}
               type="button"
-              onClick={() => applyStudioPreset(preset.id)}
+              onClick={() => applyStudioPreset(preset)}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-chrome-full text-micro font-medium border border-border/70 bg-background hover:bg-accent transition-colors shrink-0"
               title={preset.description}
             >

@@ -10,7 +10,25 @@
 
 import crypto from "node:crypto"
 
-const TOKEN_SECRET = process.env.ZENITHSUI_SECRET_KEY || "zenithsui-super-secret-salt-and-hmac-key-2026"
+// In production a missing secret must fail loudly at USE time instead of
+// signing tokens with a key every deployment shares. Local dev keeps the
+// fallback. Lazy (not module scope) so `next build` never evaluates it.
+let TOKEN_SECRET_CACHE: string | null = null
+function getTokenSecret(): string {
+  if (TOKEN_SECRET_CACHE) return TOKEN_SECRET_CACHE
+  const fromEnv = process.env.ZENITHSUI_SECRET_KEY
+  if (fromEnv) {
+    TOKEN_SECRET_CACHE = fromEnv
+    return TOKEN_SECRET_CACHE
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[security] ZENITHSUI_SECRET_KEY is required in production — set it in Vercel Project Settings → Environment Variables."
+    )
+  }
+  TOKEN_SECRET_CACHE = "zenithsui-super-secret-salt-and-hmac-key-2026"
+  return TOKEN_SECRET_CACHE
+}
 const MAX_FAILED_ATTEMPTS = 3
 const LOCKOUT_MS = 30 * 60 * 1000 // 30 minutes lockout after 3 failed attempts
 
@@ -52,7 +70,7 @@ export function verifyPassword(password: string, storedHash: string, salt: strin
 export function createEditToken(dbId: string, fileId: string, role: "editor" | "owner" = "editor"): string {
   const expiresAt = Date.now() + 24 * 60 * 60 * 1000 // 24 hours
   const payload = `${dbId}:${fileId}:${role}:${expiresAt}`
-  const signature = crypto.createHmac("sha256", TOKEN_SECRET).update(payload).digest("hex")
+  const signature = crypto.createHmac("sha256", getTokenSecret()).update(payload).digest("hex")
   return Buffer.from(`${payload}:${signature}`).toString("base64url")
 }
 
@@ -71,7 +89,7 @@ export function verifyEditToken(token: string, dbId: string, fileId: string): { 
     if (Number.isNaN(expiresAt) || Date.now() > expiresAt) return { valid: false }
 
     const payload = `${tokenDbId}:${tokenFileId}:${role}:${expiresAtStr}`
-    const expectedSig = crypto.createHmac("sha256", TOKEN_SECRET).update(payload).digest("hex")
+    const expectedSig = crypto.createHmac("sha256", getTokenSecret()).update(payload).digest("hex")
     if (crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expectedSig, "hex"))) {
       return { valid: true, role: role as "editor" | "owner" }
     }

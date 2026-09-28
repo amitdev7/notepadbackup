@@ -47,12 +47,14 @@ export function copySelection(): void {
   s.copySelected()
   const json = encodeNodes(sel)
   try {
-    void navigator.clipboard.write([
-      new ClipboardItem({
-        "text/html": new Blob([payloadHtml(json)], { type: "text/html" }),
-        "text/plain": new Blob([wordsOf(sel) || json], { type: "text/plain" }),
-      }),
-    ])
+    void navigator.clipboard
+      .write([
+        new ClipboardItem({
+          "text/html": new Blob([payloadHtml(json)], { type: "text/html" }),
+          "text/plain": new Blob([wordsOf(sel) || json], { type: "text/plain" }),
+        }),
+      ])
+      .catch(() => {})
   } catch {
     // zenithsui's own clipboard already has it; the system one can sit this out
   }
@@ -177,7 +179,7 @@ function reencode(img: HTMLImageElement, nw: number, nh: number, sourceType: str
 
 /** Turn a picture off the clipboard into a node, or null if it isn't one. */
 export async function imageNodeFrom(blob: Blob, name?: string): Promise<ImageNode | null> {
-  if (!blob.type.startsWith("image/")) return null
+  if (!blob || typeof blob.type !== "string" || !blob.type.startsWith("image/")) return null
   const url = URL.createObjectURL(blob)
   try {
     const img = await loadImage(url)
@@ -232,7 +234,9 @@ function wrap(line: string, style: { size: number }): string[] {
   if (measureTextWidth(line, style) <= PASTED_WIDTH) return [line]
   const out: string[] = []
   let current = ""
-  for (const word of line.split(/(?<=\s)/)) {
+  // No lookbehind: split keeps the whitespace with the word before it, and old
+  // engines parse this file without complaint.
+  for (const word of line.split(/(\s+)/).filter((w) => w)) {
     const next = current + word
     if (current && measureTextWidth(next.trimEnd(), style) > PASTED_WIDTH) {
       out.push(current.trimEnd())
@@ -318,8 +322,12 @@ export async function pdfNodeFrom(blob: Blob, name?: string): Promise<PdfNode | 
 
 /** Where a paste lands when the pointer has never been over the canvas. */
 function viewportCentre(): [number, number] {
-  const v = useSquig.getState().viewport
-  return screenToWorld(v, window.innerWidth / 2, window.innerHeight / 2)
+  const v = useSquig.getState().viewport ?? { x: 0, y: 0, zoom: 1 }
+  try {
+    return screenToWorld(v, window.innerWidth / 2, window.innerHeight / 2)
+  } catch {
+    return [400, 300]
+  }
 }
 
 /** Stagger, so pasting four pictures at once doesn't stack them into one. */
@@ -466,10 +474,11 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
 /** Pictures on a paste or a drop, in the order the clipboard listed them. */
 function imagesIn(dt: DataTransfer): Blob[] {
   const out: Blob[] = []
-  for (const item of dt.items) {
+  if (!dt) return out
+  for (const item of dt.items ?? []) {
     if (item.kind !== "file") continue
     const file = item.getAsFile()
-    if (file && file.type.startsWith("image/")) out.push(file)
+    if (file && String(file.type || "").startsWith("image/")) out.push(file)
   }
   return out
 }
@@ -477,10 +486,11 @@ function imagesIn(dt: DataTransfer): Blob[] {
 /** PDFs on a paste or a drop. */
 function pdfsIn(dt: DataTransfer): Blob[] {
   const out: Blob[] = []
-  for (const item of dt.items) {
+  if (!dt) return out
+  for (const item of dt.items ?? []) {
     if (item.kind !== "file") continue
     const file = item.getAsFile()
-    if (file && (file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf"))) {
+    if (file && (file.type === "application/pdf" || String(file.name || "").toLowerCase().endsWith(".pdf"))) {
       out.push(file)
     }
   }
@@ -489,10 +499,16 @@ function pdfsIn(dt: DataTransfer): Blob[] {
 
 /** Handle a real paste event. Returns whether anything landed. */
 export async function pasteFrom(dt: DataTransfer, at?: [number, number]): Promise<boolean> {
+  if (!dt) return false
   // Check if any dropped files are .zenithsui or .json documents
-  let text = dt.getData("text/plain")
+  let text = ""
+  try {
+    text = dt.getData("text/plain")
+  } catch {
+    text = ""
+  }
   if (!text) {
-    for (const item of dt.items) {
+    for (const item of dt.items ?? []) {
       if (item.kind === "file") {
         const file = item.getAsFile()
         if (file && (file.name.endsWith(".zenithsui") || file.name.endsWith(".json"))) {
@@ -509,7 +525,13 @@ export async function pasteFrom(dt: DataTransfer, at?: [number, number]): Promis
 
   // everything comes off the DataTransfer now: it is only alive for this turn
   // of the event loop, and placing a picture takes several
-  return place({ html: dt.getData("text/html"), text, images: imagesIn(dt), pdfs: pdfsIn(dt) }, at)
+  let html: string | null = null
+  try {
+    html = dt.getData("text/html")
+  } catch {
+    html = null
+  }
+  return place({ html, text, images: imagesIn(dt), pdfs: pdfsIn(dt) }, at)
 }
 
 /**

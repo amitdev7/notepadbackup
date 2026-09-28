@@ -34,7 +34,7 @@ function Editor({ node: first }: { node: TextNode }) {
 
   const close = () => st().setLinkOpen(false)
   const commit = () => {
-    st().setLinkOnSelection(value)
+    st().setLinkOnSelection(value.trim() ? value : null)
     close()
   }
 
@@ -71,7 +71,7 @@ function Editor({ node: first }: { node: TextNode }) {
         <button
           type="button"
           onClick={() => {
-            st().setLinkOnSelection("")
+            st().setLinkOnSelection(null)
             close()
           }}
           className="h-ctl rounded-chrome-sm px-2.5 text-label text-muted-foreground hover:bg-accent hover:text-destructive"

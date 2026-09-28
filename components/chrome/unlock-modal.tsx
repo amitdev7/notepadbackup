@@ -6,7 +6,7 @@
 // protected document. Includes 3-attempt lockout warning and lockout state.
 // ---------------------------------------------------------------------------
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSquig } from "@/lib/store"
 import { Lock as LockIcon, LockKey as LockKeyIcon, WarningCircle as WarningCircleIcon, X as XIcon, ShieldCheck as ShieldCheckIcon } from "@phosphor-icons/react"
 import { Button } from "@/components/ui/button"
@@ -15,19 +15,32 @@ export function UnlockModal() {
   const open = useSquig((s) => s.unlockModalOpen)
   const fileName = useSquig((s) => s.fileName)
   const attemptsLeft = useSquig((s) => s.unlockAttemptsLeft)
-  const isLocked = useSquig((s) => s.isLocked)
   const unlockPage = useSquig((s) => s.unlockPage)
+  const resetUnlockAttempts = useSquig((s) => s.resetUnlockAttempts)
   const setUnlockModalOpen = useSquig((s) => s.setUnlockModalOpen)
 
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // A fresh visit gets fresh attempts — the lockout only throttles one burst.
+  useEffect(() => {
+    if (open) {
+      setPassword("")
+      setError(null)
+      resetUnlockAttempts()
+    }
+  }, [open, resetUnlockAttempts])
+
+  // Page protection (isLocked) is WHY this dialog is here; the burst lockout
+  // is tracked separately via attemptsLeft hitting zero.
+  const lockedOut = attemptsLeft <= 0
+
   if (!open) return null
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!password || isLocked) return
+    if (!password || lockedOut) return
     setLoading(true)
     setError(null)
     try {
@@ -84,7 +97,7 @@ export function UnlockModal() {
             </span>
           </div>
 
-          {isLocked ? (
+          {lockedOut ? (
             <div className="flex items-center gap-2.5 rounded-chrome-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
               <WarningCircleIcon size={18} weight="fill" className="shrink-0" />
               <span>Editing is locked for this session due to 3 consecutive failed password attempts.</span>
@@ -105,7 +118,7 @@ export function UnlockModal() {
                       setPassword(e.target.value)
                       setError(null)
                     }}
-                    disabled={loading || isLocked}
+                    disabled={loading || lockedOut}
                     className="h-9 w-full rounded-chrome-sm border border-border/80 bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
                   />
                 </div>
@@ -137,7 +150,7 @@ export function UnlockModal() {
             <Button
               type="submit"
               size="sm"
-              disabled={!password || loading || isLocked}
+              disabled={!password || loading || lockedOut}
               className="h-8 gap-1.5 rounded-chrome-sm text-xs font-medium"
             >
               <LockKeyIcon size={14} weight="bold" />

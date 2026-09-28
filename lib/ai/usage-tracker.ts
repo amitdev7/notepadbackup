@@ -65,8 +65,10 @@ export class AIUsageTracker {
 
   /**
    * Checks if an IP / user identifier has exceeded the per-minute request rate limit.
+   * Normalizes proxy chains ("a, b, c" → "a") so each client gets one bucket.
    */
-  static checkRateLimit(identifier: string, limitPerMinute = 60): { allowed: boolean; remaining: number } {
+  static checkRateLimit(rawIdentifier: string, limitPerMinute = 60): { allowed: boolean; remaining: number } {
+    const identifier = (rawIdentifier || "anonymous").split(",")[0].trim() || "anonymous"
     const now = Date.now()
     const record = rateLimitMap.get(identifier)
 

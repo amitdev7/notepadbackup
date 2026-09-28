@@ -14,7 +14,9 @@ export class BYOKVault {
     apiKey?: string,
     customEndpoint?: string,
     defaultModel?: string,
-    isDefault?: boolean
+    isDefault?: boolean,
+    userId?: string,
+    name?: string
   ): Promise<{ success: boolean; error?: string }> {
     const res = await ProviderCredentialService.saveCredential({
       providerId,
@@ -22,6 +24,8 @@ export class BYOKVault {
       customEndpoint,
       defaultModel,
       isDefault,
+      userId,
+      name,
     })
     return { success: res.success, error: res.error }
   }
@@ -29,27 +33,27 @@ export class BYOKVault {
   /**
    * Deletes a configured key from the vault.
    */
-  static deleteKey(providerId: AIProviderId): boolean {
-    return ProviderCredentialService.deleteCredential(providerId)
+  static deleteKey(providerId: AIProviderId, userId?: string): boolean {
+    return ProviderCredentialService.deleteCredential(providerId, userId)
   }
 
   /**
    * Retrieves effective credentials for a provider.
    */
-  static getEffectiveCredentials(providerId: AIProviderId): {
+  static getEffectiveCredentials(providerId: AIProviderId, userId?: string): {
     apiKey?: string
     customEndpoint?: string
     defaultModel?: string
     source: "byok" | "env" | "none"
   } {
-    return ProviderCredentialService.getEffectiveCredentials(providerId)
+    return ProviderCredentialService.getEffectiveCredentials(providerId, userId)
   }
 
   /**
    * Returns a list of configured providers with MASKED keys (safe for UI).
    */
-  static listConfiguredKeys(): BYOKConfig[] {
-    const list = ProviderCredentialService.listCredentials()
+  static listConfiguredKeys(userId?: string): BYOKConfig[] {
+    const list = ProviderCredentialService.listCredentials(userId)
     return list.map((c) => ({
       providerId: c.providerId,
       maskedKey: c.maskedKey,
@@ -61,8 +65,8 @@ export class BYOKVault {
   /**
    * Returns complete client-safe metadata for all providers.
    */
-  static listClientSafeProviders(): ClientSafeProviderState[] {
-    return ProviderCredentialService.getClientSafeProviders()
+  static listClientSafeProviders(userId?: string): ClientSafeProviderState[] {
+    return ProviderCredentialService.getClientSafeProviders(userId)
   }
 
   /**
@@ -72,13 +76,15 @@ export class BYOKVault {
     providerId: AIProviderId,
     apiKey?: string,
     customEndpoint?: string,
-    modelId?: string
+    modelId?: string,
+    userId?: string
   ): Promise<ConnectionTestResult> {
     return ProviderCredentialService.testConnection({
       providerId,
       apiKey,
       customEndpoint,
       modelId,
+      userId,
     })
   }
 }

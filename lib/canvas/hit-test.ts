@@ -29,7 +29,8 @@ const MAX_SLOP_WORLD = 14
 
 /** Forgiveness, in world units, for a pointer aimed at a stroke. */
 export function pickTolerance(zoom: number, n?: SquigNode): number {
-  const base = Math.min(SLOP_PX / Math.max(zoom, 0.01), MAX_SLOP_WORLD)
+  const z = Number.isFinite(zoom) && (zoom as number) > 0 ? (zoom as number) : 1
+  const base = Math.min(SLOP_PX / Math.max(z, 0.01), MAX_SLOP_WORLD)
   if (!n) return base
   // Lines are thin on purpose. A horizontal arrow is ~2 units tall, and
   // shrinking its collar to match would leave a 2px-tall target you can
@@ -37,7 +38,9 @@ export function pickTolerance(zoom: number, n?: SquigNode): number {
   if (n.type === "arrow" || n.type === "draw") return base
   // For areas, never let the collar swallow the node it belongs to: a hollow
   // shape has to keep a see-through core, or you can't marquee inside it.
-  return Math.min(base, Math.max(1, 0.35 * Math.min(n.w, n.h)))
+  const m = Math.min((n as any).w, (n as any).h)
+  const cap = Number.isFinite(m) ? Math.max(1, 0.35 * m) : base
+  return Math.min(base, cap)
 }
 
 function inBox(x: number, y: number, b: Bounds, tol: number): boolean {
@@ -106,22 +109,26 @@ function segmentNearRect(ax: number, ay: number, bx: number, by: number, r: Boun
  * misses by the width of its own box.
  */
 function polylinesOf(n: SquigNode): [number, number][][] {
-  if (n.type !== "draw" && n.type !== "arrow") return []
-  if (n.type === "draw" && n.strokes && n.strokes.length > 0) {
-    return n.strokes.map((stroke) =>
-      stroke.map(([px, py]) => [
-        n.x + (n.flipX ? n.w - px : px),
-        n.y + (n.flipY ? n.h - py : py),
-      ])
-    )
+  if (!n || (n.type !== "draw" && n.type !== "arrow")) return []
+  const shift = (pt: unknown): [number, number] | null => {
+    if (!Array.isArray(pt) || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) return null
+    return [
+      n.x + (n.flipX ? n.w - pt[0] : pt[0]),
+      n.y + (n.flipY ? n.h - pt[1] : pt[1]),
+    ]
   }
-  if (!n.points || n.points.length === 0) return []
-  return [
-    (n.points as [number, number][]).map(([px, py]) => [
-      n.x + (n.flipX ? n.w - px : px),
-      n.y + (n.flipY ? n.h - py : py),
-    ]),
-  ]
+  if (n.type === "draw" && Array.isArray(n.strokes) && n.strokes.length > 0) {
+    const out: [number, number][][] = []
+    for (const stroke of n.strokes) {
+      if (!Array.isArray(stroke)) continue
+      const line = stroke.map(shift).filter((p): p is [number, number] => p !== null)
+      if (line.length) out.push(line)
+    }
+    return out
+  }
+  if (!Array.isArray((n as any).points) || (n as any).points.length === 0) return []
+  const line = ((n as any).points as unknown[]).map(shift).filter((p): p is [number, number] => p !== null)
+  return line.length ? [line] : []
 }
 
 function polylineOf(n: SquigNode): [number, number][] | null {
@@ -181,6 +188,9 @@ export function hitsPoint(n: SquigNode, x: number, y: number, zoom: number): boo
 
 /** Does this node fall inside/across a marquee rect (world units)? */
 export function hitsRect(n: SquigNode, r: Bounds, zoom: number): boolean {
+  if (!n || !r || !Number.isFinite(r.x) || !Number.isFinite(r.y) || !Number.isFinite(r.w) || !Number.isFinite(r.h)) {
+    return false
+  }
   const b = boxOf(n)
   // bounding boxes must at least touch — `>=` so a tangent marquee counts
   if (!(b.x <= r.x + r.w && b.x + b.w >= r.x && b.y <= r.y + r.h && b.y + b.h >= r.y)) return false
@@ -282,6 +292,7 @@ export function pickSoftAt(
   x: number,
   y: number
 ): string | null {
+  if (!nodes || !Array.isArray(order)) return null
   for (let i = order.length - 1; i >= 0; i--) {
     const n = nodes[order[i]]
     if (n && hitsInterior(n, x, y)) return order[i]
@@ -297,6 +308,7 @@ export function pickAt(
   y: number,
   zoom: number
 ): string | null {
+  if (!nodes || !Array.isArray(order)) return null
   for (let i = order.length - 1; i >= 0; i--) {
     const n = nodes[order[i]]
     if (n && hitsPoint(n, x, y, zoom)) return order[i]
@@ -311,6 +323,7 @@ export function pickInRect(
   rect: Bounds,
   zoom: number
 ): string[] {
+  if (!nodes || !Array.isArray(order) || !rect) return []
   const out: string[] = []
   for (const id of order) {
     const n = nodes[id]

@@ -281,7 +281,13 @@ export function TopCorner() {
             </span>
           </DropdownMenuItem>
           {/* Teams & Shared Workspaces */}
-          <DropdownMenuItem onClick={() => st().setTeamSettingsModalOpen(true)}>
+          <DropdownMenuItem
+            onClick={() => {
+              const s = st()
+              if (s.currentTeamId) s.setTeamSettingsModalOpen(true)
+              else s.setCreateTeamModalOpen(true)
+            }}
+          >
             <span className="flex items-center gap-2">
               <TeamsIcon className="size-3.5 text-muted-foreground" weight="bold" />
               Team Settings…

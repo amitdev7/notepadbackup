@@ -17,6 +17,32 @@ export interface StreamCallbacks {
   onError: (error: Error) => void
 }
 
+/**
+ * Resolve a preferred model id against the registry: the preferred provider
+ * keeps it when it lists it, otherwise the first provider (preferred first)
+ * that lists a candidate wins. Never returns a model no provider declares.
+ */
+function pickRegistryModel(
+  preferredProvider: AIProviderId,
+  candidates: string[]
+): { providerId: AIProviderId; modelId: string } | null {
+  const ordered = [
+    AI_PROVIDERS[preferredProvider],
+    ...Object.values(AI_PROVIDERS).filter((m) => m.id !== preferredProvider),
+  ].filter(Boolean)
+  for (const modelId of candidates) {
+    for (const meta of ordered) {
+      if (meta.models.some((m) => m.id === modelId)) {
+        return { providerId: meta.id, modelId }
+      }
+    }
+  }
+  const fallback = ordered[0]
+  const firstModel = fallback?.models[0]?.id
+  if (fallback && firstModel) return { providerId: fallback.id, modelId: firstModel }
+  return null
+}
+
 export class AIRouter {
   /**
    * Validates and selects the effective model based on registry metadata.
@@ -37,21 +63,43 @@ export class AIRouter {
     }
 
     if (mode === "fastest") {
-      if (preferredProvider === "groq") return { providerId: "groq", modelId: "llama-3.1-8b-instant" }
-      if (preferredProvider === "gemini") return { providerId: "gemini", modelId: "gemini-3.8-flash" }
-      return { providerId: "openai", modelId: "gpt-4o-mini" }
+      const fast = pickRegistryModel(preferredProvider, ["llama-3.1-8b-instant", "gemini-3.8-flash", "gpt-4o-mini"])
+      if (fast) return fast
     }
 
     if (mode === "best-reasoning") {
-      if (preferredProvider === "groq") return { providerId: "groq", modelId: "llama-3.3-70b-versatile" }
-      if (preferredProvider === "gemini") return { providerId: "gemini", modelId: "gemini-2.5-pro" }
-      return { providerId: "openai", modelId: "o3-mini" }
+      const smart = pickRegistryModel(preferredProvider, ["llama-3.3-70b-versatile", "gemini-2.5-pro", "o3-mini"])
+      if (smart) return smart
     }
 
     if (mode === "cheapest") {
-      if (preferredProvider === "groq") return { providerId: "groq", modelId: "llama-3.1-8b-instant" }
-      if (preferredProvider === "gemini") return { providerId: "gemini", modelId: "gemini-3.8-flash" }
-      return { providerId: "openai", modelId: "gpt-4o-mini" }
+      const cheap = pickRegistryModel(preferredProvider, ["llama-3.1-8b-instant", "gemini-3.8-flash", "gpt-4o-mini"])
+      if (cheap) return cheap
+    }
+
+    if (mode === "best-available" || mode === "document-analysis") {
+      // Largest context window among READY providers wins; documents need room.
+      try {
+        const ready = ProviderCredentialService.getClientSafeProviders().filter(
+          (p) => p.enabled && p.isConfigured
+        )
+        let best: { providerId: AIProviderId; modelId: string } | null = null
+        let bestCtx = -1
+        for (const p of ready) {
+          const meta = AI_PROVIDERS[p.providerId as AIProviderId]
+          if (!meta) continue
+          for (const m of meta.models) {
+            const ctx = (m as any).contextWindow ?? 0
+            if (ctx > bestCtx) {
+              bestCtx = ctx
+              best = { providerId: meta.id, modelId: m.id }
+            }
+          }
+        }
+        if (best) return best
+      } catch {
+        /* fall through to manual */
+      }
     }
 
     return { providerId: providerMeta.id, modelId: validModel }
@@ -131,9 +179,20 @@ export class AIRouter {
       // Check if fallback is eligible:
       // 5xx / timeout / network failures OR 404 model not found are eligible for fallback.
       if (normalized.canFallback || primaryErr?.status === 404 || String(primaryErr?.message || "").includes("not found")) {
-        const candidateChain: AIProviderId[] = (["openai", "gemini", "groq", "anthropic"] as AIProviderId[]).filter(
-          (p) => p !== effectiveProvider
-        )
+        // Every READY provider is a candidate — not just the big four.
+        let candidateChain: AIProviderId[] = []
+        try {
+          candidateChain = ProviderCredentialService.getClientSafeProviders(userId)
+            .filter((p) => p.enabled && p.isConfigured && p.providerId !== effectiveProvider)
+            .map((p) => p.providerId as AIProviderId)
+        } catch {
+          candidateChain = []
+        }
+        if (!candidateChain.length) {
+          candidateChain = (["openai", "gemini", "groq", "anthropic"] as AIProviderId[]).filter(
+            (p) => p !== effectiveProvider
+          )
+        }
 
         for (const fallbackTarget of candidateChain) {
           const targetCreds = ProviderCredentialService.getEffectiveCredentials(fallbackTarget, userId)
@@ -141,14 +200,8 @@ export class AIRouter {
           // Only fallback if secondary provider is configured, enabled, and ready
           if (targetCreds.source !== "none" && targetCreds.enabled) {
             try {
-              const fallbackModel =
-                fallbackTarget === "gemini"
-                  ? "gemini-3.8-flash"
-                  : fallbackTarget === "groq"
-                  ? "llama-3.3-70b-versatile"
-                  : fallbackTarget === "anthropic"
-                  ? "claude-3-7-sonnet-20250219"
-                  : "gpt-4o"
+              const targetMeta = AI_PROVIDERS[fallbackTarget]
+              const fallbackModel = targetMeta?.models[0]?.id || "gpt-4o"
               const res = await this.callProvider(fallbackTarget, fallbackModel, systemInstruction, messages, userId, callbacks)
               AIUsageTracker.record(
                 fallbackTarget,
@@ -512,9 +565,29 @@ export class AIRouter {
 
     // 5. Other custom / OpenAI-compatible providers (DeepSeek, Perplexity, etc.)
     let endpoint = "https://api.openai.com/v1/chat/completions"
+    const extraHeaders: Record<string, string> = {}
     if (providerId === "deepseek") endpoint = "https://api.deepseek.com/chat/completions"
     if (providerId === "perplexity") endpoint = "https://api.perplexity.ai/chat/completions"
-    if (creds.customEndpoint) endpoint = `${creds.customEndpoint.replace(/\/$/, "")}/chat/completions`
+    if (providerId === "openrouter") {
+      endpoint = "https://openrouter.ai/api/v1/chat/completions"
+      extraHeaders["HTTP-Referer"] =
+        process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || "https://zenithsui.sh"
+      extraHeaders["X-Title"] = "zenithsui"
+    }
+    if (providerId === "azure") {
+      // Azure needs a deployment URL, never the generic OpenAI one.
+      const base = (creds.customEndpoint || "").replace(/\/$/, "")
+      if (!base || /your-resource/i.test(base)) {
+        throw new Error("Azure OpenAI endpoint is not configured. Add your deployment URL in Settings.")
+      }
+      endpoint = /\/chat\/completions(\?|$)/.test(base) ? base : `${base}/chat/completions?api-version=2024-02-15-preview`
+    } else if (providerId === "huggingface") {
+      const base = (creds.customEndpoint || "https://api-inference.huggingface.co/models").replace(/\/$/, "")
+      endpoint = `${base}/${encodeURIComponent(modelId)}`
+    } else if (creds.customEndpoint) {
+      const trimmed = creds.customEndpoint.replace(/\/$/, "")
+      endpoint = /\/chat\/completions(\?|$)/.test(trimmed) ? trimmed : `${trimmed}/chat/completions`
+    }
 
     if (!creds.apiKey) {
       throw new Error(`${providerId} API key is not configured. Please add your key in Settings.`)
@@ -525,6 +598,7 @@ export class AIRouter {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${creds.apiKey}`,
+        ...extraHeaders,
       },
       body: JSON.stringify({
         model: modelId,

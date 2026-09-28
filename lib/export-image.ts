@@ -28,6 +28,20 @@ import type { SquigNode } from "./types"
 
 /** breathing room around the art, in world units — rough strokes overshoot */
 const PAD = 12
+
+/** Filename-safe, never throws on nullish names. */
+function cleanName(): string {
+  const raw = useSquig.getState().fileName
+  return String(raw ?? "zenithsui").replace(/[^\w -]+/g, "").trim() || "zenithsui"
+}
+
+/** Finite-number bounds or null — corrupt geometry never reaches the raster. */
+function safeBounds(list: SquigNode[]): { x: number; y: number; w: number; h: number } | null {
+  if (!Array.isArray(list) || !list.length) return null
+  const b = unionBounds(list) as any
+  if (!b || ![b.x, b.y, b.w, b.h].every((v) => Number.isFinite(v))) return null
+  return b
+}
 /** retina by default: a wireframe pasted into a doc gets read at 1×, not 2× */
 const SCALE = 2
 /** browsers refuse canvases past ~16k; stay well under and scale down instead */
@@ -43,8 +57,8 @@ export interface CopyOutcome {
 
 // -- the SVG document --------------------------------------------------------
 
-function esc(s: string): string {
-  return s
+function esc(s: unknown): string {
+  return String(s ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -64,7 +78,8 @@ function makeResolver(p: Palette): (paint: string) => string {
     "--sq-grid": p.grid,
     "--sq-select": p.select,
   }
-  return (paint) => paint.replace(/var\((--[\w-]+)\)/g, (whole, name: string) => vars[name] ?? whole)
+  return (paint: unknown) =>
+    String(paint ?? "none").replace(/var\((--[\w-]+)\)/g, (whole, name: string) => vars[name] ?? whole)
 }
 
 /**
@@ -84,7 +99,7 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
   // screenshot was. Its pixels are already a data URL, which is both what
   // makes the SVG standalone and what keeps the canvas untainted when this is
   // rasterised — an external src would do neither.
-  if (node.type === "image") {
+  if (node.type === "image" && typeof node.src === "string" && node.src) {
     const mirror = mirrorBox(node.w, node.h, node.flipX, node.flipY)
     out.push(
       `<image href="${esc(node.src)}" x="0" y="0" width="${node.w}" height="${node.h}"` +
@@ -266,7 +281,7 @@ export function pngTargets(): { nodes: SquigNode[]; whole: boolean } {
 
 /** Render a set of nodes to a PNG blob, on the current theme's paper. */
 export async function renderPng(list: SquigNode[]): Promise<Blob> {
-  const b = unionBounds(list)
+  const b = safeBounds(list)
   if (!b) throw new Error("nothing to draw")
 
   const s = useSquig.getState()
@@ -284,7 +299,15 @@ export async function renderPng(list: SquigNode[]): Promise<Blob> {
   const outW = Math.max(1, Math.round(w * scale))
   const outH = Math.max(1, Math.round(h * scale))
 
-  const body = list.map((n) => nodeMarkup(n, resolve, font)).join("")
+  const body = list
+    .map((n) => {
+      try {
+        return nodeMarkup(n, resolve, font)
+      } catch {
+        return ""
+      }
+    })
+    .join("")
   const svg =
     `<svg xmlns="http://www.w3.org/2000/svg" width="${outW}" height="${outH}" viewBox="${x} ${y} ${w} ${h}">` +
     (css ? `<defs><style type="text/css">${css}</style></defs>` : "") +
@@ -296,7 +319,7 @@ export async function renderPng(list: SquigNode[]): Promise<Blob> {
 }
 
 export function downloadPng(blob: Blob) {
-  const name = useSquig.getState().fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"
+  const name = cleanName()
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
@@ -316,7 +339,7 @@ function blobToDataUrl(blob: Blob): Promise<string> {
 
 /** Render SVG string for download */
 export async function renderSvgString(list: SquigNode[]): Promise<string> {
-  const b = unionBounds(list)
+  const b = safeBounds(list)
   if (!b) throw new Error("nothing to draw")
 
   const s = useSquig.getState()
@@ -330,7 +353,15 @@ export async function renderSvgString(list: SquigNode[]): Promise<string> {
   const w = Math.max(b.w + PAD * 2, 1)
   const h = Math.max(b.h + PAD * 2, 1)
 
-  const body = list.map((n) => nodeMarkup(n, resolve, font)).join("")
+  const body = list
+    .map((n) => {
+      try {
+        return nodeMarkup(n, resolve, font)
+      } catch {
+        return ""
+      }
+    })
+    .join("")
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="${x} ${y} ${w} ${h}">` +
     (css ? `<defs><style type="text/css">${css}</style></defs>` : "") +
@@ -350,7 +381,7 @@ export async function exportAsPdf(): Promise<boolean> {
   try {
     const blob = await renderPng(nodes)
     const { jsPDF } = await import("jspdf")
-    const b = unionBounds(nodes)
+    const b = safeBounds(nodes)
     if (!b) return false
     const w = b.w + PAD * 2
     const h = b.h + PAD * 2
@@ -363,7 +394,7 @@ export async function exportAsPdf(): Promise<boolean> {
     })
     const dataUrl = await blobToDataUrl(blob)
     pdf.addImage(dataUrl, "PNG", 0, 0, w, h)
-    const name = useSquig.getState().fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"
+    const name = cleanName()
     pdf.save(`${name}.pdf`)
     useSquig.getState().setNotice(`Exported ${name}.pdf`)
     return true
@@ -384,7 +415,7 @@ export async function exportAsSvg(): Promise<boolean> {
   try {
     const svg = await renderSvgString(nodes)
     const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
-    const name = useSquig.getState().fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"
+    const name = cleanName()
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
@@ -410,7 +441,7 @@ export async function exportAsPngFile(): Promise<boolean> {
   try {
     const blob = await renderPng(nodes)
     downloadPng(blob)
-    const name = useSquig.getState().fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"
+    const name = cleanName()
     useSquig.getState().setNotice(`Exported ${name}.png`)
     return true
   } catch (err) {
@@ -443,7 +474,9 @@ export function copySelectionAsPng(): Promise<CopyOutcome> {
       })
       .catch(() => ({ status: "failed" as const, whole }))
 
-  if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) return fallback()
+  if (typeof ClipboardItem === "undefined" || typeof navigator === "undefined" || !navigator.clipboard?.write) {
+    return fallback()
+  }
 
   try {
     const item = new ClipboardItem({ "image/png": blob })
@@ -476,3 +509,4 @@ export async function copyAsPngWithNotice(): Promise<void> {
   const outcome = await copySelectionAsPng()
   s.setNotice(copyNotice(outcome))
 }
+

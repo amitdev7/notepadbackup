@@ -81,14 +81,16 @@ export async function DELETE(
   const userId = req.headers.get("x-user-id") || req.headers.get("x-session-id") || "anonymous"
 
   try {
-    const body = await req.json()
-    const { invitationId } = body
+    // Some proxies/CDNs strip DELETE bodies — accept the id either way.
+    const body = await req.json().catch(() => ({}))
+    const { invitationId } = body as { invitationId?: string }
+    const id = invitationId ?? req.nextUrl.searchParams.get("invitationId")
 
-    if (!invitationId) {
+    if (!id) {
       return NextResponse.json({ error: "invitationId is required." }, { status: 400 })
     }
 
-    const result = revokeTeamInvitation(teamId, userId, invitationId)
+    const result = revokeTeamInvitation(teamId, userId, id)
     if (!result.success) {
       return NextResponse.json({ error: result.error || "Failed to revoke invitation" }, { status: 400 })
     }

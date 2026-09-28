@@ -59,6 +59,27 @@ export interface ToolExecutionResult {
 // Tool Implementations
 // ---------------------------------------------------------------------------
 
+/** headers[i] or "" — table aliases index straight into the header row. */
+function headerAt(headers: unknown, i: number): string {
+  return Array.isArray(headers) && typeof headers[i] === "string" ? (headers[i] as string) : ""
+}
+
+/** Fold a {headers, rows} table back into comparison attributes. */
+function headersRowsToAttributes(
+  headers: unknown,
+  rows: unknown
+): Array<{ attribute: string; valueA: string; valueB: string }> {
+  if (!Array.isArray(rows)) return []
+  return rows.map((r) => {
+    const cells = Array.isArray(r) ? r.map((c) => String(c ?? "")) : [String(r ?? "")]
+    return {
+      attribute: cells[0] || "Feature",
+      valueA: cells[1] || "—",
+      valueB: cells[2] || "—",
+    }
+  })
+}
+
 export const TOOLS: ToolDefinition[] = [
   // 1. read_canvas
   {
@@ -430,10 +451,15 @@ export const TOOLS: ToolDefinition[] = [
           break
         }
         case "comparison_matrix": {
+          // create_table aliases arrive as {title, headers, rows}: fold the
+          // table body back into attributes so nothing renders empty.
+          const attrs = Array.isArray(args.data.attributes) && args.data.attributes.length
+            ? args.data.attributes
+            : headersRowsToAttributes(args.data.headers, args.data.rows)
           actions = StudyCopilotEngine.buildComparisonMatrix(
-            args.data.conceptA || "A",
-            args.data.conceptB || "B",
-            args.data.attributes || [],
+            args.data.conceptA || headerAt(args.data.headers, 1) || "A",
+            args.data.conceptB || headerAt(args.data.headers, 2) || "B",
+            attrs,
             startX,
             startY
           )

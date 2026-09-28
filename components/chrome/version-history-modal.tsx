@@ -84,8 +84,8 @@ function VersionHistoryDialog() {
 
   const handlePreview = async (v: PageVersionMeta) => {
     await st().previewVersionById(v.version)
-    // Close modal so user can view preview banner & canvas
-    st().closeVersionHistory()
+    // Close the list but KEEP the preview — the banner takes it from here.
+    useSquig.setState({ versionHistoryOpen: false })
   }
 
   const handleConfirmRestore = async () => {

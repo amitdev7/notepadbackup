@@ -195,28 +195,42 @@ export function text(x: number, y: number, str: string, size: number, o?: TextOp
  * Unknown names resolve to the fallback glyph, never nothing.
  */
 export function icon(name: string, cx: number, cy: number, size = 16, o?: PrimOpts): Prim[] {
-  const { d, vb } = resolveIconData(name)
-  const p: PathPrim = { t: "path", d, size, vb, mode: "fill", name, x: cx - size / 2, y: cy - size / 2 }
+  const safeName = typeof name === "string" && name.trim() ? name : ""
+  const { d, vb } = resolveIconData(safeName)
+  const p: PathPrim = { t: "path", d, size, vb, mode: "fill", name: safeName, x: cx - size / 2, y: cy - size / 2 }
   return [withOpts(p, o)]
+}
+
+/** A point is only a point when both halves are finite numbers. */
+function validPt(pt: unknown): pt is [number, number] {
+  return Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1])
 }
 
 /** Translate a batch — the composition helper blocks are built with. */
 export function place(prims: Prim[], dx: number, dy: number): Prim[] {
+  if (!Array.isArray(prims)) return []
   if (!dx && !dy) return prims
-  return prims.map((p) => {
+  const out: Prim[] = []
+  for (const p of prims) {
+    if (!p || typeof p.t !== "string") continue
     switch (p.t) {
       case "rect":
       case "ellipse":
-        return { ...p, x: p.x + dx, y: p.y + dy }
+        out.push({ ...p, x: p.x + dx, y: p.y + dy })
+        break
       case "line":
-        return { ...p, x1: p.x1 + dx, y1: p.y1 + dy, x2: p.x2 + dx, y2: p.y2 + dy }
+        out.push({ ...p, x1: p.x1 + dx, y1: p.y1 + dy, x2: p.x2 + dx, y2: p.y2 + dy })
+        break
       case "poly":
-        return { ...p, pts: p.pts.map(([px, py]) => [px + dx, py + dy] as [number, number]) }
+        out.push({ ...p, pts: (Array.isArray(p.pts) ? p.pts : []).filter(validPt).map(([px, py]) => [px + dx, py + dy] as [number, number]) })
+        break
       case "path":
       case "text":
-        return { ...p, x: p.x + dx, y: p.y + dy }
+        out.push({ ...p, x: p.x + dx, y: p.y + dy })
+        break
     }
-  })
+  }
+  return out
 }
 
 /**
@@ -233,32 +247,40 @@ export function mirrorPrims(
   flipText?: boolean
 ): Prim[] {
   if (!flipX && !flipY) return prims
+  if (!Array.isArray(prims)) return []
   const mx = (x: number): number => (flipX ? w - x : x)
   const my = (y: number): number => (flipY ? h - y : y)
-  return prims.map((p) => {
+  const out: Prim[] = []
+  for (const p of prims) {
+    if (!p || typeof p.t !== "string") continue
     switch (p.t) {
       case "rect":
       case "ellipse":
-        return {
+        out.push({
           ...p,
           x: flipX ? w - p.x - p.w : p.x,
           y: flipY ? h - p.y - p.h : p.y,
-        }
+        })
+        break
       case "line":
-        return { ...p, x1: mx(p.x1), y1: my(p.y1), x2: mx(p.x2), y2: my(p.y2) }
+        out.push({ ...p, x1: mx(p.x1), y1: my(p.y1), x2: mx(p.x2), y2: my(p.y2) })
+        break
       case "poly":
-        return { ...p, pts: p.pts.map(([px, py]) => [mx(px), my(py)] as [number, number]) }
+        out.push({ ...p, pts: (Array.isArray(p.pts) ? p.pts : []).filter(validPt).map(([px, py]) => [mx(px), my(py)] as [number, number]) })
+        break
       case "path":
-        return { ...p, x: flipX ? w - p.x - p.size : p.x, y: flipY ? h - p.y - p.size : p.y }
+        out.push({ ...p, x: flipX ? w - p.x - p.size : p.x, y: flipY ? h - p.y - p.size : p.y })
+        break
       case "text": {
         if (flipText) {
-          return {
+          out.push({
             ...p,
             x: mx(p.x),
             y: my(p.y),
             ...(flipX ? { mirrorX: !p.mirrorX } : {}),
             ...(flipY ? { mirrorY: !p.mirrorY } : {}),
-          }
+          })
+          break
         }
         // a label hangs off its anchor, so the anchor swaps edge with it
         const align = flipX
@@ -268,10 +290,12 @@ export function mirrorPrims(
               ? "left"
               : p.align
           : p.align
-        return { ...p, x: mx(p.x), y: my(p.y), align }
+        out.push({ ...p, x: mx(p.x), y: my(p.y), align })
+        break
       }
     }
-  })
+  }
+  return out
 }
 
 /** Placeholder body-copy lines — a wireframe shouldn't pretend to final copy. */
@@ -292,11 +316,13 @@ const GLYPH_ADVANCE = 0.46
 
 /** Measure one line before laying out. DOM-free: the em-ratio estimate. */
 export function textWidth(s: string, size: number): number {
+  if (typeof s !== "string" || !Number.isFinite(size)) return 0
   return s.length * size * GLYPH_ADVANCE
 }
 
 /** Ellipsize to fit maxW, measured with textWidth. */
 export function truncate(s: string, size: number, maxW: number): string {
+  if (typeof s !== "string") return ""
   if (!s || textWidth(s, size) <= maxW) return s
   const ell = "…"
   if (textWidth(ell, size) >= maxW) return maxW > 0 ? ell : ""

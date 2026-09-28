@@ -376,6 +376,30 @@ export async function regenerateSharePublicId(
 /**
  * Revoke public sharing for a document entirely.
  */
+/**
+ * Permanently remove the share for a deleted document — unlike revoke (which
+ * disables but keeps the record), this drops every index entry so no link
+ * resolves afterwards. Safe to call when no share exists.
+ */
+export async function deletePageShare(dbId: string, fileId: string): Promise<boolean> {
+  hydrateShares()
+  const key = getDocKey(dbId, fileId)
+  const share = shareRegistry.get(key) || shareRegistry.get(fileId)
+  if (!share) return false
+  shareRegistry.delete(key)
+  shareRegistry.delete(fileId)
+  if (share.publicId) {
+    publicIdIndex.delete(share.publicId)
+    publicShares.delete(share.publicId)
+  }
+  // Same object may be reachable under stale keys — sweep by id.
+  for (const [k, v] of shareRegistry) {
+    if (v && v.id === share.id) shareRegistry.delete(k)
+  }
+  persistShares()
+  return true
+}
+
 export async function revokePageShare(
   dbId: string,
   fileId: string,

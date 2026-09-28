@@ -15,7 +15,17 @@ import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 
 export { AVATAR_COLORS }
 export const AUTH_COOKIE_NAME = "zenithsui_session"
-const AUTH_SECRET = process.env.ZENITHSUI_AUTH_SECRET || "zenithsui-auth-super-secret-key-2026"
+function resolveAuthSecret(): string {
+  const fromEnv = process.env.ZENITHSUI_AUTH_SECRET || process.env.ZENITHSUI_SECRET_KEY
+  if (fromEnv) return fromEnv
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[server-auth] ZENITHSUI_AUTH_SECRET (or ZENITHSUI_SECRET_KEY) is required in production — set it in Vercel Project Settings → Environment Variables."
+    )
+  }
+  return "zenithsui-auth-super-secret-key-2026"
+}
+const AUTH_SECRET = resolveAuthSecret()
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
 const PBKDF2_ROUNDS = 100000
 const MAX_LOGIN_ATTEMPTS = 5

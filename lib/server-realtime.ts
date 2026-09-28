@@ -217,7 +217,7 @@ export class RealtimeRoom {
           updatedAt: Date.now(),
         }
         await saveSupabaseDoc(saved)
-        void createPageVersion("nezukos-box", this.fileId, saved, "Collaborative edit")
+        void createPageVersion("nezukos-box", this.fileId, saved, "Collaborative edit").catch(() => {})
       } else {
         const store = getStore(this.dbId)
         const saved = {
@@ -227,7 +227,7 @@ export class RealtimeRoom {
         }
         store.set(this.fileId, saved)
         persistDbFiles(this.dbId)
-        void createPageVersion(this.dbId, this.fileId, saved, "Collaborative edit")
+        void createPageVersion(this.dbId, this.fileId, saved, "Collaborative edit").catch(() => {})
       }
     } catch (err) {
       console.warn(`[RealtimeRoom] Background persistence error for ${this.fileId}:`, err)
@@ -269,3 +269,4 @@ export function getExistingRoom(dbId: string, fileId: string): RealtimeRoom | nu
   const key = getRoomKey(dbId, fileId)
   return globalRooms.get(key) || null
 }
+

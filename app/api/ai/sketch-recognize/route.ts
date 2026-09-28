@@ -31,10 +31,10 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const body = await req.json()
+    const body = (await req.json().catch(() => ({}))) as { imageBase64?: unknown; strokeSummary?: unknown }
     const { imageBase64, strokeSummary } = body
 
-    if (!imageBase64 && !strokeSummary) {
+    if (typeof imageBase64 !== "string" && typeof strokeSummary !== "string") {
       return NextResponse.json(
         { recognized: false, kind: null, confidence: 0, error: "Missing sketch data" },
         { status: 400 }
@@ -70,7 +70,7 @@ No conversational filler.`
 
     const contents: any[] = []
 
-    if (imageBase64) {
+    if (typeof imageBase64 === "string" && imageBase64) {
       const cleanBase64 = imageBase64.replace(/^data:image\/\w+;base64,/, "")
       contents.push({
         role: "user",
@@ -98,7 +98,7 @@ No conversational filler.`
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.8-flash",
       contents,
       config: {
         responseMimeType: "application/json",

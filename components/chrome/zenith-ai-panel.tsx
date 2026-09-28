@@ -70,15 +70,22 @@ export function ZenithAIPanel() {
   const hasReadyProvider = readyProviders.length > 0
   const activeReadyProvider = readyProviders.find((p) => p.providerId === selectedProvider) || readyProviders[0]
 
-  // Auto-sync selected provider with an active ready provider if current is not ready
+  // Auto-sync selected provider with an active ready provider — only when the
+  // ready set itself changes. Re-running on every fetch round-trip steals a
+  // deliberate (even unready) choice back, so a stable list means hands off.
+  const autoSyncKeyRef = useRef("")
   useEffect(() => {
-    if (activeReadyProvider && selectedProvider !== activeReadyProvider.providerId) {
+    const key = readyProviders.map((p) => p.providerId).join(",")
+    if (autoSyncKeyRef.current === key) return
+    autoSyncKeyRef.current = key
+    if (!activeReadyProvider) return
+    if (selectedProvider !== activeReadyProvider.providerId) {
       setSelectedProvider(activeReadyProvider.providerId)
       if (activeReadyProvider.defaultModel) {
         setSelectedModel(activeReadyProvider.defaultModel)
       }
     }
-  }, [activeReadyProvider, selectedProvider, setSelectedProvider, setSelectedModel])
+  }, [readyProviders, activeReadyProvider, selectedProvider, setSelectedProvider, setSelectedModel])
 
   // Auto scroll to bottom
   useEffect(() => {
@@ -98,6 +105,11 @@ export function ZenithAIPanel() {
   }
 
   const handleActionClick = (actionId: StudentModeAction) => {
+    if (isStreaming) return
+    if (!hasReadyProvider) {
+      setSettingsOpen(true)
+      return
+    }
     setActiveStudentAction(actionId)
     const def = STUDENT_ACTIONS.find((a) => a.id === actionId)
     if (def) {
@@ -284,48 +296,55 @@ export function ZenithAIPanel() {
             </div>
 
 
-            {/* Canvas Action Proposals */}
+            {/* Canvas Action Proposals — every one, not just the first */}
             {msg.actions && msg.actions.length > 0 && (
-              <div className="mt-2 rounded-chrome-xs border border-amber-500/30 bg-amber-500/5 p-2 text-xs">
-                <div className="flex items-center justify-between font-medium text-amber-700 dark:text-amber-300">
-                  <span>⚡ Proposed Canvas Objects</span>
-                  <span className="text-[10px]">{msg.actions[0].actionCount.total} items</span>
-                </div>
-                <p className="mt-0.5 text-[11px] text-muted-foreground">{msg.actions[0].summary}</p>
-                {msg.actionsApplied ? (
-                  <div className="mt-2 flex items-center justify-between rounded-chrome-xs bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                    <span className="flex items-center gap-1">
-                      <CheckCircleIcon weight="fill" className="size-3.5 text-emerald-600" />
-                      Applied to canvas
-                    </span>
-                    <button
-                      id="zenith-undo-proposal-btn"
-                      onClick={() => useSquig.getState().undo()}
-                      className="text-[10px] text-muted-foreground hover:text-foreground underline cursor-pointer"
-                      title="Undo canvas application (⌘Z)"
-                    >
-                      Undo (⌘Z)
-                    </button>
+              <div className="mt-2 flex flex-col gap-2">
+                {msg.actions.map((proposal) => (
+                  <div
+                    key={proposal.id}
+                    className="rounded-chrome-xs border border-amber-500/30 bg-amber-500/5 p-2 text-xs"
+                  >
+                    <div className="flex items-center justify-between font-medium text-amber-700 dark:text-amber-300">
+                      <span>⚡ Proposed Canvas Objects</span>
+                      <span className="text-[10px]">{proposal.actionCount.total} items</span>
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">{proposal.summary}</p>
+                    {msg.actionsApplied ? (
+                      <div className="mt-2 flex items-center justify-between rounded-chrome-xs bg-emerald-500/10 px-2.5 py-1.5 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                        <span className="flex items-center gap-1">
+                          <CheckCircleIcon weight="fill" className="size-3.5 text-emerald-600" />
+                          Applied to canvas
+                        </span>
+                        <button
+                          id="zenith-undo-proposal-btn"
+                          onClick={() => useSquig.getState().undo()}
+                          className="text-[10px] text-muted-foreground hover:text-foreground underline cursor-pointer"
+                          title="Undo canvas application (⌘Z)"
+                        >
+                          Undo (⌘Z)
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="mt-2 flex items-center gap-2">
+                        <button
+                          id="zenith-apply-proposal-btn"
+                          onClick={() => applyProposal(proposal)}
+                          className="flex items-center gap-1 rounded-chrome-xs bg-[var(--sq-ink)] px-2.5 py-1 text-[11px] font-medium text-[var(--sq-paper)] hover:opacity-90"
+                        >
+                          <CheckCircleIcon className="size-3.5" />
+                          <span>Apply to Canvas</span>
+                        </button>
+                        <button
+                          id="zenith-discard-proposal-btn"
+                          onClick={() => discardProposal(proposal.id)}
+                          className="rounded-chrome-xs border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent"
+                        >
+                          Discard
+                        </button>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="mt-2 flex items-center gap-2">
-                    <button
-                      id="zenith-apply-proposal-btn"
-                      onClick={() => applyProposal(msg.actions![0])}
-                      className="flex items-center gap-1 rounded-chrome-xs bg-[var(--sq-ink)] px-2.5 py-1 text-[11px] font-medium text-[var(--sq-paper)] hover:opacity-90"
-                    >
-                      <CheckCircleIcon className="size-3.5" />
-                      <span>Apply to Canvas</span>
-                    </button>
-                    <button
-                      id="zenith-discard-proposal-btn"
-                      onClick={() => discardProposal(msg.actions![0].id)}
-                      className="rounded-chrome-xs border border-border px-2 py-1 text-[11px] text-muted-foreground hover:bg-accent"
-                    >
-                      Discard
-                    </button>
-                  </div>
-                )}
+                ))}
               </div>
             )}
           </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getRawDoc, updateDocPassword } from "../../route"
+import { getRawDoc, updateDocPassword } from "@/lib/server-documents"
 import {
   hashPassword,
   verifyPassword,

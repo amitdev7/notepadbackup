@@ -5,6 +5,8 @@ import type { StoredDoc, FileMeta } from "./files"
 import { listFiles, readFile, saveFileAs, deleteStoredFile, readPrefs, writePrefs } from "./files"
 import type { Look } from "./theme"
 import { DEFAULT_LOOK, applyLook } from "./theme"
+import { DEFAULT_ELEMENT_DEFAULTS } from "./element-defaults"
+import { validateZenithsuiDocument } from "./document-validator"
 import type { Collaborator, CollabStatus, CollaborationOp } from "./collaboration-types"
 import type { PageVersionMeta, PageVersion } from "./version-types"
 import type { ClientSafeShareConfig } from "./server-share"
@@ -122,6 +124,7 @@ interface SquigState {
   hydrate: () => void
   loadDoc: (text: string) => boolean
   serialize: () => string
+  switchBoard: (wsId: string, boardId: string) => Promise<boolean>
   newFile: () => void
   openFile: (id: string, dbId?: string) => void
   deleteFile: (id: string, dbId?: string) => void
@@ -147,7 +150,7 @@ interface SquigState {
   zoomTo100: () => void
   zoomToSelection: () => void
   addNode: (node: SquigNode, opts?: { select?: boolean; checkpoint?: boolean }) => void
-  addNodes: (list: SquigNode[], opts?: { select?: boolean }) => void
+  addNodes: (list: SquigNode[], opts?: { select?: boolean; checkpoint?: boolean }) => void
   updateNode: (id: string, patch: Partial<SquigNode>, opts?: { checkpoint?: boolean }) => void
   updateNodes: (patches: Record<string, Partial<SquigNode>>, opts?: { checkpoint?: boolean }) => void
   removeNodes: (ids: string[], opts?: { checkpoint?: boolean }) => void
@@ -237,7 +240,8 @@ interface SquigState {
   resetPresentationTimer: () => void
   setSlmLearningModalOpen: (v: boolean, target?: any) => void
   setActivePdfModalNodeId: (id: string | null) => void
-  openClassroom: (nodeId?: string | null) => void
+  classroomWhiteboard: boolean
+  openClassroom: (nodeId?: string | null, whiteboard?: boolean) => void
 
   setTheme: (v: string) => void
   setPaper: (v: string) => void
@@ -258,6 +262,7 @@ interface SquigState {
   setPagePassword: (pw: string, currentPw?: string) => { success: boolean; error?: string }
   removePagePassword: (currentPw?: string) => { success: boolean; error?: string }
   unlockPage: (pw: string) => boolean
+  resetUnlockAttempts: () => void
 }
 
 let saveTimer: ReturnType<typeof setTimeout> | null = null
@@ -372,7 +377,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   workspaceHomeOpen: false,
   handwritingModalOpen: false,
   colorSizeStudioOpen: false,
-  activeStudioTab: "color",
+  activeStudioTab: "rectangle",
   passwordModalOpen: false,
   unlockModalOpen: false,
   presentationMode: false,
@@ -391,7 +396,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   pencilGrade: "HB",
   shapeKind: "rough",
   arrowHead: "arrow",
-  elementDefaults: {},
+  elementDefaults: JSON.parse(JSON.stringify(DEFAULT_ELEMENT_DEFAULTS)),
   pendingSuggestion: null,
   slmLearningTarget: null,
   hasPassword: false,
@@ -428,22 +433,36 @@ export const useSquig = create<SquigState>((set, get) => ({
   loadDoc: (text) => {
     try {
       const d = JSON.parse(text) as any
-      const raw = d.nodes
-      const order: string[] = Array.isArray(d.order) ? d.order : Array.isArray(raw) ? raw.map((n: any) => n.id) : Object.keys(raw ?? {})
-      const arr: SquigNode[] = Array.isArray(raw) ? raw : Object.values(raw ?? {})
-      if (!Array.isArray(arr)) return false
-      const nodes: Record<string, SquigNode> = {}
-      for (const n of arr) if (n?.id) nodes[n.id] = n
-      const look = d.look ?? d.theme
+      // Legacy array-form documents predate the nodes map — fold them in so
+      // the validator below sees one shape.
+      if (d && Array.isArray(d.nodes)) {
+        const map: Record<string, unknown> = {}
+        for (const n of d.nodes) {
+          const id = (n as any)?.id
+          if (id) map[String(id)] = n
+        }
+        d.nodes = map
+      }
+      // Every inbound document — files, shares, boards, forks — is sanitized
+      // before it touches the canvas, so a crafted file can't smuggle corrupt
+      // nodes into the renderer, hit-testing, or export.
+      const v = validateZenithsuiDocument(d)
+      if (!v.success) return false
+      const doc = v.doc
+      const look = (doc as any).look ?? d.look ?? d.theme
       if (look) { try { applyLook({ ...(DEFAULT_LOOK as any), ...look } as Look) } catch { /* noop */ } }
       set((s) => ({
-        nodes, order: order.filter((id) => nodes[id]),
+        nodes: doc.nodes,
+        order: doc.order,
         selection: [], selectedIds: [],
-        docId: d.docId ?? d.id ?? s.docId,
-        fileName: d.fileName ?? d.name ?? s.fileName,
-        viewport: d.viewport ?? s.viewport,
-        pan: { x: (d.viewport?.x ?? s.viewport.x), y: (d.viewport?.y ?? s.viewport.y) },
-        zoom: d.viewport?.zoom ?? s.zoom,
+        docId: (d as any).docId ?? (d as any).id ?? s.docId,
+        fileName: doc.fileName ?? (d as any).fileName ?? (d as any).name ?? s.fileName,
+        viewport: doc.viewport ?? (d as any).viewport ?? s.viewport,
+        pan: { x: (doc.viewport?.x ?? (d as any).viewport?.x ?? s.viewport.x), y: (doc.viewport?.y ?? (d as any).viewport?.y ?? s.viewport.y) },
+        zoom: doc.viewport?.zoom ?? (d as any).viewport?.zoom ?? s.zoom,
+        theme: look?.theme ?? s.theme,
+        paper: look?.paper ?? s.paper,
+        font: look?.font ?? s.font,
         past: [], future: [], saveStatus: "saved",
       }))
       return true
@@ -452,6 +471,36 @@ export const useSquig = create<SquigState>((set, get) => ({
   serialize: () => {
     const s = get()
     return JSON.stringify({ nodes: s.nodes, order: s.order, fileName: s.fileName, docId: s.docId, viewport: s.viewport, savedAt: Date.now() })
+  },
+  switchBoard: async (wsId, boardId) => {
+    try {
+      const data = await fetchJSON(`/api/workspaces/${encodeURIComponent(wsId)}/boards/${encodeURIComponent(boardId)}`)
+      const b = (data?.board ?? data) as any
+      if (!b || (!b.nodes && !b.order)) { get().setNotice("Could not open board"); return false }
+      const ok = get().loadDoc(JSON.stringify({
+        nodes: b.nodes ?? {},
+        order: b.order ?? Object.keys(b.nodes ?? {}),
+        fileName: b.name ?? "Untitled",
+        viewport: b.viewport,
+        look: b.look,
+      }))
+      if (!ok) { get().setNotice("Could not open board"); return false }
+      // Boards live on the server: opening one loads its content, and the
+      // local autosave keeps a working copy under the board's name.
+      set({
+        docId: null,
+        fileName: b.name ?? "Untitled",
+        currentWorkspaceId: wsId,
+        selection: [], selectedIds: [],
+        permissionRole: (data?.permissionRole ?? null) as DocumentPermissionRole | null,
+        isReadOnly: data?.permissionRole === "viewer",
+      })
+      get().setNotice(`Opened board "${b.name ?? "Untitled"}" — saving a local copy`)
+      return true
+    } catch {
+      get().setNotice("Could not open board")
+      return false
+    }
   },
   newFile: () => {
     try {
@@ -569,7 +618,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     for (const n of list) { nodes[n.id] = n; if (!order.includes(n.id)) order.push(n.id) }
     set({ nodes, order,
       ...(opts?.select ? { selection: list.map((n) => n.id), selectedIds: list.map((n) => n.id) } : {}),
-      past: [...s.past, snap(s)].slice(-60), future: [] })
+      ...(opts?.checkpoint === false ? {} : { past: [...s.past, snap(s)].slice(-60), future: [] }) })
     get().scheduleSave()
   },
   updateNode: (id, patch, opts) => {
@@ -752,32 +801,40 @@ export const useSquig = create<SquigState>((set, get) => ({
     set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
     get().scheduleSave()
   },
-  bringToFront: () => {
+  bringToFront: (ids) => {
     const s = get()
-    const sel = new Set(s.selection)
-    set({ order: [...s.order.filter((id) => !sel.has(id)), ...s.order.filter((id) => sel.has(id))], ...pushHistory(s) })
+    const targets = ids?.length ? ids.filter((id) => s.nodes[id]) : s.selection
+    if (!targets.length) return
+    const sel = new Set(targets)
+    set({ order: [...s.order.filter((id) => !sel.has(id)), ...s.order.filter((id) => sel.has(id))], selection: targets, selectedIds: targets, ...pushHistory(s) })
     get().scheduleSave()
   },
-  bringForward: () => {
+  bringForward: (ids) => {
     const s = get()
+    const targets = ids?.length ? ids.filter((id) => s.nodes[id]) : s.selection
+    if (!targets.length) return
     const order = [...s.order]
     for (let i = order.length - 2; i >= 0; i--) {
-      if (s.selection.includes(order[i]) && !s.selection.includes(order[i + 1])) { const t = order[i]; order[i] = order[i + 1]; order[i + 1] = t }
+      if (targets.includes(order[i]) && !targets.includes(order[i + 1])) { const t = order[i]; order[i] = order[i + 1]; order[i + 1] = t }
     }
-    set({ order, ...pushHistory(s) }); get().scheduleSave()
+    set({ order, selection: targets, selectedIds: targets, ...pushHistory(s) }); get().scheduleSave()
   },
-  sendBackward: () => {
+  sendBackward: (ids) => {
     const s = get()
+    const targets = ids?.length ? ids.filter((id) => s.nodes[id]) : s.selection
+    if (!targets.length) return
     const order = [...s.order]
     for (let i = 1; i < order.length; i++) {
-      if (s.selection.includes(order[i]) && !s.selection.includes(order[i - 1])) { const t = order[i]; order[i] = order[i - 1]; order[i - 1] = t }
+      if (targets.includes(order[i]) && !targets.includes(order[i - 1])) { const t = order[i]; order[i] = order[i - 1]; order[i - 1] = t }
     }
-    set({ order, ...pushHistory(s) }); get().scheduleSave()
+    set({ order, selection: targets, selectedIds: targets, ...pushHistory(s) }); get().scheduleSave()
   },
-  sendToBack: () => {
+  sendToBack: (ids) => {
     const s = get()
-    const sel = new Set(s.selection)
-    set({ order: [...s.order.filter((id) => sel.has(id)), ...s.order.filter((id) => !sel.has(id))], ...pushHistory(s) })
+    const targets = ids?.length ? ids.filter((id) => s.nodes[id]) : s.selection
+    if (!targets.length) return
+    const sel = new Set(targets)
+    set({ order: [...s.order.filter((id) => sel.has(id)), ...s.order.filter((id) => !sel.has(id))], selection: targets, selectedIds: targets, ...pushHistory(s) })
     get().scheduleSave()
   },
   alignSelected: (mode) => {
@@ -1013,8 +1070,8 @@ export const useSquig = create<SquigState>((set, get) => ({
       const url = `/api/database/${selectedDbId}/files/${docId}/realtime${token ? `?token=${encodeURIComponent(token)}` : ""}`
       const es = new EventSource(url)
       sse = es
-      set({ collabStatus: "connecting" as CollabStatus })
-      es.onopen = () => set({ collabStatus: "live" as CollabStatus })
+      set({ collabStatus: "syncing" })
+      es.onopen = () => set({ collabStatus: "synced" })
       es.onmessage = (ev) => {
         try {
           const msg = JSON.parse(ev.data)
@@ -1023,9 +1080,9 @@ export const useSquig = create<SquigState>((set, get) => ({
           if (typeof msg?.revision === "number") set({ collabRevision: msg.revision })
         } catch { /* noop */ }
       }
-      es.onerror = () => { set({ collabStatus: "offline" as CollabStatus }); get().setNotice("Realtime disconnected") }
+      es.onerror = () => { set({ collabStatus: "offline" }); get().setNotice("Realtime disconnected") }
     } catch {
-      set({ collabStatus: "offline" as CollabStatus })
+      set({ collabStatus: "error" })
       get().setNotice("Could not connect realtime")
     }
   },
@@ -1044,9 +1101,9 @@ export const useSquig = create<SquigState>((set, get) => ({
       if (data?.ops) get().handleRemotePatch(data.ops as CollaborationOp[])
     } catch { get().setNotice("Could not catch up patches") }
   },
-  handleConnectionDrop: () => set({ collabStatus: "offline" as CollabStatus, saveStatus: "offline" }),
+  handleConnectionDrop: () => set({ collabStatus: "reconnecting", saveStatus: "offline" }),
   handleNetworkOnline: () => { set({ saveStatus: "saved" }); get().catchUpMissedPatches() },
-  handleNetworkOffline: () => set({ collabStatus: "offline" as CollabStatus, saveStatus: "offline" }),
+  handleNetworkOffline: () => set({ collabStatus: "offline", saveStatus: "offline" }),
 
   setAuthModalOpen: (authModalOpen) => set({ authModalOpen }),
   setCurrentUser: (currentUser) => set({ currentUser }),
@@ -1112,7 +1169,20 @@ export const useSquig = create<SquigState>((set, get) => ({
     ...(target !== undefined ? { slmLearningTarget: target } : {}),
   })),
   setActivePdfModalNodeId: (activePdfModalNodeId) => set({ activePdfModalNodeId }),
-  openClassroom: (nodeId) => set({ activePdfModalNodeId: nodeId ?? null }),
+  classroomWhiteboard: false,
+  openClassroom: (nodeId, whiteboard) => {
+    const s = get()
+    let id = nodeId ?? null
+    if (!id) {
+      const sel = s.selection.map((x) => s.nodes[x]).find((n) => n?.type === "pdf")
+      id = (sel as any)?.id ?? null
+    }
+    if (!id) {
+      get().setNotice("Select or import a PDF to present")
+      return
+    }
+    set({ activePdfModalNodeId: id, classroomWhiteboard: !!whiteboard })
+  },
 
   setTheme: (theme) => {
     set({ theme })
@@ -1136,7 +1206,9 @@ export const useSquig = create<SquigState>((set, get) => ({
   setShapeKind: (shapeKind) => set({ shapeKind }),
   setArrowHead: (arrowHead) => set({ arrowHead }),
   setElementDefault: (k, v) => set((s) => ({ elementDefaults: { ...s.elementDefaults, [k]: v } })),
-  resetElementDefaults: () => set({ elementDefaults: {} }),
+  resetElementDefaults: () => set({
+    elementDefaults: JSON.parse(JSON.stringify(DEFAULT_ELEMENT_DEFAULTS)),
+  }),
   applyStudioPreset: (preset) => {
     if (!preset || typeof preset !== "object") return
     set((s) => ({
@@ -1228,4 +1300,5 @@ export const useSquig = create<SquigState>((set, get) => ({
     set({ unlockAttemptsLeft: left })
     return false
   },
+  resetUnlockAttempts: () => set({ unlockAttemptsLeft: 5 }),
 }))

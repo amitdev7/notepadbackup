@@ -105,8 +105,10 @@ export async function DELETE(
   const requesterUserId = user ? user.id : req.headers.get("x-user-id") || req.headers.get("x-session-id") || "anonymous"
 
   try {
-    const body = await req.json()
-    const { targetUserId } = body as { targetUserId: string }
+    // Some proxies/CDNs strip DELETE bodies — accept the id either way.
+    const body = await req.json().catch(() => ({}))
+    const targetUserId =
+      (body as { targetUserId?: string }).targetUserId ?? req.nextUrl.searchParams.get("targetUserId")
 
     if (!targetUserId) {
       return NextResponse.json({ error: "targetUserId is required." }, { status: 400 })

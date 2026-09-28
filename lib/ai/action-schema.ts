@@ -235,19 +235,36 @@ export function normalizeToolToAction(raw: any): CanvasAction | null {
     }
 
     case "create_mind_map": {
+      const rawBranches = Array.isArray(params.branches) && params.branches.length
+        ? params.branches
+        : ["Branch 1", "Branch 2"]
       return {
         type: "createMindMap",
         rootTopic: params.rootTopic || params.topic || "Topic",
-        branches: params.branches || ["Branch 1", "Branch 2"],
+        branches: rawBranches.map((b: unknown) =>
+          typeof b === "string" ? { title: b, subTopics: [] } : b
+        ),
         startX: params.startX,
         startY: params.startY,
       }
     }
 
     case "create_flowchart": {
+      const rawSteps = Array.isArray(params.steps) && params.steps.length
+        ? params.steps
+        : [{ label: "Start", kind: "start" }, { label: "End", kind: "end" }]
+      let n = 0
       return {
         type: "createFlowchart",
-        steps: params.steps || [{ label: "Start", kind: "start" }, { label: "End", kind: "end" }],
+        steps: rawSteps.map((s: unknown) => {
+          if (typeof s === "string") return { id: `step-${n++}`, label: s, kind: "process" }
+          const o = (s ?? {}) as Record<string, unknown>
+          return {
+            id: typeof o.id === "string" && o.id ? o.id : `step-${n++}`,
+            label: typeof o.label === "string" ? o.label : "Step",
+            kind: o.kind === "step" ? "process" : (o.kind ?? "process"),
+          }
+        }),
         startX: params.startX,
         startY: params.startY,
       }
@@ -358,6 +375,9 @@ export function validateCanvasAction(action: any): { valid: boolean; error?: str
     }
 
     case "deleteNode": {
+      if (act.all === true) {
+        return { valid: true, action: act as CanvasAction }
+      }
       if (!Array.isArray(act.nodeIds) || act.nodeIds.length === 0) {
         return { valid: false, error: "deleteNode requires a non-empty nodeIds array." }
       }

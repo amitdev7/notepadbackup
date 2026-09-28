@@ -207,7 +207,7 @@ export class FallbackAIEngine {
           rootTopic: topic,
           branches: subTopics.map((b) => ({
             title: b.name,
-            subBranches: b.sub,
+            subTopics: b.sub,
           })),
         },
       ],

@@ -116,7 +116,7 @@ export async function POST(
       const store = getStore(dbId)
       store.set(doc.id, normalized)
       persistDbFiles(dbId)
-      void createPageVersion("nezukos-box", doc.id, normalized, "Autosave")
+      void createPageVersion("nezukos-box", doc.id, normalized, "Autosave").catch(() => {})
       return NextResponse.json({ success: true, dbId, files })
     }
 
@@ -131,7 +131,7 @@ export async function POST(
     }
     store.set(doc.id, normalizedDoc)
     persistDbFiles(dbId)
-    void createPageVersion(dbId, doc.id, normalizedDoc, "Autosave")
+    void createPageVersion(dbId, doc.id, normalizedDoc, "Autosave").catch(() => {})
 
     try {
       const { getProviderForDatabase } = await import("@/lib/data-providers/registry")

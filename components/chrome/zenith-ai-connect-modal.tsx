@@ -68,7 +68,7 @@ export function ZenithAIConnectModal() {
           (pId === "openrouter"
             ? "google/gemini-2.0-flash-exp:free"
             : pId === "gemini"
-            ? "gemini-2.5-flash"
+            ? "gemini-3.8-flash"
             : pId === "groq"
             ? "llama-3.3-70b-versatile"
             : "gpt-4o")
@@ -96,7 +96,7 @@ export function ZenithAIConnectModal() {
         (pId === "openrouter"
           ? "google/gemini-2.0-flash-exp:free"
           : pId === "gemini"
-          ? "gemini-2.5-flash"
+          ? "gemini-3.8-flash"
           : pId === "groq"
           ? "llama-3.3-70b-versatile"
           : "gpt-4o")
@@ -580,7 +580,7 @@ export function ZenithAIConnectModal() {
             <button
               type="button"
               onClick={() => handleConnect(false)}
-              disabled={isSubmitting || (!apiKeyInput.trim() && !isConnected)}
+              disabled={isSubmitting || (!apiKeyInput.trim() && !customEndpoint.trim() && !isConnected)}
               className="flex items-center gap-1.5 rounded-chrome-xs bg-[var(--sq-ink)] px-4 py-1.5 text-xs font-medium text-[var(--sq-paper)] hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {isSubmitting ? (
@@ -600,3 +600,4 @@ export function ZenithAIConnectModal() {
     </div>
   )
 }
+

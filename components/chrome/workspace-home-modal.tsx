@@ -134,10 +134,7 @@ export function WorkspaceHomeModal({ open, onClose }: WorkspaceHomeModalProps) {
   const handleOpenBoard = async (board: BoardClientSummary) => {
     onClose()
     st().setNotice(`Opening ${board.name}…`)
-    // If store has switchBoard, use it
-    if ((st() as any).switchBoard) {
-      await (st() as any).switchBoard(board.id)
-    }
+    await st().switchBoard(activeWsId, board.id)
   }
 
   const handleToggleFav = async (itemId: string) => {
