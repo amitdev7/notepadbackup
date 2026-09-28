@@ -22,14 +22,10 @@ function resolveMasterSecret(): string {
   return "zenithsui_production_vault_secret_key_2026_aes256"
 }
 
-let CACHED_KEY: Buffer | null = null
-function getEncryptionKey(): Buffer {
-  if (CACHED_KEY) return CACHED_KEY
-  const masterSecret = resolveMasterSecret()
-  CACHED_KEY = crypto.createHash("sha256").update(masterSecret).digest()
-  return CACHED_KEY
-}
+const MASTER_SECRET = resolveMasterSecret()
 
+// Derive a 32-byte key using SHA-256
+const ENCRYPTION_KEY = crypto.createHash("sha256").update(MASTER_SECRET).digest()
 const ALGORITHM = "aes-256-gcm"
 
 export interface EncryptedPayload {
@@ -49,7 +45,7 @@ export class SecretEncryptionService {
     }
 
     const iv = crypto.randomBytes(12) // 96-bit IV recommended for GCM
-    const cipher = crypto.createCipheriv(ALGORITHM, getEncryptionKey(), iv)
+    const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv)
 
     let ciphertext = cipher.update(plaintext, "utf8", "hex")
     ciphertext += cipher.final("hex")
@@ -74,7 +70,7 @@ export class SecretEncryptionService {
 
     const iv = Buffer.from(payload.iv, "hex")
     const tag = Buffer.from(payload.tag, "hex")
-    const decipher = crypto.createDecipheriv(ALGORITHM, getEncryptionKey(), iv)
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv)
     decipher.setAuthTag(tag)
 
     let decrypted = decipher.update(payload.ciphertext, "hex", "utf8")
