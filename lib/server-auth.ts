@@ -15,7 +15,20 @@ import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 
 export { AVATAR_COLORS }
 export const AUTH_COOKIE_NAME = "zenithsui_session"
-const AUTH_SECRET = process.env.ZENITHSUI_AUTH_SECRET || "zenithsui-auth-super-secret-key-2026"
+function resolveAuthSecret(): string {
+  const fromEnv = process.env.ZENITHSUI_AUTH_SECRET || process.env.ZENITHSUI_SECRET_KEY
+  if (fromEnv) return fromEnv
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[server-auth] ZENITHSUI_AUTH_SECRET (or ZENITHSUI_SECRET_KEY) is required in production — set it in Vercel Project Settings → Environment Variables."
+    )
+  }
+let AUTH_SECRET_CACHE: string | null = null
+function getAuthSecret(): string {
+  if (AUTH_SECRET_CACHE) return AUTH_SECRET_CACHE
+  AUTH_SECRET_CACHE = resolveAuthSecret()
+  return AUTH_SECRET_CACHE
+}
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
 const PBKDF2_ROUNDS = 100000
 const MAX_LOGIN_ATTEMPTS = 5
@@ -593,7 +606,7 @@ export function createSession(userId: string, userAgent?: string, ip?: string): 
 
   // Sign session token with HMAC SHA-256
   const payload = `${sessionId}:${userId}:${expiresAt}`
-  const signature = crypto.createHmac("sha256", AUTH_SECRET).update(payload).digest("hex")
+  const signature = crypto.createHmac("sha256", getAuthSecret()).update(payload).digest("hex")
   const token = Buffer.from(`${payload}:${signature}`).toString("base64url")
 
   const session: UserSession = {
@@ -628,7 +641,7 @@ export function verifySessionToken(token: string): UserSession | null {
     }
 
     const payload = `${sessionId}:${userId}:${expiresAtStr}`
-    const expectedSig = crypto.createHmac("sha256", AUTH_SECRET).update(payload).digest("hex")
+    const expectedSig = crypto.createHmac("sha256", getAuthSecret()).update(payload).digest("hex")
 
     if (!crypto.timingSafeEqual(Buffer.from(signature, "hex"), Buffer.from(expectedSig, "hex"))) {
       return null

@@ -93,6 +93,11 @@ export function PdfClassroomModal() {
   }, [drawColor])
   const [penWeight, setPenWeight] = useState(2.5)
   const [isWhiteboard, setIsWhiteboard] = useState(false)
+  const whiteboardIntent = useSquig((s) => s.classroomWhiteboard)
+  // A "whiteboard" entry lands on the scratchpad instead of the slide.
+  useEffect(() => {
+    if (activeId) setIsWhiteboard(whiteboardIntent)
+  }, [activeId, whiteboardIntent])
   const [showRuler, setShowRuler] = useState(false)
   const [showGrid, setShowGrid] = useState(false)
   const [thumbnailsOpen, setThumbnailsOpen] = useState(false)
@@ -140,12 +145,16 @@ export function PdfClassroomModal() {
     }
   }, [node?.id])
 
-  // Sync annotations to node on page change or close
+  // Sync annotations to node on page change or close. Reads the CURRENT node
+  // from the store (never the render-closed one) so rapid page turns can't
+  // clobber another page's just-persisted annotations.
   const persistAnnotations = useCallback(
     (newAnn: PdfPageAnnotation[], targetPage: number) => {
-      if (!node) return
-      const currentMap = node.annotationsByPage || {}
-      updateNode(node.id, {
+      const st = useSquig.getState()
+      const fresh = (activeId ? st.nodes[activeId] : undefined) as PdfNode | undefined
+      if (!fresh) return
+      const currentMap = fresh.annotationsByPage || {}
+      st.updateNode(fresh.id, {
         currentPage: targetPage,
         annotationsByPage: {
           ...currentMap,
@@ -153,7 +162,7 @@ export function PdfClassroomModal() {
         },
       })
     },
-    [node, updateNode]
+    [activeId]
   )
 
   // Load high-resolution page
@@ -254,7 +263,9 @@ export function PdfClassroomModal() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [activeId, page, totalPages, annotations, isFullscreen, persistAnnotations])
 
-  if (!activeId || !node) return null
+  // NOTE: no early return before this point — every hook below must run on
+  // every render in the same order (rules-of-hooks). The null return lives
+  // just above the JSX instead.
 
   // Pointer normalized coordinate conversion helper
   const getNormalizedPoint = (e: React.PointerEvent<SVGSVGElement>): [number, number] | null => {
@@ -476,7 +487,7 @@ export function PdfClassroomModal() {
 
   // Export current slide as PNG
   const handleExportSlide = () => {
-    if (!pageImage) return
+    if (!pageImage || !node) return
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.src = pageImage
@@ -564,6 +575,8 @@ export function PdfClassroomModal() {
     const results = await searchPdfText(node.src, q)
     setSearchResults(results)
   }
+
+  if (!activeId || !node) return null
 
   return (
     <div

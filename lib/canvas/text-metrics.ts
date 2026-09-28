@@ -49,6 +49,7 @@ function resolvedFamily(): string | null {
 }
 
 function context(style: TypeStyle): CanvasRenderingContext2D | null {
+  if (!style || !Number.isFinite(style.size) || style.size <= 0) return null
   const family = style.fontFamily ? resolveFontFamily(style.fontFamily) : resolvedFamily()
   if (!family) return null
   if (!ctx) ctx = document.createElement("canvas").getContext("2d")
@@ -59,14 +60,15 @@ function context(style: TypeStyle): CanvasRenderingContext2D | null {
 
 /** Width of one line, in the same units as `style.size`. */
 export function measureTextWidth(text: string, style: TypeStyle): number {
-  if (!text) return 0
+  if (typeof text !== "string" || !text) return 0
   const c = context(style)
-  if (!c) return text.length * style.size * FALLBACK_WIDTH
+  if (!c) return text.length * (Number.isFinite(style?.size) ? (style as TypeStyle).size : 16) * FALLBACK_WIDTH
   return c.measureText(text).width
 }
 
 /** Widest of a run's lines. */
 export function measureLinesWidth(lines: string[], style: TypeStyle): number {
+  if (!Array.isArray(lines)) return 0
   return lines.reduce((max, line) => Math.max(max, measureTextWidth(line, style)), 0)
 }
 
@@ -114,7 +116,7 @@ function wrapParagraph(text: string, maxW: number, style: TypeStyle): string[] {
  * fixed-width text layer.
  */
 export function wrapText(text: string, maxW: number, style: TypeStyle): string[] {
-  return (text || " ").split("\n").flatMap((p) => wrapParagraph(p, maxW, style))
+  return String(text ?? " ").split("\n").flatMap((p) => wrapParagraph(p, maxW, style))
 }
 
 /**

@@ -4,19 +4,21 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { ProviderCredentialService } from "@/lib/ai/credential-service"
+import { getEffectiveUserId } from "@/lib/server-auth"
 import type { AIProviderId } from "@/lib/ai/types"
 
 export const dynamic = "force-dynamic"
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { providerId, apiKey, customEndpoint, modelId } = body as {
-      providerId: AIProviderId
+    const { userId } = await getEffectiveUserId(req)
+    const body = (await req.json().catch(() => ({}))) as {
+      providerId?: AIProviderId
       apiKey?: string
       customEndpoint?: string
       modelId?: string
     }
+    const { providerId, apiKey, customEndpoint, modelId } = body
 
     if (!providerId) {
       return NextResponse.json({ error: "providerId is required." }, { status: 400 })
@@ -27,6 +29,7 @@ export async function POST(req: NextRequest) {
       apiKey,
       customEndpoint,
       modelId,
+      userId,
     })
 
     return NextResponse.json(testRes)

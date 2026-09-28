@@ -6,11 +6,12 @@
 // ---------------------------------------------------------------------------
 
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
 
 const CWD_ATTACHMENTS_DIR = path.join(process.cwd(), ".zenithsui_data", "attachments")
-const TMP_ATTACHMENTS_DIR = path.join("/tmp", ".zenithsui_data", "attachments")
+const TMP_ATTACHMENTS_DIR = path.join(os.tmpdir(), ".zenithsui_data", "attachments")
 
 function getWritableAttachmentsDir(): string {
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
@@ -163,4 +164,56 @@ export async function getAttachmentMeta(id: string): Promise<StoredAttachmentMet
   }
   const att = await getAttachment(id)
   return att?.meta || null
+}
+
+/**
+ * Delete one attachment by id — removes the .bin file, the memory fallback
+ * entry, and the registry row. Safe to call when absent.
+ */
+export async function deleteAttachment(id: string): Promise<boolean> {
+  const safeId = id.replace(/[^a-zA-Z0-9_-]/g, "_")
+  let removed = false
+  const dir = ensureAttachmentsDir()
+  const filePath = path.join(dir, `${safeId}.bin`)
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath)
+      removed = true
+    }
+  } catch (err) {
+    console.warn(`[Attachments] Failed to unlink ${filePath}:`, err)
+  }
+  if (memoryFallback.delete(safeId)) removed = true
+  try {
+    const registry = readJsonSnapshot<Record<string, StoredAttachmentMeta>>("attachments_meta.json", {})
+    if (registry[safeId]) {
+      delete registry[safeId]
+      writeJsonSnapshot("attachments_meta.json", registry)
+      removed = true
+    }
+  } catch (err) {
+    console.warn("[Attachments] Failed to prune meta registry:", err)
+  }
+  return removed
+}
+
+/**
+ * Delete every attachment belonging to a deleted file: registry rows whose
+ * dbId+fileId match, plus the legacy fallback entry keyed by the file id.
+ */
+export async function deleteAttachmentsForFile(dbId: string, fileId: string): Promise<number> {
+  let count = 0
+  try {
+    const registry = readJsonSnapshot<Record<string, StoredAttachmentMeta>>("attachments_meta.json", {})
+    const victims = Object.keys(registry).filter(
+      (key) => registry[key]?.fileId === fileId && (!dbId || !registry[key]?.dbId || registry[key].dbId === dbId)
+    )
+    for (const key of victims) {
+      if (await deleteAttachment(key)) count++
+    }
+  } catch (err) {
+    console.warn("[Attachments] Failed to enumerate registry for cleanup:", err)
+  }
+  if (await deleteAttachment(fileId)) count++
+  return count
 }

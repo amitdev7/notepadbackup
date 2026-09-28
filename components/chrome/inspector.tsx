@@ -489,7 +489,7 @@ function PageSettings() {
         </Row>
         <Row spread label="Context menu">
           <Switch
-            checked={contextRow}
+            checked={!!contextRow}
             aria-label="Context menu"
             onCheckedChange={(on) => st().setContextRow(on)}
             className="scale-90"
@@ -680,7 +680,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
               ariaLabel="Link"
               placeholder="https://…"
               shared={shared(texts.map((n) => n.link ?? ""))}
-              onCommit={(v) => st().setLinkOnSelection(v)}
+              onCommit={(v) => st().setLinkOnSelection(v.trim() ? v : null)}
             />
           </Row>
 
@@ -989,6 +989,7 @@ function Footer({ selected }: { selected: SquigNode[] }) {
                       res.metadata
                     )
                     useSquig.setState((s) => ({ nodes: { ...s.nodes, [d.id]: recognizedNode } }))
+                    st().scheduleSave()
                     st().setNotice(`Converted to ${getSketchLabel(res.kind, res.text)}`)
                   } else {
                     st().setNotice("Could not recognize a matching shape")

@@ -1,5 +1,5 @@
-import type { ServerStoredDoc } from "@/app/api/database/[dbId]/files/route"
-import { getRawDoc, getStore, persistDbFiles } from "@/app/api/database/[dbId]/files/route"
+import type { ServerStoredDoc } from "@/lib/server-documents"
+import { getRawDoc, getStore, persistDbFiles } from "@/lib/server-documents"
 import { saveSupabaseDoc } from "@/lib/supabase-server"
 import { verifyEditToken } from "@/lib/security"
 import { createPageVersion } from "@/lib/server-versions"
@@ -217,7 +217,7 @@ export class RealtimeRoom {
           updatedAt: Date.now(),
         }
         await saveSupabaseDoc(saved)
-        void createPageVersion("nezukos-box", this.fileId, saved, "Collaborative edit")
+        void createPageVersion("nezukos-box", this.fileId, saved, "Collaborative edit").catch(() => {})
       } else {
         const store = getStore(this.dbId)
         const saved = {
@@ -227,7 +227,7 @@ export class RealtimeRoom {
         }
         store.set(this.fileId, saved)
         persistDbFiles(this.dbId)
-        void createPageVersion(this.dbId, this.fileId, saved, "Collaborative edit")
+        void createPageVersion(this.dbId, this.fileId, saved, "Collaborative edit").catch(() => {})
       }
     } catch (err) {
       console.warn(`[RealtimeRoom] Background persistence error for ${this.fileId}:`, err)
@@ -269,3 +269,4 @@ export function getExistingRoom(dbId: string, fileId: string): RealtimeRoom | nu
   const key = getRoomKey(dbId, fileId)
   return globalRooms.get(key) || null
 }
+

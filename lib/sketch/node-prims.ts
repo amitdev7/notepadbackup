@@ -41,7 +41,8 @@ const FRAME_GAP = 2.5
 
 /** Merge a node's outline settings into the options for one of its marks. */
 function outline(node: Outlined, baseWidth: number, o?: PrimOpts): PrimOpts {
-  const width = node.strokeWidth ?? (baseWidth * PEN_SCALE[node.stroke ?? "regular"])
+  const scale = PEN_SCALE[(node.stroke as StrokeWeight) ?? "regular"] ?? 1
+  const width = node.strokeWidth ?? (baseWidth * scale)
   return {
     ...o,
     strokeColor: node.color || o?.strokeColor,
@@ -136,9 +137,10 @@ export function basePrims(node: SquigNode): Prim[] {
       // PDF document card wireframe
       const currentPage = node.currentPage || 1
       const totalPages = node.pageCount || 1
+      const rawName = typeof node.name === "string" ? node.name : ""
       const pageBadge = totalPages > 1 ? `Page ${currentPage}/${totalPages}` : "PDF"
       const maxTitleLen = Math.max(12, Math.floor((node.w - 140) / 8))
-      const displayTitle = node.name.length > maxTitleLen ? `${node.name.slice(0, maxTitleLen - 1)}…` : node.name
+      const displayTitle = rawName.length > maxTitleLen ? `${rawName.slice(0, maxTitleLen - 1)}…` : rawName
 
       const out: Prim[] = [
         // Card background

@@ -53,7 +53,9 @@ export class ClaudeProvider extends BaseAIProvider {
     }
 
     const data = await res.json()
-    const rawText = data.content?.map((c: any) => c.text).join("") || ""
+    const rawText = Array.isArray(data.content)
+      ? data.content.filter((c: any) => c && c.type === "text" && typeof c.text === "string").map((c: any) => c.text).join("") || ""
+      : ""
     const { cleanText, reasoningText, citations, actions } = this.parseActionsAndCitations(rawText)
     const latencyMs = Date.now() - startTime
 

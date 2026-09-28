@@ -47,6 +47,11 @@ export function PagePasswordModal() {
       const res = await setPagePassword(newPassword, currentPassword || undefined)
       if (!res.success) {
         setError(res.error || "Failed to set password")
+      } else {
+        setCurrentPassword("")
+        setNewPassword("")
+        setConfirmPassword("")
+        setPasswordModalOpen(false)
       }
     } finally {
       setLoading(false)
@@ -60,6 +65,11 @@ export function PagePasswordModal() {
       const res = await removePagePassword(currentPassword || undefined)
       if (!res.success) {
         setError(res.error || "Failed to remove password")
+      } else {
+        setCurrentPassword("")
+        setNewPassword("")
+        setConfirmPassword("")
+        setPasswordModalOpen(false)
       }
     } finally {
       setLoading(false)

@@ -128,6 +128,11 @@ export function VariantControl({
         onCommit={(n) =>
           setValue(Math.min(control.max ?? Infinity, Math.max(control.min ?? -Infinity, n)), { checkpoint: false })
         }
+        onStep={(d) => {
+          const base = current.mixed ? 0 : Number(current.value ?? 0)
+          const next = Math.min(control.max ?? Infinity, Math.max(control.min ?? -Infinity, base + d))
+          setValue(next, { checkpoint: false })
+        }}
       />
     )
     if (compact) {

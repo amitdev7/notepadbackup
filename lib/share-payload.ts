@@ -89,7 +89,7 @@ export function decodeSharePayload(raw: string): {
     const decompressed = inflate(bytes)
     const json = new TextDecoder().decode(decompressed)
     const parsed = JSON.parse(json)
-    if (parsed && typeof parsed === "object" && parsed.nodes) {
+    if (parsed && typeof parsed === "object" && parsed.nodes && typeof parsed.nodes === "object") {
       return parsed
     }
     return null
@@ -99,7 +99,7 @@ export function decodeSharePayload(raw: string): {
       const bytes = base64UrlToUint8(target)
       const json = new TextDecoder().decode(bytes)
       const parsed = JSON.parse(json)
-      if (parsed && typeof parsed === "object" && parsed.nodes) {
+      if (parsed && typeof parsed === "object" && parsed.nodes && typeof parsed.nodes === "object") {
         return parsed
       }
     } catch {

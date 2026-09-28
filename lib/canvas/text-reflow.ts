@@ -24,10 +24,13 @@ const SLACK = 2
  * A mirrored node pins the opposite edge: flipping swaps which end of the box
  * the run hangs off (see mirrorPrims), so the anchor has to swap with it.
  */
-export function fitTextBox(n: TextNode, text: string, fontSize = n.fontSize): Partial<TextNode> {
-  const style = { size: fontSize, bold: n.bold, italic: n.italic, fontFamily: n.fontFamily }
+export function fitTextBox(n: TextNode, text: string, fontSize = n?.fontSize): Partial<TextNode> {
+  if (!n) return {}
+  const fs = Number.isFinite(fontSize) && (fontSize as number) > 0 ? (fontSize as number) : 16
+  const style = { size: fs, bold: n.bold, italic: n.italic, fontFamily: n.fontFamily }
   if (n.fixedW) {
-    return { text, fontSize, h: textBlockHeight(wrapText(text, n.w, style).length, fontSize) }
+    const wrapW = Number.isFinite(n.w) && n.w > 0 ? n.w : MIN_WIDTH
+    return { text, fontSize: fs, h: textBlockHeight(wrapText(text, wrapW, style).length, fs) }
   }
   const lines = (text || " ").split("\n")
   const measured = measureLinesWidth(lines, style)
@@ -35,10 +38,10 @@ export function fitTextBox(n: TextNode, text: string, fontSize = n.fontSize): Pa
   const pinned = n.flipX ? 1 - anchorFactor(n.align) : anchorFactor(n.align)
   return {
     text,
-    fontSize,
-    x: n.x + (n.w - w) * pinned,
+    fontSize: fs,
+    x: (Number.isFinite(n.x) ? n.x : 0) + ((Number.isFinite(n.w) ? n.w : w) - w) * pinned,
     w,
-    h: textBlockHeight(lines.length, fontSize),
+    h: textBlockHeight(lines.length, fs),
   }
 }
 
@@ -49,7 +52,8 @@ export function fitTextBox(n: TextNode, text: string, fontSize = n.fontSize): Pa
  * line to make progress.
  */
 export function minTextWidth(n: TextNode): number {
-  return Math.max(MIN_WIDTH, n.fontSize)
+  const fs = Number.isFinite(n?.fontSize) && (n.fontSize as number) > 0 ? (n.fontSize as number) : 16
+  return Math.max(MIN_WIDTH, fs)
 }
 
 /**
@@ -58,9 +62,12 @@ export function minTextWidth(n: TextNode): number {
  * From here on the layer is fixed-width — `autoSizeTextBox` is the way back.
  */
 export function setTextWidth(n: TextNode, w: number): Partial<TextNode> {
-  const cw = Math.max(minTextWidth(n), w)
-  const lines = wrapText(n.text, cw, { size: n.fontSize, bold: n.bold, italic: n.italic })
-  return { fixedW: true, w: cw, h: textBlockHeight(lines.length, n.fontSize) }
+  if (!n) return {}
+  const minW = minTextWidth(n)
+  const cw = Math.max(minW, Number.isFinite(w) ? w : minW)
+  const fs = Number.isFinite(n.fontSize) && n.fontSize > 0 ? n.fontSize : 16
+  const lines = wrapText(n.text, cw, { size: fs, bold: n.bold, italic: n.italic })
+  return { fixedW: true, w: cw, h: textBlockHeight(lines.length, fs) }
 }
 
 /** Back to hugging the words — what double-clicking a side handle means. */

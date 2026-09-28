@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { listSupabaseFiles, getRawSupabaseDoc } from "@/lib/supabase-server"
-import { getStore, getRawDoc, type ServerStoredDoc } from "../files/route"
+import { getStore, getRawDoc, type ServerStoredDoc } from "@/lib/server-documents"
 import { checkDatabaseAccess } from "@/lib/database-auth"
 
 export const dynamic = "force-dynamic"
@@ -110,9 +110,13 @@ export async function GET(
 
   if (dbId === "nezukos-box") {
     const fileMetas = await listSupabaseFiles()
-    for (const meta of fileMetas) {
-      const raw = await getRawSupabaseDoc(meta.id)
-      if (raw) docs.push(raw)
+    // Bounded concurrency — sequential awaits blow past the serverless budget.
+    const CONCURRENCY = 10
+    for (let i = 0; i < fileMetas.length; i += CONCURRENCY) {
+      const batch = await Promise.all(
+        fileMetas.slice(i, i + CONCURRENCY).map((meta) => getRawSupabaseDoc(meta.id).catch(() => null))
+      )
+      for (const raw of batch) if (raw) docs.push(raw)
     }
   } else {
     const store = getStore(dbId)

@@ -3,8 +3,9 @@
 // ---------------------------------------------------------------------------
 
 import type { PageVersion, PageVersionDoc, PageVersionMeta } from "./version-types"
-import type { ServerStoredDoc } from "@/app/api/database/[dbId]/files/route"
-import { getRawDoc, getStore } from "@/app/api/database/[dbId]/files/route"
+import type { ServerStoredDoc } from "@/lib/server-documents"
+import { readJsonSnapshot, writeJsonSnapshot } from "./server-storage"
+import { getRawDoc, getStore } from "@/lib/server-documents"
 import { saveSupabaseDoc, getSupabase } from "@/lib/supabase-server"
 import { verifyEditToken } from "@/lib/security"
 import { getExistingRoom } from "./server-realtime"
@@ -14,15 +15,52 @@ import type { Look } from "./theme"
 // Global in-memory version store: dbId -> (fileId -> PageVersion[])
 const globalVersionStores: Record<string, Map<string, PageVersion[]>> = {}
 
-export function getVersionsForFile(dbId: string, fileId: string): PageVersion[] {
-  if (!globalVersionStores[dbId]) {
-    globalVersionStores[dbId] = new Map()
+function versionsSnapshotFile(dbId: string): string {
+  return `versions_${dbId}.json`
+}
+
+function ensureVersionStoreLoaded(dbId: string): void {
+  if (globalVersionStores[dbId]) return
+  const saved = readJsonSnapshot<Record<string, PageVersion[]>>(versionsSnapshotFile(dbId), {})
+  const fileMap = new Map<string, PageVersion[]>()
+  if (saved && typeof saved === "object") {
+    for (const [fileId, versions] of Object.entries(saved)) {
+      if (Array.isArray(versions)) fileMap.set(fileId, versions)
+    }
   }
+  globalVersionStores[dbId] = fileMap
+}
+
+function persistVersionStore(dbId: string): void {
+  try {
+    const fileMap = globalVersionStores[dbId]
+    if (!fileMap) return
+    writeJsonSnapshot(versionsSnapshotFile(dbId), Object.fromEntries(fileMap.entries()))
+  } catch (err) {
+    console.warn(`[Versions] Failed to persist versions for ${dbId}:`, err)
+  }
+}
+
+export function getVersionsForFile(dbId: string, fileId: string): PageVersion[] {
+  ensureVersionStoreLoaded(dbId)
   const fileMap = globalVersionStores[dbId]
   if (!fileMap.has(fileId)) {
     fileMap.set(fileId, [])
   }
   return fileMap.get(fileId)!
+}
+
+/**
+ * Permanently drop all versions for a deleted file and persist the store.
+ * Safe to call when none exist.
+ */
+export function deleteVersionsForFile(dbId: string, fileId: string): boolean {
+  ensureVersionStoreLoaded(dbId)
+  const fileMap = globalVersionStores[dbId]
+  if (!fileMap.has(fileId)) return false
+  fileMap.delete(fileId)
+  persistVersionStore(dbId)
+  return true
 }
 
 /**
@@ -102,6 +140,7 @@ export async function createPageVersion(
   }
 
   versions.push(newVersion)
+  persistVersionStore(dbId)
 
   // Persist to Supabase if connected
   if (dbId === "nezukos-box") {

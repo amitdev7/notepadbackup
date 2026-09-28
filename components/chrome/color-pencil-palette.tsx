@@ -67,14 +67,53 @@ export function ColorPencilPalette({
   const activeColor = target === "draw" ? drawColor : textColor
   const activeSetter = target === "draw" ? setDrawColor : setTextColor
 
-  const currentGradeInfo = PENCIL_GRADES[pencilGrade] || PENCIL_GRADES["HB"]
+  const currentGradeInfo = PENCIL_GRADES[pencilGrade as keyof typeof PENCIL_GRADES] || PENCIL_GRADES["HB"]
+
+  // A pick lands on the live selection first (when there is one) and always
+  // updates the default for the next thing drawn.
+  const applyColorToSelection = (hex: string) => {
+    const s = useSquig.getState()
+    if (s.isReadOnly || s.isLocked || !s.selection.length) return
+    const patches: Record<string, any> = {}
+    for (const id of s.selection) {
+      const n = s.nodes[id] as any
+      if (!n) continue
+      if (target === "text") {
+        if (n.type === "text") patches[id] = { color: hex }
+      } else {
+        if (n.type === "draw" || n.type === "shape" || n.type === "arrow") patches[id] = { color: hex }
+      }
+    }
+    if (Object.keys(patches).length) s.updateNodes(patches)
+  }
+
+  const applyGradeToSelection = (grade: PencilGrade) => {
+    const s = useSquig.getState()
+    if (s.isReadOnly || s.isLocked || !s.selection.length) return
+    const info = PENCIL_GRADES[grade]
+    if (!info) return
+    const patches: Record<string, any> = {}
+    for (const id of s.selection) {
+      const n = s.nodes[id] as any
+      if (!n) continue
+      if (n.type === "draw") patches[id] = { strokeWidth: info.strokeWidth, opacity: info.opacity }
+    }
+    if (Object.keys(patches).length) s.updateNodes(patches)
+  }
 
   const handleSelectColor = (hex: string) => {
     activeSetter(hex)
+    applyColorToSelection(hex)
   }
 
   const handleResetToTheme = () => {
     activeSetter("")
+    applyColorToSelection("")
+  }
+
+  const handleSelectGrade = (grade: PencilGrade) => {
+    setPencilGrade(grade)
+    applyGradeToSelection(grade)
   }
 
   return (
@@ -274,7 +313,7 @@ export function ColorPencilPalette({
                   <button
                     key={g}
                     type="button"
-                    onClick={() => setPencilGrade(g)}
+                    onClick={() => handleSelectGrade(g)}
                     title={`${g} — ${info.hardness} (Width: ${info.strokeWidth}px, Opacity: ${Math.round(info.opacity * 100)}%)`}
                     className={`flex flex-col items-center justify-center rounded-chrome-xs py-1 px-0.5 text-[10px] font-mono font-medium transition-all ${
                       isActive

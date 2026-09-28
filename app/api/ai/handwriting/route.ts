@@ -5,8 +5,11 @@ export const dynamic = "force-dynamic"
 
 export async function POST(req: NextRequest) {
   try {
-    const { imageBase64, mode } = await req.json()
-    if (!imageBase64) {
+    const { imageBase64, mode } = (await req.json().catch(() => ({}))) as {
+      imageBase64?: unknown
+      mode?: unknown
+    }
+    if (typeof imageBase64 !== "string" || !imageBase64) {
       return NextResponse.json({ error: "Missing handwriting image data" }, { status: 400 })
     }
 
@@ -27,7 +30,7 @@ export async function POST(req: NextRequest) {
       : "You are an expert handwriting transcription assistant for whiteboard sketches and notes. Transcribe the handwritten text in this image verbatim. Preserve line breaks. Output ONLY the recognized text without any conversational filler."
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.8-flash",
       contents: [
         {
           role: "user",

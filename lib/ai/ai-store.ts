@@ -108,20 +108,20 @@ export const useZenithAI = create<ZenithAIState>((set, get) => ({
   setOpen: (open) => {
     set({ isOpen: open })
     if (open) {
-      get().fetchProviders()
+      void get().fetchProviders().catch(() => {})
     }
   },
   toggleOpen: () => {
     const next = !get().isOpen
     set({ isOpen: next })
     if (next) {
-      get().fetchProviders()
+      void get().fetchProviders().catch(() => {})
     }
   },
   setSettingsOpen: (open) => {
     set({ isSettingsOpen: open })
     if (open) {
-      get().fetchProviders()
+      void get().fetchProviders().catch(() => {})
     }
   },
 
@@ -144,8 +144,8 @@ export const useZenithAI = create<ZenithAIState>((set, get) => ({
       activeProposal: null,
       isConnectModalOpen: false,
       connectModalProvider: null,
-      selectedProvider: "openai",
-      selectedModel: "gpt-4o",
+      selectedProvider: "gemini",
+      selectedModel: "gemini-3.8-flash",
       messages: [
         {
           id: "welcome_msg",
@@ -207,6 +207,13 @@ export const useZenithAI = create<ZenithAIState>((set, get) => ({
   discardProposal: (proposalId) => {
     set((s) => ({
       activeProposal: s.activeProposal?.id === proposalId ? null : s.activeProposal,
+      // Discarding removes the offer from the message — otherwise the
+      // button looks dead while Apply stays behind it.
+      messages: s.messages.map((m) =>
+        m.actions?.some((a) => a.id === proposalId)
+          ? { ...m, actions: m.actions.filter((a) => a.id !== proposalId) }
+          : m
+      ),
     }))
   },
 
@@ -334,7 +341,7 @@ export const useZenithAI = create<ZenithAIState>((set, get) => ({
       })
       const data = await res.json()
       // Refresh provider list status in background
-      get().fetchProviders()
+      void get().fetchProviders().catch(() => {})
       return data
     } catch (err: any) {
       return {
@@ -486,8 +493,8 @@ export const useZenithAI = create<ZenithAIState>((set, get) => ({
       const data = await res.json()
       const rawText = data.text || ""
 
-      // Extract canvas action proposals
-      const { cleanText, proposals } = extractActionProposals(rawText)
+      // Extract canvas action proposals (user wording drives the fallback)
+      const { cleanText, proposals } = extractActionProposals(rawText, content)
 
       set((s) => ({
         isStreaming: false,

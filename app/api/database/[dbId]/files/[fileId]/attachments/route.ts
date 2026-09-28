@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { verifyEditToken } from "@/lib/security"
-import { getRawDoc } from "../../route"
+import { getRawDoc } from "@/lib/server-documents"
 import {
   saveAttachment,
   getAttachmentDataUrl,

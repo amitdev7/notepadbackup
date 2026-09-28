@@ -169,6 +169,8 @@ export interface UpdateNodeAction extends BaseCanvasAction {
 export interface DeleteNodeAction extends BaseCanvasAction {
   type: "deleteNode"
   nodeIds: string[]
+  /** clear the whole canvas instead of the listed nodes */
+  all?: boolean
 }
 
 export interface MoveNodeAction extends BaseCanvasAction {

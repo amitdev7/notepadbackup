@@ -78,7 +78,7 @@ function hydrate() {
       description: "Pre-configured Supabase project with real-time sync and asset store.",
       status: "connected",
       configurationMetadata: {
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || "https://mhyzfqvuywpxlyyghvyz.supabase.co",
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL || "",
         schemaVersion: 1,
         tablesCount: 5,
         status: "operational",

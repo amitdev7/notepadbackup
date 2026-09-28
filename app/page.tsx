@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
+import { useKeyboard } from "@/lib/canvas/use-keyboard"
 import { Canvas } from "@/components/canvas/canvas"
 import { CanvasErrorBoundary } from "@/components/canvas/canvas-error-boundary"
+import { SmartSketchSuggestionOverlay } from "@/components/canvas/smart-sketch-overlay"
 import { LeftRail } from "@/components/chrome/left-rail"
 import { LibraryPanel } from "@/components/chrome/library-panel"
 import { Inspector } from "@/components/chrome/inspector"
@@ -56,6 +58,9 @@ export default function Home() {
     hydrate()
   }, [hydrate])
 
+  // The whole documented keyboard (see lib/canvas/use-keyboard.ts).
+  useKeyboard()
+
   // Global ⌘J shortcut for Zenith AI
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -105,6 +110,7 @@ export default function Home() {
       <VersionPreviewBanner />
       <LinkEditor />
       <CanvasContextMenu />
+      <SmartSketchSuggestionOverlay />
       <CommandPalette />
       <ShortcutsSheet />
       <DatabaseModal />

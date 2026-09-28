@@ -6,14 +6,30 @@ import crypto from "crypto"
 
 // Master secret for encrypting BYOK credentials at rest on the server.
 // Uses process.env.ZENITHSUI_SECRET_KEY, process.env.ENCRYPTION_KEY, or a persistent fallback.
-const MASTER_SECRET =
-  process.env.ZENITHSUI_SECRET_KEY ||
-  process.env.ENCRYPTION_KEY ||
-  process.env.NEXTAUTH_SECRET ||
-  "zenithsui_production_vault_secret_key_2026_aes256"
+// In production a missing secret fails loudly instead of encrypting every
+// deployment's vault with the same committed key.
+function resolveMasterSecret(): string {
+  const fromEnv =
+    process.env.ZENITHSUI_SECRET_KEY ||
+    process.env.ENCRYPTION_KEY ||
+    process.env.NEXTAUTH_SECRET
+  if (fromEnv) return fromEnv
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[encryption] ZENITHSUI_SECRET_KEY (or ENCRYPTION_KEY) is required in production — set it in Vercel Project Settings → Environment Variables."
+    )
+  }
+  return "zenithsui_production_vault_secret_key_2026_aes256"
+}
 
-// Derive a 32-byte key using SHA-256
-const ENCRYPTION_KEY = crypto.createHash("sha256").update(MASTER_SECRET).digest()
+let CACHED_KEY: Buffer | null = null
+function getEncryptionKey(): Buffer {
+  if (CACHED_KEY) return CACHED_KEY
+  const masterSecret = resolveMasterSecret()
+  CACHED_KEY = crypto.createHash("sha256").update(masterSecret).digest()
+  return CACHED_KEY
+}
+
 const ALGORITHM = "aes-256-gcm"
 
 export interface EncryptedPayload {
@@ -33,7 +49,7 @@ export class SecretEncryptionService {
     }
 
     const iv = crypto.randomBytes(12) // 96-bit IV recommended for GCM
-    const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv)
+    const cipher = crypto.createCipheriv(ALGORITHM, getEncryptionKey(), iv)
 
     let ciphertext = cipher.update(plaintext, "utf8", "hex")
     ciphertext += cipher.final("hex")
@@ -58,7 +74,7 @@ export class SecretEncryptionService {
 
     const iv = Buffer.from(payload.iv, "hex")
     const tag = Buffer.from(payload.tag, "hex")
-    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv)
+    const decipher = crypto.createDecipheriv(ALGORITHM, getEncryptionKey(), iv)
     decipher.setAuthTag(tag)
 
     let decrypted = decipher.update(payload.ciphertext, "hex", "utf8")

@@ -155,9 +155,12 @@ export function primsToPaths(
   const paths: PathBit[] = []
   const texts: Extract<Prim, { t: "text" }>[] = []
   const crisp: CrispBit[] = []
+  const safeSeed = Number.isFinite(seed) ? seed : 1
 
+  if (!Array.isArray(prims)) return { paths, texts, crisp }
   prims.forEach((p, i) => {
-    const s = ((seed + i * 7919) % 2 ** 31) || 1
+    if (!p || typeof p.t !== "string") return
+    const s = ((safeSeed + i * 7919) % 2 ** 31) || 1
     const dash = "o" in p && p.o?.dashed ? "6 4" : undefined
     const opacity = "o" in p ? p.o?.opacity : undefined
     try {
@@ -198,9 +201,12 @@ export function primsToPaths(
           // Phosphor glyphs are filled outlines, so pen pressure has nothing to
           // push on — an icon is simply drawn in the ink, like everything else.
           // The weight below only bites on the handful of stroke-mode paths.
-          const k = p.size / p.vb
+          const vb = typeof p.vb === "number" && p.vb > 0 ? p.vb : 0
+          const size = typeof p.size === "number" && p.size > 0 ? p.size : 12
+          if (!vb) break
+          const k = size / vb
           crisp.push({
-            d: p.d,
+            d: Array.isArray(p.d) ? p.d : [],
             transform: `translate(${p.x} ${p.y}) scale(${k})`,
             mode: p.mode,
             color: INK.ink,
@@ -263,7 +269,7 @@ export const SketchPrims = memo(function SketchPrims({
       ))}
       {crisp.map((c, i) => (
         <g key={`c${i}`} transform={c.transform}>
-          {c.d.map((d, j) => (
+          {(Array.isArray(c.d) ? c.d : []).map((d, j) => (
             <path
               key={j}
               d={d}
@@ -350,7 +356,7 @@ export const NodeSketch = memo(function NodeSketch({
   }, [node])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const prims = useMemo<Prim[]>(() => nodePrims(node), [shapeKey, node.type])
+  const prims = useMemo<Prim[]>(() => nodePrims(node), [shapeKey, (node as any)?.type])
 
   return (
     <>
@@ -374,7 +380,11 @@ export const NodeSketch = memo(function NodeSketch({
         const cy = isPage ? 2 : 52
         const cw = Math.max(10, isPage ? node.w - 4 : node.w - 28)
         const ch = Math.max(10, isPage ? node.h - 4 : node.h - 66)
-        const pageAnns = (node.annotations?.[node.currentPage || 1] || node.annotationsByPage?.[node.currentPage || 1] || []) as any[]
+        const pageAnnsRaw =
+          node.annotations?.[node.currentPage || 1] || node.annotationsByPage?.[node.currentPage || 1] || []
+        // The node stores page annotations; the overlay renderer types them as
+        // its own PdfAnnotation — same runtime shape, bridged here.
+        const pageAnns = (Array.isArray(pageAnnsRaw) ? pageAnnsRaw : []) as any[]
 
         if (!node.previewSrc && pageAnns.length === 0) return null
 
@@ -403,7 +413,7 @@ export const NodeSketch = memo(function NodeSketch({
           </>
         )
       })()}
-      <SketchPrims prims={prims} seed={node.seed} hiddenText={hiddenText} />
+      <SketchPrims prims={prims} seed={node.seed ?? 1} hiddenText={hiddenText} />
     </>
   )
 })

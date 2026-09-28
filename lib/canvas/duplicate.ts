@@ -29,14 +29,16 @@ export function repeatStep(
   selection: string[],
   nodes: Record<string, SquigNode>
 ): { dx: number; dy: number } | null {
-  if (!trail || trail.ids.length !== selection.length) return null
+  if (!trail || !Array.isArray(trail.ids) || !trail.ids.length) return null
+  if (!Array.isArray(selection) || !nodes || trail.ids.length !== selection.length) return null
   const sel = new Set(selection)
   if (!trail.ids.every((id) => sel.has(id) && nodes[id])) return null
   // the copies move as one, so any of them measures the same distance
-  const head = nodes[trail.ids[0]]
-  const origin = trail.from[trail.ids[0]]
-  if (!origin) return null
+  const head = nodes[trail.ids[0]] as any
+  const origin = (trail.from ?? {})[trail.ids[0]]
+  if (!head || !origin || !Number.isFinite(head.x) || !Number.isFinite(origin.x)) return null
   const dx = head.x - origin.x
   const dy = head.y - origin.y
+  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return null
   return dx === 0 && dy === 0 ? null : { dx, dy }
 }

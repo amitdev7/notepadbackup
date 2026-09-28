@@ -84,8 +84,8 @@ function VersionHistoryDialog() {
 
   const handlePreview = async (v: PageVersionMeta) => {
     await st().previewVersionById(v.version)
-    // Close modal so user can view preview banner & canvas
-    st().closeVersionHistory()
+    // Close the list but KEEP the preview — the banner takes it from here.
+    useSquig.setState({ versionHistoryOpen: false })
   }
 
   const handleConfirmRestore = async () => {
@@ -103,7 +103,7 @@ function VersionHistoryDialog() {
     setIsCreatingSnapshot(true)
     try {
       const token = localStorage.getItem(`zenithsui_edit_token:${selectedDbId}:${docId}`) || ""
-      const res = await fetch(`/api/database/${encodeURIComponent(selectedDbId)}/files/${encodeURIComponent(docId)}/versions`, {
+      const res = await fetch(`/api/database/${encodeURIComponent(selectedDbId)}/files/${encodeURIComponent(docId ?? "")}/versions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

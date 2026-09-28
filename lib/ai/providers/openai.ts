@@ -30,7 +30,10 @@ export class OpenAIProvider extends BaseAIProvider {
     const payload: any = {
       model,
       messages,
-      temperature: request.temperature ?? 0.7,
+    }
+    // Reasoning models (o1/o3/…) reject non-default temperature — omit it.
+    if (!/^o\d/i.test(model)) {
+      payload.temperature = request.temperature ?? 0.7
     }
 
     const res = await fetch(endpoint, {
@@ -90,11 +93,14 @@ export class OpenAIProvider extends BaseAIProvider {
       messages.push({ role: msg.role, content: msg.content })
     }
 
-    const payload = {
+    const payload: any = {
       model,
       messages,
-      temperature: request.temperature ?? 0.7,
       stream: true,
+    }
+    // Reasoning models (o1/o3/…) reject non-default temperature — omit it.
+    if (!/^o\d/i.test(model)) {
+      payload.temperature = request.temperature ?? 0.7
     }
 
     const res = await fetch(endpoint, {

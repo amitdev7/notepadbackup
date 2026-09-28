@@ -220,14 +220,14 @@ export function FontPicker({
             <div className="flex max-h-[240px] flex-col gap-0.5 overflow-y-auto pr-1">
               {filteredFonts.length === 0 ? (
                 <div className="py-4 text-center text-xs text-muted-foreground">
-                  No font matched "{search}".
+                  No font matched &ldquo;{search}&rdquo;.
                   <div className="mt-1">
                     <button
                       type="button"
                       onClick={() => handleAddCustomFont()}
                       className="text-[var(--sq-ink)] underline hover:opacity-80"
                     >
-                      Add "{search}" as custom font
+                      Add &ldquo;{search}&rdquo; as custom font
                     </button>
                   </div>
                 </div>

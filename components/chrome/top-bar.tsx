@@ -38,7 +38,7 @@ export function TopBar() {
 
       {/* Center status */}
       <div className="text-xs text-[var(--sq-ink-subtle)] font-mono">
-        {nodes.length} items on canvas
+        {Object.keys(nodes).length} items on canvas
       </div>
 
       {/* Right Controls */}

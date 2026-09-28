@@ -150,25 +150,31 @@ export function ZenithAISettingsModal() {
     setFormSaving(false)
 
     if (res.success) {
+      const savedKey = apiKeyInput.trim() || undefined
+      const savedEndpoint = customEndpointInput.trim() || undefined
+      const savedModel = customModelInput.trim() || undefined
       setIsEditing(false)
       setApiKeyInput("")
       setCustomEndpointInput("")
       setFormError(null)
-      // Auto trigger live test to confirm connection
-      handleTestSingleProvider(editingProviderId)
+      // Auto trigger live test with the values just saved (state is already
+      // cleared above, so pass them explicitly).
+      handleTestSingleProvider(editingProviderId, savedKey, savedEndpoint, savedModel)
     } else {
       setFormError(res.error || "Failed to save API key.")
     }
   }
 
-  // Handle Test Connection
-  const handleTestSingleProvider = async (pId: AIProviderId, draftKey?: string, draftEndpoint?: string) => {
+  // Handle Test Connection — explicit drafts win (edit view); otherwise the
+  // stored credential is tested, never a stale sibling form's leftovers.
+  const handleTestSingleProvider = async (pId: AIProviderId, draftKey?: string, draftEndpoint?: string, draftModel?: string) => {
+    const testingStored = draftKey === undefined && draftEndpoint === undefined && draftModel === undefined
     setTestingProviderId(pId)
     const res = await testProviderConnection({
       providerId: pId,
-      apiKey: draftKey || (apiKeyInput.trim() ? apiKeyInput.trim() : undefined),
-      customEndpoint: draftEndpoint || (customEndpointInput.trim() ? customEndpointInput.trim() : undefined),
-      modelId: customModelInput || undefined,
+      apiKey: testingStored ? undefined : draftKey || (apiKeyInput.trim() ? apiKeyInput.trim() : undefined),
+      customEndpoint: testingStored ? undefined : draftEndpoint || (customEndpointInput.trim() ? customEndpointInput.trim() : undefined),
+      modelId: testingStored ? undefined : draftModel || customModelInput || undefined,
     })
     setTestResult({ providerId: pId, result: res })
     setTestingProviderId(null)

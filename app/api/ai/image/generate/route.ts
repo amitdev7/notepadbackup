@@ -21,12 +21,25 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const body = await req.json()
+    const body = (await req.json().catch(() => ({}))) as {
+      prompt?: unknown
+      aspectRatio?: unknown
+      width?: unknown
+      height?: unknown
+    }
     const { prompt, aspectRatio = "1:1", width, height } = body
 
     if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
       return NextResponse.json({ error: "Prompt is required." }, { status: 400 })
     }
+    if (prompt.trim().length > 1000) {
+      return NextResponse.json({ error: "Prompt is too long (max 1000 characters)." }, { status: 400 })
+    }
+
+    const VALID_RATIOS = ["1:1", "16:9", "9:16", "4:3", "3:4"]
+    const ratio = typeof aspectRatio === "string" && VALID_RATIOS.includes(aspectRatio) ? aspectRatio : "1:1"
+    const w = typeof width === "number" && Number.isFinite(width) && width > 0 ? Math.min(width, 2048) : undefined
+    const h = typeof height === "number" && Number.isFinite(height) && height > 0 ? Math.min(height, 2048) : undefined
 
     // Retrieve active Gemini API key if available
     const creds = ProviderCredentialService.getEffectiveCredentials("gemini", effectiveUserId)
@@ -34,11 +47,18 @@ export async function POST(req: NextRequest) {
 
     const result = await AIImageService.generateImage({
       prompt: prompt.trim(),
-      aspectRatio,
+      aspectRatio: ratio as "1:1" | "16:9" | "9:16" | "4:3" | "3:4",
       apiKey,
-      width,
-      height,
+      width: w,
+      height: h,
     })
+
+    if (!result || (result as any).success === false) {
+      return NextResponse.json(
+        { error: (result as any)?.error || "Image generation failed." },
+        { status: 502 }
+      )
+    }
 
     return NextResponse.json(result)
   } catch (error: any) {

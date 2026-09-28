@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { listPageVersions, getPageVersion, restorePageVersion, createPageVersion } from "@/lib/server-versions"
-import { getRawDoc } from "@/app/api/database/[dbId]/files/route"
+import { getRawDoc } from "@/lib/server-documents"
 import { verifyEditToken } from "@/lib/security"
 
 export const dynamic = "force-dynamic"

@@ -10,8 +10,8 @@ import type {
   DatabaseProviderType,
 } from "@/lib/database-types"
 import type { WorkspaceRecord, BoardRecord } from "@/lib/workspace-types"
-import type { ServerStoredDoc, ServerFileMeta } from "@/app/api/database/[dbId]/files/route"
-import { getStore, getRawDoc, persistDbFiles } from "@/app/api/database/[dbId]/files/route"
+import type { ServerStoredDoc, ServerFileMeta } from "@/lib/server-documents"
+import { getStore, getRawDoc, persistDbFiles } from "@/lib/server-documents"
 import type { PageShare } from "@/lib/server-share"
 import type { PageVersion, PageVersionMeta } from "@/lib/version-types"
 import { getVersionsForFile } from "@/lib/server-versions"
@@ -195,7 +195,22 @@ export class ZenithsuiCloudProvider implements DataProvider {
 
   async writeVersion(version: PageVersion): Promise<void> {
     const versions = getVersionsForFile(version.dbId, version.pageId)
-    versions.unshift(version)
+    const idx = versions.findIndex((v) => v.id === version.id)
+    if (idx >= 0) {
+      versions[idx] = version
+    } else {
+      versions.unshift(version)
+    }
+    // Persist via the same snapshot file used by lib/server-versions so versions survive restarts
+    // (persistVersionStore there is module-private; getVersionsForFile returns the live store reference)
+    try {
+      const key = `versions_${version.dbId}.json`
+      const saved = readJsonSnapshot<Record<string, PageVersion[]>>(key, {})
+      saved[version.pageId] = versions
+      writeJsonSnapshot(key, saved)
+    } catch (err) {
+      console.warn(`[ZenithsuiCloudProvider] Failed to persist version for ${version.pageId}:`, err)
+    }
   }
 
   async close(): Promise<void> {

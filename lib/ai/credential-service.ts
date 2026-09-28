@@ -219,6 +219,12 @@ export class ProviderCredentialService {
       }
       trimmedKey = process.env.GROQ_API_KEY
       isSystemEnvKey = true
+    } else if (providerId === "openrouter" && trimmedKey === "__SYSTEM_OPENROUTER_KEY__") {
+      if (!process.env.OPENROUTER_API_KEY) {
+        return { success: false, error: "System OpenRouter key is not configured on the server." }
+      }
+      trimmedKey = process.env.OPENROUTER_API_KEY
+      isSystemEnvKey = true
     }
 
     // Ensure API key is provided if provider strictly requires one
@@ -243,7 +249,10 @@ export class ProviderCredentialService {
       userCredentials.forEach((c) => (c.isDefault = false))
     }
 
-    const chosenModel = defaultModel || meta.models[0]?.id || "default"
+    const chosenModel =
+      defaultModel && meta.models.some((m) => m.id === defaultModel)
+        ? defaultModel
+        : meta.models[0]?.id || "default"
 
     let credential: StoredCredential
 
@@ -301,6 +310,35 @@ export class ProviderCredentialService {
     const list = this.listCredentials(userId)
     const index = list.findIndex((c) => c.id === id)
     if (index === -1) {
+      // Settings UI addresses never-configured (env-only) providers as
+      // `prov_<providerId>` — materialize a keyless preference row for them
+      // (the key itself still comes from the server environment at call time)
+      // so toggles, models, and defaults actually stick.
+      const m = /^prov_(.+)$/.exec(id)
+      const meta = m ? AI_PROVIDERS[m[1] as AIProviderId] : undefined
+      if (meta) {
+        if (updates.isDefault) {
+          list.forEach((c) => (c.isDefault = false))
+        }
+        const now = new Date().toISOString()
+        list.push({
+          id: `cred_${meta.id}_${nanoid(8)}`,
+          userId,
+          providerId: meta.id,
+          name: typeof updates.name === "string" && updates.name ? updates.name : meta.name,
+          customEndpoint: updates.customEndpoint,
+          defaultModel: updates.defaultModel || meta.models[0]?.id || "default",
+          enabled: typeof updates.enabled === "boolean" ? updates.enabled : true,
+          isDefault: !!updates.isDefault,
+          createdAt: now,
+          updatedAt: now,
+          lastStatus: "untested",
+          source: "byok",
+        } as StoredCredential)
+        credentialStore.set(userId, list)
+        persistCredentials()
+        return { success: true }
+      }
       return { success: false, error: "Credential not found." }
     }
 
@@ -468,6 +506,8 @@ export class ProviderCredentialService {
       keyToTest = process.env.GEMINI_API_KEY
     } else if (keyToTest === "__SYSTEM_GROQ_KEY__" && providerId === "groq") {
       keyToTest = process.env.GROQ_API_KEY
+    } else if (keyToTest === "__SYSTEM_OPENROUTER_KEY__" && providerId === "openrouter") {
+      keyToTest = process.env.OPENROUTER_API_KEY
     }
 
     if (!keyToTest) {
@@ -669,6 +709,21 @@ export class ProviderCredentialService {
         targetEndpoint = "https://api.deepseek.com/chat/completions"
       } else if (providerId === "perplexity") {
         targetEndpoint = "https://api.perplexity.ai/chat/completions"
+      } else if (providerId === "openrouter") {
+        targetEndpoint = "https://openrouter.ai/api/v1/chat/completions"
+        reqHeaders = {
+          ...reqHeaders,
+          "HTTP-Referer":
+            process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL || "https://zenithsui.sh",
+          "X-Title": "zenithsui",
+        }
+      } else if (providerId === "azure") {
+        const base = (endpointToTest || "").replace(/\/$/, "")
+        if (base && !/your-resource/i.test(base)) {
+          targetEndpoint = /\/chat\/completions(\?|$)/.test(base)
+            ? base
+            : `${base}/chat/completions?api-version=2024-02-15-preview`
+        }
       } else if (providerId === "huggingface") {
         targetEndpoint = `https://api-inference.huggingface.co/models/${testModel}`
         reqHeaders = {
@@ -676,7 +731,10 @@ export class ProviderCredentialService {
           Authorization: `Bearer ${keyToTest || ""}`,
         }
       } else if (endpointToTest) {
-        targetEndpoint = `${endpointToTest.replace(/\/$/, "")}/chat/completions`
+        const trimmed = endpointToTest.replace(/\/$/, "")
+        targetEndpoint = /\/chat\/completions(\?|$)/.test(trimmed)
+          ? trimmed
+          : `${trimmed}/chat/completions`
       }
 
       const res = await fetch(targetEndpoint, {
@@ -727,6 +785,8 @@ export class ProviderCredentialService {
 
   /**
    * Internal helper to record test outcomes in memory.
+   * Never persists phantom rows for env-only providers: a health check must
+   * not mint credentials (or steal `isDefault`) in the vault file.
    */
   private static recordTestOutcome(
     providerId: AIProviderId,
@@ -745,39 +805,8 @@ export class ProviderCredentialService {
       cred.latencyMs = latencyMs
       cred.lastError = error
       persistCredentials()
-    } else {
-      const meta = AI_PROVIDERS[providerId]
-      if (meta) {
-        const isEnv = (providerId === "gemini" && !!process.env.GEMINI_API_KEY) ||
-                      (providerId === "openai" && !!process.env.OPENAI_API_KEY) ||
-                      (providerId === "groq" && !!process.env.GROQ_API_KEY) ||
-                      (providerId === "openrouter" && !!process.env.OPENROUTER_API_KEY) ||
-                      (providerId === "anthropic" && !!process.env.ANTHROPIC_API_KEY) ||
-                      (providerId === "deepseek" && !!process.env.DEEPSEEK_API_KEY) ||
-                      (providerId === "perplexity" && !!process.env.PERPLEXITY_API_KEY)
-        if (isEnv) {
-          const newCred: StoredCredential = {
-            id: `cred_${providerId}_sys`,
-            userId: effectiveUserId,
-            providerId,
-            name: meta.name,
-            source: "env",
-            maskedKey: "•••••••••••• (Server Key Active)",
-            defaultModel: meta.models[0]?.id || "default",
-            enabled: true,
-            isDefault: providerId === "gemini",
-            lastTestedAt: now,
-            lastStatus: status,
-            latencyMs,
-            lastError: error,
-            createdAt: now,
-            updatedAt: now,
-          }
-          list.push(newCred)
-          credentialStore.set(effectiveUserId, list)
-          persistCredentials()
-        }
-      }
     }
+    // No stored row and no persist: env-only providers are evaluated live
+    // from process.env on every read, so there is nothing to record.
   }
 }

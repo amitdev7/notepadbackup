@@ -183,22 +183,25 @@ class CollaborationClient {
             }
           }
           if (this.activeDbId === data.dbId && this.activeFileId === data.fileId) {
-            this.serverRevision = data.revision
+            if (Number.isFinite(data.revision)) this.serverRevision = data.revision
             const st = useSquig.getState()
             if (st.docId === data.fileId) {
+              const clean = this.cleanRemoteDoc(data.doc)
+              if (!clean) return
               this.isApplyingRemote = true
               try {
                 useSquig.setState({
-                  fileName: data.doc.name || st.fileName,
-                  nodes: data.doc.nodes || {},
-                  order: data.doc.order || [],
-                  collabRevision: data.revision,
+                  fileName: clean.name || st.fileName,
+                  nodes: clean.nodes,
+                  order: clean.order,
+                  collabRevision: this.serverRevision,
                   selection: [],
                   previewVersion: null,
                 })
-                if (data.doc.look) {
-                  useSquig.setState(data.doc.look)
-                  applyLook(data.doc.look)
+                const look = this.cleanRemoteLook(data.doc?.look)
+                if (look) {
+                  useSquig.setState(look)
+                  applyLook(look)
                 }
                 st.setNotice(`Page restored to version ${data.restoredFromVersion}`)
               } finally {
@@ -229,33 +232,58 @@ class CollaborationClient {
     }
   }
 
-  private handleInit(msg: ServerInitMessage): void {
-    if (this.activeDbId !== msg.dbId || this.activeFileId !== msg.fileId) return
+  /** Server shapes are validated before they reach the canvas. */
+  private cleanRemoteDoc(doc: any): { nodes: Record<string, SquigNode>; order: string[]; name: string } | null {
+    if (!doc || typeof doc !== "object") return null
+    const rawNodes = doc.nodes && typeof doc.nodes === "object" ? doc.nodes : {}
+    const nodes: Record<string, SquigNode> = {}
+    for (const [id, n] of Object.entries(rawNodes)) {
+      const c = n as any
+      if (c && typeof c.id === "string" && typeof c.type === "string") nodes[id] = c as SquigNode
+    }
+    const order = Array.isArray(doc.order)
+      ? (doc.order as unknown[]).filter((id): id is string => typeof id === "string" && !!nodes[id])
+      : Object.keys(nodes)
+    return { nodes, order, name: typeof doc.name === "string" && doc.name ? doc.name : "" }
+  }
 
-    this.serverRevision = msg.revision
-    this.setCollaborators(msg.collaborators || [])
+  private cleanRemoteLook(look: any): Look | null {
+    if (!look || typeof look !== "object") return null
+    const out: Record<string, unknown> = {}
+    if (typeof look.theme === "string") out.theme = look.theme
+    if (typeof look.paper === "string") out.paper = look.paper
+    if (typeof look.font === "string") out.font = look.font
+    if (typeof look.grid === "boolean") out.grid = look.grid
+    return Object.keys(out).length ? (out as unknown as Look) : null
+  }
+
+  private handleInit(msg: ServerInitMessage): void {
+    if (!msg || this.activeDbId !== msg.dbId || this.activeFileId !== msg.fileId) return
+
+    if (Number.isFinite(msg.revision)) this.serverRevision = msg.revision
+    this.setCollaborators(Array.isArray(msg.collaborators) ? msg.collaborators : [])
     this.setStatus("synced")
 
     const st = useSquig.getState()
     // Hydrate document if it came from server and local canvas is current file
     if (st.docId === msg.fileId) {
+      const clean = this.cleanRemoteDoc((msg as any).doc)
+      if (!clean) return
       this.isApplyingRemote = true
       try {
-        const doc = msg.doc
-        const nodes = (doc.nodes || {}) as Record<string, SquigNode>
-        const order = doc.order || []
         useSquig.setState({
-          fileName: doc.name || st.fileName,
-          nodes,
-          order,
+          fileName: clean.name || st.fileName,
+          nodes: clean.nodes,
+          order: clean.order,
           hasPassword: !!msg.hasPassword,
-          isReadOnly: msg.role === "viewer",
-          permissionRole: msg.role,
-          collabRevision: msg.revision,
+          isReadOnly: (msg as any).role === "viewer",
+          permissionRole: ((msg as any).role ?? null) as any,
+          collabRevision: this.serverRevision,
         })
-        if (doc.look) {
-          useSquig.setState(doc.look)
-          applyLook(doc.look as Look)
+        const look = this.cleanRemoteLook((msg as any).doc?.look)
+        if (look) {
+          useSquig.setState(look)
+          applyLook(look)
         }
       } finally {
         this.isApplyingRemote = false
@@ -264,7 +292,9 @@ class CollaborationClient {
   }
 
   private handleRemotePatch(msg: ServerPatchMessage): void {
-    if (this.activeDbId !== msg.dbId || this.activeFileId !== msg.fileId) return
+    if (!msg || this.activeDbId !== msg.dbId || this.activeFileId !== msg.fileId) return
+    if (!Number.isFinite(msg.revision)) return
+    if (!Array.isArray(msg.ops)) return
 
     const myClientId = getClientSessionId()
     if (msg.clientId === myClientId) {
@@ -293,7 +323,7 @@ class CollaborationClient {
     try {
       const st = useSquig.getState()
       const currentDoc = {
-        id: st.docId,
+        id: st.docId ?? "local",
         name: st.fileName,
         nodes: st.nodes,
         order: st.order,
@@ -303,14 +333,16 @@ class CollaborationClient {
           paper: st.paper,
           font: st.font,
           grid: st.grid,
-        },
+        } as Look,
         hasPassword: st.hasPassword,
       }
 
       const updated = applyCollaborationOps(currentDoc, ops)
 
       // Reconcile selection: filter out any nodes that were deleted remotely
-      const validSelection = st.selection.filter((id) => !!updated.nodes[id])
+      const validSelection = Array.isArray(st.selection)
+        ? st.selection.filter((id) => !!updated.nodes[id])
+        : []
 
       useSquig.setState({
         nodes: updated.nodes,
@@ -321,8 +353,11 @@ class CollaborationClient {
       })
 
       if (updated.look) {
-        useSquig.setState(updated.look)
-        applyLook(updated.look)
+        const look = this.cleanRemoteLook(updated.look)
+        if (look) {
+          useSquig.setState(look)
+          applyLook(look)
+        }
       }
     } finally {
       this.isApplyingRemote = false
@@ -459,7 +494,7 @@ class CollaborationClient {
           revision: data.revision,
           doc: data.doc,
           collaborators: this.collaborators,
-          role: useSquig.getState().permissionRole,
+          role: useSquig.getState().permissionRole ?? "viewer",
           hasPassword: data.doc.hasPassword,
         })
       } else if (Array.isArray(data.patches) && data.patches.length) {

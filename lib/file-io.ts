@@ -186,15 +186,17 @@ export async function attachFileToCanvas(file?: File): Promise<boolean> {
         body: formData,
       })
       if (!res.ok) throw new Error("Upload failed")
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
+      const attachment = (data as any)?.attachment
+      if (!attachment?.url) throw new Error("Upload failed")
       const [cx, cy] = getViewportCenter()
       const fileNode = {
         type: "file" as const,
         name: selected.name,
         fileSize: selected.size,
         mimeType: selected.type || "application/octet-stream",
-        attachmentId: data.attachment?.id,
-        src: data.attachment?.url,
+        attachmentId: attachment.id,
+        src: attachment.url,
         status: "ready" as const,
         x: Math.round(cx - 120),
         y: Math.round(cy - 32),
@@ -234,12 +236,14 @@ export function importDoc(): void {
     const file = input.files?.[0]
     if (!file) return
 
-    const ext = file.name.slice(file.name.lastIndexOf(".")).toLowerCase()
-    if (ext === ".pdf" || file.type === "application/pdf") {
+    const name = String(file.name || "")
+    const mime = String((file as any).type || "")
+    const ext = name.slice(name.lastIndexOf(".")).toLowerCase()
+    if (ext === ".pdf" || mime === "application/pdf") {
       await importPdf(file)
-    } else if (file.type.startsWith("image/")) {
+    } else if (mime.startsWith("image/")) {
       await importImage(file)
-    } else if (ext === ".zenithsui" || (ext === ".json" && !file.name.includes("workspace"))) {
+    } else if (ext === ".zenithsui" || (ext === ".json" && !name.includes("workspace"))) {
       await importZenithsuiOrJson(file)
     } else {
       await attachFileToCanvas(file)

@@ -23,8 +23,8 @@ export async function GET(
   const db = getDatabaseRecord(dbId)
   const myRole = getEffectiveUserRole(dbId, userId)
 
-  if (!myRole) {
-    return NextResponse.json({ error: "Access denied. You do not have access to this database." }, { status: 403 })
+  if (!myRole || !db) {
+    return NextResponse.json({ error: "Access denied. You do not have access to this database." }, { status: !db ? 404 : 403 })
   }
 
   return NextResponse.json({
@@ -105,8 +105,10 @@ export async function DELETE(
   const requesterUserId = user ? user.id : req.headers.get("x-user-id") || req.headers.get("x-session-id") || "anonymous"
 
   try {
-    const body = await req.json()
-    const { targetUserId } = body as { targetUserId: string }
+    // Some proxies/CDNs strip DELETE bodies — accept the id either way.
+    const body = await req.json().catch(() => ({}))
+    const targetUserId =
+      (body as { targetUserId?: string }).targetUserId ?? req.nextUrl.searchParams.get("targetUserId")
 
     if (!targetUserId) {
       return NextResponse.json({ error: "targetUserId is required." }, { status: 400 })

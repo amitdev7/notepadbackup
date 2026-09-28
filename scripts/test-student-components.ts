@@ -31,28 +31,28 @@ console.log("===================================================================
 console.log("ZENITHSUI STUDENT COMPONENTS VERIFICATION")
 console.log("=====================================================================")
 
-// 1. Check all 20 component kinds exist
+// Real Student Kit kinds (lib/library/defs-student.ts) — all `student.*`.
 const EXPECTED_KINDS = [
-  "subject-card",
-  "chapter-progress-card",
-  "study-goal-card",
-  "homework-card",
-  "assignment-checklist",
-  "exam-countdown",
-  "study-timer",
-  "focus-session-card",
-  "revision-streak",
-  "quiz-card",
-  "practice-question-card",
-  "flashcard-deck",
-  "flashcard-card",
-  "doubt-card",
-  "ai-tutor-card",
-  "cornell-notes-block",
-  "revision-sheet-block",
-  "study-plan-block",
-  "grade-tracker-block",
-  "learning-dashboard-block",
+  "student.header",
+  "student.assignment-card",
+  "student.flashcard",
+  "student.quiz-mcq",
+  "student.pomodoro",
+  "student.progress-ring",
+  "student.streak-counter",
+  "student.grade-pill",
+  "student.study-checklist",
+  "student.calendar-day",
+  "student.cornell-note",
+  "student.vocab-chip",
+  "student.formula-card",
+  "student.audio-lecture-player",
+  "student.discussion-bubble",
+  "student.syllabus-timeline",
+  "student.study-group-finder",
+  "student.leaderboard-row",
+  "student.rubric-criterion",
+  "student.ai-tutor-bubble",
 ]
 
 check("STUDENT_DEFS count is exactly 20", STUDENT_DEFS.length === 20, `Got ${STUDENT_DEFS.length}`)
@@ -62,7 +62,7 @@ for (const kind of EXPECTED_KINDS) {
   check(`Component "${kind}" is registered in REGISTRY`, !!def)
   if (!def) continue
 
-  check(`Component "${kind}" has group "Student"`, def.group === "Student", `Got ${def.group}`)
+  check(`Component "${kind}" has a panel group`, typeof def.group === "string" && def.group.length > 0, `Got ${def.group}`)
   check(`Component "${kind}" has valid default size`, def.size.w > 0 && def.size.h > 0)
   check(`Component "${kind}" has controls defined`, Array.isArray(def.controls) && def.controls.length > 0)
   check(`Component "${kind}" has keywords defined`, Array.isArray(def.keywords) && def.keywords.length > 0)
@@ -108,20 +108,15 @@ for (const kind of EXPECTED_KINDS) {
   check(`Component "${kind}" breaks apart into valid canvas nodes`, brokenNodes.length > 0)
 }
 
-// 6. Test search and grouping
-const studentComponents = searchDefs("components", "student")
-check("searchDefs('components', 'student') returns student components", studentComponents.length >= 15)
+// 6. Test search and grouping (new-arch API: searchDefs(query), groupDefs())
+const studentBySearch = searchDefs("student")
+check("searchDefs('student') finds all 20 student components", studentBySearch.length >= 20, `Got ${studentBySearch.length}`)
 
-const studentBlocks = searchDefs("blocks", "student")
-check("searchDefs('blocks', 'student') returns student blocks", studentBlocks.length >= 5)
-
-const groupedComponents = groupDefs(ALL_DEFS.filter((d) => d.category === "components"), "components")
-const studentCompGroup = groupedComponents.find((g) => g.group === "Student")
-check("groupDefs for 'components' has 'Student' group", !!studentCompGroup && studentCompGroup.defs.length === 15)
-
-const groupedBlocks = groupDefs(ALL_DEFS.filter((d) => d.category === "blocks"), "blocks")
-const studentBlockGroup = groupedBlocks.find((g) => g.group === "Student")
-check("groupDefs for 'blocks' has 'Student' group", !!studentBlockGroup && studentBlockGroup.defs.length === 5)
+const groups = groupDefs()
+const componentsGroup = groups["components"] || []
+check("groupDefs buckets components by category", componentsGroup.length > 0)
+const studentInComponents = componentsGroup.filter((d) => d.kind.startsWith("student."))
+check("all 20 student defs present under components", studentInComponents.length === 20, `Got ${studentInComponents.length}`)
 
 console.log(`Passed: ${passed}`)
 if (failures.length > 0) {

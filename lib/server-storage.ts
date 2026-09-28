@@ -3,10 +3,11 @@
 // ---------------------------------------------------------------------------
 
 import fs from "node:fs"
+import os from "node:os"
 import path from "node:path"
 
 const CWD_DATA_DIR = path.join(process.cwd(), ".zenithsui_data")
-const TMP_DATA_DIR = path.join("/tmp", ".zenithsui_data")
+const TMP_DATA_DIR = path.join(os.tmpdir(), ".zenithsui_data")
 
 // Determine the preferred writable directory (use /tmp on Vercel or read-only serverless runtimes)
 function getWritableDataDir(): string {
@@ -95,7 +96,7 @@ export function writeJsonSnapshot<T>(filename: string, data: T): void {
         fs.renameSync(tempFallback, fallbackPath)
         return
       } catch (fallbackErr) {
-        console.warn(`[Storage] Warning: Fallback write to /tmp failed for ${filename}:`, fallbackErr)
+        console.warn(`[Storage] Warning: Fallback write to ${os.tmpdir()} failed for ${filename}:`, fallbackErr)
       }
     }
     console.warn(`[Storage] Warning: Failed to persist ${filename}:`, err)

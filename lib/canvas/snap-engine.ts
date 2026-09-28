@@ -98,7 +98,8 @@ export function computeSnap(
   threshold: number,
   parent?: SnapRect
 ): SnapResult {
-  const allCandidates = parent ? [parent, ...candidates] : candidates
+  if (!dragged) return { dx: 0, dy: 0, guides: [], distances: [] }
+  const allCandidates = parent ? [parent, ...(candidates ?? [])] : (candidates ?? [])
   const dragEdges = getEdges(dragged)
   const guides: GuideLine[] = []
 
@@ -224,14 +225,16 @@ export function computeResizeSnap(
   threshold: number,
   parent?: SnapRect
 ): SnapResult {
-  const allCandidates = parent ? [parent, ...candidates] : candidates
+  if (!dragged) return { dx: 0, dy: 0, guides: [], distances: [] }
+  const h = typeof handle === "string" ? handle : ""
+  const allCandidates = parent ? [parent, ...(candidates ?? [])] : (candidates ?? [])
   const guides: GuideLine[] = []
 
   // Determine which edges are moving
-  const movingLeft = handle.includes("w")
-  const movingRight = handle.includes("e")
-  const movingTop = handle.includes("n")
-  const movingBottom = handle.includes("s")
+  const movingLeft = h.includes("w")
+  const movingRight = h.includes("e")
+  const movingTop = h.includes("n")
+  const movingBottom = h.includes("s")
 
   // Collect the drag positions to test for each axis
   const testX: number[] = []
@@ -344,7 +347,9 @@ export function computeDistances(
   parent?: SnapRect,
   scale: number = 1
 ): DistanceIndicator[] {
-  const allCandidates = parent ? [parent, ...candidates] : candidates
+  if (!selected) return []
+  const s = Number.isFinite(scale) && (scale as number) > 0 ? (scale as number) : 1
+  const allCandidates = parent ? [parent, ...(candidates ?? [])] : (candidates ?? [])
   const indicators: DistanceIndicator[] = []
 
   const selLeft = selected.left
@@ -379,7 +384,7 @@ export function computeDistances(
         const dist = selLeft - candRight
         indicators.push({
           axis: "x",
-          distance: Math.round(dist / scale),
+          distance: Math.round(dist / s),
           x1: candRight,
           y1: midY,
           x2: selLeft,
@@ -394,7 +399,7 @@ export function computeDistances(
         const dist = candLeft - selRight
         indicators.push({
           axis: "x",
-          distance: Math.round(dist / scale),
+          distance: Math.round(dist / s),
           x1: selRight,
           y1: midY,
           x2: candLeft,
@@ -413,7 +418,7 @@ export function computeDistances(
         const dist = selTop - candBottom
         indicators.push({
           axis: "y",
-          distance: Math.round(dist / scale),
+          distance: Math.round(dist / s),
           x1: midX,
           y1: candBottom,
           x2: midX,
@@ -428,7 +433,7 @@ export function computeDistances(
         const dist = candTop - selBottom
         indicators.push({
           axis: "y",
-          distance: Math.round(dist / scale),
+          distance: Math.round(dist / s),
           x1: midX,
           y1: selBottom,
           x2: midX,
@@ -452,7 +457,7 @@ export function computeDistances(
       const dist = selLeft - pLeft
       indicators.push({
         axis: "x",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: pLeft,
         y1: selected.cy,
         x2: selLeft,
@@ -467,7 +472,7 @@ export function computeDistances(
       const dist = pRight - selRight
       indicators.push({
         axis: "x",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: selRight,
         y1: selected.cy,
         x2: pRight,
@@ -482,7 +487,7 @@ export function computeDistances(
       const dist = selTop - pTop
       indicators.push({
         axis: "y",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: selected.cx,
         y1: pTop,
         x2: selected.cx,
@@ -497,7 +502,7 @@ export function computeDistances(
       const dist = pBottom - selBottom
       indicators.push({
         axis: "y",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: selected.cx,
         y1: selBottom,
         x2: selected.cx,
@@ -529,7 +534,9 @@ export function computePairwiseDistances(
   target: SnapRect,
   scale: number = 1
 ): DistanceIndicator[] {
+  if (!selected || !target) return []
   if (target.id === selected.id) return []
+  const s = Number.isFinite(scale) && (scale as number) > 0 ? (scale as number) : 1
   const indicators: DistanceIndicator[] = []
 
   const selLeft = selected.left
@@ -563,7 +570,7 @@ export function computePairwiseDistances(
       const dist = inLeft - outLeft
       indicators.push({
         axis: "x",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: outLeft,
         y1: inner.cy,
         x2: inLeft,
@@ -576,7 +583,7 @@ export function computePairwiseDistances(
       const dist = outRight - inRight
       indicators.push({
         axis: "x",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: inRight,
         y1: inner.cy,
         x2: outRight,
@@ -589,7 +596,7 @@ export function computePairwiseDistances(
       const dist = inTop - outTop
       indicators.push({
         axis: "y",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: inner.cx,
         y1: outTop,
         x2: inner.cx,
@@ -602,7 +609,7 @@ export function computePairwiseDistances(
       const dist = outBottom - inBottom
       indicators.push({
         axis: "y",
-        distance: Math.round(dist / scale),
+        distance: Math.round(dist / s),
         x1: inner.cx,
         y1: inBottom,
         x2: inner.cx,
@@ -624,7 +631,7 @@ export function computePairwiseDistances(
     const dist = selLeft - tRight
     indicators.push({
       axis: "x",
-      distance: Math.round(dist / scale),
+      distance: Math.round(dist / s),
       x1: tRight,
       y1: midY,
       x2: selLeft,
@@ -636,7 +643,7 @@ export function computePairwiseDistances(
     const dist = tLeft - selRight
     indicators.push({
       axis: "x",
-      distance: Math.round(dist / scale),
+      distance: Math.round(dist / s),
       x1: selRight,
       y1: midY,
       x2: tLeft,
@@ -655,7 +662,7 @@ export function computePairwiseDistances(
     const dist = selTop - tBottom
     indicators.push({
       axis: "y",
-      distance: Math.round(dist / scale),
+      distance: Math.round(dist / s),
       x1: midX,
       y1: tBottom,
       x2: midX,
@@ -667,7 +674,7 @@ export function computePairwiseDistances(
     const dist = tTop - selBottom
     indicators.push({
       axis: "y",
-      distance: Math.round(dist / scale),
+      distance: Math.round(dist / s),
       x1: midX,
       y1: selBottom,
       x2: midX,
@@ -772,3 +779,4 @@ export function collectArtboardSnapCandidates(
   }
   return rects
 }
+

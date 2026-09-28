@@ -64,11 +64,11 @@ export function InkPicker() {
       <DropdownMenuTrigger
         // the face is a chip and a palette name, so the control needs to say
         // out loud what it is for anyone not looking at it
-        aria-label={`Palette — ${THEMES[theme].label}`}
+        aria-label={`Palette — ${THEMES[theme as keyof typeof THEMES].label}`}
         className="flex h-ctl w-full min-w-0 items-center gap-2 rounded-chrome-sm border border-input bg-transparent px-2 text-label outline-none transition-colors hover:border-border focus-visible:border-[var(--sq-ink)] focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/15"
       >
-        <InkSwatch name={theme} />
-        <span className="min-w-0 flex-1 truncate text-left">{THEMES[theme].label}</span>
+        <InkSwatch name={theme as keyof typeof THEMES} />
+        <span className="min-w-0 flex-1 truncate text-left">{THEMES[theme as keyof typeof THEMES].label}</span>
         <CaretDownIcon className="size-3 shrink-0 text-muted-foreground" weight="bold" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">

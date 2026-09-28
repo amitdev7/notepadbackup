@@ -237,6 +237,73 @@ export function savePrefs(p: Prefs) {
   writeJSON(PREFS_KEY, p)
 }
 
+// ---------------------------------------------------------------------------
+// Backward-compatible aliases — the canvas store was written against these
+// names. They delegate to the canonical functions above so old imports keep
+// working at runtime on Vercel and locally. No behavior change.
+// ---------------------------------------------------------------------------
+
+/** Legacy alias for saveFile — accepts the store's { fileName, ... } shape. */
+export function saveFileAs(doc: any): StoredDoc {
+  const id: string =
+    (doc && (doc.id ?? doc.docId)) ||
+    `file-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const stored: StoredDoc = {
+    id,
+    name:
+      (doc && (doc.name ?? doc.fileName)) || "untitled scribbles",
+    nodes: (doc && doc.nodes) || {},
+    order: Array.isArray(doc && doc.order)
+      ? (doc.order as string[])
+      : Object.keys((doc && doc.nodes) || {}),
+    updatedAt: Date.now(),
+    look: doc && doc.look ? knownLook(doc.look, DEFAULT_LOOK) : undefined,
+  };
+  saveFile(stored);
+  return stored;
+}
+
+/** Legacy alias for deleteFile. */
+export function deleteStoredFile(id: string): FileMeta[] {
+  return deleteFile(id);
+}
+
+/**
+ * Legacy alias for loadPrefs — returns a flat object ({ theme, paper, font,
+ * ... }) because the store reads prefs?.theme directly.
+ */
+export function readPrefs(): any {
+  try {
+    const p = loadPrefs();
+    return {
+      ...p,
+      theme: p.look?.theme,
+      paper: p.look?.paper,
+      font: p.look?.font,
+    };
+  } catch {
+    return { theme: DEFAULT_LOOK.theme, paper: DEFAULT_LOOK.paper, font: DEFAULT_LOOK.font };
+  }
+}
+
+/** Legacy alias for savePrefs — merges a partial/flat patch into prefs. */
+export function writePrefs(patch: any): void {
+  try {
+    const current = loadPrefs();
+    const look = {
+      ...current.look,
+      ...(patch?.look ?? {}),
+      ...(typeof patch?.theme === "string" ? { theme: patch.theme } : {}),
+      ...(typeof patch?.paper === "string" ? { paper: patch.paper } : {}),
+      ...(typeof patch?.font === "string" ? { font: patch.font } : {}),
+    };
+    const { look: _drop, theme: _t, paper: _p, font: _f, ...rest } = patch ?? {};
+    savePrefs({ ...current, ...rest, look: knownLook(look, DEFAULT_LOOK) });
+  } catch {
+    // never take the canvas down for a prefs write
+  }
+}
+
 /**
  * zenithsui used to keep a single autosaved document. Move it into the drawer as
  * a real file the first time we see it, so nobody's canvas disappears.

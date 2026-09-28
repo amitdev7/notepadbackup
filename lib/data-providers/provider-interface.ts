@@ -9,7 +9,7 @@ import type {
   SchemaDetectionResult,
 } from "@/lib/database-types"
 import type { WorkspaceRecord, BoardRecord } from "@/lib/workspace-types"
-import type { ServerStoredDoc, ServerFileMeta } from "@/app/api/database/[dbId]/files/route"
+import type { ServerStoredDoc, ServerFileMeta } from "@/lib/server-documents"
 import type { PageShare } from "@/lib/server-share"
 import type { PageVersion, PageVersionMeta } from "@/lib/version-types"
 

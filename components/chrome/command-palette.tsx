@@ -236,7 +236,7 @@ function Palette() {
       { id: "keys", label: "Keyboard shortcuts", hint: kbd("shift+/"), section: "View", keywords: "hotkeys help cheat sheet", icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },
 
       { id: "classroom-open", label: "Classroom: Present / Smart Board", hint: kbd("mod+shift+p"), section: "Classroom", keywords: "pdf slides present smart board teacher whiteboard annotate laser spotlight presentation", icon: ChalkboardTeacherIcon, run: () => st().openClassroom() },
-      { id: "classroom-whiteboard", label: "Classroom: Open Whiteboard Scratchpad", section: "Classroom", keywords: "whiteboard drawing scratchpad board notes classroom teach scribble", icon: ChalkboardTeacherIcon, run: () => { st().openClassroom(); } },
+      { id: "classroom-whiteboard", label: "Classroom: Open Whiteboard Scratchpad", section: "Classroom", keywords: "whiteboard drawing scratchpad board notes classroom teach scribble", icon: ChalkboardTeacherIcon, run: () => { st().openClassroom(undefined, true); } },
 
       { id: "workspace-home", label: "Workspace Home: Multi-Boards, Storage & Trash", section: "Workspace", keywords: "workspace boards trash storage home dashboard multi projects", icon: HouseIcon, run: () => st().setWorkspaceHomeOpen(true) },
       { id: "presentation-toggle", label: "Toggle Presentation Mode", hint: kbd("mod+alt+p"), section: "Presentation", keywords: "present laser spotlight timer presentation slides pointer", icon: PresentationIcon, run: () => st().setPresentationMode(!st().presentationMode) },
