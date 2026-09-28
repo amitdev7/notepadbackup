@@ -403,7 +403,7 @@ export const NodeSketch = memo(function NodeSketch({
           </>
         )
       })()}
-      <SketchPrims prims={prims} seed={node.seed} hiddenText={hiddenText} />
+      <SketchPrims prims={prims} seed={node.seed ?? 1} hiddenText={hiddenText} />
     </>
   )
 })

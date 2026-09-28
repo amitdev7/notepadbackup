@@ -20,8 +20,10 @@ export type SaveStatus = "saved" | "saving" | "syncing" | "offline" | "failed"
 export type ElementDefaults = Record<string, any>
 
 type Snapshot = { nodes: Record<string, SquigNode>; order: string[]; selection: string[] }
-type AlignMode = "left" | "center-x" | "right" | "top" | "center-y" | "bottom"
-type DistributeMode = "horizontal" | "vertical"
+type AlignMode = "left" | "center-x" | "right" | "top" | "center-y" | "bottom" | "hcenter" | "vcenter"
+type DistributeMode = "horizontal" | "vertical" | "h" | "v"
+type FlipDir = "h" | "v" | "x" | "y"
+type TextStyleKey = "bold" | "italic" | "underline"
 
 interface Notice { text: string; id: number }
 
@@ -34,6 +36,9 @@ interface SquigState {
   fileName: string
   renamingFile: boolean
   editingId: string | null
+  transforming: boolean
+  placingDrag: boolean
+  saveFlash: number
   viewport: Viewport
   pan: { x: number; y: number }
   zoom: number
@@ -78,9 +83,9 @@ interface SquigState {
   shortcutsOpen: boolean
   panel: string | null
   pagePanel: boolean
-  contextRow: string | null
+  contextRow: string | boolean | null
   smartSketch: boolean
-  contextMenu: { x: number; y: number; id?: string } | null
+  contextMenu: { x: number; y: number; id?: string; nodeId?: string } | null
   linkOpen: boolean
   workspaceHomeOpen: boolean
   handwritingModalOpen: boolean
@@ -103,7 +108,7 @@ interface SquigState {
   textColor: string
   pencilGrade: string
   shapeKind: string
-  arrowHead: string
+  arrowHead: string | boolean
   elementDefaults: ElementDefaults
   pendingSuggestion: any | null
   slmLearningTarget: any | null
@@ -118,8 +123,8 @@ interface SquigState {
   loadDoc: (text: string) => boolean
   serialize: () => string
   newFile: () => void
-  openFile: (id: string) => void
-  deleteFile: (id: string) => void
+  openFile: (id: string, dbId?: string) => void
+  deleteFile: (id: string, dbId?: string) => void
   clearCanvas: () => void
   saveNow: () => void
   retrySave: () => void
@@ -144,10 +149,10 @@ interface SquigState {
   addNode: (node: SquigNode, opts?: { select?: boolean; checkpoint?: boolean }) => void
   addNodes: (list: SquigNode[], opts?: { select?: boolean }) => void
   updateNode: (id: string, patch: Partial<SquigNode>, opts?: { checkpoint?: boolean }) => void
-  updateNodes: (patches: Record<string, Partial<SquigNode>>) => void
-  removeNodes: (ids: string[]) => void
+  updateNodes: (patches: Record<string, Partial<SquigNode>>, opts?: { checkpoint?: boolean }) => void
+  removeNodes: (ids: string[], opts?: { checkpoint?: boolean }) => void
   deleteNodes: (ids: string[]) => void
-  insertComponent: (kind: string, x: number, y: number) => void
+  insertComponent: (kind: string, x?: number, y?: number) => void
   checkpoint: () => void
   revertToCheckpoint: () => void
   undo: () => void
@@ -156,19 +161,21 @@ interface SquigState {
   duplicateSelected: () => void
   copySelected: () => void
   cutSelected: () => void
-  pasteClipboard: (dx?: number, dy?: number) => void
-  pasteNodes: (list: SquigNode[]) => void
+  pasteClipboard: (dx?: number | [number, number], dy?: number) => void
+  pasteNodes: (list: SquigNode[], at?: [number, number]) => void
   deleteSelected: () => void
   groupSelected: () => void
   ungroupSelected: () => void
   detachSelected: () => void
-  bringToFront: () => void
-  bringForward: () => void
-  sendBackward: () => void
-  sendToBack: () => void
+  bringToFront: (ids?: string[]) => void
+  bringForward: (ids?: string[]) => void
+  sendBackward: (ids?: string[]) => void
+  sendToBack: (ids?: string[]) => void
   alignSelected: (mode: AlignMode) => void
   distributeSelected: (mode: DistributeMode) => void
-  flipSelected: (dir: "h" | "v") => void
+  flipSelected: (dir: FlipDir) => void
+  toggleTextStyle: (key: TextStyleKey) => void
+  setTextAlign: (align: "left" | "center" | "right") => void
   lockSelected: () => void
   unlockSelected: () => void
   toggleLockSelected: () => void
@@ -176,16 +183,16 @@ interface SquigState {
   handleRemotePatch: (ops: CollaborationOp[]) => void
 
   selectDatabase: (dbId: string | null) => void
-  syncDatabaseFiles: () => void
+  syncDatabaseFiles: (dbId?: string | null) => void
   setDatabaseModalOpen: (v: boolean) => void
   setShareModalOpen: (v: boolean) => void
-  updateShareSettings: (patch: any) => void
-  revokeShare: () => void
+  updateShareSettings: (patch: any) => Promise<{ success: boolean; error?: string }>
+  revokeShare: () => Promise<{ success: boolean; error?: string }>
   openVersionHistory: () => void
   closeVersionHistory: () => void
   fetchVersions: () => void
-  previewVersionById: (id: string) => void
-  restoreVersion: (id: string) => void
+  previewVersionById: (id: string | number) => void
+  restoreVersion: (id: string | number) => Promise<boolean>
   exitVersionPreview: () => void
 
   connectSSE: () => void
@@ -209,10 +216,10 @@ interface SquigState {
   setPanel: (v: string | null) => void
   setPagePanel: (v: boolean) => void
   togglePagePanel: () => void
-  setContextRow: (v: string | null) => void
+  setContextRow: (v: string | boolean | null) => void
   setSmartSketch: (v: boolean) => void
   toggleSmartSketch: () => void
-  setContextMenu: (v: { x: number; y: number; id?: string } | null) => void
+  setContextMenu: (v: { x: number; y: number; id?: string; nodeId?: string } | null) => void
   setLinkOpen: (v: boolean) => void
   setWorkspaceHomeOpen: (v: boolean) => void
   setHandwritingModalOpen: (v: boolean) => void
@@ -222,12 +229,12 @@ interface SquigState {
   setUnlockModalOpen: (v: boolean) => void
   setPresentationMode: (v: boolean) => void
   setPresentationPointerType: (v: string) => void
-  setPresentationTimer: (v: number) => void
+  setPresentationTimer: (v: number | ((prev: number) => number)) => void
   setPresentationTimerRunning: (v: boolean) => void
   resetPresentationTimer: () => void
-  setSlmLearningModalOpen: (v: boolean) => void
+  setSlmLearningModalOpen: (v: boolean, target?: any) => void
   setActivePdfModalNodeId: (id: string | null) => void
-  openClassroom: (nodeId: string) => void
+  openClassroom: (nodeId?: string | null) => void
 
   setTheme: (v: string) => void
   setPaper: (v: string) => void
@@ -237,7 +244,7 @@ interface SquigState {
   setTextColor: (v: string) => void
   setPencilGrade: (v: string) => void
   setShapeKind: (v: string) => void
-  setArrowHead: (v: string) => void
+  setArrowHead: (v: string | boolean) => void
   setElementDefault: (k: string, v: any) => void
   resetElementDefaults: () => void
   applyStudioPreset: (preset: any) => void
@@ -245,8 +252,8 @@ interface SquigState {
   applyPendingSuggestion: () => void
   dismissPendingSuggestion: () => void
   setNotice: (text: string | null) => void
-  setPagePassword: (pw: string) => void
-  removePagePassword: () => void
+  setPagePassword: (pw: string, currentPw?: string) => { success: boolean; error?: string }
+  removePagePassword: (currentPw?: string) => { success: boolean; error?: string }
   unlockPage: (pw: string) => boolean
 }
 
@@ -308,6 +315,9 @@ export const useSquig = create<SquigState>((set, get) => ({
   fileName: "Untitled",
   renamingFile: false,
   editingId: null,
+  transforming: false,
+  placingDrag: false,
+  saveFlash: 0,
   viewport: { x: 0, y: 0, zoom: 1 },
   pan: { x: 0, y: 0 },
   zoom: 1,
@@ -565,21 +575,22 @@ export const useSquig = create<SquigState>((set, get) => ({
     let next = { ...cur, ...patch } as SquigNode
     try {
       if ((patch as any)?.text != null && (cur as any).type === "text")
-        next = fitTextBox(next as any, {}) as unknown as SquigNode
+        next = fitTextBox(next as any, (patch as any).text as string) as unknown as SquigNode
     } catch { /* noop */ }
     set({ nodes: { ...s.nodes, [id]: next },
       ...(opts?.checkpoint === false ? {} : { past: [...s.past, snap(s)].slice(-60), future: [] }) })
     get().scheduleSave()
   },
-  updateNodes: (patches) => {
+  updateNodes: (patches, opts) => {
     const s = get()
     if (s.isReadOnly || s.isLocked) return
     const nodes = { ...s.nodes }
     for (const [id, p] of Object.entries(patches)) if (nodes[id]) nodes[id] = { ...nodes[id], ...p } as SquigNode
-    set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
+    set({ nodes,
+      ...(opts?.checkpoint === false ? {} : { past: [...s.past, snap(s)].slice(-60), future: [] }) })
     get().scheduleSave()
   },
-  removeNodes: (ids) => {
+  removeNodes: (ids, opts) => {
     const s = get()
     if (s.isReadOnly || s.isLocked || !ids.length) return
     const gone = new Set(ids)
@@ -587,7 +598,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     for (const id of gone) delete nodes[id]
     set({ nodes, order: s.order.filter((id) => !gone.has(id)),
       selection: s.selection.filter((id) => !gone.has(id)), selectedIds: s.selectedIds.filter((id) => !gone.has(id)),
-      past: [...s.past, snap(s)].slice(-60), future: [] })
+      ...(opts?.checkpoint === false ? {} : { past: [...s.past, snap(s)].slice(-60), future: [] }) })
     get().scheduleSave()
   },
   deleteNodes: (ids) => get().removeNodes(ids),
@@ -601,7 +612,12 @@ export const useSquig = create<SquigState>((set, get) => ({
       props = def?.defaultProps ?? {}
       w = def?.defaultSize?.w ?? w; h = def?.defaultSize?.h ?? h
     } catch { /* defaults stand */ }
-    const node = { id: nanoid(), type: "component", kind, x, y, w, h, props } as unknown as SquigNode
+    // ⌘K drops the component in the middle of the current view when the
+    // caller passes no coordinates.
+    const vp = s.viewport ?? { x: 0, y: 0, zoom: 1 }
+    const cx = typeof x === "number" ? x : Math.round(-vp.x / vp.zoom + (typeof window !== "undefined" ? window.innerWidth / (2 * vp.zoom) : 400) - w / 2)
+    const cy = typeof y === "number" ? y : Math.round(-vp.y / vp.zoom + (typeof window !== "undefined" ? window.innerHeight / (2 * vp.zoom) : 300) - h / 2)
+    const node = { id: nanoid(), type: "component", kind, x: cx, y: cy, w, h, props } as unknown as SquigNode
     get().addNode(node, { select: true })
   },
   checkpoint: () => set((s) => ({ checkpointRef: snap(s) })),
@@ -647,12 +663,32 @@ export const useSquig = create<SquigState>((set, get) => ({
   pasteClipboard: (dx = 32, dy = 32) => {
     const s = get()
     if (s.isReadOnly || s.isLocked || !s.clipboard.length) return
-    const clones = s.clipboard.map((n) => freshClone(n, dx, dy))
+    // ⇧⌘V passes the copied corner back as a tuple — land there instead of
+    // offsetting. A bare (dx, dy) offsets, as ⌘V always has.
+    if (Array.isArray(dx)) {
+      const [cx, cy] = dx
+      const clones = s.clipboard.map((n) => freshClone(n, 0, 0))
+      const minX = Math.min(...clones.map((n) => (n as any).x ?? 0))
+      const minY = Math.min(...clones.map((n) => (n as any).y ?? 0))
+      const placed = clones.map((n) => ({ ...n, x: (n as any).x - minX + cx, y: (n as any).y - minY + cy }) as SquigNode)
+      get().addNodes(placed, { select: true })
+      return
+    }
+    const clones = s.clipboard.map((n) => freshClone(n, dx as number, dy as number))
     get().addNodes(clones, { select: true })
   },
-  pasteNodes: (list) => {
+  pasteNodes: (list, at) => {
     if (!list?.length) return
-    get().addNodes(list.map((n) => freshClone(n, 16, 16)), { select: true })
+    if (!at) {
+      get().addNodes(list.map((n) => freshClone(n, 16, 16)), { select: true })
+      return
+    }
+    // Land the incoming layers on `at` (their top-left corner), with fresh ids.
+    const clones = list.map((n) => freshClone(n, 0, 0))
+    const minX = Math.min(...clones.map((n) => (n as any).x ?? 0))
+    const minY = Math.min(...clones.map((n) => (n as any).y ?? 0))
+    const placed = clones.map((n) => ({ ...n, x: (n as any).x - minX + at[0], y: (n as any).y - minY + at[1] }) as SquigNode)
+    get().addNodes(placed, { select: true })
   },
   deleteSelected: () => get().removeNodes(get().selection),
   groupSelected: () => {
@@ -660,7 +696,11 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (s.isReadOnly || s.isLocked || s.selection.length < 2) return
     const gid = nanoid()
     const nodes = { ...s.nodes }
-    for (const id of s.selection) if (nodes[id]) nodes[id] = { ...nodes[id], groupId: gid } as SquigNode
+    for (const id of s.selection) {
+      if (!nodes[id]) continue
+      const prev = ((nodes[id] as any).groupIds ?? []) as string[]
+      nodes[id] = { ...nodes[id], groupIds: [...prev, gid] } as SquigNode
+    }
     set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
     get().scheduleSave()
   },
@@ -668,7 +708,14 @@ export const useSquig = create<SquigState>((set, get) => ({
     const s = get()
     if (s.isReadOnly || s.isLocked || !s.selection.length) return
     const nodes = { ...s.nodes }
-    for (const id of s.selection) if (nodes[id] && (nodes[id] as any).groupId) { const c = { ...nodes[id] } as any; delete c.groupId; nodes[id] = c }
+    for (const id of s.selection) {
+      if (!nodes[id]) continue
+      const c = { ...nodes[id] } as any
+      // tolerate the legacy singular key written by older builds
+      delete c.groupId
+      delete c.groupIds
+      nodes[id] = c
+    }
     set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
     get().scheduleSave()
   },
@@ -676,7 +723,14 @@ export const useSquig = create<SquigState>((set, get) => ({
     const s = get()
     if (s.isReadOnly || s.isLocked || !s.selection.length) return
     const nodes = { ...s.nodes }
-    for (const id of s.selection.slice(0, 1)) if (nodes[id]) { const c = { ...nodes[id] } as any; delete c.groupId; nodes[id] = c }
+    for (const id of s.selection.slice(0, 1)) {
+      if (!nodes[id]) continue
+      const c = { ...nodes[id] } as any
+      delete c.groupId
+      if (Array.isArray(c.groupIds) && c.groupIds.length > 1) c.groupIds = c.groupIds.slice(0, -1)
+      else delete c.groupIds
+      nodes[id] = c
+    }
     set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
     get().scheduleSave()
   },
@@ -712,17 +766,21 @@ export const useSquig = create<SquigState>((set, get) => ({
     const s = get()
     const list = s.selection.map((id) => s.nodes[id]).filter(Boolean)
     if (list.length < 2) return
+    // Component vocabulary uses hcenter/vcenter aliases — normalize them here
+    // so every caller lands on the same geometry.
+    const m =
+      mode === "hcenter" ? "center-x" : mode === "vcenter" ? "center-y" : mode
     const boxes = list.map(boxOf)
     const minX = Math.min(...boxes.map((b) => b.x)); const maxR = Math.max(...boxes.map((b) => b.x + b.w))
     const minY = Math.min(...boxes.map((b) => b.y)); const maxB = Math.max(...boxes.map((b) => b.y + b.h))
     const nodes = { ...s.nodes }
     list.forEach((n, i) => {
       const b = boxes[i]; const c = { ...nodes[n.id] } as any
-      if (mode === "left") c.x = minX
-      else if (mode === "right") c.x = maxR - b.w
-      else if (mode === "center-x") c.x = (minX + maxR) / 2 - b.w / 2
-      else if (mode === "top") c.y = minY
-      else if (mode === "bottom") c.y = maxB - b.h
+      if (m === "left") c.x = minX
+      else if (m === "right") c.x = maxR - b.w
+      else if (m === "center-x") c.x = (minX + maxR) / 2 - b.w / 2
+      else if (m === "top") c.y = minY
+      else if (m === "bottom") c.y = maxB - b.h
       else c.y = (minY + maxB) / 2 - b.h / 2
       nodes[n.id] = c
     })
@@ -732,10 +790,12 @@ export const useSquig = create<SquigState>((set, get) => ({
     const s = get()
     const list = s.selection.map((id) => s.nodes[id]).filter(Boolean)
     if (list.length < 3) return
-    const sorted = [...list].sort((a, b) => mode === "horizontal" ? boxOf(a).x - boxOf(b).x : boxOf(a).y - boxOf(b).y)
+    // Callers use "h"/"v" shorthand — normalize to the canonical axis.
+    const axis = mode === "h" ? "horizontal" : mode === "v" ? "vertical" : mode
+    const sorted = [...list].sort((a, b) => axis === "horizontal" ? boxOf(a).x - boxOf(b).x : boxOf(a).y - boxOf(b).y)
     const boxes = sorted.map(boxOf)
     const nodes = { ...s.nodes }
-    if (mode === "horizontal") {
+    if (axis === "horizontal") {
       const lo = Math.min(...boxes.map((b) => b.x)); const hi = Math.max(...boxes.map((b) => b.x))
       const gap = (hi - lo) / (sorted.length - 1)
       sorted.forEach((n, i) => { (nodes[n.id] as any) = { ...nodes[n.id], x: lo + gap * i } })
@@ -750,23 +810,56 @@ export const useSquig = create<SquigState>((set, get) => ({
     const s = get()
     const list = s.selection.map((id) => s.nodes[id]).filter(Boolean)
     if (!list.length) return
-    try {
-      const flipped = scaleNodes(list as any, dir === "h" ? -1 : 1, dir === "v" ? -1 : 1) as any[]
-      const nodes = { ...s.nodes }
-      flipped.forEach((n: any) => { if (nodes[n.id]) nodes[n.id] = { ...nodes[n.id], ...n } })
-      set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
-    } catch {
-      const boxes = list.map(boxOf)
-      const minX = Math.min(...boxes.map((b) => b.x)); const maxR = Math.max(...boxes.map((b) => b.x + b.w))
-      const minY = Math.min(...boxes.map((b) => b.y)); const maxB = Math.max(...boxes.map((b) => b.y + b.h))
-      const nodes = { ...s.nodes }
-      list.forEach((n, i) => {
-        const b = boxes[i]; const c = { ...nodes[n.id] } as any
-        if (dir === "h") c.x = minX + maxR - b.x - b.w; else c.y = minY + maxB - b.y - b.h
-        nodes[n.id] = c
-      })
-      set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
+    // Callers use "x"/"y" shorthand — normalize to the canonical axis.
+    const d = dir === "x" ? "h" : dir === "y" ? "v" : dir
+    // Mirror in place around the selection's bounding box. (scaleNodes takes
+    // Bounds pairs, not a bare axis — the box mirror below is the flip path.)
+    const boxes = list.map(boxOf)
+    const minX = Math.min(...boxes.map((b) => b.x)); const maxR = Math.max(...boxes.map((b) => b.x + b.w))
+    const minY = Math.min(...boxes.map((b) => b.y)); const maxB = Math.max(...boxes.map((b) => b.y + b.h))
+    const nodes = { ...s.nodes }
+    list.forEach((n, i) => {
+      const b = boxes[i]; const c = { ...nodes[n.id] } as any
+      if (d === "h") {
+        c.x = minX + maxR - b.x - b.w
+        if (typeof c.flipX === "boolean") c.flipX = !c.flipX
+      } else {
+        c.y = minY + maxB - b.y - b.h
+        if (typeof c.flipY === "boolean") c.flipY = !c.flipY
+      }
+      nodes[n.id] = c
+    })
+    set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
+    get().scheduleSave()
+  },
+  toggleTextStyle: (key) => {
+    const s = get()
+    if (s.isReadOnly || s.isLocked || !s.selection.length) return
+    const nodes = { ...s.nodes }
+    let touched = false
+    for (const id of s.selection) {
+      const n = nodes[id] as any
+      if (!n || n.type !== "text") continue
+      nodes[id] = { ...n, [key]: !n[key] } as SquigNode
+      touched = true
     }
+    if (!touched) return
+    set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
+    get().scheduleSave()
+  },
+  setTextAlign: (align) => {
+    const s = get()
+    if (s.isReadOnly || s.isLocked || !s.selection.length) return
+    const nodes = { ...s.nodes }
+    let touched = false
+    for (const id of s.selection) {
+      const n = nodes[id] as any
+      if (!n || n.type !== "text") continue
+      nodes[id] = { ...n, align } as SquigNode
+      touched = true
+    }
+    if (!touched) return
+    set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
     get().scheduleSave()
   },
   lockSelected: () => {
@@ -804,8 +897,8 @@ export const useSquig = create<SquigState>((set, get) => ({
     set({ selectedDbId })
     if (selectedDbId) get().syncDatabaseFiles()
   },
-  syncDatabaseFiles: async () => {
-    const { selectedDbId } = get()
+  syncDatabaseFiles: async (dbId) => {
+    const selectedDbId = dbId ?? get().selectedDbId
     if (!selectedDbId) return
     set({ isSyncingDb: true })
     try {
@@ -824,23 +917,26 @@ export const useSquig = create<SquigState>((set, get) => ({
   setShareModalOpen: (shareModalOpen) => set({ shareModalOpen }),
   updateShareSettings: async (patch) => {
     const { selectedDbId, docId } = get()
-    if (!selectedDbId || !docId) { get().setNotice("Open a database file to share"); return }
+    if (!selectedDbId || !docId) { get().setNotice("Open a database file to share"); return { success: false, error: "Open a database file to share" } }
     set({ isLoadingShare: true })
     try {
       const cfg = await fetchJSON(`/api/database/${selectedDbId}/files/${docId}/share`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) })
       set({ shareConfig: (cfg?.config ?? cfg ?? null) as ClientSafeShareConfig, isLoadingShare: false })
+      return { success: true }
     } catch {
       set({ isLoadingShare: false })
       get().setNotice("Could not update share settings")
+      return { success: false, error: "Could not update share settings" }
     }
   },
   revokeShare: async () => {
     const { selectedDbId, docId } = get()
-    if (!selectedDbId || !docId) return
+    if (!selectedDbId || !docId) return { success: false, error: "Nothing to revoke" }
     try {
       await fetch(`/api/database/${selectedDbId}/files/${docId}/share`, { method: "DELETE" })
       set({ shareConfig: null })
-    } catch { get().setNotice("Could not revoke share") }
+      return { success: true }
+    } catch { get().setNotice("Could not revoke share"); return { success: false, error: "Could not revoke share" } }
   },
   openVersionHistory: () => { set({ versionHistoryOpen: true }); get().fetchVersions() },
   closeVersionHistory: () => set({ versionHistoryOpen: false, previewVersion: null }),
@@ -866,7 +962,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
   restoreVersion: async (id) => {
     const { selectedDbId, docId } = get()
-    if (!selectedDbId || !docId) return
+    if (!selectedDbId || !docId) return false
     set({ isRestoringVersion: true })
     try {
       const data = await fetchJSON(`/api/database/${selectedDbId}/files/${docId}/versions/${id}/restore`, { method: "POST" })
@@ -880,9 +976,11 @@ export const useSquig = create<SquigState>((set, get) => ({
       }
       set({ isRestoringVersion: false, previewVersion: null })
       get().fetchVersions()
+      return true
     } catch {
       set({ isRestoringVersion: false })
       get().setNotice("Could not restore version")
+      return false
     }
   },
   exitVersionPreview: () => set({ previewVersion: null }),
@@ -976,12 +1074,19 @@ export const useSquig = create<SquigState>((set, get) => ({
   setUnlockModalOpen: (unlockModalOpen) => set({ unlockModalOpen }),
   setPresentationMode: (presentationMode) => set({ presentationMode }),
   setPresentationPointerType: (presentationPointerType) => set({ presentationPointerType }),
-  setPresentationTimer: (presentationTimer) => set({ presentationTimer }),
+  setPresentationTimer: (presentationTimer) => set((s) => ({
+    presentationTimer: typeof presentationTimer === "function"
+      ? (presentationTimer as (prev: number) => number)(s.presentationTimer)
+      : presentationTimer,
+  })),
   setPresentationTimerRunning: (presentationTimerRunning) => set({ presentationTimerRunning }),
   resetPresentationTimer: () => set({ presentationTimer: 0, presentationTimerRunning: false }),
-  setSlmLearningModalOpen: (slmLearningModalOpen) => set({ slmLearningModalOpen }),
+  setSlmLearningModalOpen: (slmLearningModalOpen, target) => set((s) => ({
+    slmLearningModalOpen,
+    ...(target !== undefined ? { slmLearningTarget: target } : {}),
+  })),
   setActivePdfModalNodeId: (activePdfModalNodeId) => set({ activePdfModalNodeId }),
-  openClassroom: (nodeId) => set({ activePdfModalNodeId: nodeId }),
+  openClassroom: (nodeId) => set({ activePdfModalNodeId: nodeId ?? null }),
 
   setTheme: (theme) => {
     set({ theme })
@@ -1044,13 +1149,30 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (noticeTimer) clearTimeout(noticeTimer)
     noticeTimer = setTimeout(() => set({ notice: null }), 4000)
   },
-  setPagePassword: (pw) => {
-    try { localStorage.setItem(`squig:pw:${get().docId ?? "default"}`, pw) } catch { /* noop */ }
+  setPagePassword: (pw, currentPw) => {
+    try {
+      const key = `squig:pw:${get().docId ?? "default"}`
+      // Rotating a password requires proving the current one first.
+      if (get().hasPassword && currentPw !== undefined) {
+        const expect = (() => { try { return localStorage.getItem(key) ?? "" } catch { return "" } })()
+        if (expect && currentPw !== expect) return { success: false, error: "Current password is incorrect" }
+      }
+      localStorage.setItem(key, pw)
+    } catch { /* noop */ }
     set({ hasPassword: true, isLocked: true })
+    return { success: true }
   },
-  removePagePassword: () => {
-    try { localStorage.removeItem(`squig:pw:${get().docId ?? "default"}`) } catch { /* noop */ }
+  removePagePassword: (currentPw) => {
+    try {
+      const key = `squig:pw:${get().docId ?? "default"}`
+      if (get().hasPassword && currentPw !== undefined) {
+        const expect = (() => { try { return localStorage.getItem(key) ?? "" } catch { return "" } })()
+        if (expect && currentPw !== expect) return { success: false, error: "Current password is incorrect" }
+      }
+      localStorage.removeItem(key)
+    } catch { /* noop */ }
     set({ hasPassword: false, isLocked: false })
+    return { success: true }
   },
   unlockPage: (pw) => {
     const s = get()

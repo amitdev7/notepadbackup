@@ -17,6 +17,7 @@ import { MORE_DEFS } from "./defs-more"
 import { MARKETING_DEFS } from "./defs-blocks-marketing"
 import { APP_DEFS } from "./defs-blocks-app"
 import { TEMPLATE_DEFS } from "./defs-templates"
+import { STUDENT_DEFS } from "./defs-student"
 
 export type Props = Record<string, unknown>
 
@@ -61,6 +62,7 @@ export const SOURCES: ComponentDef[][] = [
   MARKETING_DEFS,
   APP_DEFS,
   TEMPLATE_DEFS,
+  STUDENT_DEFS,
 ]
 
 export const ALL_DEFS: ComponentDef[] = SOURCES.flat()

@@ -489,7 +489,7 @@ function PageSettings() {
         </Row>
         <Row spread label="Context menu">
           <Switch
-            checked={contextRow}
+            checked={!!contextRow}
             aria-label="Context menu"
             onCheckedChange={(on) => st().setContextRow(on)}
             className="scale-90"

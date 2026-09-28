@@ -67,7 +67,7 @@ export function ColorPencilPalette({
   const activeColor = target === "draw" ? drawColor : textColor
   const activeSetter = target === "draw" ? setDrawColor : setTextColor
 
-  const currentGradeInfo = PENCIL_GRADES[pencilGrade] || PENCIL_GRADES["HB"]
+  const currentGradeInfo = PENCIL_GRADES[pencilGrade as keyof typeof PENCIL_GRADES] || PENCIL_GRADES["HB"]
 
   const handleSelectColor = (hex: string) => {
     activeSetter(hex)

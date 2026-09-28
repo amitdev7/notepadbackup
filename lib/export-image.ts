@@ -76,7 +76,7 @@ function makeResolver(p: Palette): (paint: string) => string {
  * print thirty lines of markup is a poor trade.
  */
 function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: string): string {
-  const { paths, texts, crisp } = primsToPaths(nodePrims(node), node.seed)
+  const { paths, texts, crisp } = primsToPaths(nodePrims(node), node.seed ?? 1)
   const out: string[] = []
 
   // A pasted picture is the one node that isn't made of marks, so it has to be

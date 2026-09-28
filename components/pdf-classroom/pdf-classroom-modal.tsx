@@ -254,7 +254,9 @@ export function PdfClassroomModal() {
     return () => window.removeEventListener("keydown", onKeyDown)
   }, [activeId, page, totalPages, annotations, isFullscreen, persistAnnotations])
 
-  if (!activeId || !node) return null
+  // NOTE: no early return before this point — every hook below must run on
+  // every render in the same order (rules-of-hooks). The null return lives
+  // just above the JSX instead.
 
   // Pointer normalized coordinate conversion helper
   const getNormalizedPoint = (e: React.PointerEvent<SVGSVGElement>): [number, number] | null => {
@@ -476,7 +478,7 @@ export function PdfClassroomModal() {
 
   // Export current slide as PNG
   const handleExportSlide = () => {
-    if (!pageImage) return
+    if (!pageImage || !node) return
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.src = pageImage
@@ -564,6 +566,8 @@ export function PdfClassroomModal() {
     const results = await searchPdfText(node.src, q)
     setSearchResults(results)
   }
+
+  if (!activeId || !node) return null
 
   return (
     <div

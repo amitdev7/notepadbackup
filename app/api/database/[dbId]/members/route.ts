@@ -23,8 +23,8 @@ export async function GET(
   const db = getDatabaseRecord(dbId)
   const myRole = getEffectiveUserRole(dbId, userId)
 
-  if (!myRole) {
-    return NextResponse.json({ error: "Access denied. You do not have access to this database." }, { status: 403 })
+  if (!myRole || !db) {
+    return NextResponse.json({ error: "Access denied. You do not have access to this database." }, { status: !db ? 404 : 403 })
   }
 
   return NextResponse.json({

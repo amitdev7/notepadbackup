@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 import { useState } from "react"
+import { nanoid } from "nanoid"
 import { useSquig } from "@/lib/store"
 import type { DrawNode, TextNode } from "@/lib/types"
 import {
@@ -118,7 +119,9 @@ export function HandwritingModal({ open, onClose, drawNodes = [] }: HandwritingM
 
     // Calculate position
     const first = drawNodes[0]
-    const textNode: Omit<TextNode, "id" | "seed"> = {
+    const textNode: TextNode = {
+      id: nanoid(),
+      seed: Math.random(),
       type: "text",
       text: recognizedText,
       x: replace ? first.x : first.x,

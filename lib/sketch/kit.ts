@@ -149,11 +149,11 @@ export function pill(x: number, y: number, w: number, h: number, o?: PrimOpts): 
 
 /** x,y = top-left of the bounding box. */
 export function ellipse(x: number, y: number, w: number, h: number, o?: PrimOpts): Prim {
-  return withOpts({ t: "ellipse", x, y, w, h }, o)
+  return withOpts<EllipsePrim>({ t: "ellipse", x, y, w, h }, o)
 }
 
 export function line(x1: number, y1: number, x2: number, y2: number, o?: PrimOpts): Prim {
-  return withOpts({ t: "line", x1, y1, x2, y2 }, o)
+  return withOpts<LinePrim>({ t: "line", x1, y1, x2, y2 }, o)
 }
 
 /** Open polyline by default; close=true fills the polygon. */

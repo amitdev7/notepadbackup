@@ -1,15 +1,14 @@
 "use client"
 
-import React, { useState } from "react"
-import { ALL_DEFS, renderComponent, type ComponentDef } from "@/lib/library/registry"
+import React, { useMemo, useState } from "react"
+import { ALL_DEFS, type ComponentDef } from "@/lib/library/registry"
 import { useSquig } from "@/lib/store"
-import { RoughRenderer } from "@/components/canvas/rough-renderer"
+import { SketchPrims } from "@/components/canvas/sketch"
 import { MagnifyingGlass, GraduationCap } from "@phosphor-icons/react"
 
 export function LibraryPanel() {
   const [search, setSearch] = useState("")
   const [activeTab, setActiveTab] = useState("student")
-  const { addNode, pan, zoom } = useSquig()
 
   const filteredDefs = ALL_DEFS.filter((d) => {
     const matchesSearch =
@@ -17,26 +16,19 @@ export function LibraryPanel() {
       d.name.toLowerCase().includes(search.toLowerCase()) ||
       d.kind.toLowerCase().includes(search.toLowerCase()) ||
       d.keywords.some((k) => k.toLowerCase().includes(search.toLowerCase()))
-    const matchesTab = activeTab === "all" || d.category === activeTab
+    const matchesTab =
+      activeTab === "all" ||
+      d.category === activeTab ||
+      (activeTab === "student" && d.kind.startsWith("student."))
     return matchesSearch && matchesTab
   })
 
   const handleAdd = (def: ComponentDef) => {
-    // Insert into center of viewport
-    const cx = -pan.x / zoom + 300
-    const cy = -pan.y / zoom + 200
-    addNode({
-      id: `node-${Date.now()}`,
-      type: "component",
-      kind: def.kind,
-      x: Math.round(cx),
-      y: Math.round(cy),
-      w: def.defaultWidth,
-      h: def.defaultHeight,
-      props: Object.fromEntries(
-        Object.entries(def.props || {}).map(([k, v]) => [k, v.default])
-      ),
-    })
+    // Insert into center of viewport — sizing/defaults come from the def.
+    const st = useSquig.getState()
+    const cx = -st.pan.x / st.zoom + 300
+    const cy = -st.pan.y / st.zoom + 200
+    st.insertComponent(def.kind, Math.round(cx), Math.round(cy))
   }
 
   return (
@@ -87,53 +79,65 @@ export function LibraryPanel() {
           {filteredDefs.length} Components Available
         </div>
 
-        {filteredDefs.map((def) => {
-          const defaultProps = Object.fromEntries(
-            Object.entries(def.props || {}).map(([k, v]) => [k, v.default])
-          )
-          const prims = renderComponent(def.kind, def.defaultWidth, def.defaultHeight, defaultProps)
-          const scale = Math.min(260 / def.defaultWidth, 120 / def.defaultHeight, 0.9)
+        {filteredDefs.map((def) => (
+          <LibItem key={def.kind} def={def} onAdd={handleAdd} />
+        ))}
+      </div>
+    </div>
+  )
+}
 
-          return (
-            <div
-              key={def.kind}
-              id={`lib-item-${def.kind.replace(/\./g, "-")}`}
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.setData(
-                  "application/zenithsui-component",
-                  JSON.stringify(def)
-                )
-              }}
-              onClick={() => handleAdd(def)}
-              className="group relative flex flex-col p-2.5 bg-[var(--sq-bg)] border border-[var(--sq-border)] hover:border-[var(--sq-accent)] rounded-lg cursor-pointer transition-all hover:shadow-sm"
-            >
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-semibold text-[var(--sq-ink)]">
-                  {def.name}
-                </span>
-                <span className="text-[10px] text-[var(--sq-ink-subtle)] font-mono">
-                  {def.kind}
-                </span>
-              </div>
+function LibItem({ def, onAdd }: { def: ComponentDef; onAdd: (def: ComponentDef) => void }) {
+  const prims = useMemo(() => {
+    try {
+      return def.render({ ...def.defaults }, def.size.w, def.size.h)
+    } catch {
+      return []
+    }
+  }, [def])
+  const scale = Math.min(260 / def.size.w, 120 / def.size.h, 0.9)
 
-              {/* Preview Thumbnail */}
-              <div className="w-full h-28 bg-[var(--sq-surface)] border border-dashed border-[var(--sq-border)] rounded flex items-center justify-center overflow-hidden pointer-events-none">
-                <div
-                  style={{
-                    transform: `scale(${scale})`,
-                    transformOrigin: "center center",
-                    width: def.defaultWidth,
-                    height: def.defaultHeight,
-                  }}
-                  className="flex items-center justify-center shrink-0"
-                >
-                  <RoughRenderer prims={prims} width={def.defaultWidth} height={def.defaultHeight} />
-                </div>
-              </div>
-            </div>
-          )
-        })}
+  return (
+    <div
+      id={`lib-item-${def.kind.replace(/\./g, "-")}`}
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData(
+          "application/zenithsui-component",
+          JSON.stringify({ kind: def.kind })
+        )
+      }}
+      onClick={() => onAdd(def)}
+      className="group relative flex flex-col p-2.5 bg-[var(--sq-bg)] border border-[var(--sq-border)] hover:border-[var(--sq-accent)] rounded-lg cursor-pointer transition-all hover:shadow-sm"
+    >
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-xs font-semibold text-[var(--sq-ink)]">
+          {def.name}
+        </span>
+        <span className="text-[10px] text-[var(--sq-ink-subtle)] font-mono">
+          {def.kind}
+        </span>
+      </div>
+
+      {/* Preview Thumbnail */}
+      <div className="w-full h-28 bg-[var(--sq-surface)] border border-dashed border-[var(--sq-border)] rounded flex items-center justify-center overflow-hidden pointer-events-none">
+        <div
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+            width: def.size.w,
+            height: def.size.h,
+          }}
+          className="flex items-center justify-center shrink-0"
+        >
+          <svg
+            width={def.size.w}
+            height={def.size.h}
+            style={{ display: "block", overflow: "visible" }}
+          >
+            <SketchPrims prims={prims} seed={7} />
+          </svg>
+        </div>
       </div>
     </div>
   )

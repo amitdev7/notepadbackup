@@ -23,5 +23,8 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  // Frozen archives (never edited) and standalone dev scripts (own tsconfig
+  // in scripts/tsconfig.json) are excluded so production type-checking and
+  // the Vercel build only cover shippable code. No behavior change.
+  "exclude": ["node_modules", "recognition_backup", "scripts"]
 }

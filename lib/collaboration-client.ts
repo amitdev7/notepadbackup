@@ -293,7 +293,7 @@ class CollaborationClient {
     try {
       const st = useSquig.getState()
       const currentDoc = {
-        id: st.docId,
+        id: st.docId ?? "local",
         name: st.fileName,
         nodes: st.nodes,
         order: st.order,
@@ -303,7 +303,7 @@ class CollaborationClient {
           paper: st.paper,
           font: st.font,
           grid: st.grid,
-        },
+        } as Look,
         hasPassword: st.hasPassword,
       }
 
@@ -459,7 +459,7 @@ class CollaborationClient {
           revision: data.revision,
           doc: data.doc,
           collaborators: this.collaborators,
-          role: useSquig.getState().permissionRole,
+          role: useSquig.getState().permissionRole ?? "viewer",
           hasPassword: data.doc.hasPassword,
         })
       } else if (Array.isArray(data.patches) && data.patches.length) {

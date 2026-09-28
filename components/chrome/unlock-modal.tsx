@@ -31,10 +31,13 @@ export function UnlockModal() {
     setLoading(true)
     setError(null)
     try {
-      const res = await unlockPage(password)
-      if (!res.success) {
-        setError(res.error || "Incorrect password")
+      const ok = await unlockPage(password)
+      if (!ok) {
+        setError("Incorrect password")
         setPassword("")
+      } else {
+        setPassword("")
+        setUnlockModalOpen(false)
       }
     } finally {
       setLoading(false)

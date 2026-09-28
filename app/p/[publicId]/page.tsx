@@ -83,7 +83,7 @@ import { Button } from "@/components/ui/button"
 import { Panel } from "@/components/ui/panel"
 
 interface PageProps {
-  params: Promise<{ publicId: string }> | { publicId: string }
+  params: Promise<{ publicId: string }>
 }
 
 // ---------------------------------------------------------------------------
@@ -176,11 +176,7 @@ function diffShareOps(last: ShareSnapshot | null, cur: any): CollaborationOp[] {
 }
 
 export default function SharedPageViewer({ params }: PageProps) {
-  const resolvedParams =
-    params && typeof (params as any).then === "function"
-      ? use(params as Promise<{ publicId: string }>)
-      : (params as { publicId: string })
-  const publicId = resolvedParams?.publicId || ""
+  const publicId = use(params)?.publicId || ""
 
   const [loading, setLoading] = useState(true)
   const [errorStatus, setErrorStatus] = useState<number | null>(null)

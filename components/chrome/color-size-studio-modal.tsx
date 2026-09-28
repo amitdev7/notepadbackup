@@ -583,7 +583,7 @@ export function ColorSizeStudioModal() {
                   Pencil Graphite Hardness Scale (9H Hard → 9B Soft)
                 </label>
                 <span className="text-micro font-mono font-semibold text-foreground">
-                  {elementDefaults.draw.pencilGrade} ({PENCIL_GRADES[elementDefaults.draw.pencilGrade]?.label})
+                  {elementDefaults.draw.pencilGrade} ({PENCIL_GRADES[elementDefaults.draw.pencilGrade as keyof typeof PENCIL_GRADES]?.label})
                 </span>
               </div>
 
