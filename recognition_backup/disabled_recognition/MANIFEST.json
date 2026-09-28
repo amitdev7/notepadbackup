@@ -1,0 +1,258 @@
+[
+  {
+    "filename": "orchestrator.ts",
+    "original_path": "lib/sketch-recognition/orchestrator.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/orchestrator.ts",
+    "sha256": "6ea31fbcb14c36af656ca162336cda6398aede083f3cb0bff911dfa9e7994929",
+    "bytes": 12517
+  },
+  {
+    "filename": "handwriting-classifier.ts",
+    "original_path": "lib/sketch-recognition/handwriting-classifier.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/handwriting-classifier.ts",
+    "sha256": "59bc2a65c1096be186a11b2580c03fd887dca3119076793fda9b27c913cd6d7e",
+    "bytes": 16889
+  },
+  {
+    "filename": "sequence-engine.ts",
+    "original_path": "lib/sketch-recognition/sequence-engine.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/sequence-engine.ts",
+    "sha256": "c8569940adddbf2709e4de702c267f6d320b5642766679a40702bfc67ea047e8",
+    "bytes": 13578
+  },
+  {
+    "filename": "cnn-classifier.ts",
+    "original_path": "lib/sketch-recognition/cnn-classifier.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/cnn-classifier.ts",
+    "sha256": "45600e3e4c3ceecdb215a6bf30ab88a9abfe8bcd131d7a1ebea07f663ac06261",
+    "bytes": 13034
+  },
+  {
+    "filename": "cnn-engine.ts",
+    "original_path": "lib/sketch-recognition/cnn-engine.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/cnn-engine.ts",
+    "sha256": "bab0ba7ca9903d927120a993d6526613949cb87fc8afc1c692b93af3ce8697a7",
+    "bytes": 22952
+  },
+  {
+    "filename": "cnn-rasterizer.ts",
+    "original_path": "lib/sketch-recognition/cnn-rasterizer.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/cnn-rasterizer.ts",
+    "sha256": "7c2a9e70551204fdeb5bca1144edeb9ef1dc351d2535537f79ee2d3e546ee8ea",
+    "bytes": 4979
+  },
+  {
+    "filename": "geometry-recognizer.ts",
+    "original_path": "lib/sketch-recognition/geometry-recognizer.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/geometry-recognizer.ts",
+    "sha256": "891bfc1f8d60c5166744f5fa05e618961b7d31bb993a6e0c002528686218a032",
+    "bytes": 20891
+  },
+  {
+    "filename": "confidence-calibrator.ts",
+    "original_path": "lib/sketch-recognition/confidence-calibrator.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/confidence-calibrator.ts",
+    "sha256": "61e09fedb72f5b29272b3c01f27d80c59b86bc4cd9a8e062904bdbbe7477c212",
+    "bytes": 3790
+  },
+  {
+    "filename": "preprocessing.ts",
+    "original_path": "lib/sketch-recognition/preprocessing.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/preprocessing.ts",
+    "sha256": "2ea803b254149f96c265fe46dcf77c6c8470cb8ec7d0399dcb790c8444e487d2",
+    "bytes": 10220
+  },
+  {
+    "filename": "renderers.ts",
+    "original_path": "lib/sketch-recognition/renderers.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/renderers.ts",
+    "sha256": "6224482686ce3f520159fa4288a733916621032ba6a1753a9328a1ea7c3c314f",
+    "bytes": 29872
+  },
+  {
+    "filename": "registry.ts",
+    "original_path": "lib/sketch-recognition/registry.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/registry.ts",
+    "sha256": "765f3d7bda08b70c25823acd2e56c56f2710989061a04c61484414428ae15ac6",
+    "bytes": 8453
+  },
+  {
+    "filename": "types.ts",
+    "original_path": "lib/sketch-recognition/types.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/types.ts",
+    "sha256": "db23b55627a991cb838a678385ed19125847e89561115eff3a521c31bc703ca0",
+    "bytes": 4764
+  },
+  {
+    "filename": "ai-recognizer.ts",
+    "original_path": "lib/sketch-recognition/ai-recognizer.ts",
+    "backup_category": "source",
+    "backup_path": "recognition_backup/frozen_non_ab/source/ai-recognizer.ts",
+    "sha256": "18877e0c8ebe38394bfec61a414b4150bdd8a4bddd8cc99405a520513be09192",
+    "bytes": 4983
+  },
+  {
+    "filename": "dataset-archetypes.ts",
+    "original_path": "lib/sketch-recognition/dataset-archetypes.ts",
+    "backup_category": "datasets",
+    "backup_path": "recognition_backup/frozen_non_ab/datasets/dataset-archetypes.ts",
+    "sha256": "34fa3e5e87206b16c3f80459a42fd5d2850a13a7eba4c7c9581409b17f0f80a0",
+    "bytes": 22284
+  },
+  {
+    "filename": "dataset-generator.ts",
+    "original_path": "lib/sketch-recognition/dataset-generator.ts",
+    "backup_category": "datasets",
+    "backup_path": "recognition_backup/frozen_non_ab/datasets/dataset-generator.ts",
+    "sha256": "71651655b52839d11553a76ab4e69116cbaefe169443afce958e38f57f5904f5",
+    "bytes": 6108
+  },
+  {
+    "filename": "handwriting-cnn.json",
+    "original_path": "lib/sketch-recognition/models/handwriting-cnn.json",
+    "backup_category": "models",
+    "backup_path": "recognition_backup/frozen_non_ab/models/handwriting-cnn.json",
+    "sha256": "c8c11ec3f941cf7c6964c6d241683499f781b4eabfcc4e98b7bbafddc64fa6b2",
+    "bytes": 1564056
+  },
+  {
+    "filename": "geometry-cnn.json",
+    "original_path": "lib/sketch-recognition/models/geometry-cnn.json",
+    "backup_category": "models",
+    "backup_path": "recognition_backup/frozen_non_ab/models/geometry-cnn.json",
+    "sha256": "7f928f197a63234d62053a1315758ae35617fc123771f59ebfd6f68acf6f72c8",
+    "bytes": 1533398
+  },
+  {
+    "filename": "object-cnn.json",
+    "original_path": "lib/sketch-recognition/models/object-cnn.json",
+    "backup_category": "models",
+    "backup_path": "recognition_backup/frozen_non_ab/models/object-cnn.json",
+    "sha256": "99c0efa4e7a0a1c45503aefbb2d80ba66d6523c0858c7606f480bceed940aeea",
+    "bytes": 1537566
+  },
+  {
+    "filename": "class-definitions.ts",
+    "original_path": "lib/sketch-recognition/specialists/class-definitions.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/class-definitions.ts",
+    "sha256": "2c30edb995b2d2ac4ac27a71dc19cb1a592ef3fdf5b55a3a78bf39c3a38c836d",
+    "bytes": 27380
+  },
+  {
+    "filename": "hard-negatives-matrix.ts",
+    "original_path": "lib/sketch-recognition/specialists/hard-negatives-matrix.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/hard-negatives-matrix.ts",
+    "sha256": "f6a74b95b754052e1c06e5c133a76c9032a68d382bfd845ded78bfe4b92d7672",
+    "bytes": 8262
+  },
+  {
+    "filename": "specialist-model.ts",
+    "original_path": "lib/sketch-recognition/specialists/specialist-model.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/specialist-model.ts",
+    "sha256": "476d7284fa661f3bc857432e79266f3a65705c37ca816db8383a326279aee621",
+    "bytes": 8693
+  },
+  {
+    "filename": "specialist-registry.ts",
+    "original_path": "lib/sketch-recognition/specialists/specialist-registry.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/specialist-registry.ts",
+    "sha256": "37abbacfb6f8153185677b10a6f10ef9bddb5e7ebba800a13104bbe6a6301cf5",
+    "bytes": 2932
+  },
+  {
+    "filename": "specialist-ensemble.ts",
+    "original_path": "lib/sketch-recognition/specialists/specialist-ensemble.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/specialist-ensemble.ts",
+    "sha256": "eadbf8d1c0b969f56784237634837c4eec8d94d75683ca689e1616c1deb56273",
+    "bytes": 5944
+  },
+  {
+    "filename": "types.ts",
+    "original_path": "lib/sketch-recognition/specialists/types.ts",
+    "backup_category": "specialists",
+    "backup_path": "recognition_backup/frozen_non_ab/specialists/types.ts",
+    "sha256": "729ac98df28e3abd5597d503e2768ffb5f27f8479b50ef02797fbb7acc8eae85",
+    "bytes": 2283
+  },
+  {
+    "filename": "letter-a-model-weights.json",
+    "original_path": "lib/sketch-recognition/letter-a-model-weights.json",
+    "backup_category": "configs",
+    "backup_path": "recognition_backup/frozen_non_ab/configs/letter-a-model-weights.json",
+    "sha256": "2185aebae2123851f3702efb421efc74a7d0ff379d9b14a2db02a1665bad3bd8",
+    "bytes": 20843
+  },
+  {
+    "filename": "test-handwriting-sequences.ts",
+    "original_path": "scripts/test-handwriting-sequences.ts",
+    "backup_category": "tests",
+    "backup_path": "recognition_backup/frozen_non_ab/tests/test-handwriting-sequences.ts",
+    "sha256": "2885328dda8019b482ffdd2b7557c13a781a2d503d56a669fb73f29078f4bbb1",
+    "bytes": 17576
+  },
+  {
+    "filename": "test-specialists.ts",
+    "original_path": "scripts/test-specialists.ts",
+    "backup_category": "tests",
+    "backup_path": "recognition_backup/frozen_non_ab/tests/test-specialists.ts",
+    "sha256": "e0d4ec1122aeb6d0fdbc4bd7cd2e9e801c22b3eacb9ae0544e72d92cfa962eb6",
+    "bytes": 9351
+  },
+  {
+    "filename": "test-cnn-pipeline.ts",
+    "original_path": "scripts/test-cnn-pipeline.ts",
+    "backup_category": "tests",
+    "backup_path": "recognition_backup/frozen_non_ab/tests/test-cnn-pipeline.ts",
+    "sha256": "f6cd44d59432545c2c8322e6105673c638701319b92a58851dcb838f41347a7a",
+    "bytes": 9171
+  },
+  {
+    "filename": "test-smart-sketch.ts",
+    "original_path": "scripts/test-smart-sketch.ts",
+    "backup_category": "tests",
+    "backup_path": "recognition_backup/frozen_non_ab/tests/test-smart-sketch.ts",
+    "sha256": "cb5ea442f74188fd2adee6f3452bb53eb526a5072298e479f8f1bb77eb5b8358",
+    "bytes": 9025
+  },
+  {
+    "filename": "test-letter-a.ts",
+    "original_path": "scripts/test-letter-a.ts",
+    "backup_category": "tests",
+    "backup_path": "recognition_backup/frozen_non_ab/tests/test-letter-a.ts",
+    "sha256": "d63b934ed29b85f2ffa525a26313bdf5de0df0ebe762aa1655e8e3581d53324d",
+    "bytes": 13795
+  },
+  {
+    "filename": "train-cnn.ts",
+    "original_path": "scripts/ml/train-cnn.ts",
+    "backup_category": "training",
+    "backup_path": "recognition_backup/frozen_non_ab/training/train-cnn.ts",
+    "sha256": "b52c4acbb69f79a09f7478fb2ce22463004abd64e1eceb9e35d2a0e38df94ad4",
+    "bytes": 6336
+  },
+  {
+    "filename": "evaluate-specialists.ts",
+    "original_path": "scripts/ml/evaluate-specialists.ts",
+    "backup_category": "training",
+    "backup_path": "recognition_backup/frozen_non_ab/training/evaluate-specialists.ts",
+    "sha256": "47043d3f5d345e24a6f2703012c350004462d394896b9447aa2d03048111fb1b",
+    "bytes": 13803
+  }
+]

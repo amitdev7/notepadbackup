@@ -1,0 +1,56 @@
+[
+  {
+    "id": "board-starter-team-178",
+    "workspaceId": "team-1788387665099-bfb38d",
+    "name": "Main Canvas Board",
+    "description": "Primary napkin sketchboard",
+    "createdAt": 1788925637780,
+    "updatedAt": 1788925637780,
+    "creatorId": "owner_nezuko",
+    "nodes": {
+      "w_title": {
+        "id": "w_title",
+        "type": "text",
+        "text": "Welcome to Zenithsui Workspace\nCreate multiple boards, organize layers, and sketch wireframes together.",
+        "x": 80,
+        "y": 80,
+        "w": 520,
+        "h": 70,
+        "seed": 101,
+        "fontSize": 16
+      },
+      "w_btn": {
+        "id": "w_btn",
+        "type": "component",
+        "kind": "button",
+        "props": {
+          "label": "Main Board",
+          "variant": "primary",
+          "size": "default"
+        },
+        "x": 80,
+        "y": 180,
+        "w": 150,
+        "h": 40,
+        "seed": 102
+      }
+    },
+    "order": [
+      "w_title",
+      "w_btn"
+    ],
+    "look": {
+      "theme": "orange",
+      "paper": "subtle",
+      "font": "hand",
+      "grid": true
+    },
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 1
+    },
+    "isFavorite": false,
+    "inTrash": false
+  }
+]
