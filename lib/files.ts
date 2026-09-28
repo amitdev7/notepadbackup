@@ -297,7 +297,8 @@ export function writePrefs(patch: any): void {
       ...(typeof patch?.paper === "string" ? { paper: patch.paper } : {}),
       ...(typeof patch?.font === "string" ? { font: patch.font } : {}),
     };
-    savePrefs({ ...current, look: knownLook(look, DEFAULT_LOOK) });
+    const { look: _drop, theme: _t, paper: _p, font: _f, ...rest } = patch ?? {};
+    savePrefs({ ...current, ...rest, look: knownLook(look, DEFAULT_LOOK) });
   } catch {
     // never take the canvas down for a prefs write
   }

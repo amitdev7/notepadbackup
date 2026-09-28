@@ -161,6 +161,7 @@ interface SquigState {
   duplicateSelected: () => void
   copySelected: () => void
   cutSelected: () => void
+  nudgeSelected: (dx: number, dy: number) => void
   pasteClipboard: (dx?: number | [number, number], dy?: number) => void
   pasteNodes: (list: SquigNode[], at?: [number, number]) => void
   deleteSelected: () => void
@@ -211,6 +212,8 @@ interface SquigState {
   setInvitationModalToken: (t: string | null) => void
 
   setUiHidden: (v: boolean) => void
+  setTransforming: (v: boolean) => void
+  setPlacingDrag: (v: boolean) => void
   setCommandOpen: (v: boolean) => void
   setShortcutsOpen: (v: boolean) => void
   setPanel: (v: string | null) => void
@@ -363,7 +366,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   panel: null,
   pagePanel: false,
   contextRow: null,
-  smartSketch: false,
+  smartSketch: true,
   contextMenu: null,
   linkOpen: false,
   workspaceHomeOpen: false,
@@ -415,6 +418,8 @@ export const useSquig = create<SquigState>((set, get) => ({
         theme: (look as any).theme,
         paper: (look as any).paper,
         font: (look as any).font,
+        smartSketch: prefs?.smartSketch ?? true,
+        contextRow: prefs?.contextRow === true ? true : null,
       })
     } catch {
       set({ hydrated: true })
@@ -647,6 +652,19 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (s.isReadOnly || s.isLocked || !s.selection.length) return
     const clones = s.selection.map((id) => s.nodes[id]).filter(Boolean).map((n) => freshClone(n, 24, 24))
     get().addNodes(clones, { select: true })
+  },
+  nudgeSelected: (dx, dy) => {
+    const s = get()
+    if (s.isReadOnly || s.isLocked || !s.selection.length) return
+    if (!dx && !dy) return
+    const nodes = { ...s.nodes }
+    for (const id of s.selection) {
+      const n = nodes[id] as any
+      if (!n) continue
+      nodes[id] = { ...n, x: Math.round((n.x ?? 0) + dx), y: Math.round((n.y ?? 0) + dy) } as SquigNode
+    }
+    set({ nodes, past: [...s.past, snap(s)].slice(-60), future: [] })
+    get().scheduleSave()
   },
   copySelected: () => {
     const s = get()
@@ -1056,13 +1074,21 @@ export const useSquig = create<SquigState>((set, get) => ({
   setInvitationModalToken: (invitationModalToken) => set({ invitationModalToken }),
 
   setUiHidden: (uiHidden) => set({ uiHidden }),
+  setTransforming: (transforming) => set({ transforming }),
+  setPlacingDrag: (placingDrag) => set({ placingDrag }),
   setCommandOpen: (commandOpen) => set({ commandOpen }),
   setShortcutsOpen: (shortcutsOpen) => set({ shortcutsOpen }),
   setPanel: (panel) => set({ panel }),
   setPagePanel: (pagePanel) => set({ pagePanel }),
   togglePagePanel: () => set((s) => ({ pagePanel: !s.pagePanel })),
-  setContextRow: (contextRow) => set({ contextRow }),
-  setSmartSketch: (smartSketch) => set({ smartSketch }),
+  setContextRow: (contextRow) => {
+    set({ contextRow })
+    try { writePrefs({ contextRow: !!contextRow } as any) } catch { /* noop */ }
+  },
+  setSmartSketch: (smartSketch) => {
+    set({ smartSketch })
+    try { writePrefs({ smartSketch } as any) } catch { /* noop */ }
+  },
   toggleSmartSketch: () => set((s) => ({ smartSketch: !s.smartSketch })),
   setContextMenu: (contextMenu) => set({ contextMenu }),
   setLinkOpen: (linkOpen) => set({ linkOpen }),
@@ -1137,7 +1163,26 @@ export const useSquig = create<SquigState>((set, get) => ({
     const sug = s.pendingSuggestion as any
     if (!sug) return
     try {
-      if (sug.node) get().addNode({ ...sug.node, id: sug.node.id ?? nanoid() } as SquigNode, { select: true })
+      if (sug.node) {
+        const node = { ...sug.node, id: sug.node.id ?? nanoid() } as SquigNode
+        if (sug.replaceId && s.nodes[sug.replaceId]) {
+          // Convert, not duplicate: the ink goes and the shape lands in one
+          // undo step, so ⌘Z brings the ink back.
+          const nodes = { ...s.nodes }
+          delete nodes[sug.replaceId]
+          const order = s.order.filter((id) => id !== sug.replaceId)
+          nodes[node.id] = node
+          order.push(node.id)
+          set({
+            nodes, order,
+            selection: [node.id], selectedIds: [node.id],
+            past: [...s.past, snap(s)].slice(-60), future: [],
+          })
+          get().scheduleSave()
+        } else {
+          get().addNode(node, { select: true })
+        }
+      }
       else if (sug.patch && sug.id && s.nodes[sug.id]) get().updateNode(sug.id, sug.patch)
     } catch { /* noop */ }
     set({ pendingSuggestion: null })
