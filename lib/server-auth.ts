@@ -23,6 +23,9 @@ function resolveAuthSecret(): string {
       "[server-auth] ZENITHSUI_AUTH_SECRET (or ZENITHSUI_SECRET_KEY) is required in production — set it in Vercel Project Settings → Environment Variables."
     )
   }
+  return "zenithsui-auth-super-secret-key-2026"
+}
+
 let AUTH_SECRET_CACHE: string | null = null
 function getAuthSecret(): string {
   if (AUTH_SECRET_CACHE) return AUTH_SECRET_CACHE
