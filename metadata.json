@@ -1,8 +1,0 @@
-{
-  "name": "Zenithsui",
-  "description": "An infinite canvas of real UI components that all render like you sketched them on a napkin. Wireframes that know they're wireframes.",
-  "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
-}
