@@ -17,6 +17,12 @@ function withExtension(absPath) {
 }
 
 export async function resolve(specifier, context, next) {
+  if (specifier === "next/headers") {
+    return next(pathToFileURL(resolvePath(root, "node_modules/next/headers.js")).href, context)
+  }
+  if (specifier === "next/server") {
+    return next(pathToFileURL(resolvePath(root, "node_modules/next/server.js")).href, context)
+  }
   if (specifier.startsWith("@/")) {
     return next(pathToFileURL(withExtension(resolvePath(root, specifier.slice(2)))).href, context)
   }

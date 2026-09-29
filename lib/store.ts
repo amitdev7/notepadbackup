@@ -83,6 +83,8 @@ interface SquigState {
   paper: PaperShade
   /** the canvas dot grid is drawn */
   grid: boolean
+  /** whether the canvas page boundary sheet is visually shown */
+  showPage: boolean
   hydrated: boolean
   commandOpen: boolean
   contextMenu: ContextMenuState | null
@@ -143,6 +145,7 @@ interface SquigState {
   setCloudDocId: (id: string | null) => void
   setEffectiveRole: (role: "owner" | "editor" | "viewer") => void
   setNotice: (text: string | null) => void
+  setShowPage: (on: boolean) => void
 
   /** snapshot current doc onto the undo stack (call once at gesture start) */
   checkpoint: () => void
@@ -424,6 +427,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   editingId: null,
   contextRow: false,
   ...DEFAULT_LOOK,
+  showPage: true,
   hydrated: false,
   commandOpen: false,
   contextMenu: null,
@@ -473,6 +477,12 @@ export const useSquig = create<SquigState>((set, get) => ({
   setGrid: (on) => {
     wearLook(set, { ...lookOf(get()), grid: on })
     scheduleSave(get)
+  },
+  setShowPage: (on) => {
+    set({ showPage: on })
+    try {
+      localStorage.setItem("zenithsui:show_page", String(on))
+    } catch {}
   },
   setViewport: (v) => set({ viewport: v }),
   // a selection is a set, so store it in one canonical order: document order.
@@ -709,6 +719,12 @@ export const useSquig = create<SquigState>((set, get) => ({
     const doc = wanted ? readFile(wanted) : null
     const clean = sanitize(doc?.nodes, doc?.order)
 
+    let initialShowPage = true
+    try {
+      const sp = localStorage.getItem("zenithsui:show_page")
+      if (sp !== null) initialShowPage = sp === "true"
+    } catch {}
+
     set({
       docId: doc?.id ?? nanoid(8),
       fileName: doc?.name ?? "untitled scribbles",
@@ -716,6 +732,7 @@ export const useSquig = create<SquigState>((set, get) => ({
       order: clean.order,
       files,
       contextRow: prefs.contextRow,
+      showPage: initialShowPage,
       hydrated: true,
     })
     // the document's own look, or — for one saved before looks existed — the

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect } from "react"
+import Link from "next/link"
 import {
   StudentNav,
   type StudentTabId,
@@ -120,9 +121,9 @@ export default function StudentHubPage() {
   const [activeStudyTopic, setActiveStudyTopic] = useState("Calculus: Integration by Parts")
   const [selectedPreset, setSelectedPreset] = useState<TimerPreset>("45/10")
 
-  const examTargetTimestamp = useMemo(() => {
+  const [examTargetTimestamp] = useState(() => {
     return Date.now() + 14 * 24 * 60 * 60 * 1000 + 6 * 3600 * 1000 + 42 * 60 * 1000
-  }, [])
+  })
 
   const [countdown, setCountdown] = useState<CountdownState>(() =>
     computeExamCountdown(examTargetTimestamp)
@@ -198,14 +199,14 @@ export default function StudentHubPage() {
     <div className="flex min-h-screen w-full flex-col bg-[#FBFAF5] text-stone-900 font-sans">
       <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-stone-200 bg-[#FBFAF5]/90 px-4 sm:px-8 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <a
+          <Link
             href="/"
             className="flex items-center gap-1.5 rounded-lg border border-stone-200 bg-white px-2.5 py-1 text-xs font-mono font-medium text-stone-700 shadow-2xs hover:border-stone-300 hover:bg-stone-50 transition-colors"
             title="Return to Drawing Canvas"
           >
             <ArrowLeft size={14} />
             <span>Canvas</span>
-          </a>
+          </Link>
 
           <div className="h-4 w-px bg-stone-300" />
 

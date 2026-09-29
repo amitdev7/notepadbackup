@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { resolveShareToken } from "@/lib/cloud/sharing"
 import { cookies } from "next/headers"
@@ -46,9 +47,9 @@ export default async function SharePage({ params }: PageProps) {
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background p-4 text-center font-mono">
         <h1 className="text-xl font-bold text-destructive">Link Inactive</h1>
         <p className="mt-2 text-sm text-muted-foreground">{result.error || "This share link is no longer valid."}</p>
-        <a href="/" className="mt-6 text-xs text-primary underline">
+        <Link href="/" className="mt-6 text-xs text-primary underline">
           Return to Zenithsui
-        </a>
+        </Link>
       </div>
     )
   }

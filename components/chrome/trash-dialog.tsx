@@ -38,13 +38,14 @@ export function TrashDialog() {
 
   // Refresh items whenever dialog opens or storage changes
   useEffect(() => {
-    if (!open) {
-      setConfirmDelete(null)
-      return
-    }
+    if (!open) return
     const refresh = () => setItems(listTrashDocuments())
     refresh()
-    return subscribeTrash(refresh)
+    const unsub = subscribeTrash(refresh)
+    return () => {
+      unsub()
+      setConfirmDelete(null)
+    }
   }, [open])
 
   // Close on Escape key

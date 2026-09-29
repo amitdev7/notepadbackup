@@ -23,3 +23,4 @@ export function parseEmailList(raw: string): string[] {
 
   return Array.from(valid)
 }
+

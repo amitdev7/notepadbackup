@@ -300,11 +300,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     const stored = readStoredState()
     const localFiles = listFiles()
 
-    let workspaces = stored?.workspaces ?? INITIAL_WORKSPACES
-    let projects = stored?.projects ?? INITIAL_PROJECTS
-    let documents = stored?.documents ?? INITIAL_DOCUMENTS
+    const workspaces = stored?.workspaces ?? INITIAL_WORKSPACES
+    const projects = stored?.projects ?? INITIAL_PROJECTS
+    const documents = stored?.documents ?? INITIAL_DOCUMENTS
     let activeWorkspaceId = stored?.activeWorkspaceId ?? "ws-personal"
-    let activeProjectId = stored?.activeProjectId ?? null
+    const activeProjectId = stored?.activeProjectId ?? null
 
     // Ensure active workspace exists
     if (!workspaces.some((w) => w.id === activeWorkspaceId)) {

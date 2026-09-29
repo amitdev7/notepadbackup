@@ -3,11 +3,12 @@
 import { useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { Canvas } from "@/components/canvas/canvas"
-import { LeftRail } from "@/components/chrome/left-rail"
+import { TopBar } from "@/components/shell/top-bar"
+import { BottomDock } from "@/components/shell/bottom-dock"
+import { PagePopover } from "@/components/shell/page-popover"
+import { SettingsDialog } from "@/components/shell/settings-dialog"
 import { LibraryPanel } from "@/components/chrome/library-panel"
 import { Inspector } from "@/components/chrome/inspector"
-import { TopCorner, ZoomPill, CommandHint, TopRight } from "@/components/chrome/top-corner"
-import { FileName } from "@/components/chrome/file-name"
 import { CommandPalette } from "@/components/chrome/command-palette"
 import { CanvasContextMenu } from "@/components/chrome/context-menu"
 import { ShortcutsSheet } from "@/components/chrome/shortcuts-sheet"
@@ -52,28 +53,31 @@ export default function Home() {
   }
 
   return (
-    <main className="relative h-full">
+    <main className="relative h-full overflow-hidden select-none">
       <Canvas />
-      {/* ⌘\ clears the room — the canvas and what you've selected, nothing else */}
+
+      {/* ⌘\ clears the room — canvas and what you've selected, nothing else */}
       {!uiHidden && (
         <>
-          <TopCorner />
-          <TopRight />
-          <FileName />
-          <LeftRail />
+          <TopBar />
+          <BottomDock />
+          <PagePopover />
+          <SettingsDialog />
           <LibraryPanel />
           <Inspector />
-          <ZoomPill />
-          <CommandHint />
         </>
       )}
+
       {uiHidden && (
         <p className="pointer-events-none absolute right-4 bottom-4 z-30 font-mono text-[10px] text-muted-foreground/60">
           {kbd("mod+\\\\")}
         </p>
       )}
-      {/* the flash outlives ⌘\ — a copy still has to say it happened */}
+
+      {/* Notification flash banner */}
       <Notice />
+
+      {/* Overlays, Palettes & Floating Modals */}
       <LinkEditor />
       <CanvasContextMenu />
       <CommandPalette />

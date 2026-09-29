@@ -14,7 +14,6 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
   const [loading, setLoading] = useState(false)
 
   const fetchNotifications = async () => {
-    setLoading(true)
     try {
       const res = await fetch("/api/notifications")
       const data = await res.json()
@@ -29,8 +28,24 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
   }
 
   useEffect(() => {
-    if (isOpen) {
-      fetchNotifications()
+    if (!isOpen) return
+    let cancelled = false
+    queueMicrotask(() => {
+      if (!cancelled) setLoading(true)
+    })
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.ok) {
+          setNotifications(data.data || [])
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
     }
   }, [isOpen])
 
