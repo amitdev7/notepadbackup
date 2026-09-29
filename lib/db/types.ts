@@ -654,7 +654,7 @@ export interface BaseDatabase {
       }
       workspace_members: {
         Row: WorkspaceMemberRecord
-        Insert: Partial<WorkspaceMemberRecord> & { workspace_id: string; user_id: string; role: WorkspaceRole }
+        Insert: WorkspaceMemberRecord
         Update: Partial<WorkspaceMemberRecord>
       }
       projects: {
@@ -669,7 +669,11 @@ export interface BaseDatabase {
       }
       document_members: {
         Row: DocumentMemberRecord
-        Insert: Partial<DocumentMemberRecord> & { document_id: string; user_id: string; role: DocumentRole }
+        Insert: Partial<DocumentMemberRecord> & {
+          document_id: string
+          user_id: string
+          role: DocumentRole
+        }
         Update: Partial<DocumentMemberRecord>
       }
       document_invitations: {

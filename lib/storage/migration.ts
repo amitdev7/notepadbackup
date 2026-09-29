@@ -34,8 +34,12 @@ export async function migrateLocalStorageToIndexedDB(): Promise<{
 
     const localRecord: StoredLocalDoc = {
       id: meta.id,
-      name: meta.name || legacyDoc.fileName || "Untitled",
-      doc: legacyDoc,
+      name: meta.name || legacyDoc.name || "Untitled",
+      doc: {
+        fileName: meta.name || legacyDoc.name || "Untitled",
+        nodes: legacyDoc.nodes,
+        order: legacyDoc.order,
+      },
       baseRevision: 1,
       serverRevision: 1,
       syncStatus: "local-only",

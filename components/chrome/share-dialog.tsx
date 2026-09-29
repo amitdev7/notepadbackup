@@ -40,7 +40,7 @@ import {
   resendInvitationAction,
   revokeInvitationAction,
 } from "@/lib/actions/invitations"
-import { parseEmailList } from "@/lib/cloud/invitations"
+import { parseEmailList } from "@/lib/cloud/invite-utils"
 
 interface ShareDialogProps {
   isOpen: boolean
