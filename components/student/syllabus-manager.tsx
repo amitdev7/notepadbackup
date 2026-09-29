@@ -79,15 +79,6 @@ export function SyllabusManager({
   const [goalModalOpen, setGoalModalOpen] = useState(false)
   const [goalTargetChapter, setGoalTargetChapter] = useState<StudentChapter | null>(null)
 
-  const defaultGoalDate = useMemo(() => {
-    const d = new Date()
-    d.setDate(d.getDate() + 7)
-    const yyyy = d.getFullYear()
-    const mm = String(d.getMonth() + 1).padStart(2, "0")
-    const dd = String(d.getDate()).padStart(2, "0")
-    return `${yyyy}-${mm}-${dd}`
-  }, [])
-
   // Active subjects (not archived)
   const activeSubjects = useMemo(() => {
     return subjects
@@ -732,7 +723,7 @@ export function SyllabusManager({
           chapterName={goalTargetChapter.name}
           initialDate={
             goals.find((g) => g.chapterId === goalTargetChapter.id)?.targetDate ||
-            defaultGoalDate
+            new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
           }
           onClose={() => {
             setGoalModalOpen(false)

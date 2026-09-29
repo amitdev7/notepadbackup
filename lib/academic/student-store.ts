@@ -194,12 +194,6 @@ function getFormattedDate(offsetDays = 0): string {
   return `${yyyy}-${mm}-${dd}`
 }
 
-let _idCounter = 0
-function generateId(prefix: string): string {
-  _idCounter += 1
-  return `${prefix}-${Date.now()}-${_idCounter}-${Math.random().toString(36).slice(2, 7)}`
-}
-
 const INITIAL_GOALS: ChapterCompletionGoal[] = [
   {
     id: "goal-1",
@@ -501,7 +495,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     // ── Subjects ──────────────────────────────────────────────────────────────
     addSubject: (name, shortName, priority = "medium", targetPercentage = 80) => {
-      const id = generateId("sub")
+      const id = `sub-${Date.now()}`
       const newSub: StudentSubject = {
         id,
         name: name.trim(),
@@ -559,7 +553,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     // ── Chapters ──────────────────────────────────────────────────────────────
     addChapter: (subjectId, name, description, targetDate) => {
-      const id = generateId("chap")
+      const id = `chap-${Date.now()}`
       const newChap: StudentChapter = {
         id,
         subjectId,
@@ -693,7 +687,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
         }))
       } else {
         const newGoal: ChapterCompletionGoal = {
-          id: generateId("goal"),
+          id: `goal-${Date.now()}`,
           subjectId,
           subjectName: sub?.name || "Subject",
           chapterId,
@@ -749,7 +743,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     // ── Activities ────────────────────────────────────────────────────────────
     addActivity: (input) => {
-      const id = generateId("act")
+      const id = `act-${Date.now()}`
       const newAct: CalendarActivity = {
         ...input,
         id,
@@ -798,7 +792,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
     duplicateActivity: (id, targetDate) => {
       const act = get().activities.find((a) => a.id === id)
       if (!act) return
-      const newId = generateId("act")
+      const newId = `act-${Date.now()}`
       const copy: CalendarActivity = {
         ...act,
         id: newId,
@@ -830,7 +824,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     // ── Study Materials ───────────────────────────────────────────────────────
     addMaterial: (input) => {
-      const id = generateId("mat")
+      const id = `mat-${Date.now()}`
       const newMat: StudyMaterial = {
         ...input,
         id,
