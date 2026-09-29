@@ -145,7 +145,7 @@ export function WifiPublishDialog() {
         <div className="flex items-center justify-between pb-4 border-b border-border/50">
           <div className="flex items-center gap-2">
             <WifiHigh size={20} className="text-muted-foreground" />
-            <h2 id="wifi-dialog-title" className="font-serif text-base font-medium">
+            <h2 id="wifi-dialog-title" className="font-sans text-sm font-semibold tracking-tight">
               Publish on Wi-Fi
             </h2>
           </div>

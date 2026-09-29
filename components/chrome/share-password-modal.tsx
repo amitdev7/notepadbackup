@@ -50,7 +50,7 @@ export function SharePasswordModal({ token, onSuccess }: SharePasswordModalProps
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-foreground">
             <Lock size={24} />
           </div>
-          <h2 className="font-serif text-lg font-semibold">Protected Document</h2>
+          <h2 className="font-sans text-base font-semibold tracking-tight">Protected Document</h2>
           <p className="text-xs text-muted-foreground">
             This document is password protected. Enter the password below to view the canvas.
           </p>

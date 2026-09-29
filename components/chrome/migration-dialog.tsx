@@ -58,7 +58,7 @@ export function MigrationDialog() {
               <CloudArrowUp size={20} />
             </div>
             <div>
-              <h2 id="migration-dialog-title" className="font-serif text-base font-medium">
+              <h2 id="migration-dialog-title" className="font-sans text-sm font-semibold tracking-tight">
                 Local drawings found
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">

@@ -81,7 +81,7 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
       <div className="flex items-center justify-between pb-3 border-b border-border/50">
         <div className="flex items-center gap-2">
           <ClockCounterClockwise size={18} className="text-muted-foreground" />
-          <h2 id="version-history-title" className="font-serif text-sm font-medium">
+          <h2 id="version-history-title" className="font-sans text-xs font-semibold tracking-tight">
             Version History
           </h2>
         </div>

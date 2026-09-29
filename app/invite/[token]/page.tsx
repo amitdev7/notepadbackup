@@ -51,7 +51,7 @@ export default function InvitePage({ params }: InvitePageProps) {
           <span className="font-mono text-xs font-semibold tracking-wider text-[#2563eb] uppercase">
             Zenithsui Invitation
           </span>
-          <h1 className="font-serif text-2xl font-bold">You&apos;ve Been Invited</h1>
+          <h1 className="font-sans text-xl font-bold tracking-tight">You&apos;ve Been Invited</h1>
           <p className="text-xs text-[#71717a]">
             You have received an invitation to collaborate on a Zenithsui canvas wireframe.
           </p>

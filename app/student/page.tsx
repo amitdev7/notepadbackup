@@ -59,7 +59,8 @@ export default function StudentHubPage() {
   const [activeTab, setActiveTab] = useState<StudentTabId>("overview")
 
   // Global Student Store State
-  const subjects = useStudentStore((s) => s.subjects.filter((s) => !s.archived))
+  const allSubjects = useStudentStore((s) => s.subjects)
+  const subjects = useMemo(() => allSubjects.filter((s) => !s.archived), [allSubjects])
   const chapters = useStudentStore((s) => s.chapters)
   const goals = useStudentStore((s) => s.goals)
   const activities = useStudentStore((s) => s.activities)
@@ -327,7 +328,7 @@ export default function StudentHubPage() {
                       Self-Directed
                     </span>
                   </div>
-                  <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-white">
+                  <h2 className="font-sans text-xl sm:text-2xl font-bold tracking-tight text-white">
                     {activeStudyTopic}
                   </h2>
                   <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
@@ -446,7 +447,7 @@ export default function StudentHubPage() {
               <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+                    <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                       Today&apos;s Activities
                     </h3>
                     <p className="text-xs text-stone-400 font-mono">Date: {todayStr}</p>
@@ -533,7 +534,7 @@ export default function StudentHubPage() {
               <div className="p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between border-b border-stone-100 dark:border-stone-800 pb-3">
                   <div>
-                    <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+                    <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                       Upcoming Chapter Goals
                     </h3>
                     <p className="text-xs text-stone-400 font-mono">Academic target deadlines</p>
@@ -596,7 +597,7 @@ export default function StudentHubPage() {
             <div id="focus-engine-section" className="space-y-4 pt-2">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100">
+                  <h3 className="font-sans text-base font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                     Focus Timer & Deep Study Engine
                   </h3>
                   <p className="text-xs font-mono text-stone-500">
@@ -648,7 +649,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Spaced Repetition & Revision Decks
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -726,7 +727,7 @@ export default function StudentHubPage() {
                   <span className="text-[11px] font-mono uppercase tracking-wider text-stone-400 block mb-2">
                     {showAnswer ? "Answer / Solution" : "Question Prompt (Click to reveal answer)"}
                   </span>
-                  <p className="font-serif text-lg sm:text-xl font-medium text-stone-900 dark:text-stone-100 leading-relaxed">
+                  <p className="font-sans text-base sm:text-lg font-medium text-stone-900 dark:text-stone-100 leading-relaxed">
                     {showAnswer ? currentFlashcard.back : currentFlashcard.front}
                   </p>
                 </div>
@@ -799,7 +800,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Question Bank & Practice Mode
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -880,7 +881,7 @@ export default function StudentHubPage() {
                 </div>
 
                 <div>
-                  <p className="font-serif text-lg font-medium text-stone-900 dark:text-stone-100 leading-relaxed">
+                  <p className="font-sans text-base font-medium text-stone-900 dark:text-stone-100 leading-relaxed">
                     {currentQuestion.question}
                   </p>
                 </div>
@@ -970,7 +971,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Tests & Exam Simulation
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -991,7 +992,7 @@ export default function StudentHubPage() {
                 <span className="font-mono text-xs uppercase tracking-wider text-amber-400 font-semibold block">
                   Next Official Examination
                 </span>
-                <h3 className="font-serif text-xl font-bold mt-1">
+                <h3 className="font-sans text-lg font-bold tracking-tight mt-1">
                   Term 1 Finals Examination
                 </h3>
                 <p className="text-xs text-stone-300 font-mono mt-0.5">
@@ -1050,7 +1051,7 @@ export default function StudentHubPage() {
                         {test.subject}
                       </span>
                     </div>
-                    <h4 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+                    <h4 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                       {test.title}
                     </h4>
                     <div className="flex items-center gap-3 font-mono text-xs text-stone-500">
@@ -1105,7 +1106,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Academic Progress & Study Analytics
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -1144,7 +1145,7 @@ export default function StudentHubPage() {
 
             {/* Subject-Wise Progress Breakdown */}
             <div className="rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 shadow-2xs space-y-4">
-              <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                 Syllabus Completion by Subject
               </h3>
               <div className="space-y-3.5">
@@ -1180,7 +1181,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Classroom & Batch Sync
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -1192,7 +1193,7 @@ export default function StudentHubPage() {
             {/* Join Code Input Form */}
             <div className="rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 shadow-2xs space-y-4">
               <div>
-                <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+                <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                   Join a Classroom
                 </h3>
                 <p className="text-xs font-mono text-stone-500">
@@ -1256,7 +1257,7 @@ export default function StudentHubPage() {
                     <span className="rounded bg-stone-100 dark:bg-stone-800 px-2 py-0.5 font-mono text-[10px] text-stone-600 dark:text-stone-400">
                       {cls.academicYear} • Room {cls.room}
                     </span>
-                    <h4 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+                    <h4 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                       {cls.name}
                     </h4>
                     <p className="font-mono text-xs text-stone-500">
@@ -1280,7 +1281,7 @@ export default function StudentHubPage() {
           <div className="mx-auto max-w-5xl space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
               <div>
-                <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+                <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   Guardian & Parent Transparency
                 </h2>
                 <p className="text-xs font-mono text-stone-500">
@@ -1331,7 +1332,7 @@ export default function StudentHubPage() {
 
             {/* Read-Only Summary Report for Guardian */}
             <div className="rounded-2xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 p-6 shadow-2xs space-y-4">
-              <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                 Guardian Weekly Report Summary
               </h3>
 

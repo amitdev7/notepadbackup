@@ -117,7 +117,7 @@ export function AuthDialog() {
                 <ArrowLeft size={16} />
               </button>
             )}
-            <h2 id="auth-dialog-title" className="font-serif text-lg tracking-tight">
+            <h2 id="auth-dialog-title" className="font-sans text-base font-semibold tracking-tight">
               {authDialogView === "sign-in" && "Sign in to Zenithsui"}
               {authDialogView === "sign-up" && "Create your account"}
               {authDialogView === "reset-password" && "Reset password"}

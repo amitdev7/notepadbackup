@@ -55,7 +55,7 @@ export function ViewerClient({
             ZENITHSUI
           </span>
           <span className="text-[#a1a1aa] font-mono">/</span>
-          <span className="font-serif text-sm font-semibold truncate max-w-[200px] md:max-w-md">
+          <span className="font-sans text-xs font-semibold tracking-tight truncate max-w-[200px] md:max-w-md">
             {doc?.name || "Shared Wireframe"}
           </span>
           <span className="flex items-center gap-1 rounded bg-[#e4e0d4] px-1.5 py-0.5 font-mono text-[10px] uppercase font-semibold text-[#52525b]">

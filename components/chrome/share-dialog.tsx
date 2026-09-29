@@ -292,7 +292,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <ShareNetwork size={18} className="text-muted-foreground" />
-            <h2 id="share-dialog-title" className="font-serif text-base font-semibold truncate">
+            <h2 id="share-dialog-title" className="font-sans text-sm font-semibold tracking-tight truncate">
               Share &ldquo;{fileName}&rdquo;
             </h2>
           </div>

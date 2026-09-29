@@ -128,7 +128,7 @@ export default function DashboardPage() {
         <div>
           {/* Logo & Workspace */}
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
-            <Link href="/" className="font-serif text-lg font-medium tracking-tight text-stone-800 flex items-center gap-1.5">
+            <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 flex items-center gap-1.5">
               <span>zenithsui</span>
             </Link>
           </div>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
         <header className="h-14 border-b border-stone-200/80 bg-white/60 px-8 flex items-center justify-between backdrop-blur-xs">
-          <h1 className="font-serif text-lg font-medium text-stone-800 capitalize">
+          <h1 className="font-sans text-base font-semibold tracking-tight text-stone-800 capitalize">
             {activeTab === "recent"
               ? "Recent Drawings"
               : activeTab === "projects"
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                         </span>
                       </div>
 
-                      <div className="font-serif text-sm font-medium text-stone-800 truncate">
+                      <div className="font-sans text-xs font-semibold text-stone-800 truncate">
                         {doc.name}
                       </div>
                     </div>
