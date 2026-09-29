@@ -155,7 +155,7 @@ export function searchQuestions(query: string, subjectId?: string): QuestionReco
   const lower = query.toLowerCase().trim()
   if (!lower) return subjectId ? getQuestionsBySubject(subjectId) : getAllQuestions()
 
-  let pool = subjectId ? getQuestionsBySubject(subjectId) : getAllQuestions()
+  const pool = subjectId ? getQuestionsBySubject(subjectId) : getAllQuestions()
   return pool.filter((q) => {
     if (q.questionText.toLowerCase().includes(lower)) return true
     if (q.correctAnswer.toLowerCase().includes(lower)) return true
@@ -306,7 +306,7 @@ export function getUnattemptedQuestions(subjectId?: string): QuestionRecord[] {
   const attemptedIds = new Set(
     Array.from(attemptStore.values()).map((a) => a.questionId)
   )
-  let pool = subjectId ? getQuestionsBySubject(subjectId) : getAllQuestions()
+  const pool = subjectId ? getQuestionsBySubject(subjectId) : getAllQuestions()
   return pool.filter((q) => !attemptedIds.has(q.id))
 }
 
