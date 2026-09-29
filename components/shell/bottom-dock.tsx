@@ -3,9 +3,8 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Bottom Dock — the Mac-style floating navigation bar.
 //
-// Replaces the old LeftRail, ZoomPill, TopCorner and CommandHint.
-// Centralizes: Brand/File menu, Tool picker, Search, Page, Settings,
-// Student Hub link, and Zoom controls.
+// Centralizes: Brand/Workspace menu, Tool picker (with unified Library),
+// Search, Page, Settings, Student Hub link, and Zoom controls.
 // ---------------------------------------------------------------------------
 
 import { useSquig } from "@/lib/store"
@@ -17,7 +16,6 @@ import { cn } from "@/lib/utils"
 import {
   Cursor,
   Rectangle,
-  Circle,
   PencilLine,
   TextT,
   ArrowRight,
@@ -29,18 +27,15 @@ import {
   Gear,
   CaretDown,
   FolderOpen,
-  FloppyDisk,
-  Export,
   ShareNetwork,
   WifiHigh,
   ClockCounterClockwise,
   Trash,
-  House,
   ArrowCounterClockwise,
   ArrowClockwise,
-  Keyboard,
   GithubLogo,
-  PencilSimple,
+  User,
+  Sparkle,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -53,7 +48,7 @@ import {
 // ── Tool definitions ──────────────────────────────────────────────────────────
 
 interface ToolDef {
-  id: Tool | "components" | "blocks"
+  id: Tool | "library"
   label: string
   icon: React.ElementType
   shortcut?: string
@@ -65,8 +60,7 @@ const TOOLS: ToolDef[] = [
   { id: "draw", label: "Draw", icon: PencilLine, shortcut: "D" },
   { id: "text", label: "Text", icon: TextT, shortcut: "T" },
   { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A" },
-  { id: "components", label: "Components", icon: File },
-  { id: "blocks", label: "Blocks", icon: File },
+  { id: "library", label: "Library", icon: Sparkle, shortcut: "L" },
 ]
 
 // ── BottomDock ────────────────────────────────────────────────────────────────
@@ -86,28 +80,26 @@ export function BottomDock() {
   const setViewport = useSquig((s) => s.setViewport)
   const setShareOpen = useSquig((s) => s.setShareOpen)
   const setHistoryOpen = useSquig((s) => s.setHistoryOpen)
-  const fileName = useSquig((s) => s.fileName)
 
   const togglePagePopover = useShellStore((s) => s.togglePagePopover)
   const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const settingsOpen = useShellStore((s) => s.settingsOpen)
+  const setSettingsSection = useShellStore((s) => s.setSettingsSection)
 
   const zoomPercent = Math.round(viewport.zoom * 100)
 
   const handleToolClick = (t: ToolDef) => {
-    if (t.id === "components") {
-      setPanel("components")
-    } else if (t.id === "blocks") {
-      setPanel("blocks")
+    if (t.id === "library") {
+      setPanel(panel === "components" || panel === "blocks" ? null : "components")
     } else {
+      setPanel(null)
       setTool(t.id as Tool)
     }
   }
 
   const isToolActive = (t: ToolDef): boolean => {
-    if (t.id === "components") return panel === "components"
-    if (t.id === "blocks") return panel === "blocks"
+    if (t.id === "library") return panel === "components" || panel === "blocks"
     return tool === t.id && panel === null
   }
 
@@ -119,10 +111,10 @@ export function BottomDock() {
         "flex items-center gap-1 px-2 py-1.5",
         "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
         "bg-white/90 dark:bg-[#1C1C1F]/90 backdrop-blur-xl",
-        "shadow-lg shadow-stone-900/8 dark:shadow-black/40",
+        "shadow-lg shadow-stone-900/8 dark:shadow-black/40"
       )}
     >
-      {/* ── Brand / File Menu ── */}
+      {/* ── Brand / Workspace Menu ── */}
       <DropdownMenu>
         <DropdownMenuTrigger
           className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer"
@@ -155,8 +147,18 @@ export function BottomDock() {
             <ArrowClockwise size={14} className="mr-2" /> Redo
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => {
+            setSettingsSection("account")
+            setSettingsOpen(true)
+          }}>
+            <User size={14} className="mr-2" /> Account & Profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+            <Gear size={14} className="mr-2" /> Settings…
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setViewport({ x: 0, y: 0, zoom: 1 })}>
-            <ArrowCounterClockwise size={14} className="mr-2" /> Reset Zoom
+            <ArrowCounterClockwise size={14} className="mr-2" /> Reset View
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => { if (window.confirm("Clear all items?")) clearCanvas() }}

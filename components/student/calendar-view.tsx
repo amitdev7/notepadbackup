@@ -844,7 +844,7 @@ function DayDetailCard({
                   </h4>
                   {g.notes && (
                     <p className="text-xs text-stone-600 dark:text-stone-400 mt-1 italic">
-                      "{g.notes}"
+                      &quot;{g.notes}&quot;
                     </p>
                   )}
                 </div>
@@ -1185,7 +1185,7 @@ function GoalCard({
 
         {goal.notes && (
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 italic">
-            "{goal.notes}"
+            &quot;{goal.notes}&quot;
           </p>
         )}
       </div>
@@ -1489,7 +1489,7 @@ function ChapterGoalModal({
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs font-sans">
           <p className="text-stone-500 dark:text-stone-400">
-            Set an academic milestone date: <em>"I will complete this chapter on or before this day."</em>
+            Set an academic milestone date: <em>&quot;I will complete this chapter on or before this day.&quot;</em>
           </p>
 
           <div>

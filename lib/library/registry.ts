@@ -116,6 +116,44 @@ export function searchAll(query: string): ComponentDef[] {
   return ALL_DEFS.filter((d) => matches(d, q))
 }
 
+export type LibraryFilterType = "all" | "components" | "blocks" | "templates"
+
+export function searchUnifiedLibrary(
+  query: string,
+  filterType: LibraryFilterType = "all",
+  category = "All"
+): ComponentDef[] {
+  const q = query.trim().toLowerCase()
+  return ALL_DEFS.filter((d) => {
+    // 1. Text match
+    if (!matches(d, q)) return false
+
+    // 2. Filter Type
+    if (filterType === "components" && d.category !== "components") return false
+    if (filterType === "blocks" && d.category !== "blocks") return false
+    if (filterType === "templates") {
+      const isTemplate =
+        d.kind.startsWith("tmpl-") ||
+        d.group === "Education" ||
+        d.group === "Student" ||
+        d.group === "Screens"
+      if (!isTemplate) return false
+    }
+
+    // 3. Category match
+    if (category !== "All") {
+      if (d.group?.toLowerCase() !== category.toLowerCase()) {
+        const matchesCategoryKeyword = d.keywords?.some(
+          (k) => k.toLowerCase() === category.toLowerCase()
+        )
+        if (!matchesCategoryKeyword) return false
+      }
+    }
+
+    return true
+  })
+}
+
 /** Group defs into panel sections, preserving GROUPS order. */
 export function groupDefs(defs: ComponentDef[], category: Category): { group: string; defs: ComponentDef[] }[] {
   const order = GROUPS[category]
@@ -133,3 +171,43 @@ export function groupDefs(defs: ComponentDef[], category: Category): { group: st
   }
   return out
 }
+
+export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: ComponentDef[] }[] {
+  const order = [
+    "Student",
+    "Education",
+    "Buttons",
+    "Forms",
+    "Navigation",
+    "Display",
+    "Cards",
+    "Data",
+    "Feedback",
+    "Marketing",
+    "App",
+    "Screens",
+    "Commerce",
+    "Media",
+    "Selection",
+    "Other",
+  ]
+  const buckets = new Map<string, ComponentDef[]>()
+  for (const d of defs) {
+    const g = d.group || (d.category === "blocks" ? "Blocks" : "Components")
+    const arr = buckets.get(g)
+    if (arr) arr.push(d)
+    else buckets.set(g, [d])
+  }
+  const out: { group: string; defs: ComponentDef[] }[] = []
+  for (const g of order) {
+    const arr = buckets.get(g)
+    if (arr?.length) out.push({ group: g, defs: arr })
+  }
+  for (const [g, arr] of buckets.entries()) {
+    if (!order.includes(g) && arr.length) {
+      out.push({ group: g, defs: arr })
+    }
+  }
+  return out
+}
+

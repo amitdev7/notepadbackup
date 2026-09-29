@@ -20,11 +20,21 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
   const fileName = useSquig((s) => s.fileName)
 
   useEffect(() => {
+    let active = true
     if (isOpen && cloudDocId) {
-      setLoading(true)
+      queueMicrotask(() => {
+        if (active) setLoading(true)
+      })
       listVersionSnapshots(cloudDocId)
-        .then(setVersions)
-        .finally(() => setLoading(false))
+        .then((data) => {
+          if (active) setVersions(data)
+        })
+        .finally(() => {
+          if (active) setLoading(false)
+        })
+    }
+    return () => {
+      active = false
     }
   }, [isOpen, cloudDocId])
 

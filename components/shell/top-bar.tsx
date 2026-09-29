@@ -27,12 +27,14 @@ export function TopBar() {
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [titleDraft, setTitleDraft] = useState(fileName)
+  const [prevFileName, setPrevFileName] = useState(fileName)
   const [notifsOpen, setNotifsOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  useEffect(() => {
+  if (prevFileName !== fileName) {
+    setPrevFileName(fileName)
     setTitleDraft(fileName)
-  }, [fileName])
+  }
 
   useEffect(() => {
     if (isEditingTitle) {

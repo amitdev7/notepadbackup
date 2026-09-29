@@ -2,22 +2,30 @@
 
 import {
   SquaresFour,
-  CalendarCheck,
   Clock,
+  CalendarCheck,
   Books,
   FolderSimple,
   ArrowsClockwise,
+  Target,
+  GraduationCap,
   ChartLineUp,
+  Chalkboard,
+  ShieldCheck,
 } from "@phosphor-icons/react"
 
 export type StudentTabId =
   | "overview"
-  | "calendar"
   | "planner"
+  | "calendar"
   | "syllabus"
   | "notes"
   | "revision"
+  | "practice"
+  | "tests"
   | "analytics"
+  | "classroom"
+  | "parent-mode"
 
 export interface StudentNavProps {
   activeTab: StudentTabId
@@ -31,12 +39,16 @@ export const STUDENT_TABS: Array<{
   icon: React.ElementType
 }> = [
   { id: "overview", label: "Overview", icon: SquaresFour },
-  { id: "calendar", label: "Calendar", icon: CalendarCheck },
   { id: "planner", label: "Planner", icon: Clock },
+  { id: "calendar", label: "Calendar", icon: CalendarCheck },
   { id: "syllabus", label: "Syllabus", icon: Books },
   { id: "notes", label: "Notes & Materials", icon: FolderSimple },
   { id: "revision", label: "Revision", icon: ArrowsClockwise },
+  { id: "practice", label: "Practice", icon: Target },
+  { id: "tests", label: "Tests & Exams", icon: GraduationCap },
   { id: "analytics", label: "Analytics", icon: ChartLineUp },
+  { id: "classroom", label: "Classroom", icon: Chalkboard },
+  { id: "parent-mode", label: "Parent Mode", icon: ShieldCheck },
 ]
 
 export function StudentNav({ activeTab, onTabChange, className = "" }: StudentNavProps) {

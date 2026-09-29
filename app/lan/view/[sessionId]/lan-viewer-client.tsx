@@ -41,7 +41,7 @@ export default function LanViewerClient({ sessionId, pin }: LanViewerClientProps
         }
       }
     } catch {
-      setStatus("offline")
+      queueMicrotask(() => setStatus("offline"))
     }
 
     return () => {

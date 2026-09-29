@@ -243,6 +243,18 @@ export function AuthDialog() {
                 </button>
               </p>
             )}
+
+            {authDialogView === "sign-up" && (
+              <div className="mt-4 pt-3 border-t border-border/50 text-[11px] text-muted-foreground space-y-1.5 text-left">
+                <span className="font-semibold text-foreground/80 block">Coming Soon in Future Updates:</span>
+                <ul className="list-disc list-inside space-y-0.5 text-muted-foreground/80">
+                  <li>Advanced multi-user real-time collaboration</li>
+                  <li>Shared academic classrooms & live whiteboard</li>
+                  <li>Native iOS & Android companion apps</li>
+                  <li>Bidirectional Obsidian & Anki sync</li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

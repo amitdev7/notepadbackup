@@ -741,6 +741,369 @@ export const studyTimetableDef: ComponentDef = {
   },
 }
 
+export const studyPlanDef: ComponentDef = {
+  kind: "study-plan",
+  name: "Study Plan",
+  category: "blocks",
+  group: "Student",
+  keywords: ["study", "plan", "daily", "routine", "schedule", "goals", "academic"],
+  size: { w: 480, h: 320 },
+  defaults: { title: "Daily Study Plan", hours: "4.5", targetChapters: "2" },
+  controls: [
+    { key: "title", label: "Title", type: "text" },
+    { key: "hours", label: "Target Hours", type: "text" },
+    { key: "targetChapters", label: "Target Chapters", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const title = str(p, "title", "Daily Study Plan")
+    const hours = str(p, "hours", "4.5")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(rect(0, 0, w, 44, { r: 8, fill: "shade", fillColor: "faint", stroke: "muted" }))
+    prims.push(text(18, 28, title, 13, { bold: true }))
+    prims.push(text(w - 18, 28, `Goal: ${hours}h`, 11, { align: "right", color: "muted" }))
+
+    const tasks = [
+      { sub: "Mathematics", topic: "Quadratic Equations PYQs", time: "10:00 - 11:30", done: true },
+      { sub: "Physics", topic: "Electromagnetic Induction Notes", time: "14:00 - 15:30", done: false },
+      { sub: "Chemistry", topic: "Coordination Compounds Revision", time: "17:00 - 18:30", done: false },
+    ]
+    let y = 62
+    for (const t of tasks) {
+      prims.push(rect(16, y, w - 32, 54, { r: 6, stroke: "muted", fill: t.done ? "shade" : "none", fillColor: t.done ? "faint" : undefined }))
+      prims.push(pill(28, y + 16, 20, 20, { stroke: "ink", fill: t.done ? "shade" : "none", fillColor: t.done ? "muted" : undefined }))
+      if (t.done) prims.push(text(38, y + 27, "✓", 10, { align: "center", bold: true }))
+      prims.push(text(60, y + 24, t.sub, 11, { bold: true }))
+      prims.push(text(60, y + 42, t.topic, 10, { color: "muted" }))
+      prims.push(text(w - 28, y + 24, t.time, 9, { align: "right", color: "muted" }))
+      y += 66
+    }
+    return prims
+  },
+}
+
+export const weeklyCalendarDef: ComponentDef = {
+  kind: "weekly-calendar",
+  name: "Weekly Calendar",
+  category: "blocks",
+  group: "Student",
+  keywords: ["calendar", "week", "schedule", "planner", "student", "agenda"],
+  size: { w: 600, h: 320 },
+  defaults: { title: "Weekly Academic Calendar" },
+  controls: [{ key: "title", label: "Title", type: "text" }],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const title = str(p, "title", "Weekly Academic Calendar")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(18, 28, title, 13, { bold: true }))
+
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+    const colW = (w - 28) / 7
+    let x = 14
+    for (let i = 0; i < 7; i++) {
+      prims.push(rect(x, 46, colW - 4, h - 60, { r: 4, stroke: "muted", fill: i === 1 ? "shade" : "none", fillColor: i === 1 ? "faint" : undefined }))
+      prims.push(text(x + (colW - 4) / 2, 64, days[i], 10, { align: "center", bold: true }))
+      prims.push(line(x, 74, x + colW - 4, 74, { stroke: "faint" }))
+      if (i % 2 === 0) {
+        prims.push(rect(x + 4, 82, colW - 12, 34, { r: 3, stroke: "muted", fill: "shade", fillColor: "faint" }))
+        prims.push(text(x + 8, 98, "Math", 9, { bold: true }))
+        prims.push(text(x + 8, 110, "16:00", 8, { color: "muted" }))
+      }
+      if (i === 1 || i === 4) {
+        prims.push(rect(x + 4, 124, colW - 12, 34, { r: 3, stroke: "muted", fill: "shade", fillColor: "muted" }))
+        prims.push(text(x + 8, 140, "Physics", 9, { bold: true }))
+        prims.push(text(x + 8, 152, "18:00", 8, { color: "muted" }))
+      }
+      x += colW
+    }
+    return prims
+  },
+}
+
+export const monthlyCalendarDef: ComponentDef = {
+  kind: "monthly-calendar",
+  name: "Monthly Calendar",
+  category: "blocks",
+  group: "Student",
+  keywords: ["calendar", "month", "dates", "schedule", "deadlines", "student"],
+  size: { w: 560, h: 360 },
+  defaults: { month: "October 2026" },
+  controls: [{ key: "month", label: "Month", type: "text" }],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const month = str(p, "month", "October 2026")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(w / 2, 28, month, 14, { align: "center", bold: true }))
+
+    const days = ["M", "T", "W", "T", "F", "S", "S"]
+    const colW = (w - 32) / 7
+    const rowH = (h - 76) / 5
+    for (let c = 0; c < 7; c++) {
+      prims.push(text(16 + c * colW + colW / 2, 54, days[c], 10, { align: "center", bold: true, color: "muted" }))
+    }
+    let dayNum = 1
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 7; c++) {
+        if (dayNum > 31) break
+        const bx = 16 + c * colW
+        const by = 66 + r * rowH
+        const isExam = dayNum === 15 || dayNum === 28
+        prims.push(rect(bx, by, colW - 2, rowH - 2, { r: 4, stroke: "muted", fill: isExam ? "shade" : "none", fillColor: isExam ? "faint" : undefined }))
+        prims.push(text(bx + 6, by + 14, String(dayNum), 9, { bold: isExam }))
+        if (isExam) {
+          prims.push(rect(bx + 4, by + rowH - 16, colW - 10, 10, { r: 2, fill: "shade", fillColor: "muted", strokeWidth: 0 }))
+          prims.push(text(bx + colW / 2, by + rowH - 8, "EXAM", 7, { align: "center", bold: true }))
+        }
+        dayNum++
+      }
+    }
+    return prims
+  },
+}
+
+export const syllabusTrackerDef: ComponentDef = {
+  kind: "syllabus-tracker",
+  name: "Syllabus Tracker",
+  category: "blocks",
+  group: "Student",
+  keywords: ["syllabus", "tracker", "progress", "chapters", "academic", "completion"],
+  size: { w: 460, h: 280 },
+  defaults: { subject: "Science Syllabus", progress: "68" },
+  controls: [
+    { key: "subject", label: "Subject", type: "text" },
+    { key: "progress", label: "Progress %", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const subject = str(p, "subject", "Science Syllabus")
+    const progress = num(p, "progress", 68)
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(18, 28, subject, 13, { bold: true }))
+    prims.push(text(w - 18, 28, `${progress}% Complete`, 11, { align: "right", bold: true }))
+    // Progress bar
+    prims.push(rect(18, 40, w - 36, 8, { r: 4, stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(rect(18, 40, ((w - 36) * progress) / 100, 8, { r: 4, strokeWidth: 0, fill: "shade", fillColor: "muted" }))
+
+    const chaps = [
+      { name: "1. Chemical Reactions", done: true },
+      { name: "2. Acids, Bases & Salts", done: true },
+      { name: "3. Metals & Non-metals", done: true },
+      { name: "4. Carbon & Compounds", done: false },
+      { name: "5. Life Processes", done: false },
+    ]
+    let y = 68
+    for (const c of chaps) {
+      prims.push(rect(18, y, w - 36, 32, { r: 4, stroke: "muted", fill: c.done ? "shade" : "none", fillColor: c.done ? "faint" : undefined }))
+      prims.push(pill(28, y + 10, 12, 12, { stroke: "ink", fill: c.done ? "shade" : "none", fillColor: c.done ? "muted" : undefined }))
+      prims.push(text(50, y + 21, c.name, 10, { bold: c.done }))
+      prims.push(text(w - 30, y + 21, c.done ? "Done" : "Pending", 9, { align: "right", color: "muted" }))
+      y += 38
+    }
+    return prims
+  },
+}
+
+export const chapterTrackerDef: ComponentDef = {
+  kind: "chapter-tracker",
+  name: "Chapter Tracker",
+  category: "blocks",
+  group: "Student",
+  keywords: ["chapter", "tracker", "milestone", "topics", "student"],
+  size: { w: 420, h: 260 },
+  defaults: { chapter: "Quadratic Equations", subject: "Mathematics" },
+  controls: [
+    { key: "chapter", label: "Chapter", type: "text" },
+    { key: "subject", label: "Subject", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const chap = str(p, "chapter", "Quadratic Equations")
+    const subName = str(p, "subject", "Mathematics")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(18, 26, chap, 13, { bold: true }))
+    prims.push(text(18, 42, subName, 10, { color: "muted" }))
+
+    const milestones = [
+      { label: "Theory & Derivations", done: true },
+      { label: "NCERT Exercises Solved", done: true },
+      { label: "Exemplar Problems Solved", done: false },
+      { label: "10 Years PYQs Solved", done: false },
+    ]
+    let y = 64
+    for (const m of milestones) {
+      prims.push(rect(18, y, w - 36, 36, { r: 5, stroke: "muted", fill: m.done ? "shade" : "none", fillColor: m.done ? "faint" : undefined }))
+      prims.push(pill(30, y + 12, 14, 14, { stroke: "ink", fill: m.done ? "shade" : "none", fillColor: m.done ? "muted" : undefined }))
+      if (m.done) prims.push(text(37, y + 23, "✓", 9, { align: "center", bold: true }))
+      prims.push(text(54, y + 23, m.label, 10, { bold: m.done }))
+      y += 44
+    }
+    return prims
+  },
+}
+
+export const flashcardsDef: ComponentDef = {
+  kind: "study-flashcard",
+  name: "Flashcards",
+  category: "blocks",
+  group: "Student",
+  keywords: ["flashcard", "study", "memorize", "quiz", "revision", "active recall"],
+  size: { w: 380, h: 240 },
+  defaults: { front: "What is Faraday's Law?", back: "EMF = -N (dΦ/dt)" },
+  controls: [
+    { key: "front", label: "Question (Front)", type: "text" },
+    { key: "back", label: "Answer (Back)", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const front = str(p, "front", "What is Faraday's Law?")
+    const back = str(p, "back", "EMF = -N (dΦ/dt)")
+    prims.push(rect(0, 0, w, h, { r: 10, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(pill(18, 16, 70, 20, { stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(text(53, 30, "FLASHCARD", 8, { align: "center", bold: true }))
+
+    prims.push(text(w / 2, 90, front, 13, { align: "center", bold: true }))
+    prims.push(line(36, 125, w - 36, 125, { stroke: "faint" }))
+    prims.push(text(w / 2, 160, back, 12, { align: "center", color: "muted" }))
+    prims.push(text(w / 2, 215, "Click to flip • Spaced repetition", 9, { align: "center", color: "muted" }))
+    return prims
+  },
+}
+
+export const questionBoardDef: ComponentDef = {
+  kind: "question-board",
+  name: "Question Board",
+  category: "blocks",
+  group: "Student",
+  keywords: ["question", "practice", "pyq", "exam", "board", "problem"],
+  size: { w: 460, h: 260 },
+  defaults: { question: "State Newton's Second Law of Motion.", difficulty: "Medium", marks: "3" },
+  controls: [
+    { key: "question", label: "Question", type: "text" },
+    { key: "difficulty", label: "Difficulty", type: "select", options: ["Easy", "Medium", "Hard"] },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const q = str(p, "question", "State Newton's Second Law of Motion.")
+    const diff = str(p, "difficulty", "Medium")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(pill(18, 16, 50, 20, { stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(text(43, 29, "PYQ", 8, { align: "center", bold: true }))
+    prims.push(pill(76, 16, 60, 20, { stroke: "muted", fill: "none" }))
+    prims.push(text(106, 29, diff, 8, { align: "center" }))
+
+    prims.push(text(18, 70, q, 12, { bold: true }))
+    prims.push(rect(18, 96, w - 36, 100, { r: 6, stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(text(28, 120, "Solution & Working:", 10, { bold: true }))
+    prims.push(text(28, 142, "Rate of change of momentum is proportional to applied force.", 10, { color: "muted" }))
+    prims.push(text(28, 162, "F = dp/dt = m(dv/dt) = ma", 10, { color: "muted" }))
+    return prims
+  },
+}
+
+export const examDashboardDef: ComponentDef = {
+  kind: "exam-dashboard",
+  name: "Exam Dashboard",
+  category: "blocks",
+  group: "Student",
+  keywords: ["exam", "countdown", "target", "score", "dashboard", "student"],
+  size: { w: 480, h: 280 },
+  defaults: { exam: "Final Board Examinations", daysLeft: "42", targetScore: "95%" },
+  controls: [
+    { key: "exam", label: "Exam Name", type: "text" },
+    { key: "daysLeft", label: "Days Left", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const exam = str(p, "exam", "Final Board Examinations")
+    const days = str(p, "daysLeft", "42")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(18, 28, exam, 13, { bold: true }))
+
+    // Countdown card
+    prims.push(rect(18, 46, 140, 80, { r: 6, stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(text(88, 86, days, 26, { align: "center", bold: true }))
+    prims.push(text(88, 112, "Days Remaining", 9, { align: "center", color: "muted" }))
+
+    // Target card
+    prims.push(rect(168, 46, 140, 80, { r: 6, stroke: "muted", fill: "none" }))
+    prims.push(text(238, 86, "95%", 26, { align: "center", bold: true }))
+    prims.push(text(238, 112, "Target Score", 9, { align: "center", color: "muted" }))
+
+    // Syllabus card
+    prims.push(rect(318, 46, 144, 80, { r: 6, stroke: "muted", fill: "shade", fillColor: "muted" }))
+    prims.push(text(390, 86, "78%", 26, { align: "center", bold: true }))
+    prims.push(text(390, 112, "Prepared", 9, { align: "center", color: "muted" }))
+
+    // Subjects list
+    const subjects = ["Mathematics (92%)", "Physics (84%)", "Chemistry (76%)", "English (88%)"]
+    let sx = 18
+    for (const s of subjects) {
+      prims.push(rect(sx, 144, (w - 48) / 2, 42, { r: 4, stroke: "muted", fill: "none" }))
+      prims.push(text(sx + 10, 169, s, 10, { bold: true }))
+      sx += (w - 48) / 2 + 12
+      if (sx > w - 100) sx = 18
+    }
+    return prims
+  },
+}
+
+export const studySessionDef: ComponentDef = {
+  kind: "study-session",
+  name: "Study Session",
+  category: "blocks",
+  group: "Student",
+  keywords: ["session", "pomodoro", "timer", "focus", "study", "intervals"],
+  size: { w: 380, h: 220 },
+  defaults: { duration: "45:00", mode: "Deep Focus", subject: "Calculus" },
+  controls: [
+    { key: "duration", label: "Duration", type: "text" },
+    { key: "mode", label: "Mode", type: "text" },
+  ],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const dur = str(p, "duration", "45:00")
+    const mode = str(p, "mode", "Deep Focus")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(pill(w / 2 - 40, 18, 80, 20, { stroke: "muted", fill: "shade", fillColor: "faint" }))
+    prims.push(text(w / 2, 31, mode.toUpperCase(), 8, { align: "center", bold: true }))
+    prims.push(text(w / 2, 105, dur, 36, { align: "center", bold: true }))
+    prims.push(text(w / 2, 138, "Subject: Mathematics", 11, { align: "center", color: "muted" }))
+    prims.push(pill(w / 2 - 50, 164, 100, 32, { stroke: "ink", fill: "shade", fillColor: "muted" }))
+    prims.push(text(w / 2, 183, "Active Session", 10, { align: "center", bold: true }))
+    return prims
+  },
+}
+
+export const notesPageDef: ComponentDef = {
+  kind: "notes-page",
+  name: "Notes Page",
+  category: "blocks",
+  group: "Student",
+  keywords: ["notes", "lecture", "handout", "summary", "paper", "ruled"],
+  size: { w: 480, h: 360 },
+  defaults: { heading: "Lecture Notes: Organic Chemistry" },
+  controls: [{ key: "heading", label: "Heading", type: "text" }],
+  render(p, w, h) {
+    const prims: Prim[] = []
+    const heading = str(p, "heading", "Lecture Notes: Organic Chemistry")
+    prims.push(rect(0, 0, w, h, { r: 8, stroke: "ink", fill: "solid", fillColor: "paper" }))
+    prims.push(text(24, 34, heading, 13, { bold: true }))
+    prims.push(line(24, 46, w - 24, 46, { stroke: "ink", strokeWidth: 1.5 }))
+
+    // Ruled lines
+    let ly = 74
+    while (ly < h - 24) {
+      prims.push(line(24, ly, w - 24, ly, { stroke: "faint" }))
+      ly += 26
+    }
+    prims.push(text(28, 68, "• Key Concepts & Reactions:", 10, { bold: true }))
+    prims.push(text(38, 94, "1. Electrophilic aromatic substitution mechanism", 9, { color: "muted" }))
+    prims.push(text(38, 120, "2. Resonance stabilization of carbocation intermediate", 9, { color: "muted" }))
+    prims.push(text(38, 146, "3. Ortho/Para directors vs Meta directors summary", 9, { color: "muted" }))
+    return prims
+  },
+}
+
 export const studyDefs: ComponentDef[] = [
   mindMapDef,
   conceptMapDef,
@@ -749,4 +1112,15 @@ export const studyDefs: ComponentDef[] = [
   revisionBoardDef,
   mistakeBoardDef,
   studyTimetableDef,
+  studyPlanDef,
+  weeklyCalendarDef,
+  monthlyCalendarDef,
+  syllabusTrackerDef,
+  chapterTrackerDef,
+  flashcardsDef,
+  questionBoardDef,
+  examDashboardDef,
+  studySessionDef,
+  notesPageDef,
 ]
+

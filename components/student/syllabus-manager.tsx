@@ -78,6 +78,7 @@ export function SyllabusManager({
   const [editingChapter, setEditingChapter] = useState<StudentChapter | null>(null)
   const [goalModalOpen, setGoalModalOpen] = useState(false)
   const [goalTargetChapter, setGoalTargetChapter] = useState<StudentChapter | null>(null)
+  const [goalInitialDate, setGoalInitialDate] = useState("")
 
   // Active subjects (not archived)
   const activeSubjects = useMemo(() => {
@@ -403,6 +404,11 @@ export function SyllabusManager({
                         type="button"
                         onClick={() => {
                           setGoalTargetChapter(chap)
+                          const existingGoal = goals.find((g) => g.chapterId === chap.id)
+                          setGoalInitialDate(
+                            existingGoal?.targetDate ||
+                              new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
+                          )
                           setGoalModalOpen(true)
                         }}
                         className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-mono text-stone-600 dark:text-stone-300 transition-colors"
@@ -721,10 +727,7 @@ export function SyllabusManager({
       {goalModalOpen && goalTargetChapter && selectedSubjectId && (
         <SetChapterGoalDirectModal
           chapterName={goalTargetChapter.name}
-          initialDate={
-            goals.find((g) => g.chapterId === goalTargetChapter.id)?.targetDate ||
-            new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10)
-          }
+          initialDate={goalInitialDate}
           onClose={() => {
             setGoalModalOpen(false)
             setGoalTargetChapter(null)

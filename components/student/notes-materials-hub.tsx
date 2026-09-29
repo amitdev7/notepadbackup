@@ -18,7 +18,7 @@ import {
   FolderSimple,
   FileText,
   FilePdf,
-  Image,
+  Image as ImageIcon,
   File,
   LinkSimple,
   PencilRuler,
@@ -570,7 +570,7 @@ function MaterialCard({
       case "pdf":
         return <FilePdf size={18} className="text-red-600" />
       case "image":
-        return <Image size={18} className="text-emerald-600" />
+        return <ImageIcon size={18} className="text-emerald-600" />
       case "canvas":
         return <PencilRuler size={18} className="text-purple-600" />
       case "link":
@@ -773,7 +773,7 @@ function AddMaterialModal({
                 [
                   { type: "note", label: "Note", icon: FileText },
                   { type: "pdf", label: "PDF", icon: FilePdf },
-                  { type: "image", label: "Image", icon: Image },
+                  { type: "image", label: "Image", icon: ImageIcon },
                   { type: "document", label: "Doc", icon: File },
                   { type: "link", label: "Link", icon: LinkSimple },
                   { type: "canvas", label: "Canvas", icon: PencilRuler },
@@ -1043,7 +1043,7 @@ function MaterialPreviewModal({
 
         <div className="p-8 text-center rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700 space-y-3">
           {material.type === "image" ? (
-            <Image size={48} className="mx-auto text-emerald-600" />
+            <ImageIcon size={48} className="mx-auto text-emerald-600" />
           ) : (
             <FilePdf size={48} className="mx-auto text-red-600" />
           )}

@@ -46,9 +46,9 @@ export default function DashboardPage() {
 
     if (activeTab === "shared") {
       if (user) {
-        setLoading(true)
         import("@/lib/supabase/client").then(({ getSupabaseBrowserClient }) => {
           if (cancelled) return
+          setLoading(true)
           const supabase = getSupabaseBrowserClient()
           supabase
             .from("document_members")
@@ -91,7 +91,9 @@ export default function DashboardPage() {
         })
       }
     } else {
-      setLoading(true)
+      queueMicrotask(() => {
+        if (!cancelled) setLoading(true)
+      })
       listLocalDocuments(activeTab === "trash")
         .then((docs) => {
           if (cancelled) return
