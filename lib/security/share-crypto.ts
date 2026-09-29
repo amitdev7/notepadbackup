@@ -359,7 +359,7 @@ export async function hashSharePassword(
   const derivedBits = await globalThis.crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
-      salt: saltBytes,
+      salt: saltBytes as unknown as BufferSource,
       iterations: 100_000,
       hash: "SHA-256",
     },

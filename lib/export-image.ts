@@ -361,3 +361,22 @@ export async function exportPng(): Promise<void> {
   const blob = await renderPng(nodes)
   downloadPng(blob)
 }
+
+/** Direct canvas export download for shared viewer routes */
+export async function exportCanvasAsPng(
+  nodes: Record<string, SquigNode>,
+  order: string[],
+  fileName?: string
+): Promise<void> {
+  const list = order.map((id) => nodes[id]).filter(Boolean)
+  if (!list.length) return
+  const blob = await renderPng(list)
+  const name = (fileName || "wireframe").replace(/\.png$/i, "").replace(/[^\w -]+/g, "").trim() || "wireframe"
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `${name}.png`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+

@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth-store"
 import { listLocalDocuments, type StoredLocalDoc } from "@/lib/storage/documents"
 import { Button } from "@/components/ui/button"
@@ -12,74 +14,109 @@ import {
   ShareNetwork,
   Trash,
   Clock,
-  CloudCheck,
-  Check,
-  DotsThreeVertical,
 } from "@phosphor-icons/react"
 import { AuthCorner } from "@/components/chrome/auth-corner"
 import { WorkspaceSwitcher } from "@/components/chrome/workspace-switcher"
 
+interface SharedDocItem {
+  id: string
+  name: string
+  role: string
+  updatedAt: string
+  isPublic: boolean
+  shareState: string
+  doc?: {
+    nodes?: Record<string, unknown>
+    order?: string[]
+  }
+}
+
+type TabType = "recent" | "projects" | "shared" | "trash"
+
 export default function DashboardPage() {
+  const router = useRouter()
   const { user, state, openAuthDialog } = useAuthStore()
   const [documents, setDocuments] = useState<StoredLocalDoc[]>([])
-  const [sharedDocs, setSharedDocs] = useState<any[]>([])
+  const [sharedDocs, setSharedDocs] = useState<SharedDocItem[]>([])
+  const [activeTab, setActiveTab] = useState<TabType>("recent")
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+
     if (activeTab === "shared") {
-      setLoading(true)
-      // Fetch shared documents from Supabase if authenticated
       if (user) {
+        setLoading(true)
         import("@/lib/supabase/client").then(({ getSupabaseBrowserClient }) => {
+          if (cancelled) return
           const supabase = getSupabaseBrowserClient()
           supabase
             .from("document_members")
             .select("document_id, role, created_at, documents(id, name, updated_at, is_public, schema_version)")
             .eq("user_id", user.id)
             .then(({ data, error }) => {
+              if (cancelled) return
               if (!error && data) {
-                const list = data
-                  .filter((m: any) => m.documents)
-                  .map((m: any) => ({
-                    id: m.documents.id,
-                    name: m.documents.name,
+                const list = (data as Array<{
+                  role: string
+                  documents: {
+                    id: string
+                    name: string
+                    updated_at: string
+                    is_public: boolean
+                  } | null
+                }>)
+                  .filter((m) => m.documents !== null)
+                  .map((m) => ({
+                    id: m.documents!.id,
+                    name: m.documents!.name,
                     role: m.role,
-                    updatedAt: m.documents.updated_at,
-                    isPublic: m.documents.is_public,
+                    updatedAt: m.documents!.updated_at,
+                    isPublic: m.documents!.is_public,
                     shareState: "shared",
                   }))
                 setSharedDocs(list)
               }
               setLoading(false)
+            }, () => {
+              if (!cancelled) setLoading(false)
             })
         })
       } else {
-        setSharedDocs([])
-        setLoading(false)
+        Promise.resolve().then(() => {
+          if (!cancelled) {
+            setSharedDocs([])
+            setLoading(false)
+          }
+        })
       }
     } else {
+      setLoading(true)
       listLocalDocuments(activeTab === "trash")
         .then((docs) => {
+          if (cancelled) return
           if (activeTab === "trash") {
             setDocuments(docs.filter((d) => d.deletedAt !== null))
           } else {
             setDocuments(docs.filter((d) => d.deletedAt === null))
           }
         })
-        .finally(() => setLoading(false))
+        .finally(() => {
+          if (!cancelled) setLoading(false)
+        })
+    }
+
+    return () => {
+      cancelled = true
     }
   }, [activeTab, user])
 
   const handleOpenDoc = (doc: { id: string }) => {
-    // Navigate to canvas with docId or load into store
-    if (typeof window !== "undefined") {
-      window.location.href = `/?doc=${doc.id}`
-    }
+    router.push(`/?doc=${doc.id}`)
   }
 
   const handleCreateNew = () => {
-    if (typeof window !== "undefined") {
-      window.location.href = "/"
-    }
+    router.push("/")
   }
 
   return (
@@ -89,9 +126,9 @@ export default function DashboardPage() {
         <div>
           {/* Logo & Workspace */}
           <div className="flex items-center justify-between pb-4 border-b border-stone-200">
-            <a href="/" className="font-serif text-lg font-medium tracking-tight text-stone-800 flex items-center gap-1.5">
+            <Link href="/" className="font-serif text-lg font-medium tracking-tight text-stone-800 flex items-center gap-1.5">
               <span>zenithsui</span>
-            </a>
+            </Link>
           </div>
 
           <div className="pt-3 pb-2">
@@ -101,33 +138,32 @@ export default function DashboardPage() {
           {/* New Document Button */}
           <Button
             onClick={handleCreateNew}
-            className="w-full justify-center gap-2 text-xs h-8.5 mt-2 bg-stone-900 text-stone-50 hover:bg-stone-800"
+            className="w-full mt-3 justify-start gap-2 bg-stone-900 hover:bg-stone-800 text-white shadow-2xs text-xs font-mono"
+            size="sm"
           >
-            <Plus size={14} weight="bold" />
-            New Drawing
+            <Plus size={14} />
+            <span>New Drawing</span>
           </Button>
 
           {/* Navigation Links */}
-          <nav className="mt-6 space-y-1 text-xs font-medium">
+          <nav className="mt-6 space-y-1">
             <button
-              type="button"
               onClick={() => setActiveTab("recent")}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "recent"
-                  ? "bg-stone-200/70 text-stone-900"
+                  ? "bg-stone-200/70 text-stone-950 font-semibold"
                   : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
               }`}
             >
               <Clock size={16} />
-              Recent Drawings
+              Recent
             </button>
 
             <button
-              type="button"
               onClick={() => setActiveTab("projects")}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "projects"
-                  ? "bg-stone-200/70 text-stone-900"
+                  ? "bg-stone-200/70 text-stone-950 font-semibold"
                   : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
               }`}
             >
@@ -136,24 +172,22 @@ export default function DashboardPage() {
             </button>
 
             <button
-              type="button"
               onClick={() => setActiveTab("shared")}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "shared"
-                  ? "bg-stone-200/70 text-stone-900"
+                  ? "bg-stone-200/70 text-stone-950 font-semibold"
                   : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
               }`}
             >
               <ShareNetwork size={16} />
-              Shared with Me
+              Shared with me
             </button>
 
             <button
-              type="button"
               onClick={() => setActiveTab("trash")}
-              className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "trash"
-                  ? "bg-stone-200/70 text-stone-900"
+                  ? "bg-stone-200/70 text-stone-950 font-semibold"
                   : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
               }`}
             >
@@ -165,13 +199,13 @@ export default function DashboardPage() {
 
         {/* Back to Canvas & Auth */}
         <div className="pt-4 border-t border-stone-200/80 flex items-center justify-between">
-          <a
+          <Link
             href="/"
             className="flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 transition-colors"
           >
             <ArrowLeft size={14} />
             Back to Canvas
-          </a>
+          </Link>
           <AuthCorner />
         </div>
       </aside>
@@ -179,39 +213,54 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="h-14 border-b border-stone-200/80 px-8 flex items-center justify-between">
+        <header className="h-14 border-b border-stone-200/80 bg-white/60 px-8 flex items-center justify-between backdrop-blur-xs">
           <h1 className="font-serif text-lg font-medium text-stone-800 capitalize">
-            {activeTab === "recent" && "Recent Drawings"}
-            {activeTab === "projects" && "Projects"}
-            {activeTab === "shared" && "Shared with Me"}
-            {activeTab === "trash" && "Trash"}
+            {activeTab === "recent"
+              ? "Recent Drawings"
+              : activeTab === "projects"
+              ? "Projects"
+              : activeTab === "shared"
+              ? "Shared with Me"
+              : "Trash"}
           </h1>
 
-          {state === "unauthenticated" && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => openAuthDialog("sign-in")}
-              className="text-xs h-8"
-            >
-              Sign in to sync drawings
-            </Button>
-          )}
+          <div className="flex items-center gap-3">
+            {state !== "authenticated" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openAuthDialog("sign-in")}
+                className="text-xs font-mono h-8 border-stone-300"
+              >
+                Sign In to Sync
+              </Button>
+            )}
+          </div>
         </header>
 
-        {/* Document Grid */}
+        {/* Documents Grid / List */}
         <div className="flex-1 overflow-y-auto p-8">
           {loading ? (
-            <div className="text-xs text-stone-400 py-12 text-center">Loading drawings…</div>
-          ) : documents.length === 0 ? (
-            <div className="py-16 text-center max-w-sm mx-auto">
-              <FileText size={36} className="mx-auto text-stone-300 mb-3" />
-              <p className="text-sm font-medium text-stone-600 mb-1">
-                {activeTab === "trash" ? "Trash is empty" : "No drawings found"}
-              </p>
-              <p className="text-xs text-stone-400 mb-4">
+            <div className="flex h-64 items-center justify-center text-sm font-mono text-stone-400">
+              Loading drawings…
+            </div>
+          ) : (activeTab === "shared" ? sharedDocs.length === 0 : documents.length === 0) ? (
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200 rounded-xl p-8 text-center max-w-md mx-auto my-12">
+              <div className="rounded-full bg-stone-100 p-3 text-stone-400 mb-3">
+                <FileText size={24} />
+              </div>
+              <h3 className="text-sm font-medium text-stone-800">
                 {activeTab === "trash"
-                  ? "Deleted items will appear here before permanent purge."
+                  ? "Trash is empty"
+                  : activeTab === "shared"
+                  ? "No shared documents"
+                  : "No drawings yet"}
+              </h3>
+              <p className="text-xs text-stone-500 mt-1 mb-4">
+                {activeTab === "trash"
+                  ? "Documents you delete will show up here."
+                  : activeTab === "shared"
+                  ? "Documents shared with your account will appear here."
                   : "Start a new wireframe on the napkin canvas."}
               </p>
               {activeTab !== "trash" && (
@@ -223,10 +272,9 @@ export default function DashboardPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {(activeTab === "shared" ? sharedDocs : documents).map((doc) => {
-                const nodeCount = Object.keys(doc.doc?.nodes || {}).length
-                const isSynced = doc.syncStatus === "synced"
-                const isPublic = doc.isPublic
-                const isShared = activeTab === "shared" || doc.shareState === "shared"
+                const nodeCount = Object.keys(('doc' in doc ? doc.doc?.nodes : undefined) || {}).length
+                const isPublic = 'isPublic' in doc ? doc.isPublic : false
+                const isShared = activeTab === "shared" || ('shareState' in doc && doc.shareState === "shared")
 
                 return (
                   <div
@@ -238,7 +286,7 @@ export default function DashboardPage() {
                       {/* Document Preview Box / Thumbnail */}
                       <div className="h-20 w-full rounded-md bg-[#FBFAF5] border border-stone-100 flex items-center justify-center text-stone-300 group-hover:text-stone-400 transition-colors mb-3">
                         <span className="font-sketch text-sm">
-                          {activeTab === "shared" ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
+                          {activeTab === "shared" && 'role' in doc ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
                         </span>
                       </div>
 
@@ -269,4 +317,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-

@@ -14,6 +14,7 @@ import { useRef, useState } from "react"
 import { useSquig } from "@/lib/store"
 import { exportDoc, importDoc } from "@/lib/file-io"
 import { ArrowUpRightIcon, CaretDownIcon, ShareNetwork, WifiHigh, Bell, GraduationCap } from "@phosphor-icons/react"
+import { useWifiSessionStore } from "@/lib/lan/session"
 import { NotificationsPanel } from "@/components/chrome/notifications-panel"
 import {
   DropdownMenu,
@@ -78,7 +79,7 @@ export function TopCorner() {
           <DropdownMenuItem onClick={() => st().setShareOpen(true)}>
             Share…
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => st().setWifiPublishOpen(true)}>
+          <DropdownMenuItem onClick={() => useWifiSessionStore.getState().openPublishDialog()}>
             Publish on Wi-Fi…
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => st().setHistoryOpen(true)}>
@@ -239,7 +240,7 @@ export function TopRight() {
 
         <button
           type="button"
-          onClick={() => st().setWifiPublishOpen(true)}
+          onClick={() => useWifiSessionStore.getState().openPublishDialog()}
           className="flex items-center gap-1.5 px-2 py-1 rounded-chrome-sm text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           title="Publish on Wi-Fi"
         >

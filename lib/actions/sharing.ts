@@ -102,7 +102,6 @@ export async function updateDocumentMemberRoleAction(
     .from("document_members")
     .update({
       role: newRole,
-      updated_at: new Date().toISOString(),
     })
     .eq("document_id", documentId)
     .eq("user_id", targetUserId)

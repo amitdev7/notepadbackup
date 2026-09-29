@@ -322,7 +322,7 @@ export async function verifyShareSessionToken(
     const isValidSignature = await subtle.verify(
       "HMAC",
       cryptoKey,
-      signatureBytes,
+      signatureBytes as unknown as BufferSource,
       encoder.encode(payloadB64)
     )
 

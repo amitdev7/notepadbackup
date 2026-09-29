@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import { validateIncomingDocumentPayload } from "@/lib/security/sanitize"
-import type { CanvasDocumentJson } from "@/lib/db/types"
+import type { CanvasDocumentJson, Database } from "@/lib/db/types"
 
 interface RouteContext {
   params: Promise<{ id: string }>
@@ -96,7 +96,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     }
 
     // 3. Build update fields
-    const updates: Record<string, unknown> = {
+    const updates: Database["public"]["Tables"]["documents"]["Update"] = {
       updated_at: new Date().toISOString(),
       updated_by: user.id,
       revision: currentDoc.revision + 1,

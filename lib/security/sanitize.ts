@@ -340,7 +340,7 @@ export function validateSecureNode(v: unknown): SquigNode | null {
   }
 
   if (sanitized.type === "shape") {
-    sanitized.fill = normalizeFill((n as ShapeNode).fill)
+    sanitized.fill = normalizeFill((n as unknown as ShapeNode).fill)
   }
 
   return sanitized

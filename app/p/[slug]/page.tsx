@@ -1,4 +1,5 @@
 import { Metadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { resolvePublicDocument } from "@/lib/cloud/public"
 import { ViewerClient } from "../../share/[token]/viewer-client"
@@ -55,9 +56,9 @@ export default async function PublicSlugPage({ params }: PageProps) {
       <div className="flex h-screen w-screen flex-col items-center justify-center bg-background p-4 text-center font-mono">
         <h1 className="text-xl font-bold text-destructive">404 — Not Found</h1>
         <p className="mt-2 text-sm text-muted-foreground">{result.error || "This document does not exist."}</p>
-        <a href="/" className="mt-6 text-xs text-primary underline">
+        <Link href="/" className="mt-6 text-xs text-primary underline">
           Return to Zenithsui
-        </a>
+        </Link>
       </div>
     )
   }
@@ -69,9 +70,9 @@ export default async function PublicSlugPage({ params }: PageProps) {
         <p className="mt-2 text-sm text-muted-foreground">
           This document has been unpublished by its owner and is no longer available.
         </p>
-        <a href="/" className="mt-6 text-xs text-primary underline">
+        <Link href="/" className="mt-6 text-xs text-primary underline">
           Return to Zenithsui
-        </a>
+        </Link>
       </div>
     )
   }
@@ -81,9 +82,10 @@ export default async function PublicSlugPage({ params }: PageProps) {
       token={slug}
       initialRequiresPassword={false}
       initialDoc={result.document}
-      permission={result.document.public_role || "view"}
+      permission={result.document.public_role === "editor" ? "edit" : "view"}
       allowExport={true}
       allowDuplicate={true}
     />
   )
 }
+

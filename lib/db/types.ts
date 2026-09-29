@@ -639,7 +639,7 @@ export interface GuardianInvitationRecord {
   created_at: string
 }
 
-export interface Database {
+export interface BaseDatabase {
   public: {
     Tables: {
       profiles: {
@@ -654,7 +654,7 @@ export interface Database {
       }
       workspace_members: {
         Row: WorkspaceMemberRecord
-        Insert: WorkspaceMemberRecord
+        Insert: Partial<WorkspaceMemberRecord> & { workspace_id: string; user_id: string; role: WorkspaceRole }
         Update: Partial<WorkspaceMemberRecord>
       }
       projects: {
@@ -669,7 +669,7 @@ export interface Database {
       }
       document_members: {
         Row: DocumentMemberRecord
-        Insert: DocumentMemberRecord
+        Insert: Partial<DocumentMemberRecord> & { document_id: string; user_id: string; role: DocumentRole }
         Update: Partial<DocumentMemberRecord>
       }
       document_invitations: {
@@ -901,3 +901,27 @@ export interface Database {
     }
   }
 }
+
+export type Database = {
+  public: {
+    Tables: {
+      [K in keyof BaseDatabase["public"]["Tables"]]: {
+        Row: {
+          [P in keyof BaseDatabase["public"]["Tables"][K]["Row"]]: BaseDatabase["public"]["Tables"][K]["Row"][P]
+        }
+        Insert: {
+          [P in keyof BaseDatabase["public"]["Tables"][K]["Insert"]]: BaseDatabase["public"]["Tables"][K]["Insert"][P]
+        }
+        Update: {
+          [P in keyof BaseDatabase["public"]["Tables"][K]["Update"]]: BaseDatabase["public"]["Tables"][K]["Update"][P]
+        }
+        Relationships: []
+      }
+    }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
+  }
+}
+

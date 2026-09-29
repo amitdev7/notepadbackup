@@ -150,7 +150,7 @@ export async function runSyncWorker(): Promise<void> {
 
   try {
     let pendingCount = await getPendingMutationCount()
-    syncStore.setState({ pendingCount })
+    useSyncStore.setState({ pendingCount })
 
     let mutation = await getNextPendingMutation()
 
@@ -161,7 +161,7 @@ export async function runSyncWorker(): Promise<void> {
 
       if (result.success) {
         await removeMutation(mutation.id)
-        syncStore.setState({ lastSyncedAt: Date.now() })
+        useSyncStore.setState({ lastSyncedAt: Date.now() })
       } else if (result.conflict) {
         // Halt processing for this document and display conflict resolution
         syncStore.setConflict({
@@ -183,7 +183,7 @@ export async function runSyncWorker(): Promise<void> {
       }
 
       pendingCount = await getPendingMutationCount()
-      syncStore.setState({ pendingCount })
+      useSyncStore.setState({ pendingCount })
       mutation = await getNextPendingMutation()
     }
 

@@ -5,6 +5,8 @@
 import { getSupabaseBrowserClient } from "../supabase/client"
 import type { DocumentVersionRecord, CanvasDocumentJson } from "../db/types"
 
+export type { DocumentVersionRecord, CanvasDocumentJson }
+
 export async function createVersionSnapshot(
   documentId: string,
   snapshot: CanvasDocumentJson,

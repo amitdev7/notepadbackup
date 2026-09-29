@@ -35,11 +35,13 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
     setRestoringId(version.id)
     try {
       const snapshot = await restoreVersionSnapshot(cloudDocId, version.id)
-      loadDoc({
-        fileName: fileName || "Untitled",
-        nodes: snapshot.nodes || {},
-        order: snapshot.order || [],
-      })
+      loadDoc(
+        JSON.stringify({
+          fileName: fileName || "Untitled",
+          nodes: snapshot.nodes || {},
+          order: snapshot.order || [],
+        })
+      )
       onClose()
     } finally {
       setRestoringId(null)
@@ -48,13 +50,16 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
 
   const handleSaveAsCopy = (version: DocumentVersionRecord) => {
     const copyName = `${fileName} (${version.label || "Copy"})`
-    loadDoc({
-      fileName: copyName,
-      nodes: version.snapshot.nodes || {},
-      order: version.snapshot.order || [],
-    })
+    loadDoc(
+      JSON.stringify({
+        fileName: copyName,
+        nodes: version.snapshot.nodes || {},
+        order: version.snapshot.order || [],
+      })
+    )
     onClose()
   }
+
 
   return (
     <div

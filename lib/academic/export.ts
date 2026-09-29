@@ -1300,7 +1300,7 @@ export async function archiveAcademicYear(
       name: newYear.name,
       start_date: newYear.startDate,
       end_date: newYear.endDate,
-      grade_level: newYear.gradeLevel,
+      grade_level: newYear.gradeLevel || "Grade 11",
       status: "active",
       created_at: nowIso,
       updated_at: nowIso,
