@@ -1,0 +1,104 @@
+
+> zenithsui@0.1.0 build C:\Users\amitk\Pictures\websitetesting\notepadbackup
+> next build
+
+▲ Next.js 16.2.12 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 4 errors:
+./app/page.tsx:20:1
+Export ConflictDialog doesn't exist in target module
+  [90m18 |[0m [36mimport[0m { [33mWifiPublishDialog[0m } [36mfrom[0m [32m"@/components/chrome/wifi-publish-dialog"[0m
+  [90m19 |[0m [36mimport[0m { [33mWifiDevicePanel[0m } [36mfrom[0m [32m"@/components/chrome/wifi-device-panel"[0m
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mConflictDialog[0m } [36mfrom[0m [32m"@/components/chrome/conflict-dialog"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mMigrationDialog[0m } [36mfrom[0m [32m"@/components/chrome/migration-dialog"[0m
+  [90m22 |[0m [36mimport[0m { [33mVersionHistoryPanel[0m } [36mfrom[0m [32m"@/components/chrome/version-history-panel"[0m
+  [90m23 |[0m [36mimport[0m { [33mTrashDialog[0m } [36mfrom[0m [32m"@/components/chrome/trash-dialog"[0m
+
+The export ConflictDialog was not found in module [project]/components/chrome/conflict-dialog.tsx [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+./app/page.tsx:20:1
+Export ConflictDialog doesn't exist in target module
+  [90m18 |[0m [36mimport[0m { [33mWifiPublishDialog[0m } [36mfrom[0m [32m"@/components/chrome/wifi-publish-dialog"[0m
+  [90m19 |[0m [36mimport[0m { [33mWifiDevicePanel[0m } [36mfrom[0m [32m"@/components/chrome/wifi-device-panel"[0m
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mConflictDialog[0m } [36mfrom[0m [32m"@/components/chrome/conflict-dialog"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mMigrationDialog[0m } [36mfrom[0m [32m"@/components/chrome/migration-dialog"[0m
+  [90m22 |[0m [36mimport[0m { [33mVersionHistoryPanel[0m } [36mfrom[0m [32m"@/components/chrome/version-history-panel"[0m
+  [90m23 |[0m [36mimport[0m { [33mTrashDialog[0m } [36mfrom[0m [32m"@/components/chrome/trash-dialog"[0m
+
+The export ConflictDialog was not found in module [project]/components/chrome/conflict-dialog.tsx [app-ssr] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+
+./app/share/[token]/viewer-client.tsx:8:1
+Export exportCanvasAsPng doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m
+  [90m 7 |[0m [36mimport[0m { [33mLock[0m, [33mEye[0m, [33mDownloadSimple[0m, [33mArrowSquareOut[0m, [33mMagnifyingGlassPlus[0m, [33mMagnifyingGlassMi...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { exportCanvasAsPng } [36mfrom[0m [32m"@/lib/export-image"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m { useSquig } [36mfrom[0m [32m"@/lib/store"[0m
+  [90m10 |[0m
+  [90m11 |[0m [36minterface[0m [33mViewerClientProps[0m {
+
+The export exportCanvasAsPng was not found in module [project]/lib/export-image.ts [app-client] (ecmascript).
+Did you mean to import exportPng?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./app/share/[token]/viewer-client.tsx
+    ./app/share/[token]/page.tsx
+
+
+./app/share/[token]/viewer-client.tsx:8:1
+Export exportCanvasAsPng doesn't exist in target module
+  [90m 6 |[0m [36mimport[0m { [33mButton[0m } [36mfrom[0m [32m"@/components/ui/button"[0m
+  [90m 7 |[0m [36mimport[0m { [33mLock[0m, [33mEye[0m, [33mDownloadSimple[0m, [33mArrowSquareOut[0m, [33mMagnifyingGlassPlus[0m, [33mMagnifyingGlassMi...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { exportCanvasAsPng } [36mfrom[0m [32m"@/lib/export-image"[0m
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m { useSquig } [36mfrom[0m [32m"@/lib/store"[0m
+  [90m10 |[0m
+  [90m11 |[0m [36minterface[0m [33mViewerClientProps[0m {
+
+The export exportCanvasAsPng was not found in module [project]/lib/export-image.ts [app-ssr] (ecmascript).
+Did you mean to import exportPng?
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import trace:
+  Server Component:
+    ./app/share/[token]/viewer-client.tsx
+    ./app/share/[token]/page.tsx
+
+
+    at <unknown> (./app/page.tsx:20:1)
+    at <unknown> (./app/page.tsx:20:1)
+    at <unknown> (./app/share/[token]/viewer-client.tsx:8:1)
+    at <unknown> (./app/share/[token]/viewer-client.tsx:8:1)
+ ELIFECYCLE  Command failed with exit code 1.
