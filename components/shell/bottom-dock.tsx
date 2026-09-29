@@ -124,54 +124,49 @@ export function BottomDock() {
     >
       {/* ── Brand / File Menu ── */}
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-          >
-            <span className="text-blue-600 font-bold tracking-tight">zenithsui</span>
-            <CaretDown size={10} weight="bold" className="text-stone-400" />
-          </button>
+        <DropdownMenuTrigger
+          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer"
+        >
+          <span className="text-blue-600 font-bold tracking-tight">zenithsui</span>
+          <CaretDown size={10} weight="bold" className="text-stone-400" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" sideOffset={8} className="w-56">
-          <DropdownMenuItem onSelect={() => { window.location.href = "/" }}>
+          <DropdownMenuItem onClick={() => { window.location.href = "/" }}>
             <File size={14} className="mr-2" /> New Canvas
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setCommandOpen(true)}>
+          <DropdownMenuItem onClick={() => setCommandOpen(true)}>
             <FolderOpen size={14} className="mr-2" /> Open / Recent…
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => setShareOpen(true)}>
+          <DropdownMenuItem onClick={() => setShareOpen(true)}>
             <ShareNetwork size={14} className="mr-2" /> Share…
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => useWifiSessionStore.getState().openPublishDialog()}>
+          <DropdownMenuItem onClick={() => useWifiSessionStore.getState().openPublishDialog()}>
             <WifiHigh size={14} className="mr-2" /> Publish on Wi-Fi…
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => setHistoryOpen(true)}>
+          <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
             <ClockCounterClockwise size={14} className="mr-2" /> Version History
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => undo()}>
+          <DropdownMenuItem onClick={() => undo()}>
             <ArrowCounterClockwise size={14} className="mr-2" /> Undo
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => redo()}>
+          <DropdownMenuItem onClick={() => redo()}>
             <ArrowClockwise size={14} className="mr-2" /> Redo
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => setViewport({ x: 0, y: 0, zoom: 1 })}>
+          <DropdownMenuItem onClick={() => setViewport({ x: 0, y: 0, zoom: 1 })}>
             <ArrowCounterClockwise size={14} className="mr-2" /> Reset Zoom
           </DropdownMenuItem>
           <DropdownMenuItem
-            onSelect={() => { if (window.confirm("Clear all items?")) clearCanvas() }}
+            onClick={() => { if (window.confirm("Clear all items?")) clearCanvas() }}
             className="text-red-600 dark:text-red-400"
           >
             <Trash size={14} className="mr-2" /> Clear Canvas
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <a href="https://github.com/amitdev7/notepadbackup" target="_blank" rel="noopener noreferrer">
-              <GithubLogo size={14} className="mr-2" /> GitHub
-            </a>
+          <DropdownMenuItem onClick={() => window.open("https://github.com/amitdev7/notepadbackup", "_blank", "noopener,noreferrer")}>
+            <GithubLogo size={14} className="mr-2" /> GitHub
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
