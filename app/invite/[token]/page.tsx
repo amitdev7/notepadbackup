@@ -28,10 +28,14 @@ export default function InvitePage({ params }: InvitePageProps) {
     setError(null)
 
     try {
-      await acceptInvitationAction(token)
+      const res = await acceptInvitationAction(token)
       setAccepted(true)
       setTimeout(() => {
-        window.location.href = "/"
+        if (res?.documentId) {
+          window.location.href = `/?doc=${res.documentId}`
+        } else {
+          window.location.href = "/"
+        }
       }, 1500)
     } catch (err: any) {
       setError(err.message || "Failed to accept invitation")

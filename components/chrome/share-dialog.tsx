@@ -118,6 +118,12 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
       }
     }
     loadData()
+
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
   }, [isOpen, cloudDocId])
 
   if (!isOpen) return null
@@ -287,7 +293,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
         if (e.key === "Escape") onClose()
       }}
     >
-      <div className="w-full max-w-xl max-h-[90vh] flex flex-col rounded-xl border border-border bg-card p-6 shadow-2xl text-card-foreground overflow-hidden">
+      <div className="w-full max-w-xl max-h-[92vh] flex flex-col rounded-xl border border-border bg-card p-4 sm:p-6 shadow-2xl text-card-foreground overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">

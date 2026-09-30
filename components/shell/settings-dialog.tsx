@@ -85,14 +85,19 @@ export function SettingsDialog() {
   const setActiveSection = useShellStore((s) => s.setSettingsSection)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Close on Escape
+  // Close on Escape & lock body scroll
   useEffect(() => {
     if (!isOpen) return
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsOpen(false)
     }
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
     window.addEventListener("keydown", onKeyDown)
-    return () => window.removeEventListener("keydown", onKeyDown)
+    return () => {
+      document.body.style.overflow = prevOverflow
+      window.removeEventListener("keydown", onKeyDown)
+    }
   }, [isOpen, setIsOpen])
 
   if (!isOpen) return null

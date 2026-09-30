@@ -68,22 +68,22 @@ export function calculateSubjectAggregate(
 
   for (const entry of marksEntries) {
     const scored =
-      typeof entry.scored === "number"
+      typeof entry.scored === "number" && !isNaN(entry.scored)
         ? entry.scored
-        : typeof entry.score === "number"
+        : typeof entry.score === "number" && !isNaN(entry.score)
         ? entry.score
-        : typeof entry.scoredMarks === "number"
+        : typeof entry.scoredMarks === "number" && !isNaN(entry.scoredMarks)
         ? entry.scoredMarks
         : 0;
 
     const max =
-      typeof entry.max === "number"
+      typeof entry.max === "number" && !isNaN(entry.max)
         ? entry.max
-        : typeof entry.total === "number"
+        : typeof entry.total === "number" && !isNaN(entry.total)
         ? entry.total
-        : typeof entry.maxMarks === "number"
+        : typeof entry.maxMarks === "number" && !isNaN(entry.maxMarks)
         ? entry.maxMarks
-        : typeof entry.totalMarks === "number"
+        : typeof entry.totalMarks === "number" && !isNaN(entry.totalMarks)
         ? entry.totalMarks
         : 100;
 
@@ -161,8 +161,9 @@ export function calculatePerformanceTrend(
   let sumX = 0;
   let sumY = 0;
   for (let i = 0; i < n; i++) {
+    const pct = typeof sorted[i].percentage === "number" && !isNaN(sorted[i].percentage) ? sorted[i].percentage : 0;
     sumX += i;
-    sumY += sorted[i].percentage;
+    sumY += pct;
   }
 
   const meanX = sumX / n;
@@ -171,16 +172,17 @@ export function calculatePerformanceTrend(
   let numerator = 0;
   let denominator = 0;
   for (let i = 0; i < n; i++) {
+    const pct = typeof sorted[i].percentage === "number" && !isNaN(sorted[i].percentage) ? sorted[i].percentage : 0;
     const diffX = i - meanX;
-    const diffY = sorted[i].percentage - meanY;
+    const diffY = pct - meanY;
     numerator += diffX * diffY;
     denominator += diffX * diffX;
   }
 
-  if (denominator === 0) {
+  if (denominator === 0 || isNaN(denominator) || isNaN(numerator)) {
     return {
       slope: 0,
-      intercept: meanY,
+      intercept: isNaN(meanY) ? 0 : meanY,
       direction: "stable",
     };
   }
@@ -234,10 +236,13 @@ export function calculateWSI(
   confidence: number,
   unattempted: boolean
 ): number {
-  let normAcc = accuracy > 1.0 ? accuracy / 100.0 : accuracy;
+  const safeAcc = typeof accuracy === "number" && !isNaN(accuracy) ? accuracy : 0;
+  let normAcc = safeAcc > 1.0 ? safeAcc / 100.0 : safeAcc;
   normAcc = Math.max(0.0, Math.min(1.0, normAcc));
-  const mistClamped = Math.max(0, mistakeCount);
-  const confClamped = Math.max(1, Math.min(5, confidence));
+  const safeMistakes = typeof mistakeCount === "number" && !isNaN(mistakeCount) ? mistakeCount : 0;
+  const mistClamped = Math.max(0, safeMistakes);
+  const safeConf = typeof confidence === "number" && !isNaN(confidence) ? confidence : 3;
+  const confClamped = Math.max(1, Math.min(5, safeConf));
   const iUnattempted = unattempted ? 1.0 : 0.0;
 
   const wsi =
@@ -246,7 +251,8 @@ export function calculateWSI(
     20.0 * ((5.0 - confClamped) / 4.0) +
     15.0 * iUnattempted;
 
-  return Math.max(0.0, Math.min(100.0, wsi));
+  const res = Math.max(0.0, Math.min(100.0, wsi));
+  return isNaN(res) ? 0 : res;
 }
 
 export function calculateTopicWSI(topic: TopicAnalyticsInput): {
@@ -491,13 +497,14 @@ export function calculateFocusEfficiencyScore(
   targetDuration: number,
   distractionCount: number = 0
 ): number {
-  if (targetDuration <= 0) {
+  if (!Number.isFinite(targetDuration) || targetDuration <= 0) {
     return 0;
   }
-  const tWork = Math.max(0, workDuration);
-  const nDistractions = Math.max(0, distractionCount);
+  const tWork = Math.max(0, Number.isFinite(workDuration) ? workDuration : 0);
+  const nDistractions = Math.max(0, Number.isFinite(distractionCount) ? distractionCount : 0);
   const rawScore = 100.0 * (tWork / targetDuration) - 10.0 * nDistractions;
-  return Math.max(0.0, Math.min(100.0, rawScore));
+  const res = Math.max(0.0, Math.min(100.0, rawScore));
+  return isNaN(res) ? 0 : res;
 }
 
 export const calculateFES = calculateFocusEfficiencyScore;

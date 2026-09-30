@@ -106,7 +106,7 @@ export function BottomDock() {
       aria-label="Main dock"
       className={cn(
         "fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
-        "flex items-center gap-1 px-2 py-1.5 max-w-[calc(100vw-1.5rem)]",
+        "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)] overflow-x-auto no-scrollbar",
         "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
         "bg-white/90 dark:bg-[#1C1C1F]/90 backdrop-blur-xl",
         "shadow-lg shadow-stone-900/8 dark:shadow-black/40"
@@ -116,9 +116,10 @@ export function BottomDock() {
       <DropdownMenu>
         <DropdownMenuTrigger
           aria-label="Zenithsui workspace menu"
-          className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer shrink-0"
+          className="flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer shrink-0"
         >
-          <span className="text-blue-600 font-bold tracking-tight">zenithsui</span>
+          <span className="text-blue-600 font-bold tracking-tight hidden sm:inline">zenithsui</span>
+          <span className="text-blue-600 font-bold tracking-tight sm:hidden">z</span>
           <CaretDown size={10} weight="bold" className="text-stone-400" aria-hidden="true" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" sideOffset={8} className="w-56 font-sans">
@@ -184,13 +185,12 @@ export function BottomDock() {
             <button
               key={t.id}
               type="button"
-              data-dock-library-btn={t.id === "library" ? "" : undefined}
               onClick={() => handleToolClick(t)}
               title={`${t.label}${t.shortcut ? ` (${t.shortcut})` : ""}`}
               aria-label={t.label}
               aria-pressed={active}
               className={cn(
-                "relative flex items-center justify-center size-8 rounded-xl transition-all duration-100",
+                "relative flex items-center justify-center size-7 sm:size-8 rounded-xl transition-all duration-100",
                 active
                   ? "bg-blue-600 text-white shadow-xs shadow-blue-600/30"
                   : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
@@ -213,7 +213,7 @@ export function BottomDock() {
           onClick={() => setCommandOpen(true)}
           title="Search (⌘K)"
           aria-label="Search (⌘K)"
-          className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           <MagnifyingGlass size={16} aria-hidden="true" />
         </button>
@@ -227,7 +227,7 @@ export function BottomDock() {
           aria-label="Page settings"
           aria-expanded={pagePopoverOpen}
           className={cn(
-            "flex items-center justify-center size-8 rounded-xl transition-colors",
+            "flex items-center justify-center size-7 sm:size-8 rounded-xl transition-colors",
             pagePopoverOpen
               ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
               : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
@@ -244,7 +244,7 @@ export function BottomDock() {
           aria-label="Settings"
           aria-expanded={settingsOpen}
           className={cn(
-            "flex items-center justify-center size-8 rounded-xl transition-colors",
+            "flex items-center justify-center size-7 sm:size-8 rounded-xl transition-colors",
             settingsOpen
               ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400"
               : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
@@ -258,7 +258,7 @@ export function BottomDock() {
           href="/student"
           title="Student Hub"
           aria-label="Student Hub"
-          className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+          className="flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           <GraduationCap size={16} aria-hidden="true" />
         </Link>

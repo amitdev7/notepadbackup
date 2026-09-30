@@ -17,16 +17,15 @@ export async function GET(
   const cookieStore = await cookies()
   const allCookies = cookieStore.getAll()
 
-  // Find any relevant share password cookie
-  let sessionCookie: string | null = null
+  // Collect all relevant share password cookies
+  const sessionCookies: string[] = []
   for (const c of allCookies) {
-    if (c.name.startsWith("zs_share_pwd_")) {
-      sessionCookie = c.value
-      break
+    if (c.name.startsWith("zs_share_pwd_") && c.value) {
+      sessionCookies.push(c.value)
     }
   }
 
-  const result = await resolveShareToken(token, sessionCookie)
+  const result = await resolveShareToken(token, sessionCookies)
 
   if (!result.valid) {
     return NextResponse.json({ ok: false, error: result.error }, { status: 404 })

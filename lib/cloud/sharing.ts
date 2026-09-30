@@ -230,7 +230,7 @@ export async function revokeAllShareLinks(
  */
 export async function resolveShareToken(
   rawToken: string,
-  sessionCookieValue?: string | null,
+  sessionCookieValue?: string | string[] | null,
   client?: any
 ): Promise<ResolvedShareLink> {
   const supabase = client ?? (await createServerClient())
@@ -254,7 +254,15 @@ export async function resolveShareToken(
   if (link.password_hash) {
     let sessionValid = false
     if (sessionCookieValue) {
-      sessionValid = await verifyShareSessionToken(sessionCookieValue, link.id)
+      const candidates = Array.isArray(sessionCookieValue)
+        ? sessionCookieValue
+        : [sessionCookieValue]
+      for (const cand of candidates) {
+        if (cand && (await verifyShareSessionToken(cand, link.id))) {
+          sessionValid = true
+          break
+        }
+      }
     }
 
     if (!sessionValid) {

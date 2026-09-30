@@ -14,9 +14,8 @@
 // somewhere else.
 // ---------------------------------------------------------------------------
 
-import { useEffect, useMemo, useRef } from "react"
+import { useMemo } from "react"
 import { useSquig } from "@/lib/store"
-import { useShellStore } from "@/lib/shell-store"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
@@ -124,8 +123,7 @@ const STROKE_OPTIONS: readonly SegmentOption<StrokeWeight>[] = [
 export function Inspector() {
   const nodes = useSquig((s) => s.nodes)
   const selection = useSquig((s) => s.selection)
-  const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
-  const setPagePopoverOpen = useShellStore((s) => s.setPagePopoverOpen)
+  const selectNone = useSquig((s) => s.selectNone)
 
   const selected = useMemo(
     () => selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[],
@@ -133,37 +131,12 @@ export function Inspector() {
   )
   const empty = selected.length === 0
 
-  // Close Page settings on Escape or click outside when empty and open
-  const panelRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (!empty || !pagePopoverOpen) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPagePopoverOpen(false)
-    }
-    const onPointer = (e: PointerEvent) => {
-      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        const target = e.target as HTMLElement
-        if (!target.closest("[data-dock-page-btn]")) {
-          setPagePopoverOpen(false)
-        }
-      }
-    }
-    window.addEventListener("keydown", onKey)
-    window.addEventListener("pointerdown", onPointer)
-    return () => {
-      window.removeEventListener("keydown", onKey)
-      window.removeEventListener("pointerdown", onPointer)
-    }
-  }, [empty, pagePopoverOpen, setPagePopoverOpen])
+  // When nothing is selected, don't pin page settings over the canvas.
+  // Page settings are available via the Page button in the dock.
+  if (empty) return null
 
-  // When nothing is selected, do NOT show the panel unless the user explicitly toggled Page on
-  if (empty && !pagePopoverOpen) {
-    return null
-  }
-
-  const heading = empty
-    ? "Page"
-    : selected.length > 1
+  const heading =
+    selected.length > 1
       ? `${selected.length} selected`
       : selected[0].type === "component"
         ? (getDef((selected[0] as ComponentNode).kind)?.name ?? (selected[0] as ComponentNode).kind)
@@ -172,34 +145,27 @@ export function Inspector() {
   const subtitle = selected.length > 1 ? selectionSummary(selected) : undefined
 
   return (
-    <Panel ref={panelRef} className="absolute top-16 right-4 z-30 max-h-[calc(100vh-5rem)] w-[272px]">
-      <PanelHeader
-        title={heading}
-        subtitle={subtitle}
-        right={
-          empty ? (
-            <button
-              type="button"
-              onClick={() => setPagePopoverOpen(false)}
-              className="rounded p-1 text-muted-foreground hover:text-foreground hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
-              title="Close (Esc)"
-              aria-label="Close page settings"
-            >
-              <X size={14} />
-            </button>
-          ) : undefined
-        }
-      />
+    <Panel className="absolute top-16 right-2 sm:right-4 z-30 max-h-[calc(100vh-5rem)] w-[calc(100vw-1rem)] max-w-[272px]">
+      <div className="flex items-center justify-between">
+        <PanelHeader title={heading} subtitle={subtitle} />
+        <button
+          type="button"
+          onClick={selectNone}
+          className="mr-2 p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors sm:hidden"
+          title="Close inspector"
+          aria-label="Close inspector"
+        >
+          <X size={14} />
+        </button>
+      </div>
 
       <ScrollArea className="min-h-0">
-        {/* remounting on a selection change drops any half-typed draft, which
-            is what you want — the field now describes different objects */}
         <div key={selection.join(",")} className="flex flex-col">
-          {empty ? <PageSettings /> : <SelectionEditor selected={selected} />}
+          <SelectionEditor selected={selected} />
         </div>
       </ScrollArea>
 
-      {empty ? <PageFooter /> : <Footer selected={selected} />}
+      <Footer selected={selected} />
     </Panel>
   )
 }

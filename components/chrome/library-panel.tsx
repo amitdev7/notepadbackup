@@ -128,7 +128,7 @@ function Preview({
           {def.name}
         </span>
         <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 uppercase font-mono font-medium">
-          {def.category === "blocks" ? "Block" : "Component"}
+          {def.category === "blocks" ? (def.group === "Screens" ? "Template" : "Block") : "UI"}
         </span>
       </div>
     </button>
@@ -213,7 +213,7 @@ export function LibraryPanel() {
       role="dialog"
       aria-label="Zenithsui Library"
       className={cn(
-        "fixed top-14 sm:top-16 left-3 right-3 sm:right-auto sm:left-6 md:left-8 z-40 flex flex-col",
+        "fixed top-14 sm:top-16 left-3 right-3 sm:right-auto sm:left-6 md:left-8 z-[45] flex flex-col",
         "max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-5.5rem)]",
         isWide
           ? "w-auto sm:w-[740px] md:w-[860px] lg:w-[980px] xl:w-[1080px]"
