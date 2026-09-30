@@ -130,3 +130,4 @@ textarea,
 .cursor-not-allowed {
   cursor: url("/cursors/not-allowed.cur") 2 0, url("/cursors/not-allowed.png") 2 0, not-allowed !important;
 }
+
