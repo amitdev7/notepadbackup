@@ -19,6 +19,8 @@ export type SettingsSectionId =
   | "sharing"
   | "notifications"
   | "wifi"
+  | "student"
+  | "account"
   | "privacy"
   | "accessibility"
   | "advanced"
@@ -29,7 +31,7 @@ export type ThemeMode = "light" | "dark" | "system"
 export type UIDensity = "comfortable" | "compact"
 export type AnimationMode = "full" | "reduced"
 export type PanelStyle = "default" | "minimal"
-export type StartPage = "canvas" | "dashboard"
+export type StartPage = "canvas" | "student" | "dashboard"
 export type LibraryFilterType = "all" | "components" | "blocks" | "templates"
 
 export interface ShellPreferences {
@@ -85,7 +87,7 @@ function savePreferences(prefs: ShellPreferences) {
 }
 
 interface ShellState {
-  activeSurface: "canvas" | "settings"
+  activeSurface: "canvas" | "student" | "settings"
   pagePopoverOpen: boolean
   settingsOpen: boolean
   settingsSection: SettingsSectionId
@@ -104,7 +106,7 @@ interface ShellState {
   // App UI Preferences
   preferences: ShellPreferences
 
-  setActiveSurface: (s: "canvas" | "settings") => void
+  setActiveSurface: (s: "canvas" | "student" | "settings") => void
   setPagePopoverOpen: (open: boolean) => void
   togglePagePopover: () => void
   setSettingsOpen: (open: boolean) => void

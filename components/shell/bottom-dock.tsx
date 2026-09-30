@@ -23,6 +23,7 @@ import {
   File,
   Minus,
   Plus,
+  GraduationCap,
   Gear,
   CaretDown,
   FolderOpen,
@@ -145,6 +146,12 @@ export function BottomDock() {
             <ArrowClockwise size={14} className="mr-2" aria-hidden="true" /> Redo
           </DropdownMenuItem>
           <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => {
+            setSettingsSection("account")
+            setSettingsOpen(true)
+          }}>
+            <User size={14} className="mr-2" aria-hidden="true" /> Account & Profile
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
             <Gear size={14} className="mr-2" aria-hidden="true" /> Settings…
           </DropdownMenuItem>
@@ -244,6 +251,16 @@ export function BottomDock() {
         >
           <Gear size={16} aria-hidden="true" />
         </button>
+
+        {/* Student Hub */}
+        <Link
+          href="/student"
+          title="Student Hub"
+          aria-label="Student Hub"
+          className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <GraduationCap size={16} aria-hidden="true" />
+        </Link>
       </div>
 
       {/* ── Separator (hidden on mobile) ── */}

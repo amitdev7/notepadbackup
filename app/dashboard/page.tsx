@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useAuthStore } from "@/lib/auth-store"
 import { listLocalDocuments, type StoredLocalDoc } from "@/lib/storage/documents"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +15,7 @@ import {
   Trash,
   Clock,
 } from "@phosphor-icons/react"
+import { AuthCorner } from "@/components/chrome/auth-corner"
 import { WorkspaceSwitcher } from "@/components/chrome/workspace-switcher"
 
 interface SharedDocItem {
@@ -33,6 +35,7 @@ type TabType = "recent" | "projects" | "shared" | "trash"
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { user, state, openAuthDialog } = useAuthStore()
   const [documents, setDocuments] = useState<StoredLocalDoc[]>([])
   const [sharedDocs, setSharedDocs] = useState<SharedDocItem[]>([])
   const [activeTab, setActiveTab] = useState<TabType>("recent")
@@ -41,7 +44,56 @@ export default function DashboardPage() {
   useEffect(() => {
     let cancelled = false
 
-    if (activeTab !== "shared") {
+    if (activeTab === "shared") {
+      if (user) {
+        import("@/lib/supabase/client").then(({ getSupabaseBrowserClient }) => {
+          if (cancelled) return
+          setLoading(true)
+          const supabase = getSupabaseBrowserClient()
+          supabase
+            .from("document_members")
+            .select("document_id, role, created_at, documents(id, name, updated_at, is_public, schema_version)")
+            .eq("user_id", user.id)
+            .then(({ data, error }) => {
+              if (cancelled) return
+              if (!error && data) {
+                const list = (data as Array<{
+                  role: string
+                  documents: {
+                    id: string
+                    name: string
+                    updated_at: string
+                    is_public: boolean
+                  } | null
+                }>)
+                  .filter((m) => m.documents !== null)
+                  .map((m) => ({
+                    id: m.documents!.id,
+                    name: m.documents!.name,
+                    role: m.role,
+                    updatedAt: m.documents!.updated_at,
+                    isPublic: m.documents!.is_public,
+                    shareState: "shared",
+                  }))
+                setSharedDocs(list)
+              }
+              setLoading(false)
+            }, () => {
+              if (!cancelled) setLoading(false)
+            })
+        })
+      } else {
+        Promise.resolve().then(() => {
+          if (!cancelled) {
+            setSharedDocs([])
+            setLoading(false)
+          }
+        })
+      }
+    } else {
+      queueMicrotask(() => {
+        if (!cancelled) setLoading(true)
+      })
       listLocalDocuments(activeTab === "trash")
         .then((docs) => {
           if (cancelled) return
@@ -59,7 +111,7 @@ export default function DashboardPage() {
     return () => {
       cancelled = true
     }
-  }, [activeTab])
+  }, [activeTab, user])
 
   const handleOpenDoc = (doc: { id: string }) => {
     router.push(`/?doc=${doc.id}`)
@@ -147,7 +199,7 @@ export default function DashboardPage() {
           </nav>
         </div>
 
-        {/* Back to Canvas */}
+        {/* Back to Canvas & Auth */}
         <div className="pt-4 border-t border-stone-200/80 flex items-center justify-between">
           <Link
             href="/"
@@ -156,6 +208,7 @@ export default function DashboardPage() {
             <ArrowLeft size={14} />
             Back to Canvas
           </Link>
+          <AuthCorner />
         </div>
       </aside>
 
@@ -172,6 +225,19 @@ export default function DashboardPage() {
               ? "Shared with Me"
               : "Trash"}
           </h1>
+
+          <div className="flex items-center gap-3">
+            {state !== "authenticated" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => openAuthDialog("sign-in")}
+                className="text-xs font-mono h-8 border-stone-300"
+              >
+                Sign In to Sync
+              </Button>
+            )}
+          </div>
         </header>
 
         {/* Documents Grid / List */}

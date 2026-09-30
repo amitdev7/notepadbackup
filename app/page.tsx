@@ -14,6 +14,7 @@ import { CanvasContextMenu } from "@/components/chrome/context-menu"
 import { ShortcutsSheet } from "@/components/chrome/shortcuts-sheet"
 import { LinkEditor } from "@/components/chrome/link-editor"
 import { Notice } from "@/components/chrome/notice"
+import { AuthDialog } from "@/components/chrome/auth-dialog"
 import { ShareDialog } from "@/components/chrome/share-dialog"
 import { WifiPublishDialog } from "@/components/chrome/wifi-publish-dialog"
 import { WifiDevicePanel } from "@/components/chrome/wifi-device-panel"
@@ -21,6 +22,7 @@ import { ConflictDialog } from "@/components/chrome/conflict-dialog"
 import { MigrationDialog } from "@/components/chrome/migration-dialog"
 import { VersionHistoryPanel } from "@/components/chrome/version-history-panel"
 import { TrashDialog } from "@/components/chrome/trash-dialog"
+import { useAuthStore } from "@/lib/auth-store"
 import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
 import { kbd } from "@/lib/shortcuts"
 
@@ -36,6 +38,7 @@ export default function Home() {
 
   useEffect(() => {
     hydrate()
+    useAuthStore.getState().initialize()
     migrateLocalStorageToIndexedDB()
   }, [hydrate])
 
@@ -79,6 +82,7 @@ export default function Home() {
       <CanvasContextMenu />
       <CommandPalette />
       <ShortcutsSheet />
+      <AuthDialog />
       <ShareDialog isOpen={shareOpen} onClose={() => setShareOpen(false)} cloudDocId={cloudDocId || undefined} />
       <WifiPublishDialog />
       <WifiDevicePanel />

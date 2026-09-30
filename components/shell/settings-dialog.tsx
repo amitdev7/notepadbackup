@@ -21,6 +21,7 @@ import {
   type StartPage,
 } from "@/lib/shell-store"
 import { useSquig } from "@/lib/store"
+import { useAuthStore } from "@/lib/auth-store"
 import { UI_ACCENTS } from "@/lib/design-tokens"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
@@ -35,6 +36,8 @@ import {
   ShareNetwork,
   Bell,
   WifiHigh,
+  GraduationCap,
+  User,
   ShieldCheck,
   Eye,
   Cpu,
@@ -66,6 +69,8 @@ const SECTIONS: SectionItem[] = [
   { id: "sharing", label: "Sharing", description: "Collaboration permissions and public link rules", icon: ShareNetwork },
   { id: "notifications", label: "Notifications", description: "Goal deadline alerts and audio reminders", icon: Bell },
   { id: "wifi", label: "Wi-Fi & LAN", description: "Local network discovery and publishing", icon: WifiHigh },
+  { id: "student", label: "Student Settings", description: "Academic curriculum, target year and daily hours", icon: GraduationCap },
+  { id: "account", label: "Account", description: "Profile, active sessions and authentication", icon: User },
   { id: "privacy", label: "Privacy & Security", description: "Local-first data retention and encryption", icon: ShieldCheck },
   { id: "accessibility", label: "Accessibility", description: "Contrast, large typography and reduced motion", icon: Eye },
   { id: "advanced", label: "Advanced", description: "Render performance flags and engine diagnostics", icon: Cpu },
@@ -194,6 +199,10 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const contextRow = useSquig((s) => s.contextRow)
   const setContextRow = useSquig((s) => s.setContextRow)
 
+  const user = useAuthStore((s) => s.user)
+  const openAuthDialog = useAuthStore((s) => s.openAuthDialog)
+  const signOut = useAuthStore((s) => s.signOut)
+
   switch (section) {
     case "general":
       return (
@@ -209,6 +218,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
               className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
             >
               <option value="canvas">Infinite Canvas</option>
+              <option value="student">Student Hub</option>
               <option value="dashboard">Dashboard</option>
             </select>
           </div>
@@ -508,13 +518,15 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
         <div className="space-y-4">
           <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-stone-900 dark:text-stone-100">Storage & Synchronization</span>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium text-[11px]">
-                Local-First (Active)
+              <span className="font-semibold text-stone-900 dark:text-stone-100">Supabase Cloud Synchronization</span>
+              <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium text-[11px]">
+                {user ? "Connected" : "Offline / Local-Only"}
               </span>
             </div>
             <p className="text-[11px] text-stone-500">
-              Drawings and templates are securely persisted directly in your browser&apos;s high-performance IndexedDB storage.
+              {user
+                ? `Signed in as ${user.email}. Documents sync automatically across your active devices.`
+                : "Sign in to activate real-time cloud backup, device synchronization, and multi-device sharing."}
             </p>
           </div>
         </div>
@@ -579,6 +591,79 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
               Share live wireframes and study canvases with phones, tablets, and computers on the same Wi-Fi network without cloud upload.
             </p>
           </div>
+        </div>
+      )
+
+    case "student":
+      return (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Academic Curriculum</span>
+              <span className="text-[11px] text-stone-500">Standard syllabus and exam structure</span>
+            </div>
+            <select
+              defaultValue="cbse"
+              className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800"
+            >
+              <option value="cbse">CBSE / NCERT</option>
+              <option value="icse">ICSE / ISC</option>
+              <option value="state">State Board</option>
+              <option value="ib">IB / Cambridge</option>
+              <option value="univ">College / University</option>
+            </select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Weekly Study Hours Target</span>
+              <span className="text-[11px] text-stone-500">Used by the 7-day Week Planner</span>
+            </div>
+            <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+              25 Hours / Week
+            </span>
+          </div>
+        </div>
+      )
+
+    case "account":
+      return (
+        <div className="space-y-4">
+          {user ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-stone-50 dark:bg-stone-800/50 border border-stone-200/60 dark:border-stone-700/60">
+                <div className="size-10 rounded-full bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center text-blue-600 dark:text-blue-400 text-sm font-bold">
+                  {(user.email ?? "?")[0].toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-stone-900 dark:text-stone-100">{user.email}</p>
+                  <p className="text-[11px] text-stone-500 dark:text-stone-400">Authenticated user</p>
+                </div>
+              </div>
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="px-3 py-1.5 rounded-xl text-xs font-medium border border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs text-stone-600 dark:text-stone-400">
+                You are currently working in offline local-first mode. Sign in to sync across devices.
+              </p>
+              <button
+                type="button"
+                onClick={() => openAuthDialog("sign-in")}
+                className="px-4 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm"
+              >
+                Sign In to Zenithsui
+              </button>
+            </div>
+          )}
         </div>
       )
 

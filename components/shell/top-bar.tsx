@@ -15,6 +15,7 @@ import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
 import { SyncIndicator } from "@/components/chrome/sync-indicator"
 import { NotificationsPanel } from "@/components/chrome/notifications-panel"
+import { AuthCorner } from "@/components/chrome/auth-corner"
 import { ShareNetwork, WifiHigh, Bell, PencilSimple, SlidersHorizontal } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -143,9 +144,7 @@ export function TopBar() {
             <Bell size={15} aria-hidden="true" />
           </button>
 
-          <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
-
-          {/* Page Panel Toggle Button (Control showing on/off of Page Settings) */}
+          {/* Page Settings Toggle Button */}
           <button
             type="button"
             data-dock-page-btn
@@ -156,13 +155,18 @@ export function TopBar() {
                 ? "bg-stone-900 text-white dark:bg-white dark:text-stone-900 shadow-xs"
                 : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
             )}
-            title="Page & Canvas Settings (Show on/off)"
+            title="Page & Canvas Settings"
             aria-label="Toggle Page and Canvas Settings"
             aria-expanded={pagePopoverOpen}
           >
             <SlidersHorizontal size={14} weight={pagePopoverOpen ? "bold" : "regular"} aria-hidden="true" />
             <span>Page</span>
           </button>
+
+          <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
+
+          {/* Auth Corner Avatar */}
+          <AuthCorner />
         </div>
       </header>
 

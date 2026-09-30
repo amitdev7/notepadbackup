@@ -12,13 +12,18 @@ interface InvitePageProps {
 
 export default function InvitePage({ params }: InvitePageProps) {
   const { token } = use(params)
-  const user = useAuthStore((s) => s.user)
+  const { user, openAuthDialog } = useAuthStore()
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [accepted, setAccepted] = useState(false)
 
   const handleAccept = async () => {
+    if (!user) {
+      openAuthDialog("sign-in")
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -66,13 +71,27 @@ export default function InvitePage({ params }: InvitePageProps) {
           </div>
         ) : (
           <div className="space-y-3 pt-2">
-            <Button
-              onClick={handleAccept}
-              disabled={loading}
-              className="w-full h-10 font-mono text-xs"
-            >
-              {loading ? "Accepting..." : "Accept Invitation"} <ArrowRight size={14} className="ml-1" />
-            </Button>
+            {user ? (
+              <Button
+                onClick={handleAccept}
+                disabled={loading}
+                className="w-full h-10 font-mono text-xs"
+              >
+                {loading ? "Accepting..." : "Accept Invitation"} <ArrowRight size={14} className="ml-1" />
+              </Button>
+            ) : (
+              <div className="space-y-2">
+                <Button
+                  onClick={() => openAuthDialog("sign-in")}
+                  className="w-full h-10 font-mono text-xs"
+                >
+                  Sign in to Accept Invitation
+                </Button>
+                <p className="text-[11px] text-[#a1a1aa] font-mono">
+                  Sign in or create a free account to join this document.
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
