@@ -135,7 +135,6 @@ export function searchUnifiedLibrary(
       const isTemplate =
         d.kind.startsWith("tmpl-") ||
         d.group === "Education" ||
-        d.group === "Student" ||
         d.group === "Screens"
       if (!isTemplate) return false
     }
@@ -174,7 +173,6 @@ export function groupDefs(defs: ComponentDef[], category: Category): { group: st
 
 export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: ComponentDef[] }[] {
   const order = [
-    "Student",
     "Education",
     "Buttons",
     "Forms",

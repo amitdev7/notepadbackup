@@ -50,7 +50,7 @@ interface ShareDialogProps {
 
 export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
   const fileName = useSquig((s) => s.fileName)
-  const { user, openAuthDialog } = useAuthStore()
+  const { user } = useAuthStore()
 
   // Navigation tabs
   const [activeTab, setActiveTab] = useState<"collaborate" | "publish">("collaborate")
@@ -140,10 +140,6 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Create cryptographic share link
   const handleCreateLink = async () => {
-    if (!user) {
-      openAuthDialog("sign-in")
-      return
-    }
     if (!cloudDocId) {
       setError("Please save document to cloud first.")
       return
@@ -178,10 +174,6 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Send invitations
   const handleSendInvites = async () => {
-    if (!user) {
-      openAuthDialog("sign-in")
-      return
-    }
     if (!cloudDocId) return
 
     const parsed = parseEmailList(inviteEmails)

@@ -13,7 +13,7 @@
 import { useRef, useState } from "react"
 import { useSquig } from "@/lib/store"
 import { exportDoc, importDoc } from "@/lib/file-io"
-import { ArrowUpRightIcon, CaretDownIcon, ShareNetwork, WifiHigh, Bell, GraduationCap } from "@phosphor-icons/react"
+import { ArrowUpRightIcon, CaretDownIcon, ShareNetwork, WifiHigh, Bell } from "@phosphor-icons/react"
 import { useWifiSessionStore } from "@/lib/lan/session"
 import { NotificationsPanel } from "@/components/chrome/notifications-panel"
 import {
@@ -27,7 +27,6 @@ import {
 import { Panel } from "@/components/ui/panel"
 import { kbd } from "@/lib/shortcuts"
 import { RecentFiles } from "@/components/chrome/recent-files"
-import { AuthCorner } from "@/components/chrome/auth-corner"
 
 export function TopCorner() {
   const st = useSquig.getState
@@ -93,11 +92,6 @@ export function TopCorner() {
           >
             Dashboard
           </DropdownMenuItem>
-          <DropdownMenuItem
-            render={<a href="/student" />}
-          >
-            Student Hub
-          </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
@@ -153,15 +147,6 @@ export function TopCorner() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <div className="h-4 w-px bg-border/60 mx-0.5" />
-      <a
-        href="/student"
-        className="flex items-center gap-1.5 px-2 py-1 rounded-chrome-sm text-xs text-muted-foreground hover:text-foreground hover:bg-accent transition-colors font-medium"
-        title="Student Hub"
-      >
-        <GraduationCap size={14} weight="bold" />
-        <span>Student Hub</span>
-      </a>
     </Panel>
   )
 }
@@ -266,10 +251,6 @@ export function TopRight() {
         >
           <Bell size={14} />
         </button>
-
-        <div className="h-4 w-px bg-border/60 mx-0.5" />
-
-        <AuthCorner />
       </Panel>
 
       <NotificationsPanel isOpen={notifsOpen} onClose={() => setNotifsOpen(false)} />

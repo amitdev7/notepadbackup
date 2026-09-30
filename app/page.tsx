@@ -14,7 +14,6 @@ import { CanvasContextMenu } from "@/components/chrome/context-menu"
 import { ShortcutsSheet } from "@/components/chrome/shortcuts-sheet"
 import { LinkEditor } from "@/components/chrome/link-editor"
 import { Notice } from "@/components/chrome/notice"
-import { AuthDialog } from "@/components/chrome/auth-dialog"
 import { ShareDialog } from "@/components/chrome/share-dialog"
 import { WifiPublishDialog } from "@/components/chrome/wifi-publish-dialog"
 import { WifiDevicePanel } from "@/components/chrome/wifi-device-panel"
@@ -82,7 +81,6 @@ export default function Home() {
       <CanvasContextMenu />
       <CommandPalette />
       <ShortcutsSheet />
-      <AuthDialog />
       <ShareDialog isOpen={shareOpen} onClose={() => setShareOpen(false)} cloudDocId={cloudDocId || undefined} />
       <WifiPublishDialog />
       <WifiDevicePanel />

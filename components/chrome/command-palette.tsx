@@ -53,15 +53,8 @@ import {
   KeyboardIcon,
   ShareNetwork as ShareNetworkIcon,
   Globe as GlobeIcon,
-  GraduationCap as GraduationCapIcon,
   Gear as GearIcon,
   Sparkle as SparkleIcon,
-  Books as BooksIcon,
-  Clock as ClockIcon,
-  FolderSimple as FolderSimpleIcon,
-  Target as TargetIcon,
-  Exam as ExamIcon,
-  ChartLineUp as ChartLineUpIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 
@@ -81,7 +74,6 @@ type Row = { kind: "action"; action: Action } | { kind: "def"; def: ComponentDef
 const SECTION_ORDER = [
   "Tools",
   "Library",
-  "Student",
   "Settings",
   "Edit",
   "Arrange",
@@ -137,22 +129,11 @@ function Palette() {
       { id: "line", label: "Line", hint: kbd("l"), section: "Tools", keywords: "rule divider stroke", icon: LineSegmentIcon, run: () => { st().setArrowHead(false); st().setTool("arrow") } },
       { id: "arrow", label: "Arrow", hint: kbd("shift+l"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
 
-      { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements student", icon: SparkleIcon, run: () => st().setPanel("components") },
-
-      { id: "stu-hub", label: "Student Hub Overview", section: "Student", keywords: "academic study overview student hub", icon: GraduationCapIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-syllabus", label: "Syllabus Manager", section: "Student", keywords: "syllabus subjects chapters progress curriculum", icon: BooksIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-planner", label: "Weekly Study Planner", section: "Student", keywords: "week planner target hours routine schedule", icon: ClockIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-calendar", label: "Study Calendar", section: "Student", keywords: "calendar month activities chapter completion goals due", icon: ClockIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-notes", label: "Notes & Materials Library", section: "Student", keywords: "notes pdf handouts study materials docs canvases", icon: FolderSimpleIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-revision", label: "Revision Tracker", section: "Student", keywords: "revision spaced repetition due intervals", icon: TargetIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-practice", label: "Practice Question Bank", section: "Student", keywords: "practice pyq question bank test", icon: TargetIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-tests", label: "Mock Tests & Exams", section: "Student", keywords: "tests mock exam assessment score", icon: ExamIcon, run: () => { window.location.href = "/student" } },
-      { id: "stu-analytics", label: "Academic Analytics", section: "Student", keywords: "analytics stats study hours accuracy progress", icon: ChartLineUpIcon, run: () => { window.location.href = "/student" } },
+      { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
 
       { id: "set-all", label: "Open Settings", hint: kbd("mod+,"), section: "Settings", keywords: "preferences options config", icon: GearIcon, run: () => useShellStore.getState().setSettingsOpen(true) },
       { id: "set-appearance", label: "Appearance & Theme Settings", section: "Settings", keywords: "theme dark light accent color ui density", icon: GearIcon, run: () => { useShellStore.getState().setSettingsSection("appearance"); useShellStore.getState().setSettingsOpen(true) } },
       { id: "set-page", label: "Page & Paper Settings", section: "Settings", keywords: "paper shade dot grid pen color ink font", icon: GearIcon, run: () => useShellStore.getState().setPagePopoverOpen(true) },
-      { id: "set-account", label: "Account & Profile Settings", section: "Settings", keywords: "account sign in out email profile user", icon: GearIcon, run: () => { useShellStore.getState().setSettingsSection("account"); useShellStore.getState().setSettingsOpen(true) } },
 
       { id: "undo", label: "Undo", hint: kbd("mod+z"), section: "Edit", icon: ArrowUUpLeftIcon, run: () => st().undo() },
       { id: "redo", label: "Redo", hint: kbd("mod+shift+z"), section: "Edit", icon: ArrowUUpRightIcon, run: () => st().redo() },

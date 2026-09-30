@@ -38,7 +38,6 @@ const DRAG_THRESHOLD = 4
 
 const CATEGORIES = [
   "All",
-  "Student",
   "Education",
   "Buttons",
   "Forms",
@@ -239,7 +238,7 @@ export function LibraryPanel() {
               </span>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-stone-400">
-              Reusable components, wireframe blocks & academic templates
+              Reusable components, wireframe blocks & templates
             </p>
           </div>
         </div>

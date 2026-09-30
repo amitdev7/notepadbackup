@@ -14,7 +14,6 @@ import { useSquig } from "@/lib/store"
 import { useWifiSessionStore } from "@/lib/lan/session"
 import { SyncIndicator } from "@/components/chrome/sync-indicator"
 import { NotificationsPanel } from "@/components/chrome/notifications-panel"
-import { AuthCorner } from "@/components/chrome/auth-corner"
 import { ShareNetwork, WifiHigh, Bell, PencilSimple } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -140,11 +139,6 @@ export function TopBar() {
           >
             <Bell size={15} aria-hidden="true" />
           </button>
-
-          <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
-
-          {/* Auth Corner Avatar */}
-          <AuthCorner />
         </div>
       </header>
 
