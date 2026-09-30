@@ -11,12 +11,11 @@
 
 import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
-import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
 import { SyncIndicator } from "@/components/chrome/sync-indicator"
 import { NotificationsPanel } from "@/components/chrome/notifications-panel"
 import { AuthCorner } from "@/components/chrome/auth-corner"
-import { ShareNetwork, WifiHigh, Bell, PencilSimple, SlidersHorizontal } from "@phosphor-icons/react"
+import { ShareNetwork, WifiHigh, Bell, PencilSimple } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export function TopBar() {
@@ -25,8 +24,6 @@ export function TopBar() {
   const effectiveRole = useSquig((s) => s.effectiveRole)
   const isViewer = effectiveRole === "viewer"
   const setShareOpen = useSquig((s) => s.setShareOpen)
-  const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
-  const togglePagePopover = useShellStore((s) => s.togglePagePopover)
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [titleDraft, setTitleDraft] = useState(fileName)
@@ -142,25 +139,6 @@ export function TopBar() {
             aria-expanded={notifsOpen}
           >
             <Bell size={15} aria-hidden="true" />
-          </button>
-
-          {/* Page Settings Toggle Button */}
-          <button
-            type="button"
-            data-dock-page-btn
-            onClick={togglePagePopover}
-            className={cn(
-              "flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer",
-              pagePopoverOpen
-                ? "bg-stone-900 text-white dark:bg-white dark:text-stone-900 shadow-xs"
-                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-            )}
-            title="Page & Canvas Settings"
-            aria-label="Toggle Page and Canvas Settings"
-            aria-expanded={pagePopoverOpen}
-          >
-            <SlidersHorizontal size={14} weight={pagePopoverOpen ? "bold" : "regular"} aria-hidden="true" />
-            <span>Page</span>
           </button>
 
           <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
