@@ -825,6 +825,7 @@ USING (
 -- ----------------------------------------------------------------------------
 -- 8. ACTIVE RECORD VIEW UPDATE
 -- ----------------------------------------------------------------------------
+DROP VIEW IF EXISTS view_active_documents CASCADE;
 CREATE OR REPLACE VIEW view_active_documents AS
 SELECT
     d.id,
