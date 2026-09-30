@@ -191,12 +191,12 @@ export function handleOffset(handle: Handle, w: number, h: number): [number, num
 }
 
 export const HANDLE_CURSORS: Record<Handle, string> = {
-  nw: "nwse-resize",
-  se: "nwse-resize",
-  ne: "nesw-resize",
-  sw: "nesw-resize",
-  n: "ns-resize",
-  s: "ns-resize",
-  e: "ew-resize",
-  w: "ew-resize",
+  nw: "var(--cursor-nwse-resize, nwse-resize)",
+  se: "var(--cursor-nwse-resize, nwse-resize)",
+  ne: "var(--cursor-nesw-resize, nesw-resize)",
+  sw: "var(--cursor-nesw-resize, nesw-resize)",
+  n: "var(--cursor-ns-resize, ns-resize)",
+  s: "var(--cursor-ns-resize, ns-resize)",
+  e: "var(--cursor-ew-resize, ew-resize)",
+  w: "var(--cursor-ew-resize, ew-resize)",
 }

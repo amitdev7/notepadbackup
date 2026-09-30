@@ -1503,14 +1503,16 @@ export function Canvas() {
   // a soft hover keeps the default cursor: a click there selects, but a drag
   // marquees, and a move cursor would promise a drag this press won't do
   const cursorStyle = isSpacebarHeld && !gestureKind
-    ? "grab"
-    : placing || tool === "shape" || tool === "arrow" || tool === "draw" || tool === "text"
-      ? "crosshair"
-      : gestureKind === "move"
-        ? (altHeld ? "copy" : "move")
-        : hover && !hover.soft && tool === "select"
-          ? (altHeld ? "copy" : "move")
-          : "default"
+    ? "var(--cursor-grab, grab)"
+    : placing || tool === "shape" || tool === "arrow" || tool === "text"
+      ? "var(--cursor-crosshair, crosshair)"
+      : tool === "draw"
+        ? "var(--cursor-pen, crosshair)"
+        : gestureKind === "move"
+          ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
+          : hover && !hover.soft && tool === "select"
+            ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
+            : "var(--cursor-default, default)"
 
   return (
     <div

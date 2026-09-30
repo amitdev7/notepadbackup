@@ -1,0 +1,132 @@
+/* ============================================================================
+   ZENITHSUI CUSTOM CURSOR PACK
+   Uses macOS Sierra / Capitaine high-definition cursors with shadows and PNG fallbacks
+   ============================================================================ */
+
+:root {
+  --cursor-default: url("/cursors/normal.cur") 1 0, url("/cursors/normal.png") 1 0, default;
+  --cursor-pointer: url("/cursors/pointer.cur") 2 2, url("/cursors/pointer.png") 2 2, pointer;
+  --cursor-text: url("/cursors/text.cur") 16 16, url("/cursors/text.png") 16 16, text;
+  --cursor-grab: url("/cursors/grab.cur") 2 2, url("/cursors/grab.png") 2 2, grab;
+  --cursor-grabbing: url("/cursors/grabbing.cur") 2 0, url("/cursors/grabbing.png") 2 0, grabbing;
+  --cursor-crosshair: url("/cursors/crosshair.cur") 16 16, url("/cursors/crosshair.png") 16 16, crosshair;
+  --cursor-move: url("/cursors/move.cur") 16 16, url("/cursors/move.png") 16 16, move;
+  --cursor-pen: url("/cursors/pen.cur") 3 28, url("/cursors/pen.png") 3 28, crosshair;
+  --cursor-ew-resize: url("/cursors/ew-resize.cur") 16 16, url("/cursors/ew-resize.png") 16 16, ew-resize;
+  --cursor-ns-resize: url("/cursors/ns-resize.cur") 16 16, url("/cursors/ns-resize.png") 16 16, ns-resize;
+  --cursor-nwse-resize: url("/cursors/nwse-resize.cur") 16 16, url("/cursors/nwse-resize.png") 16 16, nwse-resize;
+  --cursor-nesw-resize: url("/cursors/nesw-resize.cur") 16 16, url("/cursors/nesw-resize.png") 16 16, nesw-resize;
+  --cursor-not-allowed: url("/cursors/not-allowed.cur") 2 0, url("/cursors/not-allowed.png") 2 0, not-allowed;
+  --cursor-help: url("/cursors/help.cur") 2 2, url("/cursors/help.png") 2 2, help;
+  --cursor-zoom-in: url("/cursors/zoom-in.cur") 2 0, url("/cursors/zoom-in.png") 2 0, zoom-in;
+  --cursor-zoom-out: url("/cursors/zoom-out.cur") 2 0, url("/cursors/zoom-out.png") 2 0, zoom-out;
+}
+
+/* 1. Entire website default cursor */
+html,
+body {
+  cursor: url("/cursors/normal.cur") 1 0, url("/cursors/normal.png") 1 0, default;
+}
+
+/* 2. Interactive elements (Links, buttons, menus, tabs, inputs) */
+a,
+button,
+[role="button"],
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+select,
+summary,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+.cursor-pointer,
+[data-slot="dropdown-menu-item"],
+[data-slot="dropdown-menu-trigger"] {
+  cursor: url("/cursors/pointer.cur") 2 2, url("/cursors/pointer.png") 2 2, pointer !important;
+}
+
+/* 3. Text inputs & editables */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+textarea,
+[contenteditable="true"],
+.cursor-text {
+  cursor: url("/cursors/text.cur") 16 16, url("/cursors/text.png") 16 16, text !important;
+}
+
+/* 4. Canvas pan & grab */
+.cursor-grab,
+[data-tool="pan"],
+[data-cursor="grab"] {
+  cursor: url("/cursors/grab.cur") 2 2, url("/cursors/grab.png") 2 2, grab !important;
+}
+
+/* 5. Dragging & Grabbing */
+.cursor-grabbing,
+[data-dragging="true"],
+[data-cursor="grabbing"],
+:active:is(.cursor-grab) {
+  cursor: url("/cursors/grabbing.cur") 2 0, url("/cursors/grabbing.png") 2 0, grabbing !important;
+}
+
+/* 6. Drawing & Precision Tools */
+[data-tool="draw"],
+[data-tool="pen"],
+[data-tool="pencil"],
+.cursor-pen {
+  cursor: url("/cursors/pen.cur") 3 28, url("/cursors/pen.png") 3 28, crosshair !important;
+}
+
+[data-tool="rectangle"],
+[data-tool="circle"],
+[data-tool="line"],
+[data-tool="arrow"],
+.cursor-crosshair {
+  cursor: url("/cursors/crosshair.cur") 16 16, url("/cursors/crosshair.png") 16 16, crosshair !important;
+}
+
+/* 7. Move */
+.cursor-move {
+  cursor: url("/cursors/move.cur") 16 16, url("/cursors/move.png") 16 16, move !important;
+}
+
+/* 8. Resizing */
+.cursor-ew-resize,
+.cursor-w-resize,
+.cursor-e-resize {
+  cursor: url("/cursors/ew-resize.cur") 16 16, url("/cursors/ew-resize.png") 16 16, ew-resize !important;
+}
+
+.cursor-ns-resize,
+.cursor-n-resize,
+.cursor-s-resize {
+  cursor: url("/cursors/ns-resize.cur") 16 16, url("/cursors/ns-resize.png") 16 16, ns-resize !important;
+}
+
+.cursor-nwse-resize,
+.cursor-nw-resize,
+.cursor-se-resize {
+  cursor: url("/cursors/nwse-resize.cur") 16 16, url("/cursors/nwse-resize.png") 16 16, nwse-resize !important;
+}
+
+.cursor-nesw-resize,
+.cursor-ne-resize,
+.cursor-sw-resize {
+  cursor: url("/cursors/nesw-resize.cur") 16 16, url("/cursors/nesw-resize.png") 16 16, nesw-resize !important;
+}
+
+/* 9. Disabled state */
+:disabled,
+[disabled],
+[aria-disabled="true"],
+.cursor-not-allowed {
+  cursor: url("/cursors/not-allowed.cur") 2 0, url("/cursors/not-allowed.png") 2 0, not-allowed !important;
+}
