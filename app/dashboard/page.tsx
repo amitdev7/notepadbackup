@@ -276,7 +276,7 @@ export default function DashboardPage() {
                   >
                     <div>
                       {/* Document Preview Box / Thumbnail */}
-                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] dark:bg-[#121316] border border-stone-100 dark:border-stone-800/60 flex items-center justify-center text-stone-300 dark:text-stone-600 group-hover:text-stone-400 dark:group-hover:text-stone-400 transition-colors mb-3">
+                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] border border-stone-200/70 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-700 transition-colors mb-3">
                         <span className="font-sketch text-sm">
                           {activeTab === "shared" && 'role' in doc ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
                         </span>

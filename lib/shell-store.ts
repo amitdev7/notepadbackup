@@ -7,8 +7,6 @@
 // ---------------------------------------------------------------------------
 
 import { create } from "zustand"
-import { useSquig } from "@/lib/store"
-import { applyLook } from "@/lib/theme"
 
 export type SettingsSectionId =
   | "general"
@@ -155,29 +153,11 @@ export function syncThemeToDOM(mode: ThemeMode = "system") {
             document.documentElement.classList.remove("dark")
             document.documentElement.style.colorScheme = "light"
           }
-          reapplyCanvasLook()
         }
       }
       mql.addEventListener("change", handler)
     } catch {}
   }
-
-  reapplyCanvasLook()
-}
-
-function reapplyCanvasLook() {
-  if (typeof window === "undefined") return
-  try {
-    const st = useSquig.getState()
-    if (st && st.hydrated) {
-      applyLook({
-        theme: st.theme,
-        paper: st.paper,
-        font: st.font,
-        grid: st.grid,
-      })
-    }
-  } catch {}
 }
 
 export const useShellStore = create<ShellState>((set, get) => ({

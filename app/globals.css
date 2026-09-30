@@ -186,17 +186,6 @@
   --shadow-panel: 0 1px 3px rgb(0 0 0 / 0.5), 0 10px 30px -5px rgb(0 0 0 / 0.7);
   --shadow-popup: 0 1px 3px rgb(0 0 0 / 0.5), 0 16px 40px -5px rgb(0 0 0 / 0.8);
   color-scheme: dark;
-
-  /* Default canvas variables for dark mode before runtime JS hydration */
-  --sq-bg: #0e121a;
-  --sq-paper: #171d28;
-  --sq-ink: #5b8bf7;
-  --sq-muted: #93c5fd;
-  --sq-faint: #283548;
-  --sq-shade: #1c2536;
-  --sq-shade-strong: #2a3a56;
-  --sq-grid: #242e40;
-  --sq-select: #c084fc;
 }
 
 @layer base {

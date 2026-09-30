@@ -111,81 +111,6 @@ export const THEMES = {
   },
 } satisfies Record<string, Palette>
 
-export const DARK_THEMES: Record<string, Palette> = {
-  "internet-blue": {
-    label: "Internet blue",
-    bg: "#0E121A",
-    paper: "#171D28",
-    ink: "#5B8BF7",
-    muted: "#93C5FD",
-    faint: "#283548",
-    shade: "#1C2536",
-    shadeStrong: "#2A3A56",
-    grid: "#242E40",
-    select: "#C084FC",
-  },
-  "riso-red": {
-    label: "Riso red",
-    bg: "#140F0F",
-    paper: "#201717",
-    ink: "#F87171",
-    muted: "#FCA5A5",
-    faint: "#4A2828",
-    shade: "#311A1A",
-    shadeStrong: "#4D2323",
-    grid: "#2C1E1E",
-    select: "#60A5FA",
-  },
-  "terminal-green": {
-    label: "Terminal green",
-    bg: "#0D1410",
-    paper: "#14221A",
-    ink: "#4ADE80",
-    muted: "#86EFAC",
-    faint: "#1C3B29",
-    shade: "#172F21",
-    shadeStrong: "#234934",
-    grid: "#1C3224",
-    select: "#FB923C",
-  },
-  plum: {
-    label: "Purple drizzle",
-    bg: "#130F17",
-    paper: "#201726",
-    ink: "#C084FC",
-    muted: "#D8B4FE",
-    faint: "#3D254C",
-    shade: "#2D1939",
-    shadeStrong: "#452458",
-    grid: "#2C1F34",
-    select: "#FBBF24",
-  },
-  marigold: {
-    label: "Dirty blond",
-    bg: "#14120E",
-    paper: "#221C14",
-    ink: "#FBBF24",
-    muted: "#FDE68A",
-    faint: "#4A3A22",
-    shade: "#332513",
-    shadeStrong: "#4F3718",
-    grid: "#2E2416",
-    select: "#60A5FA",
-  },
-  graphite: {
-    label: "Hipster black",
-    bg: "#121214",
-    paper: "#1C1C20",
-    ink: "#F4F4F6",
-    muted: "#A1A1AA",
-    faint: "#3F3F46",
-    shade: "#242429",
-    shadeStrong: "#383842",
-    grid: "#27272E",
-    select: "#FB923C",
-  },
-} satisfies Record<string, Palette>
-
 export type ThemeName = keyof typeof THEMES
 
 export const THEME_NAMES = Object.keys(THEMES) as ThemeName[]
@@ -244,12 +169,11 @@ function mix(a: string, b: string, t: number): string {
 }
 
 /** The sheet colour: what sits behind the whole drawing. */
-export function bgOf(p: Palette, shade: PaperShade, isDark?: boolean): string {
-  const dark = isDark ?? (typeof document !== "undefined" && document.documentElement.classList.contains("dark"))
-  if (shade === "white") return dark ? "#0A0B0E" : "#FFFFFF"
+export function bgOf(p: Palette, shade: PaperShade): string {
+  if (shade === "white") return "#FFFFFF"
   // far enough toward the grid colour to read as a choice — at half that, the
   // three shades look like the same white three times
-  if (shade === "shaded") return dark ? mix(p.bg, p.grid, 0.8) : mix(p.bg, p.grid, 0.7)
+  if (shade === "shaded") return mix(p.bg, p.grid, 0.7)
   return p.bg
 }
 
@@ -258,11 +182,7 @@ export function gridOf(p: Palette, shade: PaperShade): string {
   return shade === "shaded" ? mix(p.grid, p.ink, 0.15) : p.grid
 }
 
-export function paletteOf(name: string, isDark?: boolean): Palette {
-  const darkActive = isDark ?? (typeof document !== "undefined" && document.documentElement.classList.contains("dark"))
-  if (darkActive) {
-    return DARK_THEMES[name as ThemeName] ?? DARK_THEMES[DEFAULT_THEME] ?? THEMES[name as ThemeName] ?? THEMES[DEFAULT_THEME]
-  }
+export function paletteOf(name: string): Palette {
   return THEMES[name as ThemeName] ?? THEMES[DEFAULT_THEME]
 }
 
@@ -295,10 +215,9 @@ export const DEFAULT_LOOK: Look = {
     by a custom property, so it is the one part this doesn't touch. */
 export function applyLook({ theme, font, paper }: Look) {
   if (typeof document === "undefined") return
-  const isDark = document.documentElement.classList.contains("dark")
-  const p = paletteOf(theme, isDark)
+  const p = paletteOf(theme)
   const root = document.documentElement
-  root.style.setProperty("--sq-bg", bgOf(p, paper, isDark))
+  root.style.setProperty("--sq-bg", bgOf(p, paper))
   root.style.setProperty("--sq-paper", p.paper)
   root.style.setProperty("--sq-ink", p.ink)
   root.style.setProperty("--sq-muted", p.muted)

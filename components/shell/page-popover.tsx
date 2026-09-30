@@ -13,7 +13,7 @@
 // - Bottom Actions: [Fit] and [Select all]
 // ---------------------------------------------------------------------------
 
-import { useEffect, useRef, useSyncExternalStore } from "react"
+import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import {
@@ -42,21 +42,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
-function subscribeToTheme(callback: () => void) {
-  if (typeof document === "undefined") return () => {}
-  const obs = new MutationObserver(callback)
-  obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] })
-  return () => obs.disconnect()
-}
-
-function getThemeSnapshot() {
-  return typeof document !== "undefined" && document.documentElement.classList.contains("dark")
-}
-
-function getThemeServerSnapshot() {
-  return false
-}
-
 export function PagePopover() {
   const isOpen = useShellStore((s) => s.pagePopoverOpen)
   const setIsOpen = useShellStore((s) => s.setPagePopoverOpen)
@@ -75,10 +60,8 @@ export function PagePopover() {
   const selectAll = useSquig((s) => s.selectAll)
 
   const popoverRef = useRef<HTMLDivElement>(null)
-  const isDark = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getThemeServerSnapshot)
-
-  const palette = paletteOf(theme, isDark)
-  const currentThemeLabel = palette.label ?? "Hipster black"
+  const palette = paletteOf(theme)
+  const currentThemeLabel = THEMES[theme]?.label ?? "Hipster black"
 
   // Close on Escape or click outside
   useEffect(() => {
@@ -208,7 +191,7 @@ export function PagePopover() {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 text-xs font-sans">
                 {THEME_NAMES.map((name) => {
-                  const t = paletteOf(name, isDark)
+                  const t = THEMES[name]
                   const isSelected = theme === name
                   return (
                     <DropdownMenuItem
