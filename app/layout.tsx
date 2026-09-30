@@ -65,7 +65,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FBFAF5",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FBFAF5" },
+    { media: "(prefers-color-scheme: dark)", color: "#0E121A" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -80,9 +83,17 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${patrickHand.variable} ${sourceSerif.variable} h-full antialiased`}
     >
-      <body className="h-full overflow-hidden">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var p=localStorage.getItem('zenithsui:shell_prefs');var m='system';if(p){var parsed=JSON.parse(p);if(parsed&&parsed.themeMode)m=parsed.themeMode;}var dark=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="h-full overflow-hidden bg-background text-foreground">
         <ServiceWorkerRegister />
         {children}
       </body>

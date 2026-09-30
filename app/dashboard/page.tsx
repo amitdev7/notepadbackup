@@ -16,6 +16,7 @@ import {
   Clock,
 } from "@phosphor-icons/react"
 import { WorkspaceSwitcher } from "@/components/chrome/workspace-switcher"
+import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
 
 interface SharedDocItem {
   id: string
@@ -39,6 +40,10 @@ export default function DashboardPage() {
   const [sharedDocs, setSharedDocs] = useState<SharedDocItem[]>([])
   const [activeTab, setActiveTab] = useState<TabType>("recent")
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    syncThemeToDOM(useShellStore.getState().preferences.themeMode)
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -121,13 +126,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex h-screen w-screen bg-[#FBFAF5] text-stone-900 font-sans overflow-hidden">
+    <div className="flex h-screen w-screen bg-[#FBFAF5] dark:bg-[#0E1015] text-stone-900 dark:text-stone-100 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-60 border-r border-stone-200/80 bg-stone-100/50 p-4 flex flex-col justify-between shrink-0">
+      <aside className="w-60 border-r border-stone-200/80 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900/60 p-4 flex flex-col justify-between shrink-0">
         <div>
           {/* Logo & Workspace */}
-          <div className="flex items-center justify-between pb-4 border-b border-stone-200">
-            <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 flex items-center gap-1.5">
+          <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-stone-800">
+            <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
               <span>zenithsui</span>
             </Link>
           </div>
@@ -139,7 +144,7 @@ export default function DashboardPage() {
           {/* New Document Button */}
           <Button
             onClick={handleCreateNew}
-            className="w-full mt-3 justify-start gap-2 bg-stone-900 hover:bg-stone-800 text-white shadow-2xs text-xs font-mono"
+            className="w-full mt-3 justify-start gap-2 bg-stone-900 hover:bg-stone-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-2xs text-xs font-mono"
             size="sm"
           >
             <Plus size={14} />
@@ -152,8 +157,8 @@ export default function DashboardPage() {
               onClick={() => setActiveTab("recent")}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "recent"
-                  ? "bg-stone-200/70 text-stone-950 font-semibold"
-                  : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
+                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
               }`}
             >
               <Clock size={16} />
@@ -164,8 +169,8 @@ export default function DashboardPage() {
               onClick={() => setActiveTab("projects")}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "projects"
-                  ? "bg-stone-200/70 text-stone-950 font-semibold"
-                  : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
+                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
               }`}
             >
               <Folder size={16} />
@@ -176,8 +181,8 @@ export default function DashboardPage() {
               onClick={() => setActiveTab("shared")}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "shared"
-                  ? "bg-stone-200/70 text-stone-950 font-semibold"
-                  : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
+                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
               }`}
             >
               <ShareNetwork size={16} />
@@ -188,8 +193,8 @@ export default function DashboardPage() {
               onClick={() => setActiveTab("trash")}
               className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 activeTab === "trash"
-                  ? "bg-stone-200/70 text-stone-950 font-semibold"
-                  : "text-stone-600 hover:bg-stone-200/40 hover:text-stone-900"
+                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
               }`}
             >
               <Trash size={16} />
@@ -199,10 +204,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Back to Canvas */}
-        <div className="pt-4 border-t border-stone-200/80 flex items-center justify-between">
+        <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-1.5 text-xs text-stone-600 hover:text-stone-900 transition-colors"
+            className="flex items-center gap-1.5 text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
           >
             <ArrowLeft size={14} />
             Back to Canvas
@@ -213,8 +218,8 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header */}
-        <header className="h-14 border-b border-stone-200/80 bg-white/60 px-8 flex items-center justify-between backdrop-blur-xs">
-          <h1 className="font-sans text-base font-semibold tracking-tight text-stone-800 capitalize">
+        <header className="h-14 border-b border-stone-200/80 dark:border-stone-800 bg-white/60 dark:bg-[#121316]/80 px-8 flex items-center justify-between backdrop-blur-xs">
+          <h1 className="font-sans text-base font-semibold tracking-tight text-stone-800 dark:text-stone-100 capitalize">
             {activeTab === "recent"
               ? "Recent Drawings"
               : activeTab === "projects"
@@ -228,22 +233,22 @@ export default function DashboardPage() {
         {/* Documents Grid / List */}
         <div className="flex-1 overflow-y-auto p-8">
           {loading ? (
-            <div className="flex h-64 items-center justify-center text-sm font-mono text-stone-400">
+            <div className="flex h-64 items-center justify-center text-sm font-mono text-stone-400 dark:text-stone-500">
               Loading drawings…
             </div>
           ) : (activeTab === "shared" ? sharedDocs.length === 0 : documents.length === 0) ? (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200 rounded-xl p-8 text-center max-w-md mx-auto my-12">
-              <div className="rounded-full bg-stone-100 p-3 text-stone-400 mb-3">
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl p-8 text-center max-w-md mx-auto my-12">
+              <div className="rounded-full bg-stone-100 dark:bg-stone-800/80 p-3 text-stone-400 dark:text-stone-500 mb-3">
                 <FileText size={24} />
               </div>
-              <h3 className="text-sm font-medium text-stone-800">
+              <h3 className="text-sm font-medium text-stone-800 dark:text-stone-200">
                 {activeTab === "trash"
                   ? "Trash is empty"
                   : activeTab === "shared"
                   ? "No shared documents"
                   : "No drawings yet"}
               </h3>
-              <p className="text-xs text-stone-500 mt-1 mb-4">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 mb-4">
                 {activeTab === "trash"
                   ? "Documents you delete will show up here."
                   : activeTab === "shared"
@@ -267,22 +272,22 @@ export default function DashboardPage() {
                   <div
                     key={doc.id}
                     onClick={() => handleOpenDoc(doc)}
-                    className="group relative rounded-xl border border-stone-200 bg-white p-4 shadow-2xs hover:shadow-md hover:border-stone-300 transition-all cursor-pointer flex flex-col justify-between h-44"
+                    className="group relative rounded-xl border border-stone-200 dark:border-stone-800/90 bg-white dark:bg-[#18191E] p-4 shadow-2xs hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all cursor-pointer flex flex-col justify-between h-44"
                   >
                     <div>
                       {/* Document Preview Box / Thumbnail */}
-                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] border border-stone-100 flex items-center justify-center text-stone-300 group-hover:text-stone-400 transition-colors mb-3">
+                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] dark:bg-[#121316] border border-stone-100 dark:border-stone-800/60 flex items-center justify-center text-stone-300 dark:text-stone-600 group-hover:text-stone-400 dark:group-hover:text-stone-400 transition-colors mb-3">
                         <span className="font-sketch text-sm">
                           {activeTab === "shared" && 'role' in doc ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
                         </span>
                       </div>
 
-                      <div className="font-sans text-xs font-semibold text-stone-800 truncate">
+                      <div className="font-sans text-xs font-semibold text-stone-800 dark:text-stone-100 truncate">
                         {doc.name}
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-stone-400 pt-2 border-t border-stone-100">
+                    <div className="flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800/60">
                       <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
                       <span className="flex items-center gap-1 font-mono text-[10px]">
                         {isPublic ? (

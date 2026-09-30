@@ -281,7 +281,7 @@ export function LibraryPanel() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search components, wireframe blocks, formulas, syllabus cards..."
-              className="h-9 pl-10 pr-8 text-xs rounded-xl bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-750 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="h-9 pl-10 pr-8 text-xs rounded-xl bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 placeholder:text-stone-400 shadow-2xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               onKeyDown={(e) => {
                 e.stopPropagation()
                 if (e.key === "Escape") handleClose()

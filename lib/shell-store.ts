@@ -7,6 +7,8 @@
 // ---------------------------------------------------------------------------
 
 import { create } from "zustand"
+import { useSquig } from "@/lib/store"
+import { applyLook } from "@/lib/theme"
 
 export type SettingsSectionId =
   | "general"
@@ -121,6 +123,63 @@ interface ShellState {
   resetPreferences: () => void
 }
 
+let mediaQueryListenerAttached = false
+
+export function syncThemeToDOM(mode: ThemeMode = "system") {
+  if (typeof window === "undefined" || typeof document === "undefined") return
+
+  const isDark =
+    mode === "dark" ||
+    (mode === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches)
+
+  if (isDark) {
+    document.documentElement.classList.add("dark")
+    document.documentElement.style.colorScheme = "dark"
+  } else {
+    document.documentElement.classList.remove("dark")
+    document.documentElement.style.colorScheme = "light"
+  }
+
+  // Attach system listener if mode is 'system' and not already attached
+  if (mode === "system" && !mediaQueryListenerAttached) {
+    mediaQueryListenerAttached = true
+    try {
+      const mql = window.matchMedia("(prefers-color-scheme: dark)")
+      const handler = (e: MediaQueryListEvent) => {
+        const currentMode = useShellStore.getState().preferences.themeMode
+        if (currentMode === "system") {
+          if (e.matches) {
+            document.documentElement.classList.add("dark")
+            document.documentElement.style.colorScheme = "dark"
+          } else {
+            document.documentElement.classList.remove("dark")
+            document.documentElement.style.colorScheme = "light"
+          }
+          reapplyCanvasLook()
+        }
+      }
+      mql.addEventListener("change", handler)
+    } catch {}
+  }
+
+  reapplyCanvasLook()
+}
+
+function reapplyCanvasLook() {
+  if (typeof window === "undefined") return
+  try {
+    const st = useSquig.getState()
+    if (st && st.hydrated) {
+      applyLook({
+        theme: st.theme,
+        paper: st.paper,
+        font: st.font,
+        grid: st.grid,
+      })
+    }
+  } catch {}
+}
+
 export const useShellStore = create<ShellState>((set, get) => ({
   activeSurface: "canvas",
   pagePopoverOpen: false,
@@ -156,6 +215,9 @@ export const useShellStore = create<ShellState>((set, get) => ({
     set((state) => {
       const next = { ...state.preferences, ...updates }
       savePreferences(next)
+      if (updates.themeMode !== undefined) {
+        syncThemeToDOM(updates.themeMode)
+      }
       return { preferences: next }
     })
   },
@@ -163,5 +225,6 @@ export const useShellStore = create<ShellState>((set, get) => ({
   resetPreferences: () => {
     set({ preferences: DEFAULT_PREFERENCES })
     savePreferences(DEFAULT_PREFERENCES)
+    syncThemeToDOM(DEFAULT_PREFERENCES.themeMode)
   },
 }))

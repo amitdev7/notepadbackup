@@ -15,6 +15,7 @@
 import { useEffect, useRef, useState } from "react"
 import {
   useShellStore,
+  syncThemeToDOM,
   type SettingsSectionId,
   type ThemeMode,
   type UIDensity,
@@ -274,17 +275,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                   type="button"
                   onClick={() => {
                     updatePrefs({ themeMode: t })
-                    if (t === "dark") {
-                      document.documentElement.classList.add("dark")
-                    } else if (t === "light") {
-                      document.documentElement.classList.remove("dark")
-                    } else {
-                      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-                        document.documentElement.classList.add("dark")
-                      } else {
-                        document.documentElement.classList.remove("dark")
-                      }
-                    }
+                    syncThemeToDOM(t)
                   }}
                   className={cn(
                     "py-2 rounded-xl border text-center capitalize font-medium transition-all",
