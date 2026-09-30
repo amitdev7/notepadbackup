@@ -5,7 +5,6 @@ import { useSquig } from "@/lib/store"
 import { Canvas } from "@/components/canvas/canvas"
 import { TopBar } from "@/components/shell/top-bar"
 import { BottomDock } from "@/components/shell/bottom-dock"
-import { PagePopover } from "@/components/shell/page-popover"
 import { SettingsDialog } from "@/components/shell/settings-dialog"
 import { LibraryPanel } from "@/components/chrome/library-panel"
 import { Inspector } from "@/components/chrome/inspector"
@@ -61,7 +60,6 @@ export default function Home() {
         <>
           <TopBar />
           <BottomDock />
-          <PagePopover />
           <SettingsDialog />
           <LibraryPanel />
           <Inspector />

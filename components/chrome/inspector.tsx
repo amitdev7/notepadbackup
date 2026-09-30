@@ -14,8 +14,9 @@
 // somewhere else.
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
@@ -38,6 +39,7 @@ import {
   LinkBreakIcon,
   SelectionAllIcon,
   TrashIcon,
+  X,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -122,6 +124,8 @@ const STROKE_OPTIONS: readonly SegmentOption<StrokeWeight>[] = [
 export function Inspector() {
   const nodes = useSquig((s) => s.nodes)
   const selection = useSquig((s) => s.selection)
+  const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
+  const setPagePopoverOpen = useShellStore((s) => s.setPagePopoverOpen)
 
   const selected = useMemo(
     () => selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[],
@@ -129,8 +133,34 @@ export function Inspector() {
   )
   const empty = selected.length === 0
 
-  // Nothing selected is not an absence — it's the page. So the panel keeps its
-  // job and changes its subject rather than going blank.
+  // Close Page settings on Escape or click outside when empty and open
+  const panelRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!empty || !pagePopoverOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setPagePopoverOpen(false)
+    }
+    const onPointer = (e: PointerEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        const target = e.target as HTMLElement
+        if (!target.closest("[data-dock-page-btn]")) {
+          setPagePopoverOpen(false)
+        }
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    window.addEventListener("pointerdown", onPointer)
+    return () => {
+      window.removeEventListener("keydown", onKey)
+      window.removeEventListener("pointerdown", onPointer)
+    }
+  }, [empty, pagePopoverOpen, setPagePopoverOpen])
+
+  // When nothing is selected, do NOT show the panel unless the user explicitly toggled Page on
+  if (empty && !pagePopoverOpen) {
+    return null
+  }
+
   const heading = empty
     ? "Page"
     : selected.length > 1
@@ -142,8 +172,24 @@ export function Inspector() {
   const subtitle = selected.length > 1 ? selectionSummary(selected) : undefined
 
   return (
-    <Panel className="absolute top-16 right-4 z-30 max-h-[calc(100vh-5rem)] w-[272px]">
-      <PanelHeader title={heading} subtitle={subtitle} />
+    <Panel ref={panelRef} className="absolute top-16 right-4 z-30 max-h-[calc(100vh-5rem)] w-[272px]">
+      <PanelHeader
+        title={heading}
+        subtitle={subtitle}
+        right={
+          empty ? (
+            <button
+              type="button"
+              onClick={() => setPagePopoverOpen(false)}
+              className="rounded p-1 text-muted-foreground hover:text-foreground hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              title="Close (Esc)"
+              aria-label="Close page settings"
+            >
+              <X size={14} />
+            </button>
+          ) : undefined
+        }
+      />
 
       <ScrollArea className="min-h-0">
         {/* remounting on a selection change drops any half-typed draft, which

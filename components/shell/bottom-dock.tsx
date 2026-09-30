@@ -184,6 +184,7 @@ export function BottomDock() {
             <button
               key={t.id}
               type="button"
+              data-dock-library-btn={t.id === "library" ? "" : undefined}
               onClick={() => handleToolClick(t)}
               title={`${t.label}${t.shortcut ? ` (${t.shortcut})` : ""}`}
               aria-label={t.label}
