@@ -211,7 +211,7 @@ export function SyllabusManager({
               </button>
 
               <div className="flex items-center gap-3">
-                <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+                <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
                   {currentSubject.name}
                 </h1>
                 <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
@@ -489,7 +489,7 @@ export function SyllabusManager({
           {/* Header & Overall Summary */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
             <div>
-              <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+              <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
                 Syllabus & Curriculum Manager
               </h1>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
@@ -589,7 +589,7 @@ export function SyllabusManager({
                     <div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-50">
+                          <h3 className="font-sans text-base font-bold tracking-tight text-stone-900 dark:text-stone-50">
                             {sub.name}
                           </h3>
                           <span className="text-[11px] font-mono text-stone-400">
@@ -769,7 +769,7 @@ function SubjectModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-md rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             {editingSubject ? "Edit Subject" : "Add Subject"}
           </h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg text-stone-400 hover:text-stone-700">
@@ -879,7 +879,7 @@ function ChapterModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-md rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             {editingChapter ? "Edit Chapter" : "Add Chapter"}
           </h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg text-stone-400 hover:text-stone-700">
@@ -972,7 +972,7 @@ function SetChapterGoalDirectModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="p-5 space-y-4 text-xs font-sans">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
             <span className="text-amber-500">◆</span>
             <span>Set Completion Goal</span>
           </h3>

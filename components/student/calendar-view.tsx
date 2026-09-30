@@ -235,7 +235,7 @@ export function CalendarView() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
               Study Calendar & Schedule
             </h1>
             <span className="rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[11px] font-mono px-2.5 py-0.5 font-medium">
@@ -340,7 +340,7 @@ export function CalendarView() {
                 <CaretRight size={16} />
               </button>
 
-              <span className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 ml-2">
+              <span className="font-sans text-base font-bold text-stone-900 dark:text-stone-100 ml-2">
                 {pivotDate.toLocaleString("default", {
                   month: "long",
                   year: "numeric",
@@ -759,7 +759,7 @@ function DayDetailCard({
       {/* Header & Day Summary */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-200/80 dark:border-stone-800 pb-4">
         <div>
-          <h2 className="font-serif text-lg font-bold text-stone-900 dark:text-stone-50">
+          <h2 className="font-sans text-base font-semibold tracking-tight text-stone-900 dark:text-stone-50">
             {fullDateStr}
           </h2>
           <div className="flex items-center gap-3 text-xs font-mono text-stone-500 dark:text-stone-400 mt-1">
@@ -1029,7 +1029,7 @@ function ChapterGoalsManagementView({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-50">
+          <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-50">
             My Chapter Completion Goals
           </h2>
           <p className="text-xs text-stone-500">
@@ -1272,7 +1272,7 @@ function ActivityFormModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             {editingActivity ? "Edit Study Activity" : "Add What I Will Do"}
           </h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200">
@@ -1478,7 +1478,7 @@ function ChapterGoalModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-md rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
             <span className="text-amber-500">◆</span>
             <span>Set Chapter Completion Goal</span>
           </h3>
@@ -1596,7 +1596,7 @@ function ChangeGoalDateModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="p-5 space-y-4 text-xs font-sans">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             Change Chapter Completion Date?
           </h3>
           <p className="text-stone-600 dark:text-stone-400">

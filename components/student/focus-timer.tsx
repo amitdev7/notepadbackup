@@ -257,7 +257,7 @@ export function FocusTimer({
       <div className="flex flex-col gap-3 pb-4 border-b border-stone-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="font-serif text-sm font-semibold tracking-tight text-stone-900">
+            <span className="font-sans text-sm font-semibold tracking-tight text-stone-900">
               Focus Engine
             </span>
             <span className="rounded-full border border-stone-200 bg-[#FBFAF5] px-2 py-0.5 font-mono text-[10px] text-stone-600">

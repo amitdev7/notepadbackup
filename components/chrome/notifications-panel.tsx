@@ -49,7 +49,14 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     }
   }, [isOpen])
 
-  if (!isOpen) return null
+  useEffect(() => {
+    if (!isOpen) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [isOpen, onClose])
 
   const handleMarkAllRead = async () => {
     try {
@@ -92,9 +99,12 @@ export function NotificationsPanel({ isOpen, onClose }: NotificationsPanelProps)
     }
   }
 
+  if (!isOpen) return null
+
   return (
     <div
       role="dialog"
+      aria-modal="true"
       aria-label="Sharing notifications center"
       className="fixed inset-0 z-50 flex items-start justify-end p-4 bg-black/20 backdrop-blur-2xs"
       onClick={(e) => {

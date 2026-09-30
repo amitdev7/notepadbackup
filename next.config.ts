@@ -11,8 +11,25 @@ const nextConfig: NextConfig = {
   // the resolution path, so a dependency missing from this repo could quietly
   // resolve to a different version of itself two directories up. Saying where
   // the root is means that can't happen, whatever else is lying around.
+  poweredByHeader: false,
+  reactStrictMode: true,
   turbopack: {
     root: path.dirname(fileURLToPath(import.meta.url)),
+  },
+  experimental: {
+    optimizePackageImports: ["@phosphor-icons/react"],
+  },
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+    ];
   },
 };
 

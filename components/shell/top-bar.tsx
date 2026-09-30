@@ -55,12 +55,12 @@ export function TopBar() {
 
   return (
     <>
-      <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-between px-4 sm:px-6">
-        {/* Left: Intentionally empty to give canvas maximum breathing space */}
-        <div className="w-10 sm:w-48 pointer-events-none" />
+      <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-between px-2 sm:px-6 gap-2">
+        {/* Left: Intentionally empty on desktop to give canvas maximum breathing space */}
+        <div className="hidden md:block md:w-48 pointer-events-none" />
 
         {/* Center: Subtle Document Title + Inline Sync Indicator */}
-        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-stone-200/60 dark:border-stone-800/60 shadow-xs shadow-stone-900/5">
+        <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-stone-200/60 dark:border-stone-800/60 shadow-xs shadow-stone-900/5 min-w-0">
           {isEditingTitle ? (
             <input
               ref={inputRef}
@@ -75,28 +75,30 @@ export function TopBar() {
                   setIsEditingTitle(false)
                 }
               }}
-              className="text-xs font-medium text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[120px] max-w-[240px] text-center"
+              aria-label="Document title"
+              className="text-xs font-medium text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center"
             />
           ) : (
             <button
               type="button"
               onClick={() => setIsEditingTitle(true)}
-              className="group flex items-center gap-1.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors"
+              className="group flex items-center gap-1.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate"
               title="Click to rename document"
+              aria-label={`Rename document: ${fileName}`}
             >
-              <span className="truncate max-w-[180px] sm:max-w-[280px]">{fileName}</span>
-              <PencilSimple size={11} className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <span className="truncate max-w-[120px] sm:max-w-[280px]">{fileName}</span>
+              <PencilSimple size={11} className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" aria-hidden="true" />
             </button>
           )}
 
-          <div className="h-3 w-px bg-stone-200 dark:bg-stone-700 mx-0.5" />
+          <div className="h-3 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
 
           {/* Cloud / Local Save Indicator */}
           <SyncIndicator />
         </div>
 
         {/* Right: Actions (View Only, Wi-Fi, Share, Notifications, Auth) */}
-        <div className="pointer-events-auto flex items-center gap-1.5 p-1 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-stone-200/60 dark:border-stone-800/60 shadow-xs shadow-stone-900/5">
+        <div className="pointer-events-auto flex items-center gap-1 sm:gap-1.5 p-1 rounded-full bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border border-stone-200/60 dark:border-stone-800/60 shadow-xs shadow-stone-900/5 shrink-0">
           {isViewer && (
             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider">
               Viewer
@@ -107,10 +109,11 @@ export function TopBar() {
           <button
             type="button"
             onClick={() => useWifiSessionStore.getState().openPublishDialog()}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
             title="Publish on local Wi-Fi router"
+            aria-label="Publish on local Wi-Fi router"
           >
-            <WifiHigh size={14} />
+            <WifiHigh size={14} aria-hidden="true" />
             <span className="hidden sm:inline">Wi-Fi</span>
           </button>
 
@@ -118,11 +121,12 @@ export function TopBar() {
           <button
             type="button"
             onClick={() => setShareOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors"
             title="Share drawing with collaborators"
+            aria-label="Share drawing with collaborators"
           >
-            <ShareNetwork size={14} weight="bold" />
-            <span>Share</span>
+            <ShareNetwork size={14} weight="bold" aria-hidden="true" />
+            <span className="hidden xs:inline sm:inline">Share</span>
           </button>
 
           {/* Notifications */}
@@ -131,11 +135,13 @@ export function TopBar() {
             onClick={() => setNotifsOpen(!notifsOpen)}
             className="p-1.5 rounded-full text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
             title="Sharing notifications"
+            aria-label="Sharing notifications"
+            aria-expanded={notifsOpen}
           >
-            <Bell size={15} />
+            <Bell size={15} aria-hidden="true" />
           </button>
 
-          <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5" />
+          <div className="h-4 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
 
           {/* Auth Corner Avatar */}
           <AuthCorner />

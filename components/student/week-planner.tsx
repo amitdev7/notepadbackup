@@ -181,7 +181,7 @@ export function WeekPlanner({
       {/* ── Top Header & Weekly Allocation Bar ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
         <div>
-          <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+          <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
             Study Timetable & Week Planner
           </h1>
           <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
@@ -436,7 +436,7 @@ export function WeekPlanner({
       {quickDayAdd && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl p-5 space-y-4 text-xs font-sans">
-            <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+            <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
               Plan Study for {quickDayAdd}
             </h3>
 

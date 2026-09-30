@@ -155,7 +155,7 @@ export function NotesMaterialsHub({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 dark:border-stone-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-serif text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
+            <h1 className="font-sans text-xl font-bold tracking-tight text-stone-900 dark:text-stone-50">
               Notes & Study Materials
             </h1>
             <span className="rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[11px] font-mono px-2.5 py-0.5 font-medium">
@@ -315,7 +315,7 @@ export function NotesMaterialsHub({
                     <span>→</span>
                     <span>Chapter</span>
                   </div>
-                  <h2 className="font-serif text-xl font-bold text-stone-900 dark:text-stone-100 mt-0.5">
+                  <h2 className="font-sans text-lg font-bold tracking-tight text-stone-900 dark:text-stone-100 mt-0.5">
                     {currentChapter.name}
                   </h2>
                 </div>
@@ -754,7 +754,7 @@ function AddMaterialModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-lg rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200 dark:border-stone-800">
-          <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+          <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
             Add Study Material
           </h3>
           <button type="button" onClick={onClose} className="p-1 rounded-lg text-stone-400 hover:text-stone-700">
@@ -973,7 +973,7 @@ function NoteEditorModal({
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               placeholder="Note Title"
-              className="font-serif text-lg font-bold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-transparent hover:border-stone-300 focus:border-blue-500 px-1 py-0.5"
+              className="font-sans text-base font-semibold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-transparent hover:border-stone-300 focus:border-blue-500 px-1 py-0.5"
             />
           </div>
 
@@ -1029,7 +1029,7 @@ function MaterialPreviewModal({
       <div className="w-full max-w-2xl rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-2xl p-6 space-y-4">
         <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-3">
           <div>
-            <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+            <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
               {material.title}
             </h3>
             <span className="text-xs font-mono text-stone-400">
@@ -1100,7 +1100,7 @@ function MoveMaterialModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
       <div className="w-full max-w-sm rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-xl p-5 space-y-4 text-xs font-sans">
-        <h3 className="font-serif text-base font-bold text-stone-900 dark:text-stone-100">
+        <h3 className="font-sans text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
           Move Material
         </h3>
         <p className="text-stone-500">

@@ -431,7 +431,7 @@ export default function StudentHubPage() {
                     Term Finals
                   </span>
                 </div>
-                <div className="mt-2 font-mono text-2xl font-bold text-stone-900 dark:text-stone-100 tabular-nums">
+                <div suppressHydrationWarning className="mt-2 font-mono text-2xl font-bold text-stone-900 dark:text-stone-100 tabular-nums">
                   {countdown.days}d {String(countdown.hours).padStart(2, "0")}h {String(countdown.minutes).padStart(2, "0")}m
                 </div>
                 <div className="mt-1 flex items-center justify-between font-mono text-[11px] text-stone-500">
@@ -999,7 +999,7 @@ export default function StudentHubPage() {
                   Mathematics • Physics • Chemistry Comprehensive
                 </p>
               </div>
-              <div className="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-white tabular-nums">
+              <div suppressHydrationWarning className="font-mono text-2xl sm:text-3xl font-bold tracking-tight text-white tabular-nums">
                 {countdown.days}d {String(countdown.hours).padStart(2, "0")}h {String(countdown.minutes).padStart(2, "0")}m {String(countdown.seconds).padStart(2, "0")}s
               </div>
             </div>

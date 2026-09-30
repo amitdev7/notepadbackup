@@ -13,8 +13,14 @@ const PRECACHE_ASSETS = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS)
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        PRECACHE_ASSETS.map((asset) =>
+          cache.add(asset).catch((err) => {
+            console.warn(`[zenithsui-sw] Precache failed for ${asset}:`, err)
+          })
+        )
+      )
     }).then(() => self.skipWaiting())
   )
 })
@@ -88,7 +94,15 @@ self.addEventListener("fetch", (event) => {
 
   // 4. Default: Network first with cache fallback
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request)
+      .then((networkResponse) => {
+        if (networkResponse.status === 200) {
+          const clone = networkResponse.clone()
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+        }
+        return networkResponse
+      })
+      .catch(() => caches.match(event.request))
   )
 })
 

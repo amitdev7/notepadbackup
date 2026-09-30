@@ -177,7 +177,8 @@ CREATE TABLE IF NOT EXISTS documents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     workspace_id UUID NOT NULL REFERENCES workspaces(id) ON DELETE CASCADE,
     project_id UUID REFERENCES projects(id) ON DELETE SET NULL,
-    title VARCHAR(255) NOT NULL DEFAULT 'untitled scribbles',
+    name VARCHAR(255) NOT NULL DEFAULT 'untitled scribbles',
+    title VARCHAR(255) NULL,
     document_json JSONB NOT NULL DEFAULT '{"nodes": {}, "order": [], "look": {"theme": "internet-blue", "paper": "subtle", "font": "hand", "grid": true}}'::jsonb,
     schema_version INT NOT NULL DEFAULT 1 CHECK (schema_version >= 1),
     revision BIGINT NOT NULL DEFAULT 1 CHECK (revision >= 1),
@@ -609,7 +610,7 @@ RETURNS BOOLEAN LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
         SELECT 1 FROM documents d
         LEFT JOIN document_members dm ON dm.document_id = d.id AND dm.profile_id = p_user_id
         LEFT JOIN workspace_members wm ON wm.workspace_id = d.workspace_id AND wm.profile_id = p_user_id
-        WHERE d.id = p_document_id AND (d.created_by = p_user_id OR dm.id IS NOT NULL OR wm.id IS NOT NULL)
+        WHERE d.id = p_document_id AND (d.created_by = p_user_id OR dm.profile_id IS NOT NULL OR wm.profile_id IS NOT NULL)
     );
 $$;
 
@@ -678,8 +679,8 @@ DECLARE
     v_workspace_id UUID;
 BEGIN
     -- Create profile
-    INSERT INTO public.profiles (id, email, full_name)
-    VALUES (NEW.id, NEW.email, coalesce(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)));
+    INSERT INTO public.profiles (id, email, display_name)
+    VALUES (NEW.id, NEW.email, coalesce(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'display_name', split_part(NEW.email, '@', 1)));
 
     -- Create personal workspace
     INSERT INTO public.workspaces (name, slug, owner_id)

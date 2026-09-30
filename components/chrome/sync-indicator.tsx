@@ -28,14 +28,28 @@ export function SyncIndicator() {
     clickAction = triggerSync
   }
 
+  if (clickAction) {
+    return (
+      <button
+        type="button"
+        role="status"
+        aria-live="polite"
+        onClick={clickAction}
+        className="inline-flex items-center gap-1 text-[11px] font-sans text-amber-600 hover:text-amber-700 dark:hover:text-amber-400 select-none cursor-pointer outline-none focus-visible:ring-1 focus-visible:ring-amber-500 rounded px-1"
+        title={label}
+        aria-label="Sync failed. Click or press Enter to retry sync"
+      >
+        {icon}
+        <span>{label}</span>
+      </button>
+    )
+  }
+
   return (
     <span
       role="status"
       aria-live="polite"
-      onClick={clickAction}
-      className={`inline-flex items-center gap-1 text-[11px] font-sans text-muted-foreground/70 select-none ${
-        clickAction ? "cursor-pointer hover:text-foreground" : ""
-      }`}
+      className="inline-flex items-center gap-1 text-[11px] font-sans text-muted-foreground/70 select-none"
       title={label}
     >
       {icon}

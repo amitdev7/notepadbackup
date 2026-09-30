@@ -14,6 +14,7 @@
 // somewhere else.
 // ---------------------------------------------------------------------------
 
+import { useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
@@ -122,7 +123,10 @@ export function Inspector() {
   const nodes = useSquig((s) => s.nodes)
   const selection = useSquig((s) => s.selection)
 
-  const selected = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
+  const selected = useMemo(
+    () => selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[],
+    [selection, nodes]
+  )
   const empty = selected.length === 0
 
   // Nothing selected is not an absence — it's the page. So the panel keeps its
@@ -138,7 +142,7 @@ export function Inspector() {
   const subtitle = selected.length > 1 ? selectionSummary(selected) : undefined
 
   return (
-    <Panel className="absolute top-4 right-4 z-30 max-h-[calc(100vh-2rem)] w-[272px]">
+    <Panel className="absolute top-16 right-4 z-30 max-h-[calc(100vh-5rem)] w-[272px]">
       <PanelHeader title={heading} subtitle={subtitle} />
 
       <ScrollArea className="min-h-0">

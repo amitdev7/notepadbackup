@@ -165,7 +165,7 @@ export function LibraryPanel() {
       role="dialog"
       aria-label="Zenithsui Library"
       className={cn(
-        "fixed top-16 left-6 z-40 flex flex-col w-[360px] max-h-[calc(100vh-6rem)]",
+        "fixed top-14 sm:top-16 left-3 right-3 sm:right-auto sm:left-6 z-40 flex flex-col w-auto sm:w-[360px] max-w-[calc(100vw-1.5rem)] max-h-[calc(100vh-5rem)] sm:max-h-[calc(100vh-6rem)]",
         "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
         "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-2xl shadow-stone-900/15 dark:shadow-black/60",
         "overflow-hidden font-sans animate-in fade-in zoom-in-95 duration-150 ease-out"
