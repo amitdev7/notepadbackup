@@ -530,13 +530,14 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
       const targetDoc = documents[0]
       st().updateNode(targetDoc.id, {
         assetId: res.assetId,
-        src: res.localUrl,
+        src: `asset://${res.hash}`,
         name: res.name,
         mimeType: res.mimeType,
         extension: res.extension,
         sizeBytes: res.sizeBytes,
-        pageCount: res.pageCount,
+        pageCount: res.pageCount || 1,
         textContent: res.textContent,
+        thumbnailUrl: res.thumbnailUrl,
         currentPage: 1,
       } as Partial<DocumentNode>)
     } catch (err: any) {

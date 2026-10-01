@@ -78,38 +78,151 @@ export async function computeBlobHash(blob: Blob): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
 }
 
-/** Cache a binary asset blob in local IndexedDB */
+/** In-memory blob cache for active session fast path */
+const inMemoryBlobCache = new Map<string, Blob>()
+
+/** Cache a binary asset blob in local IndexedDB and fast in-memory map */
 export async function cacheAssetBlob(blob: Blob, assetId?: string): Promise<string> {
   const hash = await computeBlobHash(blob)
   const validation = await validateImageMagicBytes(blob)
 
+  const normalizedAssetId = assetId || `asset_${hash}`
+
+  // 1. Instant in-memory cache
+  inMemoryBlobCache.set(hash, blob)
+  inMemoryBlobCache.set(`asset://${hash}`, blob)
+  inMemoryBlobCache.set(normalizedAssetId, blob)
+  const stripped = normalizedAssetId.replace(/^asset_/, "")
+  inMemoryBlobCache.set(stripped, blob)
+
   const record: AssetBlobRecord = {
     hash,
-    assetId,
+    assetId: normalizedAssetId,
     blob,
     mimeType: validation.valid ? validation.mimeType : blob.type,
     createdAt: Date.now(),
   }
 
-  await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
-    tx.objectStore(STORES.ASSET_BLOBS).put(record)
-  })
+  // 2. Persistent IndexedDB cache
+  if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
+    try {
+      await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
+        tx.objectStore(STORES.ASSET_BLOBS).put(record)
+      })
+    } catch (err) {
+      console.warn("Failed to persist asset to IndexedDB:", err)
+    }
+  }
 
   return hash
 }
 
-/** Retrieve a cached binary asset blob from IndexedDB */
-export async function getAssetBlob(hash: string): Promise<Blob | null> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve) => {
-    const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
-    const store = tx.objectStore(STORES.ASSET_BLOBS)
-    const req = store.get(hash)
-    req.onsuccess = () => {
-      const record = req.result as AssetBlobRecord | undefined
-      resolve(record?.blob || null)
+/** Retrieve a cached binary asset blob from Memory or IndexedDB */
+export async function getAssetBlob(key: string): Promise<Blob | null> {
+  if (!key) return null
+
+  // Fast path: memory cache
+  if (inMemoryBlobCache.has(key)) {
+    return inMemoryBlobCache.get(key)!
+  }
+
+  const cleanKey = key.replace(/^asset:\/\//, "").replace(/^asset_/, "")
+  if (inMemoryBlobCache.has(cleanKey)) {
+    return inMemoryBlobCache.get(cleanKey)!
+  }
+
+  // Prefix match in memory cache (supports truncated/legacy 16-char hashes)
+  for (const [k, v] of inMemoryBlobCache.entries()) {
+    const cleanK = k.replace(/^asset:\/\//, "").replace(/^asset_/, "")
+    if (cleanK.startsWith(cleanKey) || cleanKey.startsWith(cleanK)) {
+      return v
     }
-    req.onerror = () => resolve(null)
+  }
+
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") {
+    return null
+  }
+
+  const db = await openZenithsuiDb()
+
+  // 1. Direct primary key lookup using cleanKey
+  const directBlob = await new Promise<Blob | null>((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.get(cleanKey)
+      req.onsuccess = () => {
+        const record = req.result as AssetBlobRecord | undefined
+        resolve(record?.blob || null)
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
+  })
+
+  if (directBlob) {
+    inMemoryBlobCache.set(key, directBlob)
+    inMemoryBlobCache.set(cleanKey, directBlob)
+    return directBlob
+  }
+
+  // 2. Direct lookup using key as-is (e.g. if key was stored with prefix)
+  const asIsBlob = await new Promise<Blob | null>((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.get(key)
+      req.onsuccess = () => {
+        const record = req.result as AssetBlobRecord | undefined
+        resolve(record?.blob || null)
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
+  })
+
+  if (asIsBlob) {
+    inMemoryBlobCache.set(key, asIsBlob)
+    inMemoryBlobCache.set(cleanKey, asIsBlob)
+    return asIsBlob
+  }
+
+  // 3. Robust fallback: scan records by prefix (for truncated 16-char hashes) or assetId property
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.openCursor()
+      req.onsuccess = () => {
+        const cursor = req.result
+        if (!cursor) {
+          resolve(null)
+          return
+        }
+        const record = cursor.value as AssetBlobRecord
+        const recordStripped = record.assetId ? record.assetId.replace(/^asset_/, "") : ""
+        if (
+          record.hash === cleanKey ||
+          record.hash.startsWith(cleanKey) ||
+          record.assetId === key ||
+          record.assetId === `asset_${cleanKey}` ||
+          recordStripped === cleanKey
+        ) {
+          if (record.blob) {
+            inMemoryBlobCache.set(key, record.blob)
+            inMemoryBlobCache.set(cleanKey, record.blob)
+            resolve(record.blob)
+            return
+          }
+        }
+        cursor.continue()
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
   })
 }
 

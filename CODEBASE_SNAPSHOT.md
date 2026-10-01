@@ -492,10 +492,10 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `.vercelignore` | 1 | 0 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
-| `eslint.config.mjs` | 32 | 788 | Core eslint.config.mjs module | `eslint.config` |
+| `eslint.config.mjs` | 30 | 713 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
-| `package.json` | 57 | 3789 | Core package.json module | `package` |
+| `package.json` | 57 | 3891 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 44 | 729 | Core tsconfig.json module | `tsconfig` |
@@ -549,7 +549,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `components/chrome/file-name.tsx` | 156 | 5752 | Core file-name.tsx module | `file-name` |
 | `components/chrome/files-popover.tsx` | 239 | 9727 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 670 | 26381 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 671 | 26436 | Core inspector.tsx module | `inspector` |
 | `components/chrome/left-rail.tsx` | 164 | 4916 | Core left-rail.tsx module | `left-rail` |
 | `components/chrome/library-panel.tsx` | 433 | 17526 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
@@ -614,7 +614,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/actions/documents.ts` | 127 | 3196 | Core documents.ts module | `documents` |
 | `lib/actions/invitations.ts` | 102 | 2962 | Core invitations.ts module | `invitations` |
 | `lib/actions/sharing.ts` | 246 | 6824 | Core sharing.ts module | `sharing` |
-| `lib/cloud/assets.ts` | 163 | 4947 | Core assets.ts module | `assets` |
+| `lib/cloud/assets.ts` | 276 | 8447 | Core assets.ts module | `assets` |
 | `lib/cloud/invitations.ts` | 246 | 6797 | Core invitations.ts module | `invitations` |
 | `lib/cloud/invite-utils.ts` | 27 | 903 | Core invite-utils.ts module | `invite-utils` |
 | `lib/cloud/migration.ts` | 102 | 2733 | Core migration.ts module | `migration` |
@@ -643,7 +643,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
 | `lib/clipboard-payload.ts` | 151 | 5657 | Core clipboard-payload.ts module | `clipboard-payload` |
-| `lib/clipboard.ts` | 525 | 18447 | Core clipboard.ts module | `clipboard` |
+| `lib/clipboard.ts` | 526 | 18499 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 383 | 14676 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 31 | 1113 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 234 | 7768 | Core files.ts module | `files` |
@@ -715,10 +715,11 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-academic-syllabus.ts` | 218 | 9342 | Core test-academic-syllabus.ts module | `test-academic-syllabus` |
 | `scripts/test-clipboard.ts` | 124 | 5420 | Core test-clipboard.ts module | `test-clipboard` |
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
-| `scripts/test-document-attachments.ts` | 210 | 9333 | Core test-document-attachments.ts module | `test-document-attachments` |
+| `scripts/test-document-attachments.ts` | 260 | 11108 | Core test-document-attachments.ts module | `test-document-attachments` |
 | `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
+| `scripts/test-pdf-service.ts` | 77 | 2436 | Core test-pdf-service.ts module | `test-pdf-service` |
 | `scripts/test-phase2-invitations.ts` | 71 | 3035 | Core test-phase2-invitations.ts module | `test-phase2-invitations` |
 | `scripts/test-phase2-permissions.ts` | 214 | 7882 | Core test-phase2-permissions.ts module | `test-phase2-permissions` |
 | `scripts/test-phase2-public.ts` | 68 | 2971 | Core test-phase2-public.ts module | `test-phase2-public` |
@@ -734,11 +735,12 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-text.ts` | 167 | 6090 | Core test-text.ts module | `test-text` |
 | `scripts/tsconfig.json` | 13 | 263 | Core tsconfig.json module | `tsconfig` |
 | `docs/multiselect-spec.md` | 179 | 12071 | Core multiselect-spec.md module | `multiselect-spec` |
-| `components/canvas/document-canvas-item.tsx` | 415 | 13344 | Core document-canvas-item.tsx module | `document-canvas-item` |
-| `components/canvas/document-viewer-modal.tsx` | 476 | 17321 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
-| `components/canvas/pdf-canvas-viewer.tsx` | 611 | 21831 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
+| `components/canvas/document-canvas-item.tsx` | 485 | 15719 | Core document-canvas-item.tsx module | `document-canvas-item` |
+| `components/canvas/document-viewer-modal.tsx` | 515 | 18507 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
+| `components/canvas/pdf-canvas-viewer.tsx` | 635 | 22640 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `lib/pdf/pdf-renderer.ts` | 231 | 6502 | Core pdf-renderer.ts module | `pdf-renderer` |
-| `lib/storage/document-assets.ts` | 335 | 10143 | Core document-assets.ts module | `document-assets` |
+| `lib/pdf/pdf-service.ts` | 160 | 4599 | Core pdf-service.ts module | `pdf-service` |
+| `lib/storage/document-assets.ts` | 389 | 11757 | Core document-assets.ts module | `document-assets` |
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 
 ---
@@ -1059,8 +1061,8 @@ Figma's, so your hands already know it. `?` opens the full list in the app.
 ### File: `eslint.config.mjs`
 
 - **Path**: `eslint.config.mjs`
-- **Lines**: 32
-- **Size**: 788 bytes
+- **Lines**: 30
+- **Size**: 713 bytes
 
 ```javascript
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -1074,9 +1076,7 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
-      "prefer-const": "warn",
-      "react-hooks/set-state-in-effect": "off",
-      "react-compiler/react-compiler": "off",
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -1085,11 +1085,11 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
-    "public/**",
     "next-env.d.ts",
     "scripts/**",
     "docs/**",
     "supabase/**",
+    "public/**",
   ]),
 ]);
 
@@ -1166,7 +1166,7 @@ export default nextConfig;
 
 - **Path**: `package.json`
 - **Lines**: 57
-- **Size**: 3789 bytes
+- **Size**: 3891 bytes
 
 ```json
 {
@@ -1183,7 +1183,7 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts"
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -13033,8 +13033,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 670
-- **Size**: 26381 bytes
+- **Lines**: 671
+- **Size**: 26436 bytes
 
 ```tsx
 "use client"
@@ -13569,13 +13569,14 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
       const targetDoc = documents[0]
       st().updateNode(targetDoc.id, {
         assetId: res.assetId,
-        src: res.localUrl,
+        src: `asset://${res.hash}`,
         name: res.name,
         mimeType: res.mimeType,
         extension: res.extension,
         sizeBytes: res.sizeBytes,
-        pageCount: res.pageCount,
+        pageCount: res.pageCount || 1,
         textContent: res.textContent,
+        thumbnailUrl: res.thumbnailUrl,
         currentPage: 1,
       } as Partial<DocumentNode>)
     } catch (err: any) {
@@ -28034,8 +28035,8 @@ export async function unpublishDocumentAction(documentId: string) {
 ### File: `lib/cloud/assets.ts`
 
 - **Path**: `lib/cloud/assets.ts`
-- **Lines**: 163
-- **Size**: 4947 bytes
+- **Lines**: 276
+- **Size**: 8447 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -28118,38 +28119,151 @@ export async function computeBlobHash(blob: Blob): Promise<string> {
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("")
 }
 
-/** Cache a binary asset blob in local IndexedDB */
+/** In-memory blob cache for active session fast path */
+const inMemoryBlobCache = new Map<string, Blob>()
+
+/** Cache a binary asset blob in local IndexedDB and fast in-memory map */
 export async function cacheAssetBlob(blob: Blob, assetId?: string): Promise<string> {
   const hash = await computeBlobHash(blob)
   const validation = await validateImageMagicBytes(blob)
 
+  const normalizedAssetId = assetId || `asset_${hash}`
+
+  // 1. Instant in-memory cache
+  inMemoryBlobCache.set(hash, blob)
+  inMemoryBlobCache.set(`asset://${hash}`, blob)
+  inMemoryBlobCache.set(normalizedAssetId, blob)
+  const stripped = normalizedAssetId.replace(/^asset_/, "")
+  inMemoryBlobCache.set(stripped, blob)
+
   const record: AssetBlobRecord = {
     hash,
-    assetId,
+    assetId: normalizedAssetId,
     blob,
     mimeType: validation.valid ? validation.mimeType : blob.type,
     createdAt: Date.now(),
   }
 
-  await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
-    tx.objectStore(STORES.ASSET_BLOBS).put(record)
-  })
+  // 2. Persistent IndexedDB cache
+  if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
+    try {
+      await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
+        tx.objectStore(STORES.ASSET_BLOBS).put(record)
+      })
+    } catch (err) {
+      console.warn("Failed to persist asset to IndexedDB:", err)
+    }
+  }
 
   return hash
 }
 
-/** Retrieve a cached binary asset blob from IndexedDB */
-export async function getAssetBlob(hash: string): Promise<Blob | null> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve) => {
-    const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
-    const store = tx.objectStore(STORES.ASSET_BLOBS)
-    const req = store.get(hash)
-    req.onsuccess = () => {
-      const record = req.result as AssetBlobRecord | undefined
-      resolve(record?.blob || null)
+/** Retrieve a cached binary asset blob from Memory or IndexedDB */
+export async function getAssetBlob(key: string): Promise<Blob | null> {
+  if (!key) return null
+
+  // Fast path: memory cache
+  if (inMemoryBlobCache.has(key)) {
+    return inMemoryBlobCache.get(key)!
+  }
+
+  const cleanKey = key.replace(/^asset:\/\//, "").replace(/^asset_/, "")
+  if (inMemoryBlobCache.has(cleanKey)) {
+    return inMemoryBlobCache.get(cleanKey)!
+  }
+
+  // Prefix match in memory cache (supports truncated/legacy 16-char hashes)
+  for (const [k, v] of inMemoryBlobCache.entries()) {
+    const cleanK = k.replace(/^asset:\/\//, "").replace(/^asset_/, "")
+    if (cleanK.startsWith(cleanKey) || cleanKey.startsWith(cleanK)) {
+      return v
     }
-    req.onerror = () => resolve(null)
+  }
+
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") {
+    return null
+  }
+
+  const db = await openZenithsuiDb()
+
+  // 1. Direct primary key lookup using cleanKey
+  const directBlob = await new Promise<Blob | null>((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.get(cleanKey)
+      req.onsuccess = () => {
+        const record = req.result as AssetBlobRecord | undefined
+        resolve(record?.blob || null)
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
+  })
+
+  if (directBlob) {
+    inMemoryBlobCache.set(key, directBlob)
+    inMemoryBlobCache.set(cleanKey, directBlob)
+    return directBlob
+  }
+
+  // 2. Direct lookup using key as-is (e.g. if key was stored with prefix)
+  const asIsBlob = await new Promise<Blob | null>((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.get(key)
+      req.onsuccess = () => {
+        const record = req.result as AssetBlobRecord | undefined
+        resolve(record?.blob || null)
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
+  })
+
+  if (asIsBlob) {
+    inMemoryBlobCache.set(key, asIsBlob)
+    inMemoryBlobCache.set(cleanKey, asIsBlob)
+    return asIsBlob
+  }
+
+  // 3. Robust fallback: scan records by prefix (for truncated 16-char hashes) or assetId property
+  return new Promise((resolve) => {
+    try {
+      const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+      const store = tx.objectStore(STORES.ASSET_BLOBS)
+      const req = store.openCursor()
+      req.onsuccess = () => {
+        const cursor = req.result
+        if (!cursor) {
+          resolve(null)
+          return
+        }
+        const record = cursor.value as AssetBlobRecord
+        const recordStripped = record.assetId ? record.assetId.replace(/^asset_/, "") : ""
+        if (
+          record.hash === cleanKey ||
+          record.hash.startsWith(cleanKey) ||
+          record.assetId === key ||
+          record.assetId === `asset_${cleanKey}` ||
+          recordStripped === cleanKey
+        ) {
+          if (record.blob) {
+            inMemoryBlobCache.set(key, record.blob)
+            inMemoryBlobCache.set(cleanKey, record.blob)
+            resolve(record.blob)
+            return
+          }
+        }
+        cursor.continue()
+      }
+      req.onerror = () => resolve(null)
+    } catch {
+      resolve(null)
+    }
   })
 }
 
@@ -31801,8 +31915,8 @@ export function validNode(v: unknown): SquigNode | null {
 ### File: `lib/clipboard.ts`
 
 - **Path**: `lib/clipboard.ts`
-- **Lines**: 525
-- **Size**: 18447 bytes
+- **Lines**: 526
+- **Size**: 18499 bytes
 
 ```tsx
 "use client"
@@ -32049,14 +32163,15 @@ export async function documentNodeFrom(file: File | Blob, rawName?: string): Pro
       id: nanoid(8),
       type: "document",
       assetId: res.assetId,
-      src: res.localUrl,
+      src: `asset://${res.hash}`,
       name: res.name,
       mimeType: res.mimeType,
       extension: res.extension,
       sizeBytes: res.sizeBytes,
-      pageCount: res.pageCount,
+      pageCount: res.pageCount || 1,
       currentPage: 1,
       textContent: res.textContent,
+      thumbnailUrl: res.thumbnailUrl,
       x: 0,
       y: 0,
       w,
@@ -71120,8 +71235,8 @@ runTests().catch((err) => {
 ### File: `scripts/test-document-attachments.ts`
 
 - **Path**: `scripts/test-document-attachments.ts`
-- **Lines**: 210
-- **Size**: 9333 bytes
+- **Lines**: 260
+- **Size**: 11108 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -71141,7 +71256,15 @@ import {
   sanitizeDocumentFilename,
   inferMimeType,
   extractPdfInfo,
+  getDocumentBlob,
 } from "../lib/storage/document-assets.ts"
+
+import {
+  validateImageMagicBytes,
+  computeBlobHash,
+  cacheAssetBlob,
+  getAssetBlob,
+} from "../lib/cloud/assets.ts"
 
 import { isSolid } from "../lib/canvas/hit-test.ts"
 import { validNode, wordsOf, encodeNodes, decodeNodes } from "../lib/clipboard-payload.ts"
@@ -71305,33 +71428,75 @@ console.log("-> 5. Testing solid hit-test recognition...")
 assert(isSolid(sampleDocNode) === true, "DocumentNode is solid for canvas hit testing")
 
 // ---------------------------------------------------------------------------
-// 6. Geometry, Selection Bounds & Scaling
+// 7. Binary Validation & Hash Verification
 // ---------------------------------------------------------------------------
-console.log("-> 6. Testing geometry & bounding boxes...")
+console.log("-> 7. Testing binary validation & SHA-256 hash generation...")
 
-const bounds = unionBounds([sampleDocNode])
-assert(bounds !== null, "Calculates bounds")
-assert(bounds!.x === 100, "Bounds X matches")
-assert(bounds!.y === 150, "Bounds Y matches")
-assert(bounds!.w === 340, "Bounds W matches")
-assert(bounds!.h === 440, "Bounds H matches")
+const pdfData = new TextEncoder().encode("%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n").buffer
+const pdfBlob = new Blob([pdfData], { type: "application/pdf" })
 
-const secondDoc: DocumentNode = {
-  ...sampleDocNode,
-  id: "doc_test2",
-  x: 500,
-  y: 600,
-  w: 200,
-  h: 200,
+const magicRes = await validateImageMagicBytes(pdfBlob)
+assert(magicRes.valid === true, "Validates PDF magic bytes (%PDF-)")
+assert(magicRes.mimeType === "application/pdf", "Infers correct application/pdf MIME")
+
+const hash = await computeBlobHash(pdfBlob)
+assert(typeof hash === "string" && hash.length === 64, "Generates 64-char SHA-256 hash")
+
+// ---------------------------------------------------------------------------
+// 8. End-to-End Local-First Binary Resolution Pipeline
+// ---------------------------------------------------------------------------
+console.log("-> 8. Testing local-first binary resolution pipeline...")
+
+const assetId = `asset_${hash}`
+await cacheAssetBlob(pdfBlob, assetId)
+
+// Verify resolution by full hash
+const resolvedByHash = await getAssetBlob(hash)
+assert(resolvedByHash !== null, "Resolves blob by full 64-char SHA-256 hash")
+assert(resolvedByHash!.size === pdfBlob.size, "Resolved blob has matching byte size")
+
+// Verify resolution by assetId
+const resolvedByAssetId = await getAssetBlob(assetId)
+assert(resolvedByAssetId !== null, "Resolves blob by assetId")
+
+// Verify resolution by asset:// URI
+const resolvedByUri = await getAssetBlob(`asset://${hash}`)
+assert(resolvedByUri !== null, "Resolves blob by asset:// URI")
+
+// Verify DocumentNode resolution through getDocumentBlob
+const testDocNode: DocumentNode = {
+  id: "node_abc123",
+  type: "document",
+  assetId,
+  src: `asset://${hash}`,
+  name: "class10.pdf",
+  mimeType: "application/pdf",
+  extension: "pdf",
+  sizeBytes: pdfBlob.size,
+  pageCount: 1,
+  currentPage: 1,
+  x: 0,
+  y: 0,
+  w: 340,
+  h: 440,
+  seed: 1234,
 }
-const multiBounds = unionBounds([sampleDocNode, secondDoc])
-assert(multiBounds !== null, "Calculates multi-node union bounds")
-assert(multiBounds!.x === 100, "Multi bounds min X")
-assert(multiBounds!.y === 150, "Multi bounds min Y")
-assert(multiBounds!.w === 600, "Multi bounds union width (700 - 100 = 600)")
-assert(multiBounds!.h === 650, "Multi bounds union height (800 - 150 = 650)")
+
+const resolvedNodeBlob = await getDocumentBlob(testDocNode)
+assert(resolvedNodeBlob !== null, "getDocumentBlob successfully resolves DocumentNode")
+assert(resolvedNodeBlob!.size === pdfBlob.size, "DocumentNode blob size matches original file")
+
+// Verify backward-compatibility with 16-char sliced hashes
+const legacyNode: DocumentNode = {
+  ...testDocNode,
+  assetId: `asset_${hash.slice(0, 16)}`,
+  src: `asset://${hash.slice(0, 16)}`,
+}
+const resolvedLegacy = await getDocumentBlob(legacyNode)
+assert(resolvedLegacy !== null, "getDocumentBlob resolves legacy sliced 16-char assetId")
 
 console.log("=== All Zenithsui Document Attachments Tests Passed Successfully! ===")
+
 
 ```
 
@@ -72257,6 +72422,93 @@ runTests().catch((err) => {
   console.error("Test execution error:", err)
   process.exit(1)
 })
+
+```
+
+---
+
+### File: `scripts/test-pdf-service.ts`
+
+- **Path**: `scripts/test-pdf-service.ts`
+- **Lines**: 77
+- **Size**: 2436 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui PDF Document Service & Pipeline Tests
+// ---------------------------------------------------------------------------
+
+import { pdfDocumentService } from "../lib/pdf/pdf-service.ts"
+import { cacheAssetBlob } from "../lib/cloud/assets.ts"
+import type { DocumentNode } from "../lib/types.ts"
+
+function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(`[Assertion Failed]: ${message}`)
+  }
+}
+
+console.log("=== Starting Zenithsui PDF Service & Pipeline Tests ===")
+
+// 1. Rejection of corrupted / non-PDF data
+console.log("-> 1. Testing corrupted / non-PDF rejection...")
+const fakePdfBlob = new Blob([new TextEncoder().encode("NOT A PDF AT ALL")], { type: "application/pdf" })
+const fakeHash = "fake123456789012345678901234567890123456789012345678901234567890"
+await cacheAssetBlob(fakePdfBlob, `asset_${fakeHash}`)
+
+const fakeDocNode: DocumentNode = {
+  id: "fake_node_1",
+  type: "document",
+  assetId: `asset_${fakeHash}`,
+  src: `asset://${fakeHash}`,
+  name: "fake.pdf",
+  mimeType: "application/pdf",
+  extension: "pdf",
+  sizeBytes: fakePdfBlob.size,
+  x: 0,
+  y: 0,
+  w: 300,
+  h: 400,
+  seed: 123,
+}
+
+let caughtError = false
+try {
+  await pdfDocumentService.resolveDocument(fakeDocNode)
+} catch (e: any) {
+  caughtError = true
+  assert(e.message.includes("missing %PDF- header"), "Accurately rejects files without %PDF- magic bytes")
+}
+assert(caughtError, "Successfully blocked non-PDF payload from reaching PDF.js engine")
+
+// 2. Missing attachment data error handling
+console.log("-> 2. Testing missing attachment handling...")
+const missingNode: DocumentNode = {
+  id: "missing_node",
+  type: "document",
+  assetId: "asset_nonexistent_hash_00000000000000000000000000000000000000000",
+  src: "asset://nonexistent_hash_00000000000000000000000000000000000000000",
+  name: "missing.pdf",
+  mimeType: "application/pdf",
+  extension: "pdf",
+  sizeBytes: 1234,
+  x: 0,
+  y: 0,
+  w: 300,
+  h: 400,
+  seed: 456,
+}
+
+let missingCaught = false
+try {
+  await pdfDocumentService.resolveDocument(missingNode)
+} catch (e: any) {
+  missingCaught = true
+  assert(e.message.includes("No binary document data available"), "Reports clear binary missing error")
+}
+assert(missingCaught, "Correctly handles missing binary data without hanging")
+
+console.log("=== All Zenithsui PDF Service Tests Passed Successfully! ===")
 
 ```
 
@@ -74865,8 +75117,8 @@ load.
 ### File: `components/canvas/document-canvas-item.tsx`
 
 - **Path**: `components/canvas/document-canvas-item.tsx`
-- **Lines**: 415
-- **Size**: 13344 bytes
+- **Lines**: 485
+- **Size**: 15719 bytes
 
 ```tsx
 "use client"
@@ -74913,10 +75165,16 @@ function PdfCardPreview({
   node,
   blob,
   currentPage,
+  isBlobLoading,
+  blobError,
+  onRetry,
 }: {
   node: DocumentNode
   blob: Blob | null
   currentPage: number
+  isBlobLoading?: boolean
+  blobError?: boolean
+  onRetry?: () => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [rendered, setRendered] = useState(false)
@@ -74978,6 +75236,37 @@ function PdfCardPreview({
     )
   }
 
+  if (isBlobLoading && !blob) {
+    return (
+      <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex flex-col items-center justify-center p-3 text-stone-600 dark:text-stone-300">
+        <div className="size-6 border-2 border-stone-400 border-t-transparent rounded-full animate-spin mb-2" />
+        <span className="text-[10px] font-mono opacity-75">Loading document...</span>
+      </div>
+    )
+  }
+
+  if (blobError || (!blob && !isBlobLoading)) {
+    return (
+      <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex flex-col items-center justify-center p-3 text-center">
+        <FilePdf size={32} className="mb-1.5 opacity-50 text-red-500" />
+        <span className="text-[11px] font-medium text-stone-700 dark:text-stone-200 truncate max-w-full">{node.name}</span>
+        <span className="text-[9px] text-stone-500 dark:text-stone-400 mt-0.5">Attachment unavailable</span>
+        {onRetry && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onRetry()
+            }}
+            className="mt-2 text-[10px] px-2 py-0.5 rounded border border-stone-300 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors pointer-events-auto"
+          >
+            Retry
+          </button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex items-center justify-center p-2 pointer-events-none">
       <canvas
@@ -74989,8 +75278,8 @@ function PdfCardPreview({
       />
       {!rendered && !error && (
         <div className="flex flex-col items-center justify-center text-xs opacity-60">
-          <FilePdf size={36} className="mb-1" />
-          <span className="text-[10px] font-mono">Loading page {currentPage}...</span>
+          <div className="size-5 border-2 border-stone-400 border-t-transparent rounded-full animate-spin mb-2" />
+          <span className="text-[10px] font-mono">Rendering page {currentPage}...</span>
         </div>
       )}
       {error && (
@@ -75020,20 +75309,46 @@ export function DocumentCanvasItem({
   onOpenViewer,
 }: DocumentCanvasItemProps) {
   const [docBlob, setDocBlob] = useState<Blob | null>(null)
+  const [isBlobLoading, setIsBlobLoading] = useState(true)
+  const [blobError, setBlobError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  // Resolve live blob for the document asset
-  useEffect(() => {
+  const fetchBlob = useCallback(() => {
     let mounted = true
-    getDocumentBlob(node).then((blob) => {
-      if (mounted && blob) {
-        setDocBlob(blob)
-      }
-    })
+    setIsBlobLoading(true)
+    setBlobError(false)
+
+    getDocumentBlob(node)
+      .then((blob) => {
+        if (!mounted) return
+        if (blob && blob.size > 0) {
+          setDocBlob(blob)
+          setIsBlobLoading(false)
+        } else {
+          setDocBlob(null)
+          setIsBlobLoading(false)
+          setBlobError(true)
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return
+        console.error("Document blob resolution error:", err)
+        setDocBlob(null)
+        setIsBlobLoading(false)
+        setBlobError(true)
+      })
+
     return () => {
       mounted = false
     }
-  }, [node.assetId, node.src])
+  }, [node])
+
+  useEffect(() => {
+    const cancel = fetchBlob()
+    return () => {
+      cancel?.()
+    }
+  }, [fetchBlob])
 
   const extension = (node.extension || node.name.split(".").pop() || "doc").toLowerCase()
   const pageCount = node.pageCount || 1
@@ -75202,7 +75517,14 @@ export function DocumentCanvasItem({
       <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)] flex flex-col">
         {/* Genuine PDF Preview */}
         {extension === "pdf" && (
-          <PdfCardPreview node={node} blob={docBlob} currentPage={currentPage} />
+          <PdfCardPreview
+            node={node}
+            blob={docBlob}
+            currentPage={currentPage}
+            isBlobLoading={isBlobLoading}
+            blobError={blobError}
+            onRetry={fetchBlob}
+          />
         )}
 
         {/* CSV Table Preview */}
@@ -75290,8 +75612,8 @@ export function DocumentCanvasItem({
 ### File: `components/canvas/document-viewer-modal.tsx`
 
 - **Path**: `components/canvas/document-viewer-modal.tsx`
-- **Lines**: 476
-- **Size**: 17321 bytes
+- **Lines**: 515
+- **Size**: 18507 bytes
 
 ```tsx
 "use client"
@@ -75337,25 +75659,61 @@ export interface DocumentViewerModalProps {
 
 export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps) {
   const [docBlob, setDocBlob] = useState<Blob | null>(null)
+  const [isBlobLoading, setIsBlobLoading] = useState<boolean>(true)
+  const [blobError, setBlobError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
   const [fullText, setFullText] = useState<string | null>(null)
   const [csvFilter, setCsvFilter] = useState<string>("")
   const [copied, setCopied] = useState<boolean>(false)
 
   // Resolve document blob
-  useEffect(() => {
+  const loadBlob = useCallback(() => {
     if (!node) {
       setDocBlob(null)
+      setIsBlobLoading(false)
+      setBlobError(null)
       return
     }
     let mounted = true
-    getDocumentBlob(node).then((blob) => {
-      if (mounted) setDocBlob(blob)
-    })
+    setIsBlobLoading(true)
+    setBlobError(null)
+
+    getDocumentBlob(node)
+      .then((blob) => {
+        if (!mounted) return
+        if (blob && blob.size > 0) {
+          setDocBlob(blob)
+          setIsBlobLoading(false)
+          setBlobError(null)
+          try {
+            const url = URL.createObjectURL(blob)
+            setObjectUrl(url)
+          } catch {}
+        } else {
+          setDocBlob(null)
+          setIsBlobLoading(false)
+          setBlobError("The PDF document payload could not be located in local or cloud storage.")
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return
+        console.error("Failed to load document blob in modal:", err)
+        setDocBlob(null)
+        setIsBlobLoading(false)
+        setBlobError(err instanceof Error ? err.message : "Failed to load document.")
+      })
+
     return () => {
       mounted = false
     }
   }, [node])
+
+  useEffect(() => {
+    const cleanup = loadBlob()
+    return () => {
+      cleanup?.()
+    }
+  }, [loadBlob])
 
   // Resolve object URL
   useEffect(() => {
@@ -75547,6 +75905,9 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
         >
           <PdfCanvasViewer
             blob={docBlob}
+            isLoadingBlob={isBlobLoading}
+            blobError={blobError}
+            onRetry={loadBlob}
             documentName={node.name}
             initialPage={node.currentPage || 1}
             onPageChange={(p, total) => {
@@ -75776,8 +76137,8 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
 ### File: `components/canvas/pdf-canvas-viewer.tsx`
 
 - **Path**: `components/canvas/pdf-canvas-viewer.tsx`
-- **Lines**: 611
-- **Size**: 21831 bytes
+- **Lines**: 635
+- **Size**: 22640 bytes
 
 ```tsx
 "use client"
@@ -75826,6 +76187,9 @@ import { cn } from "@/lib/utils"
 
 export interface PdfCanvasViewerProps {
   blob: Blob | null
+  isLoadingBlob?: boolean
+  blobError?: string | null
+  onRetry?: () => void
   documentName: string
   initialPage?: number
   onPageChange?: (page: number, total: number) => void
@@ -75836,6 +76200,9 @@ export interface PdfCanvasViewerProps {
 
 export function PdfCanvasViewer({
   blob,
+  isLoadingBlob = false,
+  blobError = null,
+  onRetry,
   documentName,
   initialPage = 1,
   onPageChange,
@@ -75867,8 +76234,17 @@ export function PdfCanvasViewer({
 
   // 1. Load PDF Document from Blob
   useEffect(() => {
+    if (isLoadingBlob) {
+      setIsLoading(true)
+      setLoadError(null)
+      return
+    }
+
     if (!blob) {
-      setLoadError("No document data available.")
+      setLoadError(
+        blobError ||
+          "The PDF document binary is currently unavailable. Ensure the file exists in local storage or remote storage."
+      )
       setIsLoading(false)
       return
     }
@@ -75908,7 +76284,7 @@ export function PdfCanvasViewer({
         destroyPdfDocument(pdfDoc)
       }
     }
-  }, [blob])
+  }, [blob, isLoadingBlob, blobError, initialPage, onPageChange])
 
   // 2. Render Page to Canvas whenever currentPage, scale, rotation, or fitMode changes
   const renderCurrentPage = useCallback(async () => {
@@ -76336,10 +76712,10 @@ export function PdfCanvasViewer({
           className="flex-1 h-full overflow-auto p-6 flex flex-col items-center justify-start relative"
         >
           {/* Loading Indicator */}
-          {isLoading && (
+          {isLoading && !loadError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--sq-paper)]/80 backdrop-blur-xs z-20">
               <CircleNotch size={32} className="animate-spin text-[var(--sq-ink)]" />
-              <p className="text-xs font-mono font-medium">Initializing PDF Engine...</p>
+              <p className="text-xs font-mono font-medium">Opening document...</p>
             </div>
           )}
 
@@ -76350,6 +76726,15 @@ export function PdfCanvasViewer({
               <h3 className="font-bold text-sm mb-1">Unable to Open PDF</h3>
               <p className="text-xs opacity-80 mb-4">{loadError}</p>
               <div className="flex items-center justify-center gap-2">
+                {onRetry && (
+                  <button
+                    type="button"
+                    onClick={onRetry}
+                    className="px-3 py-1.5 rounded text-xs font-semibold bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:opacity-90 transition-opacity"
+                  >
+                    Retry Loading
+                  </button>
+                )}
                 {onDownload && (
                   <button
                     type="button"
@@ -76637,11 +77022,181 @@ export async function extractPdfPageText(page: PDFPageProxy): Promise<string> {
 
 ---
 
+### File: `lib/pdf/pdf-service.ts`
+
+- **Path**: `lib/pdf/pdf-service.ts`
+- **Lines**: 160
+- **Size**: 4599 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui PDF Document Service (Canonical Resolution & Shared In-Memory Cache)
+//
+// Unifies the data loading, caching, and document lifecycle for:
+// - PdfCanvasItem (canvas card preview & page stepper)
+// - PdfCanvasViewer (full-screen modal viewer)
+//
+// Invariants:
+// 1. Local-first binary priority (IndexedDB STORES.ASSET_BLOBS)
+// 2. Strict magic-byte validation (%PDF-) before passing to PDF.js
+// 3. Shared in-memory caching to prevent duplicate parsing between preview and viewer
+// 4. Clean resource disposal without memory leaks
+// ---------------------------------------------------------------------------
+
+import type { PDFDocumentProxy } from "pdfjs-dist"
+import type { DocumentNode } from "../types"
+import { getDocumentBlob } from "../storage/document-assets"
+import { loadPdfDocument, destroyPdfDocument } from "./pdf-renderer"
+
+export interface ResolvedPdfDocument {
+  doc: PDFDocumentProxy
+  blob: Blob
+  pageCount: number
+  source: "local-memory" | "local-indexeddb" | "cloud"
+}
+
+interface CacheEntry {
+  doc: PDFDocumentProxy
+  blob: Blob
+  lastAccessed: number
+  refCount: number
+}
+
+class PdfDocumentServiceManager {
+  private cache = new Map<string, CacheEntry>()
+  private inFlight = new Map<string, Promise<ResolvedPdfDocument>>()
+  private readonly MAX_CACHED_DOCS = 5
+
+  /**
+   * Resolves a DocumentNode into a verified PDFDocumentProxy and Blob.
+   * Leverages shared in-memory caching and deduplicates simultaneous requests.
+   */
+  async resolveDocument(node: DocumentNode): Promise<ResolvedPdfDocument> {
+    const key = node.assetId || node.src
+    if (!key) {
+      throw new Error("Document node is missing assetId and src identity.")
+    }
+
+    // 1. Check in-memory cache
+    const existing = this.cache.get(key)
+    if (existing) {
+      existing.lastAccessed = Date.now()
+      return {
+        doc: existing.doc,
+        blob: existing.blob,
+        pageCount: existing.doc.numPages,
+        source: "local-memory",
+      }
+    }
+
+    // 2. Deduplicate simultaneous loads for the same document
+    if (this.inFlight.has(key)) {
+      return this.inFlight.get(key)!
+    }
+
+    const loadPromise = (async () => {
+      // 3. Retrieve binary blob through local-first resolution pipeline
+      const blob = await getDocumentBlob(node)
+      if (!blob || blob.size === 0) {
+        throw new Error("No binary document data available in local or cloud storage.")
+      }
+
+      // 4. Validate binary PDF signature (%PDF-)
+      const headerBytes = new Uint8Array(await blob.slice(0, 5).arrayBuffer())
+      const isPdfHeader =
+        headerBytes[0] === 0x25 && // %
+        headerBytes[1] === 0x50 && // P
+        headerBytes[2] === 0x44 && // D
+        headerBytes[3] === 0x46 && // F
+        headerBytes[4] === 0x2d    // -
+
+      if (!isPdfHeader) {
+        throw new Error("File content is not a valid PDF document (missing %PDF- header).")
+      }
+
+      // 5. Load through PDF.js
+      const doc = await loadPdfDocument(blob)
+
+      // 6. Evict oldest cache entries if exceeding max cache
+      this.evictOldestIfNeeded()
+
+      // 7. Store in shared cache
+      this.cache.set(key, {
+        doc,
+        blob,
+        lastAccessed: Date.now(),
+        refCount: 1,
+      })
+
+      return {
+        doc,
+        blob,
+        pageCount: doc.numPages,
+        source: "local-indexeddb" as const,
+      }
+    })().finally(() => {
+      this.inFlight.delete(key)
+    })
+
+    this.inFlight.set(key, loadPromise)
+    return loadPromise
+  }
+
+  /**
+   * Safely evicts and cleans up a specific cached document.
+   */
+  evict(key: string): void {
+    const entry = this.cache.get(key)
+    if (entry) {
+      destroyPdfDocument(entry.doc)
+      this.cache.delete(key)
+    }
+  }
+
+  /**
+   * Cleans up all cached PDF documents (e.g. on workspace change or memory pressure).
+   */
+  clear(): void {
+    for (const [key, entry] of this.cache.entries()) {
+      destroyPdfDocument(entry.doc)
+    }
+    this.cache.clear()
+    this.inFlight.clear()
+  }
+
+  private evictOldestIfNeeded() {
+    if (this.cache.size < this.MAX_CACHED_DOCS) return
+
+    let oldestKey: string | null = null
+    let oldestTime = Infinity
+
+    for (const [key, entry] of this.cache.entries()) {
+      if (entry.lastAccessed < oldestTime) {
+        oldestTime = entry.lastAccessed
+        oldestKey = key
+      }
+    }
+
+    if (oldestKey) {
+      this.evict(oldestKey)
+    }
+  }
+}
+
+/** Singleton instance of the PDF Document Service */
+export const pdfDocumentService = new PdfDocumentServiceManager()
+
+```
+
+---
+
 ### File: `lib/storage/document-assets.ts`
 
 - **Path**: `lib/storage/document-assets.ts`
-- **Lines**: 335
-- **Size**: 10143 bytes
+- **Lines**: 389
+- **Size**: 11757 bytes
 
 ```tsx
 "use client"
@@ -76840,9 +77395,9 @@ export async function saveDocumentAsset(
 
   // 1. Compute SHA-256 hash for content deduplication & stable identity
   const hash = await computeBlobHash(file)
-  const assetId = `asset_${hash.slice(0, 16)}`
+  const assetId = `asset_${hash}`
 
-  // 2. Cache in IndexedDB (STORES.ASSET_BLOBS)
+  // 2. Cache in IndexedDB (STORES.ASSET_BLOBS) and in-memory cache
   await cacheAssetBlob(file, assetId)
 
   // 3. Extract metadata
@@ -76872,6 +77427,7 @@ export async function saveDocumentAsset(
   // 4. Generate local object URL for instant UI rendering
   const localUrl = URL.createObjectURL(file)
   activeObjectUrls.set(assetId, localUrl)
+  activeObjectUrls.set(hash, localUrl)
 
   return {
     assetId,
@@ -76880,7 +77436,7 @@ export async function saveDocumentAsset(
     mimeType,
     extension,
     sizeBytes,
-    pageCount,
+    pageCount: pageCount || 1,
     textContent,
     localUrl,
     thumbnailUrl,
@@ -76891,36 +77447,89 @@ export async function saveDocumentAsset(
  * Resolves a DocumentNode's underlying Blob from local IndexedDB or remote URL.
  */
 export async function getDocumentBlob(node: DocumentNode): Promise<Blob | null> {
-  // Case 1: "asset://<hash>" from local IndexedDB
+  if (!node) return null
+
+  // Case 1: "asset://<hash>" from local IndexedDB / Memory
   if (node.src && node.src.startsWith("asset://")) {
     const hash = node.src.replace("asset://", "")
     const blob = await getAssetBlob(hash)
-    if (blob) return blob
+    if (blob && blob.size > 0) return blob
   }
 
-  // Case 2: assetId matches in IndexedDB
+  // Case 2: assetId matches in IndexedDB / Memory
   if (node.assetId) {
-    const hash = node.assetId.replace(/^asset_/, "")
-    const blob = await getAssetBlob(hash)
-    if (blob) return blob
+    const blob = await getAssetBlob(node.assetId)
+    if (blob && blob.size > 0) return blob
   }
 
-  // Case 3: Remote URL
+  // Case 3: Cloud Supabase Storage path
+  const storagePath = (node as any).storagePath
+  if (storagePath) {
+    try {
+      const { getAssetSignedUrl } = await import("../cloud/storage")
+      const signedUrl = await getAssetSignedUrl(storagePath)
+      if (signedUrl) {
+        const res = await fetch(signedUrl)
+        if (res.ok) {
+          const blob = await res.blob()
+          if (blob && blob.size > 0) {
+            // Automatically cache in local IndexedDB for offline capability!
+            if (node.assetId) {
+              await cacheAssetBlob(blob, node.assetId)
+            }
+            return blob
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch cloud asset from storagePath:", e)
+    }
+  }
+
+  // Case 4: Remote HTTP/HTTPS/relative URL
   if (node.src && (node.src.startsWith("http://") || node.src.startsWith("https://") || node.src.startsWith("/"))) {
     try {
       const res = await fetch(node.src)
       if (res.ok) {
-        return await res.blob()
+        const blob = await res.blob()
+        if (blob && blob.size > 0) {
+          if (node.assetId) {
+            await cacheAssetBlob(blob, node.assetId)
+          }
+          return blob
+        }
       }
     } catch {
       // Fallback through asset proxy
       try {
         const proxyRes = await fetch(`/api/assets/proxy?url=${encodeURIComponent(node.src)}`)
         if (proxyRes.ok) {
-          return await proxyRes.blob()
+          const blob = await proxyRes.blob()
+          if (blob && blob.size > 0) {
+            if (node.assetId) {
+              await cacheAssetBlob(blob, node.assetId)
+            }
+            return blob
+          }
         }
       } catch {}
     }
+  }
+
+  // Case 5: Live active object URL (blob:...)
+  if (node.src && node.src.startsWith("blob:")) {
+    try {
+      const res = await fetch(node.src)
+      if (res.ok) {
+        const blob = await res.blob()
+        if (blob && blob.size > 0) {
+          if (node.assetId) {
+            await cacheAssetBlob(blob, node.assetId)
+          }
+          return blob
+        }
+      }
+    } catch {}
   }
 
   return null

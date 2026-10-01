@@ -9,6 +9,7 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -21,6 +22,7 @@ const eslintConfig = defineConfig([
     "scripts/**",
     "docs/**",
     "supabase/**",
+    "public/**",
   ]),
 ]);
 

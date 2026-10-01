@@ -41,25 +41,61 @@ export interface DocumentViewerModalProps {
 
 export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps) {
   const [docBlob, setDocBlob] = useState<Blob | null>(null)
+  const [isBlobLoading, setIsBlobLoading] = useState<boolean>(true)
+  const [blobError, setBlobError] = useState<string | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
   const [fullText, setFullText] = useState<string | null>(null)
   const [csvFilter, setCsvFilter] = useState<string>("")
   const [copied, setCopied] = useState<boolean>(false)
 
   // Resolve document blob
-  useEffect(() => {
+  const loadBlob = useCallback(() => {
     if (!node) {
       setDocBlob(null)
+      setIsBlobLoading(false)
+      setBlobError(null)
       return
     }
     let mounted = true
-    getDocumentBlob(node).then((blob) => {
-      if (mounted) setDocBlob(blob)
-    })
+    setIsBlobLoading(true)
+    setBlobError(null)
+
+    getDocumentBlob(node)
+      .then((blob) => {
+        if (!mounted) return
+        if (blob && blob.size > 0) {
+          setDocBlob(blob)
+          setIsBlobLoading(false)
+          setBlobError(null)
+          try {
+            const url = URL.createObjectURL(blob)
+            setObjectUrl(url)
+          } catch {}
+        } else {
+          setDocBlob(null)
+          setIsBlobLoading(false)
+          setBlobError("The PDF document payload could not be located in local or cloud storage.")
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return
+        console.error("Failed to load document blob in modal:", err)
+        setDocBlob(null)
+        setIsBlobLoading(false)
+        setBlobError(err instanceof Error ? err.message : "Failed to load document.")
+      })
+
     return () => {
       mounted = false
     }
   }, [node])
+
+  useEffect(() => {
+    const cleanup = loadBlob()
+    return () => {
+      cleanup?.()
+    }
+  }, [loadBlob])
 
   // Resolve object URL
   useEffect(() => {
@@ -251,6 +287,9 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
         >
           <PdfCanvasViewer
             blob={docBlob}
+            isLoadingBlob={isBlobLoading}
+            blobError={blobError}
+            onRetry={loadBlob}
             documentName={node.name}
             initialPage={node.currentPage || 1}
             onPageChange={(p, total) => {

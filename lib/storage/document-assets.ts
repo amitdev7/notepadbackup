@@ -194,9 +194,9 @@ export async function saveDocumentAsset(
 
   // 1. Compute SHA-256 hash for content deduplication & stable identity
   const hash = await computeBlobHash(file)
-  const assetId = `asset_${hash.slice(0, 16)}`
+  const assetId = `asset_${hash}`
 
-  // 2. Cache in IndexedDB (STORES.ASSET_BLOBS)
+  // 2. Cache in IndexedDB (STORES.ASSET_BLOBS) and in-memory cache
   await cacheAssetBlob(file, assetId)
 
   // 3. Extract metadata
@@ -226,6 +226,7 @@ export async function saveDocumentAsset(
   // 4. Generate local object URL for instant UI rendering
   const localUrl = URL.createObjectURL(file)
   activeObjectUrls.set(assetId, localUrl)
+  activeObjectUrls.set(hash, localUrl)
 
   return {
     assetId,
@@ -234,7 +235,7 @@ export async function saveDocumentAsset(
     mimeType,
     extension,
     sizeBytes,
-    pageCount,
+    pageCount: pageCount || 1,
     textContent,
     localUrl,
     thumbnailUrl,
@@ -245,36 +246,89 @@ export async function saveDocumentAsset(
  * Resolves a DocumentNode's underlying Blob from local IndexedDB or remote URL.
  */
 export async function getDocumentBlob(node: DocumentNode): Promise<Blob | null> {
-  // Case 1: "asset://<hash>" from local IndexedDB
+  if (!node) return null
+
+  // Case 1: "asset://<hash>" from local IndexedDB / Memory
   if (node.src && node.src.startsWith("asset://")) {
     const hash = node.src.replace("asset://", "")
     const blob = await getAssetBlob(hash)
-    if (blob) return blob
+    if (blob && blob.size > 0) return blob
   }
 
-  // Case 2: assetId matches in IndexedDB
+  // Case 2: assetId matches in IndexedDB / Memory
   if (node.assetId) {
-    const hash = node.assetId.replace(/^asset_/, "")
-    const blob = await getAssetBlob(hash)
-    if (blob) return blob
+    const blob = await getAssetBlob(node.assetId)
+    if (blob && blob.size > 0) return blob
   }
 
-  // Case 3: Remote URL
+  // Case 3: Cloud Supabase Storage path
+  const storagePath = (node as any).storagePath
+  if (storagePath) {
+    try {
+      const { getAssetSignedUrl } = await import("../cloud/storage")
+      const signedUrl = await getAssetSignedUrl(storagePath)
+      if (signedUrl) {
+        const res = await fetch(signedUrl)
+        if (res.ok) {
+          const blob = await res.blob()
+          if (blob && blob.size > 0) {
+            // Automatically cache in local IndexedDB for offline capability!
+            if (node.assetId) {
+              await cacheAssetBlob(blob, node.assetId)
+            }
+            return blob
+          }
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to fetch cloud asset from storagePath:", e)
+    }
+  }
+
+  // Case 4: Remote HTTP/HTTPS/relative URL
   if (node.src && (node.src.startsWith("http://") || node.src.startsWith("https://") || node.src.startsWith("/"))) {
     try {
       const res = await fetch(node.src)
       if (res.ok) {
-        return await res.blob()
+        const blob = await res.blob()
+        if (blob && blob.size > 0) {
+          if (node.assetId) {
+            await cacheAssetBlob(blob, node.assetId)
+          }
+          return blob
+        }
       }
     } catch {
       // Fallback through asset proxy
       try {
         const proxyRes = await fetch(`/api/assets/proxy?url=${encodeURIComponent(node.src)}`)
         if (proxyRes.ok) {
-          return await proxyRes.blob()
+          const blob = await proxyRes.blob()
+          if (blob && blob.size > 0) {
+            if (node.assetId) {
+              await cacheAssetBlob(blob, node.assetId)
+            }
+            return blob
+          }
         }
       } catch {}
     }
+  }
+
+  // Case 5: Live active object URL (blob:...)
+  if (node.src && node.src.startsWith("blob:")) {
+    try {
+      const res = await fetch(node.src)
+      if (res.ok) {
+        const blob = await res.blob()
+        if (blob && blob.size > 0) {
+          if (node.assetId) {
+            await cacheAssetBlob(blob, node.assetId)
+          }
+          return blob
+        }
+      }
+    } catch {}
   }
 
   return null

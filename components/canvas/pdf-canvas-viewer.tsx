@@ -44,6 +44,9 @@ import { cn } from "@/lib/utils"
 
 export interface PdfCanvasViewerProps {
   blob: Blob | null
+  isLoadingBlob?: boolean
+  blobError?: string | null
+  onRetry?: () => void
   documentName: string
   initialPage?: number
   onPageChange?: (page: number, total: number) => void
@@ -54,6 +57,9 @@ export interface PdfCanvasViewerProps {
 
 export function PdfCanvasViewer({
   blob,
+  isLoadingBlob = false,
+  blobError = null,
+  onRetry,
   documentName,
   initialPage = 1,
   onPageChange,
@@ -85,8 +91,17 @@ export function PdfCanvasViewer({
 
   // 1. Load PDF Document from Blob
   useEffect(() => {
+    if (isLoadingBlob) {
+      setIsLoading(true)
+      setLoadError(null)
+      return
+    }
+
     if (!blob) {
-      setLoadError("No document data available.")
+      setLoadError(
+        blobError ||
+          "The PDF document binary is currently unavailable. Ensure the file exists in local storage or remote storage."
+      )
       setIsLoading(false)
       return
     }
@@ -126,7 +141,7 @@ export function PdfCanvasViewer({
         destroyPdfDocument(pdfDoc)
       }
     }
-  }, [blob])
+  }, [blob, isLoadingBlob, blobError, initialPage, onPageChange])
 
   // 2. Render Page to Canvas whenever currentPage, scale, rotation, or fitMode changes
   const renderCurrentPage = useCallback(async () => {
@@ -554,10 +569,10 @@ export function PdfCanvasViewer({
           className="flex-1 h-full overflow-auto p-6 flex flex-col items-center justify-start relative"
         >
           {/* Loading Indicator */}
-          {isLoading && (
+          {isLoading && !loadError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[var(--sq-paper)]/80 backdrop-blur-xs z-20">
               <CircleNotch size={32} className="animate-spin text-[var(--sq-ink)]" />
-              <p className="text-xs font-mono font-medium">Initializing PDF Engine...</p>
+              <p className="text-xs font-mono font-medium">Opening document...</p>
             </div>
           )}
 
@@ -568,6 +583,15 @@ export function PdfCanvasViewer({
               <h3 className="font-bold text-sm mb-1">Unable to Open PDF</h3>
               <p className="text-xs opacity-80 mb-4">{loadError}</p>
               <div className="flex items-center justify-center gap-2">
+                {onRetry && (
+                  <button
+                    type="button"
+                    onClick={onRetry}
+                    className="px-3 py-1.5 rounded text-xs font-semibold bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:opacity-90 transition-opacity"
+                  >
+                    Retry Loading
+                  </button>
+                )}
                 {onDownload && (
                   <button
                     type="button"

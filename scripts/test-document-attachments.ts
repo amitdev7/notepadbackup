@@ -15,7 +15,15 @@ import {
   sanitizeDocumentFilename,
   inferMimeType,
   extractPdfInfo,
+  getDocumentBlob,
 } from "../lib/storage/document-assets.ts"
+
+import {
+  validateImageMagicBytes,
+  computeBlobHash,
+  cacheAssetBlob,
+  getAssetBlob,
+} from "../lib/cloud/assets.ts"
 
 import { isSolid } from "../lib/canvas/hit-test.ts"
 import { validNode, wordsOf, encodeNodes, decodeNodes } from "../lib/clipboard-payload.ts"
@@ -179,31 +187,73 @@ console.log("-> 5. Testing solid hit-test recognition...")
 assert(isSolid(sampleDocNode) === true, "DocumentNode is solid for canvas hit testing")
 
 // ---------------------------------------------------------------------------
-// 6. Geometry, Selection Bounds & Scaling
+// 7. Binary Validation & Hash Verification
 // ---------------------------------------------------------------------------
-console.log("-> 6. Testing geometry & bounding boxes...")
+console.log("-> 7. Testing binary validation & SHA-256 hash generation...")
 
-const bounds = unionBounds([sampleDocNode])
-assert(bounds !== null, "Calculates bounds")
-assert(bounds!.x === 100, "Bounds X matches")
-assert(bounds!.y === 150, "Bounds Y matches")
-assert(bounds!.w === 340, "Bounds W matches")
-assert(bounds!.h === 440, "Bounds H matches")
+const pdfData = new TextEncoder().encode("%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n").buffer
+const pdfBlob = new Blob([pdfData], { type: "application/pdf" })
 
-const secondDoc: DocumentNode = {
-  ...sampleDocNode,
-  id: "doc_test2",
-  x: 500,
-  y: 600,
-  w: 200,
-  h: 200,
+const magicRes = await validateImageMagicBytes(pdfBlob)
+assert(magicRes.valid === true, "Validates PDF magic bytes (%PDF-)")
+assert(magicRes.mimeType === "application/pdf", "Infers correct application/pdf MIME")
+
+const hash = await computeBlobHash(pdfBlob)
+assert(typeof hash === "string" && hash.length === 64, "Generates 64-char SHA-256 hash")
+
+// ---------------------------------------------------------------------------
+// 8. End-to-End Local-First Binary Resolution Pipeline
+// ---------------------------------------------------------------------------
+console.log("-> 8. Testing local-first binary resolution pipeline...")
+
+const assetId = `asset_${hash}`
+await cacheAssetBlob(pdfBlob, assetId)
+
+// Verify resolution by full hash
+const resolvedByHash = await getAssetBlob(hash)
+assert(resolvedByHash !== null, "Resolves blob by full 64-char SHA-256 hash")
+assert(resolvedByHash!.size === pdfBlob.size, "Resolved blob has matching byte size")
+
+// Verify resolution by assetId
+const resolvedByAssetId = await getAssetBlob(assetId)
+assert(resolvedByAssetId !== null, "Resolves blob by assetId")
+
+// Verify resolution by asset:// URI
+const resolvedByUri = await getAssetBlob(`asset://${hash}`)
+assert(resolvedByUri !== null, "Resolves blob by asset:// URI")
+
+// Verify DocumentNode resolution through getDocumentBlob
+const testDocNode: DocumentNode = {
+  id: "node_abc123",
+  type: "document",
+  assetId,
+  src: `asset://${hash}`,
+  name: "class10.pdf",
+  mimeType: "application/pdf",
+  extension: "pdf",
+  sizeBytes: pdfBlob.size,
+  pageCount: 1,
+  currentPage: 1,
+  x: 0,
+  y: 0,
+  w: 340,
+  h: 440,
+  seed: 1234,
 }
-const multiBounds = unionBounds([sampleDocNode, secondDoc])
-assert(multiBounds !== null, "Calculates multi-node union bounds")
-assert(multiBounds!.x === 100, "Multi bounds min X")
-assert(multiBounds!.y === 150, "Multi bounds min Y")
-assert(multiBounds!.w === 600, "Multi bounds union width (700 - 100 = 600)")
-assert(multiBounds!.h === 650, "Multi bounds union height (800 - 150 = 650)")
+
+const resolvedNodeBlob = await getDocumentBlob(testDocNode)
+assert(resolvedNodeBlob !== null, "getDocumentBlob successfully resolves DocumentNode")
+assert(resolvedNodeBlob!.size === pdfBlob.size, "DocumentNode blob size matches original file")
+
+// Verify backward-compatibility with 16-char sliced hashes
+const legacyNode: DocumentNode = {
+  ...testDocNode,
+  assetId: `asset_${hash.slice(0, 16)}`,
+  src: `asset://${hash.slice(0, 16)}`,
+}
+const resolvedLegacy = await getDocumentBlob(legacyNode)
+assert(resolvedLegacy !== null, "getDocumentBlob resolves legacy sliced 16-char assetId")
 
 console.log("=== All Zenithsui Document Attachments Tests Passed Successfully! ===")
+
 

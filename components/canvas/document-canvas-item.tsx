@@ -42,10 +42,16 @@ function PdfCardPreview({
   node,
   blob,
   currentPage,
+  isBlobLoading,
+  blobError,
+  onRetry,
 }: {
   node: DocumentNode
   blob: Blob | null
   currentPage: number
+  isBlobLoading?: boolean
+  blobError?: boolean
+  onRetry?: () => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [rendered, setRendered] = useState(false)
@@ -107,6 +113,37 @@ function PdfCardPreview({
     )
   }
 
+  if (isBlobLoading && !blob) {
+    return (
+      <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex flex-col items-center justify-center p-3 text-stone-600 dark:text-stone-300">
+        <div className="size-6 border-2 border-stone-400 border-t-transparent rounded-full animate-spin mb-2" />
+        <span className="text-[10px] font-mono opacity-75">Loading document...</span>
+      </div>
+    )
+  }
+
+  if (blobError || (!blob && !isBlobLoading)) {
+    return (
+      <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex flex-col items-center justify-center p-3 text-center">
+        <FilePdf size={32} className="mb-1.5 opacity-50 text-red-500" />
+        <span className="text-[11px] font-medium text-stone-700 dark:text-stone-200 truncate max-w-full">{node.name}</span>
+        <span className="text-[9px] text-stone-500 dark:text-stone-400 mt-0.5">Attachment unavailable</span>
+        {onRetry && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              onRetry()
+            }}
+            className="mt-2 text-[10px] px-2 py-0.5 rounded border border-stone-300 dark:border-stone-700 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors pointer-events-auto"
+          >
+            Retry
+          </button>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex items-center justify-center p-2 pointer-events-none">
       <canvas
@@ -118,8 +155,8 @@ function PdfCardPreview({
       />
       {!rendered && !error && (
         <div className="flex flex-col items-center justify-center text-xs opacity-60">
-          <FilePdf size={36} className="mb-1" />
-          <span className="text-[10px] font-mono">Loading page {currentPage}...</span>
+          <div className="size-5 border-2 border-stone-400 border-t-transparent rounded-full animate-spin mb-2" />
+          <span className="text-[10px] font-mono">Rendering page {currentPage}...</span>
         </div>
       )}
       {error && (
@@ -149,20 +186,46 @@ export function DocumentCanvasItem({
   onOpenViewer,
 }: DocumentCanvasItemProps) {
   const [docBlob, setDocBlob] = useState<Blob | null>(null)
+  const [isBlobLoading, setIsBlobLoading] = useState(true)
+  const [blobError, setBlobError] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  // Resolve live blob for the document asset
-  useEffect(() => {
+  const fetchBlob = useCallback(() => {
     let mounted = true
-    getDocumentBlob(node).then((blob) => {
-      if (mounted && blob) {
-        setDocBlob(blob)
-      }
-    })
+    setIsBlobLoading(true)
+    setBlobError(false)
+
+    getDocumentBlob(node)
+      .then((blob) => {
+        if (!mounted) return
+        if (blob && blob.size > 0) {
+          setDocBlob(blob)
+          setIsBlobLoading(false)
+        } else {
+          setDocBlob(null)
+          setIsBlobLoading(false)
+          setBlobError(true)
+        }
+      })
+      .catch((err) => {
+        if (!mounted) return
+        console.error("Document blob resolution error:", err)
+        setDocBlob(null)
+        setIsBlobLoading(false)
+        setBlobError(true)
+      })
+
     return () => {
       mounted = false
     }
-  }, [node.assetId, node.src])
+  }, [node])
+
+  useEffect(() => {
+    const cancel = fetchBlob()
+    return () => {
+      cancel?.()
+    }
+  }, [fetchBlob])
 
   const extension = (node.extension || node.name.split(".").pop() || "doc").toLowerCase()
   const pageCount = node.pageCount || 1
@@ -331,7 +394,14 @@ export function DocumentCanvasItem({
       <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)] flex flex-col">
         {/* Genuine PDF Preview */}
         {extension === "pdf" && (
-          <PdfCardPreview node={node} blob={docBlob} currentPage={currentPage} />
+          <PdfCardPreview
+            node={node}
+            blob={docBlob}
+            currentPage={currentPage}
+            isBlobLoading={isBlobLoading}
+            blobError={blobError}
+            onRetry={fetchBlob}
+          />
         )}
 
         {/* CSV Table Preview */}
