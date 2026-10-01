@@ -16,8 +16,8 @@ import {
   getDocumentBlob,
   downloadDocument,
 } from "@/lib/storage/document-assets"
+import { PdfCanvasViewer } from "./pdf-canvas-viewer"
 import {
-  FilePdf,
   FileText,
   FileCode,
   FileCsv,
@@ -28,8 +28,6 @@ import {
   DownloadSimple,
   ArrowSquareOut,
   X,
-  CaretLeft,
-  CaretRight,
   MagnifyingGlass,
   Copy,
   Check,
@@ -42,18 +40,24 @@ export interface DocumentViewerModalProps {
 }
 
 export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps) {
+  const [docBlob, setDocBlob] = useState<Blob | null>(null)
   const [objectUrl, setObjectUrl] = useState<string | null>(null)
   const [fullText, setFullText] = useState<string | null>(null)
-  const [currentPage, setCurrentPage] = useState<number>(1)
   const [csvFilter, setCsvFilter] = useState<string>("")
   const [copied, setCopied] = useState<boolean>(false)
 
-  // Sync current page from node
+  // Resolve document blob
   useEffect(() => {
-    if (node) {
-      setCurrentPage(node.currentPage || 1)
-      setCsvFilter("")
-      setCopied(false)
+    if (!node) {
+      setDocBlob(null)
+      return
+    }
+    let mounted = true
+    getDocumentBlob(node).then((blob) => {
+      if (mounted) setDocBlob(blob)
+    })
+    return () => {
+      mounted = false
     }
   }, [node])
 
@@ -118,56 +122,6 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
     return (node.extension || node.name.split(".").pop() || "doc").toLowerCase()
   }, [node])
 
-  const pageCount = node?.pageCount || 1
-
-  // Page navigation
-  const handlePrevPage = useCallback(() => {
-    if (currentPage > 1 && node) {
-      const nextP = currentPage - 1
-      setCurrentPage(nextP)
-      useSquig.getState().updateNode(node.id, { currentPage: nextP } as Partial<DocumentNode>)
-    }
-  }, [currentPage, node])
-
-  const handleNextPage = useCallback(() => {
-    if (currentPage < pageCount && node) {
-      const nextP = currentPage + 1
-      setCurrentPage(nextP)
-      useSquig.getState().updateNode(node.id, { currentPage: nextP } as Partial<DocumentNode>)
-    }
-  }, [currentPage, pageCount, node])
-
-  // Keyboard navigation & isolation
-  useEffect(() => {
-    if (!node) return
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Isolate modal keys completely from canvas
-      if (e.key === "Escape") {
-        e.preventDefault()
-        e.stopPropagation()
-        onClose()
-      } else if (e.key === "ArrowLeft") {
-        if (pageCount > 1) {
-          e.preventDefault()
-          e.stopPropagation()
-          handlePrevPage()
-        }
-      } else if (e.key === "ArrowRight") {
-        if (pageCount > 1) {
-          e.preventDefault()
-          e.stopPropagation()
-          handleNextPage()
-        }
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown, true)
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown, true)
-    }
-  }, [node, onClose, pageCount, handlePrevPage, handleNextPage])
-
   // Copy text content
   const handleCopyText = useCallback(() => {
     const textToCopy = fullText || node?.textContent || ""
@@ -192,11 +146,27 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
     }
   }, [objectUrl])
 
+  // Non-PDF keyboard isolation
+  useEffect(() => {
+    if (!node || extension === "pdf") return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault()
+        e.stopPropagation()
+        onClose()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true)
+    }
+  }, [node, extension, onClose])
+
   // Icon selection
   const FileIcon = useMemo(() => {
     switch (extension) {
-      case "pdf":
-        return FilePdf
       case "json":
       case "js":
       case "ts":
@@ -260,6 +230,49 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
 
   if (!node) return null
 
+  // ---------------------------------------------------------------------------
+  // Case A: PDF Documents (Genuine High-DPI PDF.js Viewer)
+  // ---------------------------------------------------------------------------
+  if (extension === "pdf") {
+    return (
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Document Viewer: ${node.name}`}
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose()
+        }}
+      >
+        <div
+          className="w-full max-w-6xl h-[92vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
+          style={{
+            boxShadow: "0 20px 40px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.15)",
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <PdfCanvasViewer
+            blob={docBlob}
+            documentName={node.name}
+            initialPage={node.currentPage || 1}
+            onPageChange={(p, total) => {
+              useSquig.getState().updateNode(node.id, {
+                currentPage: p,
+                pageCount: total,
+              } as Partial<DocumentNode>)
+            }}
+            onDownload={handleDownload}
+            onOpenExternal={handleOpenExternal}
+            onClose={onClose}
+          />
+        </div>
+      </div>
+    )
+  }
+
+  // ---------------------------------------------------------------------------
+  // Case B: Non-PDF Documents (CSV, JSON, Markdown, Text, Office)
+  // ---------------------------------------------------------------------------
   return (
     <div
       role="dialog"
@@ -288,40 +301,12 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
               <div className="text-[10px] opacity-65 flex items-center gap-2 font-mono">
                 <span className="uppercase font-semibold">{extension}</span>
                 {sizeLabel && <span>• {sizeLabel}</span>}
-                {pageCount > 1 && <span>• {pageCount} pages</span>}
               </div>
             </div>
           </div>
 
           {/* Action controls */}
           <div className="flex items-center gap-2 shrink-0">
-            {/* Multi-page controls for PDFs */}
-            {extension === "pdf" && pageCount > 1 && (
-              <div className="flex items-center gap-1 bg-[var(--sq-paper)] px-2 py-1 rounded border border-[var(--sq-border)] text-xs">
-                <button
-                  type="button"
-                  onClick={handlePrevPage}
-                  disabled={currentPage <= 1}
-                  className="p-0.5 rounded hover:bg-[var(--sq-shade)] disabled:opacity-30 transition-colors"
-                  title="Previous page (Left Arrow)"
-                >
-                  <CaretLeft size={14} />
-                </button>
-                <span className="font-mono text-[11px] px-1">
-                  Page {currentPage} of {pageCount}
-                </span>
-                <button
-                  type="button"
-                  onClick={handleNextPage}
-                  disabled={currentPage >= pageCount}
-                  className="p-0.5 rounded hover:bg-[var(--sq-shade)] disabled:opacity-30 transition-colors"
-                  title="Next page (Right Arrow)"
-                >
-                  <CaretRight size={14} />
-                </button>
-              </div>
-            )}
-
             {/* Copy button for textual files */}
             {fullText && (
               <button
@@ -372,38 +357,6 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
 
         {/* 2. Main Content Area */}
         <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)]">
-          {/* PDF Viewer */}
-          {extension === "pdf" && objectUrl && (
-            <div className="w-full h-full">
-              <object
-                data={`${objectUrl}#page=${currentPage}`}
-                type="application/pdf"
-                className="w-full h-full border-none"
-                title={node.name}
-              >
-                <iframe
-                  src={`${objectUrl}#page=${currentPage}`}
-                  className="w-full h-full border-none"
-                  title={node.name}
-                >
-                  <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
-                    <FilePdf size={48} className="mb-4 opacity-60" />
-                    <p className="text-sm font-medium mb-3">
-                      Your browser does not support embedded PDF viewing.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleDownload}
-                      className="px-4 py-2 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] text-xs font-semibold"
-                    >
-                      Download PDF
-                    </button>
-                  </div>
-                </iframe>
-              </object>
-            </div>
-          )}
-
           {/* CSV / TSV Table Viewer */}
           {(extension === "csv" || extension === "tsv") && (
             <div className="w-full h-full flex flex-col">
@@ -480,8 +433,7 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
           )}
 
           {/* Office Documents & Fallback */}
-          {extension !== "pdf" &&
-            extension !== "csv" &&
+          {extension !== "csv" &&
             extension !== "tsv" &&
             fullText === null && (
               <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
@@ -514,14 +466,12 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
             {node.assetId ? `Asset ID: ${node.assetId}` : "Local attachment"}
           </div>
           <div className="flex items-center gap-3">
-            <span>Press <kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">Esc</kbd> to close</span>
-            {pageCount > 1 && (
-              <span><kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">←</kbd> <kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">→</kbd> to turn pages</span>
-            )}
+            <span>
+              Press <kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">Esc</kbd> to close
+            </span>
           </div>
         </div>
       </div>
     </div>
   )
 }
-

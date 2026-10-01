@@ -10,6 +10,7 @@
 
 import { openZenithsuiDb, STORES, withTransaction } from "./db"
 import { computeBlobHash, cacheAssetBlob, getAssetBlob } from "../cloud/assets"
+import { generatePdfThumbnail } from "../pdf/pdf-renderer"
 import type { DocumentNode } from "../types"
 
 export const MAX_ATTACHMENT_SIZE_BYTES = 50 * 1024 * 1024 // 50MB limit
@@ -201,11 +202,23 @@ export async function saveDocumentAsset(
   // 3. Extract metadata
   let pageCount: number | undefined
   let textContent: string | undefined
+  let thumbnailUrl: string | undefined
 
   if (mimeType === "application/pdf" || extension === "pdf") {
-    const buffer = await file.slice(0, Math.min(sizeBytes, 5 * 1024 * 1024)).arrayBuffer()
-    const pdfInfo = extractPdfInfo(buffer)
-    pageCount = pdfInfo.pageCount
+    if (typeof window !== "undefined") {
+      try {
+        const thumb = await generatePdfThumbnail(file, 480)
+        thumbnailUrl = thumb.thumbnailUrl
+        pageCount = thumb.pageCount
+      } catch (err) {
+        console.warn("PDF thumbnail generation notice:", err)
+      }
+    }
+    if (!pageCount) {
+      const buffer = await file.slice(0, Math.min(sizeBytes, 5 * 1024 * 1024)).arrayBuffer()
+      const pdfInfo = extractPdfInfo(buffer)
+      pageCount = pdfInfo.pageCount
+    }
   } else {
     textContent = await extractTextPreview(file, mimeType)
   }
@@ -224,6 +237,7 @@ export async function saveDocumentAsset(
     pageCount,
     textContent,
     localUrl,
+    thumbnailUrl,
   }
 }
 

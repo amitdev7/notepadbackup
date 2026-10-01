@@ -4,14 +4,24 @@
 // Zenithsui Canvas — First-Class Interactive Document Node Component
 //
 // Renders live PDF, Text, JSON, CSV, Markdown, and Office document attachments
-// with real previews, page navigation, inline renaming, download, and viewer trigger.
+// with genuine PDF.js canvas rendering, page navigation, inline renaming,
+// download, and viewer trigger.
 // Follows Zenithsui risograph ink & paper aesthetic.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import type { DocumentNode } from "@/lib/types"
 import { useSquig } from "@/lib/store"
-import { getDocumentObjectUrl, downloadDocument } from "@/lib/storage/document-assets"
+import {
+  getDocumentObjectUrl,
+  getDocumentBlob,
+  downloadDocument,
+} from "@/lib/storage/document-assets"
+import {
+  loadPdfDocument,
+  renderPdfPageToCanvas,
+  destroyPdfDocument,
+} from "@/lib/pdf/pdf-renderer"
 import {
   FilePdf,
   FileText,
@@ -22,13 +32,108 @@ import {
   FilePpt,
   File,
   DownloadSimple,
-  Eye,
   CaretLeft,
   CaretRight,
   ArrowsOutSimple,
-  Table,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+
+function PdfCardPreview({
+  node,
+  blob,
+  currentPage,
+}: {
+  node: DocumentNode
+  blob: Blob | null
+  currentPage: number
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [rendered, setRendered] = useState(false)
+  const [error, setError] = useState(false)
+
+  // Fast path: if page 1 and thumbnail is available, render image directly
+  const hasThumb = currentPage === 1 && !!node.thumbnailUrl
+
+  useEffect(() => {
+    if (hasThumb || !blob) return
+
+    let cancelled = false
+    setRendered(false)
+    setError(false)
+
+    loadPdfDocument(blob)
+      .then(async (doc) => {
+        if (cancelled) {
+          destroyPdfDocument(doc)
+          return
+        }
+        try {
+          const page = await doc.getPage(currentPage)
+          if (cancelled || !canvasRef.current) {
+            destroyPdfDocument(doc)
+            return
+          }
+          const task = renderPdfPageToCanvas(page, canvasRef.current, {
+            targetWidth: node.w - 16,
+            targetHeight: Math.max(100, node.h - 60),
+            maxPixelRatio: 2,
+          })
+          await task.promise
+          if (!cancelled) setRendered(true)
+        } catch {
+          if (!cancelled) setError(true)
+        } finally {
+          destroyPdfDocument(doc)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setError(true)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [blob, currentPage, node.w, node.h, hasThumb])
+
+  if (hasThumb) {
+    return (
+      <div className="w-full h-full relative overflow-hidden bg-white flex items-center justify-center pointer-events-none p-1.5">
+        <img
+          src={node.thumbnailUrl}
+          alt={node.name}
+          className="max-w-full max-h-full object-contain rounded-xs shadow-xs"
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="w-full h-full relative overflow-hidden bg-stone-100 dark:bg-stone-900/40 flex items-center justify-center p-2 pointer-events-none">
+      <canvas
+        ref={canvasRef}
+        className={cn(
+          "max-w-full max-h-full object-contain bg-white shadow-xs rounded-xs",
+          rendered ? "block" : "hidden"
+        )}
+      />
+      {!rendered && !error && (
+        <div className="flex flex-col items-center justify-center text-xs opacity-60">
+          <FilePdf size={36} className="mb-1" />
+          <span className="text-[10px] font-mono">Loading page {currentPage}...</span>
+        </div>
+      )}
+      {error && (
+        <div className="flex flex-col items-center justify-center text-xs opacity-60 p-2 text-center">
+          <FilePdf size={36} className="mb-1" />
+          <span className="text-[11px] font-semibold">{node.name}</span>
+          <span className="text-[9px] font-mono mt-0.5">
+            Page {currentPage} of {node.pageCount || 1}
+          </span>
+        </div>
+      )}
+    </div>
+  )
+}
 
 export interface DocumentCanvasItemProps {
   node: DocumentNode
@@ -43,15 +148,15 @@ export function DocumentCanvasItem({
   zoom,
   onOpenViewer,
 }: DocumentCanvasItemProps) {
-  const [objectUrl, setObjectUrl] = useState<string | null>(null)
+  const [docBlob, setDocBlob] = useState<Blob | null>(null)
   const [isHovered, setIsHovered] = useState(false)
 
-  // Resolve live object URL for the document asset
+  // Resolve live blob for the document asset
   useEffect(() => {
     let mounted = true
-    getDocumentObjectUrl(node).then((url) => {
-      if (mounted && url) {
-        setObjectUrl(url)
+    getDocumentBlob(node).then((blob) => {
+      if (mounted && blob) {
+        setDocBlob(blob)
       }
     })
     return () => {
@@ -144,7 +249,6 @@ export function DocumentCanvasItem({
     if (extension !== "csv" || !node.textContent) return null
     const lines = node.textContent.split("\n").filter((l) => l.trim())
     return lines.slice(0, 8).map((line) => {
-      // Basic comma split respecting basic quotes
       return line.split(",").map((c) => c.replace(/^"|"$/g, "").trim()).slice(0, 4)
     })
   }, [extension, node.textContent])
@@ -225,23 +329,9 @@ export function DocumentCanvasItem({
 
       {/* 2. Main Document Preview Body */}
       <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)] flex flex-col">
-        {/* PDF Preview */}
-        {extension === "pdf" && objectUrl && (
-          <div className="w-full h-full relative overflow-hidden pointer-events-none">
-            <object
-              data={`${objectUrl}#page=${currentPage}&toolbar=0&navpanes=0&scrollbar=0`}
-              type="application/pdf"
-              className="w-full h-full border-none"
-              title={node.name}
-            >
-              {/* Fallback card if browser embedded PDF object is unsupported */}
-              <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
-                <FilePdf size={40} className="mb-2 opacity-70" />
-                <span className="font-semibold text-xs">{node.name}</span>
-                <span className="text-[10px] opacity-60 mt-1">PDF · {pageCount} pages</span>
-              </div>
-            </object>
-          </div>
+        {/* Genuine PDF Preview */}
+        {extension === "pdf" && (
+          <PdfCardPreview node={node} blob={docBlob} currentPage={currentPage} />
         )}
 
         {/* CSV Table Preview */}
@@ -285,7 +375,7 @@ export function DocumentCanvasItem({
           extension === "xlsx" ||
           extension === "ppt" ||
           extension === "pptx" ||
-          (!objectUrl && !node.textContent)) && (
+          (extension !== "pdf" && !node.textContent)) && (
           <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
             <div className="p-3 rounded-full bg-[var(--sq-shade)]/60 text-[var(--sq-ink)] mb-2">
               <FileIcon size={32} />
@@ -322,4 +412,3 @@ export function DocumentCanvasItem({
     </div>
   )
 }
-

@@ -56,14 +56,15 @@ export async function validateImageMagicBytes(blob: Blob): Promise<{ valid: bool
     return { valid: true, mimeType: "image/webp" }
   }
 
-  // SVG: text containing <svg
-  try {
-    const text = await blob.slice(0, 1024).text()
-    if (text.includes("<svg") && !text.includes("<script")) {
-      return { valid: true, mimeType: "image/svg+xml" }
-    }
-  } catch {
-    // Not text
+  // PDF: 25 50 44 46 2D (%PDF-)
+  if (
+    bytes[0] === 0x25 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x44 &&
+    bytes[3] === 0x46 &&
+    bytes[4] === 0x2d
+  ) {
+    return { valid: true, mimeType: "application/pdf" }
   }
 
   return { valid: false, mimeType: "application/octet-stream" }
@@ -137,6 +138,21 @@ export async function resolveAssetsForExport(
           ...node,
           src: dataUrl,
         } as ImageNode
+      }
+    }
+    if (node.type === "document" && node.thumbnailUrl?.startsWith("asset://")) {
+      const hash = node.thumbnailUrl.replace("asset://", "")
+      const blob = await getAssetBlob(hash)
+      if (blob) {
+        const dataUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader()
+          reader.onloadend = () => resolve(reader.result as string)
+          reader.readAsDataURL(blob)
+        })
+        cloned[id] = {
+          ...node,
+          thumbnailUrl: dataUrl,
+        }
       }
     }
   }
