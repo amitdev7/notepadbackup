@@ -138,7 +138,49 @@ export interface ImageNode extends BaseNode {
   name?: string
 }
 
-export type SquigNode = ComponentNode | ShapeNode | DrawNode | TextNode | ArrowNode | ImageNode
+/**
+ * A document or file attached directly to the canvas (PDF, text, JSON, CSV, MD, Office doc).
+ * Stored as a first-class canvas object backed by local IndexedDB binary asset storage
+ * and optional cloud blob sync.
+ */
+export interface DocumentNode extends BaseNode {
+  type: "document"
+  /** Stable unique asset ID referencing local/cloud asset storage */
+  assetId: string
+  /**
+   * Reference to the asset content:
+   * - "asset://<hash>" for IndexedDB local asset storage
+   * - "blob:..." for transient local object URLs
+   * - "https://..." for cloud Vercel Blob / Supabase Storage
+   */
+  src?: string
+  /** Document display name (e.g. "Calculus_Notes.pdf") */
+  name: string
+  /** MIME type (e.g. "application/pdf", "text/plain", "application/json", "text/csv") */
+  mimeType: string
+  /** File extension without dot (e.g. "pdf", "txt", "json", "csv", "md", "docx") */
+  extension?: string
+  /** File size in bytes */
+  sizeBytes?: number
+  /** Total page count (for multi-page documents like PDF) */
+  pageCount?: number
+  /** Currently selected preview page (1-indexed, default 1) */
+  currentPage?: number
+  /** First-page rendered thumbnail or preview image */
+  thumbnailUrl?: string
+  /** Visual presentation mode on canvas */
+  displayMode?: "preview" | "compact" | "icon"
+  /** Text content snippet for rapid offline preview of text/json/csv/md files */
+  textContent?: string
+  /** Timestamp when attached */
+  attachedAt?: number
+  /** Local/cloud sync status */
+  status?: "ready" | "uploading" | "local" | "syncing" | "error"
+  /** Optional custom metadata (e.g. author, title, tags) */
+  metadata?: Record<string, unknown>
+}
+
+export type SquigNode = ComponentNode | ShapeNode | DrawNode | TextNode | ArrowNode | ImageNode | DocumentNode
 
 export interface Viewport {
   x: number

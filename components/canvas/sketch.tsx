@@ -327,6 +327,8 @@ export const NodeSketch = memo(function NodeSketch({
       case "image":
         // the src doesn't shape a single mark — only the frame's box does
         return `i:${node.w}:${node.h}:${flip}`
+      case "document":
+        return `doc:${node.name}:${node.w}:${node.h}:${flip}:${node.pageCount ?? 0}:${node.sizeBytes ?? 0}`
     }
   }, [node])
 

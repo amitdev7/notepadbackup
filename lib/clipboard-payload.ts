@@ -15,7 +15,7 @@
 // Kept free of the store and the DOM so it can be tested on its own.
 // ---------------------------------------------------------------------------
 
-import type { SquigNode, TextNode } from "./types"
+import type { SquigNode, TextNode, DocumentNode } from "./types"
 
 const PAYLOAD_VERSION = 1
 /** the attribute the HTML carrier hides the payload in */
@@ -77,15 +77,15 @@ export function payloadFromHtml(html: string | null | undefined): string | null 
 /** The words in a selection, in document order — what `text/plain` carries. */
 export function wordsOf(nodes: readonly SquigNode[]): string {
   return nodes
-    .filter((n): n is TextNode => n.type === "text")
-    .map((n) => n.text)
+    .filter((n): n is TextNode | DocumentNode => n.type === "text" || n.type === "document")
+    .map((n) => (n.type === "text" ? n.text : (n.name || "Document")))
     .filter(Boolean)
     .join("\n")
 }
 
 // -- reading a stranger's nodes ---------------------------------------------
 
-const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image"])
+const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image", "document"])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
 
@@ -131,6 +131,10 @@ export function validNode(v: unknown): SquigNode | null {
       // the only scheme this app ever writes, and the only one it will read:
       // a pasted document has no business pointing the canvas at a URL
       if (!str(n.src) || !/^data:image\//i.test(n.src)) return null
+      break
+    case "document":
+      if (!str(n.name) || !n.name.trim() || !str(n.mimeType) || !n.mimeType.trim() || (!str(n.assetId) && !str(n.src))) return null
+      if (n.w <= 0 || n.h <= 0) return null
       break
   }
 

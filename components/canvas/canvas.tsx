@@ -18,7 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useSquig } from "@/lib/store"
-import type { SquigNode, TextNode } from "@/lib/types"
+import type { SquigNode, TextNode, DocumentNode } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
@@ -27,6 +27,7 @@ import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type H
 import { pickAt, pickInRect, pickSoftAt } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
+import { dropFiles } from "@/lib/clipboard"
 import { editTarget, hasEditableText } from "@/lib/canvas/edit-target"
 import { textBlockHeight } from "@/lib/sketch/text-layout"
 import { unionBounds, type Bounds } from "@/lib/selection"
@@ -38,6 +39,8 @@ import { ContextRow } from "./context-row"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
+import { DocumentCanvasItem } from "./document-canvas-item"
+import { DocumentViewerModal } from "./document-viewer-modal"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -202,6 +205,7 @@ export function Canvas() {
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
+  const [viewerNode, setViewerNode] = useState<DocumentNode | null>(null)
 
   const { isSpacebarHeld } = useSpacebarPan()
   // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
@@ -1100,6 +1104,10 @@ export function Canvas() {
       }
       // double-clicking inside a multi-selection narrows to what you clicked
       if (s.selection.length !== 1 || s.selection[0] !== hitId) s.setSelection([hitId])
+      if (n.type === "document") {
+        setViewerNode(n as DocumentNode)
+        return
+      }
       if (hasEditableText(n)) s.setEditing(hitId)
     },
     [st, pick, toWorld]
@@ -1151,6 +1159,24 @@ export function Canvas() {
   )
 
   const onPointerLeave = useCallback(() => setHover(null), [])
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = "copy"
+  }, [])
+
+  const onDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const files = Array.from(e.dataTransfer.files)
+      if (!files.length) return
+      const [wx, wy] = toWorld(e)
+      await dropFiles(files, [wx, wy])
+    },
+    [toWorld]
+  )
 
   /**
    * The placement ghost tracks the pointer on `window`, not on the canvas, so a
@@ -1551,6 +1577,8 @@ export function Canvas() {
       onPointerLeave={onPointerLeave}
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <svg className="pointer-events-none absolute inset-0 h-full w-full" style={{ overflow: "visible" }}>
         <g transform={`translate(${v.x} ${v.y}) scale(${v.zoom})`}>
@@ -1558,7 +1586,7 @@ export function Canvas() {
             const n = nodes[id]
             if (!n) return null
             const def = n.type === "component" ? getDef(n.kind) : null
-            if (def?.interactive) {
+            if (def?.interactive || n.type === "document") {
               return null
             }
             return (
@@ -1601,29 +1629,57 @@ export function Canvas() {
       >
         {order.map((id) => {
           const n = nodes[id]
-          if (!n || n.type !== "component") return null
-          const def = getDef(n.kind)
-          const Component = INTERACTIVE_COMPONENTS[n.kind]
-          if (!def?.interactive || !Component) return null
-          return (
-            <div
-              key={id}
-              data-interactive-node={id}
-              className="absolute pointer-events-auto"
-              style={{
-                left: n.x,
-                top: n.y,
-                width: n.w,
-                height: n.h,
-              }}
-            >
-              <Component
-                node={n}
-                selected={selection.includes(id)}
-                zoom={v.zoom}
-              />
-            </div>
-          )
+          if (!n) return null
+
+          if (n.type === "document") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <DocumentCanvasItem
+                  node={n as DocumentNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                  onOpenViewer={(doc) => setViewerNode(doc)}
+                />
+              </div>
+            )
+          }
+
+          if (n.type === "component") {
+            const def = getDef(n.kind)
+            const Component = INTERACTIVE_COMPONENTS[n.kind]
+            if (!def?.interactive || !Component) return null
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <Component
+                  node={n}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
+          return null
         })}
       </div>
 
@@ -1686,6 +1742,14 @@ export function Canvas() {
 
       {/* empty-canvas nudge */}
       {order.length === 0 && !placing && <EmptyCanvas />}
+
+      {/* expanded document viewer modal */}
+      {viewerNode && (
+        <DocumentViewerModal
+          node={(nodes[viewerNode.id] as DocumentNode) || viewerNode}
+          onClose={() => setViewerNode(null)}
+        />
+      )}
     </div>
   )
 }

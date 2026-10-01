@@ -92,6 +92,23 @@ export function basePrims(node: SquigNode): Prim[] {
       const g = FRAME_GAP
       return [{ t: "rect", x: -g, y: -g, w: node.w + g * 2, h: node.h + g * 2, r: 2, o: { stroke: "muted" } }]
     }
+    case "document": {
+      const ext = (node.extension || node.name.split(".").pop() || "doc").toUpperCase()
+      const meta = node.pageCount
+        ? `${node.pageCount} ${node.pageCount === 1 ? "page" : "pages"}`
+        : node.sizeBytes
+          ? `${(node.sizeBytes / 1024 >= 1024 ? (node.sizeBytes / (1024 * 1024)).toFixed(1) + " MB" : Math.round(node.sizeBytes / 1024) + " KB")}`
+          : "Document"
+
+      return [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: ext, size: 10, bold: true },
+        { t: "line", x1: 0, y1: Math.max(26, node.h - 38), x2: node.w, y2: Math.max(26, node.h - 38), o: { stroke: "faint" } },
+        { t: "text", x: 8, y: Math.max(38, node.h - 22), text: node.name, size: 11, bold: true },
+        { t: "text", x: 8, y: Math.max(48, node.h - 8), text: `${ext} · ${meta}`, size: 9 },
+      ]
+    }
     case "text": {
       const anchor = textAnchorX(node.align, node.w)
       // an auto-sized layer's lines are its hard returns; a fixed-width layer

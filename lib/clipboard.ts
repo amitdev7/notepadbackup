@@ -18,7 +18,8 @@ import { decodeNodes, encodeNodes, payloadFromHtml, payloadHtml, wordsOf } from 
 import { useSquig } from "./store"
 import { measureTextWidth } from "./canvas/text-metrics"
 import { fitTextBox } from "./canvas/text-reflow"
-import { screenToWorld, type ImageNode, type SquigNode, type TextNode } from "./types"
+import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode } from "./types"
+import { saveDocumentAsset } from "./storage/document-assets"
 
 // -- copying out ------------------------------------------------------------
 
@@ -211,6 +212,56 @@ export async function imageNodeFrom(blob: Blob, name?: string): Promise<ImageNod
   }
 }
 
+/** Turn a document (PDF, TXT, CSV, JSON, MD, DOCX, XLSX, etc.) into a DocumentNode. */
+export async function documentNodeFrom(file: File | Blob, rawName?: string): Promise<DocumentNode | null> {
+  try {
+    const filename = rawName || (file instanceof File ? file.name : "document.pdf")
+    const res = await saveDocumentAsset(file, filename)
+    const isPdf = res.extension === "pdf"
+    const isTable = res.extension === "csv" || res.extension === "tsv"
+    const isCode = ["json", "js", "ts", "html", "css"].includes(res.extension)
+    const isOffice = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(res.extension)
+
+    let w = 320
+    let h = 260
+    if (isPdf) {
+      w = 340
+      h = 440
+    } else if (isTable) {
+      w = 380
+      h = 300
+    } else if (isCode) {
+      w = 340
+      h = 280
+    } else if (isOffice) {
+      w = 260
+      h = 220
+    }
+
+    return {
+      id: nanoid(8),
+      type: "document",
+      assetId: res.assetId,
+      src: res.localUrl,
+      name: res.name,
+      mimeType: res.mimeType,
+      extension: res.extension,
+      sizeBytes: res.sizeBytes,
+      pageCount: res.pageCount,
+      currentPage: 1,
+      textContent: res.textContent,
+      x: 0,
+      y: 0,
+      w,
+      h,
+      seed: Math.floor(Math.random() * 2 ** 31),
+    }
+  } catch (err) {
+    console.error("Failed to create document node:", err)
+    return null
+  }
+}
+
 // -- words ------------------------------------------------------------------
 
 /** The size pasted words land at — the same one the text tool starts from. */
@@ -280,14 +331,15 @@ interface Incoming {
   html?: string | null
   text?: string | null
   images: Blob[]
+  documents?: File[]
 }
 
 /**
- * Everything a paste could be, in the order it should be tried.
+ * Everything a paste or drop could be, in the order it should be tried.
  *
  * Layers first: a zenithsui payload arrives as text, so reading the words before
  * looking for the payload would turn every cross-tab paste into a paragraph of
- * JSON. Pictures next, then whatever text is left over.
+ * JSON. Pictures next, documents next, then whatever text is left over.
  *
  * `at` is the top-left corner the paste lands on — the same convention ⌘V has
  * always had here. `inPlace` ignores it and puts the layers back at the
@@ -328,6 +380,28 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
       n.y = Math.round(oy + i * CASCADE)
     })
     s.addNodes(made)
+    s.setSelection(made.map((m) => m.id))
+    return true
+  }
+
+  if (c.documents?.length) {
+    const made: DocumentNode[] = []
+    for (const doc of c.documents) {
+      const node = await documentNodeFrom(doc, doc.name)
+      if (node) made.push(node)
+    }
+    if (!made.length) {
+      s.setNotice(c.documents.length > 1 ? "couldn't read those documents" : "couldn't read that document")
+      return false
+    }
+    const [px, py] = at ?? viewportCentre()
+    const [ox, oy] = at ? [px, py] : [px - made[0].w / 2, py - made[0].h / 2]
+    made.forEach((n, i) => {
+      n.x = Math.round(ox + i * CASCADE)
+      n.y = Math.round(oy + i * CASCADE)
+    })
+    s.addNodes(made)
+    s.setSelection(made.map((m) => m.id))
     return true
   }
 
@@ -335,6 +409,7 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
     const node = textNodeFrom(c.text, at ?? viewportCentre())
     if (node) {
       s.addNodes([node])
+      s.setSelection([node.id])
       return true
     }
   }
@@ -342,22 +417,55 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
   return false
 }
 
-/** Pictures on a paste or a drop, in the order the clipboard listed them. */
-function imagesIn(dt: DataTransfer): Blob[] {
-  const out: Blob[] = []
-  for (const item of dt.items) {
-    if (item.kind !== "file") continue
-    const file = item.getAsFile()
-    if (file && file.type.startsWith("image/")) out.push(file)
+/** Files on a paste or a drop, categorized into images and documents. */
+function filesIn(dt: DataTransfer): { images: Blob[]; documents: File[] } {
+  const images: Blob[] = []
+  const documents: File[] = []
+
+  if (dt.items && dt.items.length) {
+    for (const item of Array.from(dt.items)) {
+      if (item.kind !== "file") continue
+      const file = item.getAsFile()
+      if (!file) continue
+      if (file.type.startsWith("image/")) {
+        images.push(file)
+      } else {
+        documents.push(file)
+      }
+    }
+  } else if (dt.files && dt.files.length) {
+    for (const file of Array.from(dt.files)) {
+      if (file.type.startsWith("image/")) {
+        images.push(file)
+      } else {
+        documents.push(file)
+      }
+    }
   }
-  return out
+
+  return { images, documents }
+}
+
+/** Drop desktop files directly onto canvas at world coordinates. */
+export async function dropFiles(files: File[], at: [number, number]): Promise<boolean> {
+  const images: Blob[] = []
+  const documents: File[] = []
+  for (const file of files) {
+    if (file.type.startsWith("image/")) {
+      images.push(file)
+    } else {
+      documents.push(file)
+    }
+  }
+  return place({ images, documents }, at)
 }
 
 /** Handle a real paste event. Returns whether anything landed. */
 export function pasteFrom(dt: DataTransfer, at?: [number, number]): Promise<boolean> {
   // everything comes off the DataTransfer now: it is only alive for this turn
   // of the event loop, and placing a picture takes several
-  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images: imagesIn(dt) }, at)
+  const { images, documents } = filesIn(dt)
+  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, documents }, at)
 }
 
 /**
@@ -389,11 +497,18 @@ export async function pasteFromSystem(at?: [number, number], inPlace = false): P
     const items = await navigator.clipboard.read()
     if (settled) return
     settled = true
-    const c: Incoming = { images: [] }
+    const c: Incoming = { images: [], documents: [] }
     for (const item of items) {
       const imageType = item.types.find((t) => t.startsWith("image/"))
       if (imageType) {
         c.images.push(await item.getType(imageType))
+        continue
+      }
+      const docType = item.types.find((t) => t === "application/pdf" || t === "text/csv" || t === "application/json")
+      if (docType) {
+        const blob = await item.getType(docType)
+        const ext = docType.split("/")[1] || "pdf"
+        c.documents!.push(new File([blob], `pasted_document.${ext}`, { type: docType }))
         continue
       }
       if (!c.html && item.types.includes("text/html")) c.html = await (await item.getType("text/html")).text()

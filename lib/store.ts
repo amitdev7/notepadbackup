@@ -260,6 +260,8 @@ function sanitize(
     // an imported file is a stranger's document: a picture in it carries its
     // own pixels or it doesn't render at all — never a URL we'd go and fetch
     if (node.type === "image" && !/^data:image\//i.test(node.src ?? "")) continue
+    // a document requires valid name, mimeType, and asset identity
+    if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
     clean[id] = node
   }
   const seen = new Set<string>()

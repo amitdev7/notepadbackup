@@ -1,13 +1,25 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 
-const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024 // 50MB
 const ALLOWED_MIME_TYPES = new Set([
   "image/png",
   "image/jpeg",
   "image/webp",
   "image/gif",
   "image/svg+xml",
+  "application/pdf",
+  "text/plain",
+  "text/markdown",
+  "text/csv",
+  "text/tab-separated-values",
+  "application/json",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ])
 
 export async function POST(request: NextRequest) {

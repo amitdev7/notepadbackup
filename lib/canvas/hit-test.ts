@@ -114,9 +114,9 @@ function polylineOf(n: SquigNode): [number, number][] | null {
 }
 
 /** Shapes are only solid to the pointer when they're actually filled. */
-function isSolid(n: SquigNode): boolean {
+export function isSolid(n: SquigNode): boolean {
   if (n.type === "shape") return normalizeFill(n.fill) !== "none"
-  return n.type === "component" || n.type === "text" || n.type === "image"
+  return n.type === "component" || n.type === "text" || n.type === "image" || n.type === "document"
 }
 
 // ---------------------------------------------------------------------------

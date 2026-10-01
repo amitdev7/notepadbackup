@@ -14,14 +14,15 @@
 // somewhere else.
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
 import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
+import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -39,6 +40,8 @@ import {
   SelectionAllIcon,
   TrashIcon,
   X,
+  DownloadSimple,
+  ArrowsClockwise,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -300,6 +303,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const shapes = selected.filter((n): n is ShapeNode => n.type === "shape")
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
+  const documents = selected.filter((n): n is DocumentNode => n.type === "document")
   // components draw their own strokes from authored prims — a pen weight set
   // here would have nothing to apply to without rewriting the whole library
   const outlined = selected.filter((n) => n.type === "shape" || n.type === "draw" || n.type === "arrow")
@@ -507,7 +511,112 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           )}
         </>
       )}
+
+      {/* --- contextual: document ---------------------------------------- */}
+      {documents.length > 0 && <DocumentSection documents={documents} />}
     </>
+  )
+}
+
+function DocumentSection({ documents }: { documents: DocumentNode[] }) {
+  const st = useSquig.getState
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || documents.length === 0) return
+    try {
+      const res = await saveDocumentAsset(file, file.name)
+      const targetDoc = documents[0]
+      st().updateNode(targetDoc.id, {
+        assetId: res.assetId,
+        src: res.localUrl,
+        name: res.name,
+        mimeType: res.mimeType,
+        extension: res.extension,
+        sizeBytes: res.sizeBytes,
+        pageCount: res.pageCount,
+        textContent: res.textContent,
+        currentPage: 1,
+      } as Partial<DocumentNode>)
+    } catch (err: any) {
+      st().setNotice(err?.message || "Failed to replace file")
+    }
+  }
+
+  const doc = documents[0]
+  const sizeLabel = doc?.sizeBytes
+    ? doc.sizeBytes >= 1024 * 1024
+      ? `${(doc.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.round(doc.sizeBytes / 1024)} KB`
+    : null
+
+  return (
+    <PanelSection id="document" title="Document" count={documents.length > 1 ? documents.length : undefined}>
+      <StackRow label="File Name">
+        <MixedTextField
+          ariaLabel="File Name"
+          shared={shared(documents.map((n) => n.name))}
+          onCommit={(name) => {
+            const patches: Record<string, Partial<SquigNode>> = {}
+            documents.forEach((d) => {
+              patches[d.id] = { name } as Partial<DocumentNode>
+            })
+            st().updateNodes(patches)
+          }}
+        />
+      </StackRow>
+
+      {documents.length === 1 && (
+        <>
+          <Row label="Type">
+            <span className="text-xs font-mono uppercase opacity-75">{doc.extension || "FILE"}</span>
+          </Row>
+          {sizeLabel && (
+            <Row label="Size">
+              <span className="text-xs font-mono opacity-75">{sizeLabel}</span>
+            </Row>
+          )}
+          {doc.pageCount && doc.pageCount > 1 && (
+            <Row label="Pages">
+              <span className="text-xs font-mono opacity-75">{doc.pageCount} pages</span>
+            </Row>
+          )}
+        </>
+      )}
+
+      <div className="flex items-center gap-1.5 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label"
+          onClick={() => {
+            documents.forEach((d) => downloadDocument(d))
+          }}
+        >
+          <DownloadSimple className="size-3" /> Download
+        </Button>
+
+        {documents.length === 1 && (
+          <>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleReplace}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-ctl flex-1 rounded-chrome-sm text-label"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ArrowsClockwise className="size-3" /> Replace
+            </Button>
+          </>
+        )}
+      </div>
+    </PanelSection>
   )
 }
 

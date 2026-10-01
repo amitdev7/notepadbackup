@@ -47,6 +47,7 @@
    - [Category 19: PWA Offline Service Worker & Install Flow](#category-19-pwa-offline-service-worker-install-flow)
    - [Category 20: Build Scripts, Asset Generators & Offline Test Suite](#category-20-build-scripts-asset-generators-offline-test-suite)
    - [Category 21: Product & UX Specifications](#category-21-product-ux-specifications)
+   - [Category 22: Additional Discovered Source Files](#category-22-additional-discovered-source-files)
    - [Binary & Generated Assets Reference](#binary--generated-assets-reference)
 
 ---
@@ -494,7 +495,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `eslint.config.mjs` | 28 | 647 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
-| `package.json` | 56 | 3648 | Core package.json module | `package` |
+| `package.json` | 56 | 3759 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 44 | 729 | Core tsconfig.json module | `tsconfig` |
@@ -516,14 +517,14 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/shell-store.ts` | 211 | 6692 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 166 | 5302 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
-| `lib/store.ts` | 1204 | 42985 | Core store.ts module | `store` |
+| `lib/store.ts` | 1206 | 43162 | Core store.ts module | `store` |
 | `lib/theme.ts` | 231 | 7761 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 184 | 5788 | Core types.ts module | `types` |
+| `lib/types.ts` | 226 | 7454 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/duplicate.ts` | 43 | 1693 | Core duplicate.ts module | `duplicate` |
 | `lib/canvas/edit-target.ts` | 180 | 6655 | Core edit-target.ts module | `edit-target` |
-| `lib/canvas/hit-test.ts` | 300 | 11063 | Core hit-test.ts module | `hit-test` |
+| `lib/canvas/hit-test.ts` | 300 | 11095 | Core hit-test.ts module | `hit-test` |
 | `lib/canvas/keyboard-owner.ts` | 38 | 1867 | Core keyboard-owner.ts module | `keyboard-owner` |
 | `lib/canvas/snap-engine.ts` | 775 | 23634 | Core snap-engine.ts module | `snap-engine` |
 | `lib/canvas/text-metrics.ts` | 131 | 4920 | Core text-metrics.ts module | `text-metrics` |
@@ -531,14 +532,14 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/canvas/transform.ts` | 203 | 6995 | Core transform.ts module | `transform` |
 | `lib/canvas/use-clipboard.ts` | 101 | 3986 | Core use-clipboard.ts module | `use-clipboard` |
 | `lib/canvas/use-spacebar-pan.ts` | 77 | 2175 | Core use-spacebar-pan.ts module | `use-spacebar-pan` |
-| `components/canvas/sketch.tsx` | 368 | 13252 | Core sketch.tsx module | `sketch` |
+| `components/canvas/sketch.tsx` | 370 | 13383 | Core sketch.tsx module | `sketch` |
 | `lib/sketch/doodle.ts` | 45 | 8497 | Core doodle.ts module | `doodle` |
 | `lib/sketch/icons.ts` | 104 | 2953 | Core icons.ts module | `icons` |
 | `lib/sketch/kit.ts` | 234 | 8858 | Core kit.ts module | `kit` |
-| `lib/sketch/node-prims.ts` | 128 | 5297 | Core node-prims.ts module | `node-prims` |
+| `lib/sketch/node-prims.ts` | 145 | 6350 | Core node-prims.ts module | `node-prims` |
 | `lib/sketch/phosphor-paths.ts` | 182 | 66464 | Core phosphor-paths.ts module | `phosphor-paths` |
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
-| `components/canvas/canvas.tsx` | 1856 | 69496 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 1920 | 71383 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8153 | Core context-row.tsx module | `context-row` |
 | `components/canvas/empty-canvas.tsx` | 86 | 2889 | Core empty-canvas.tsx module | `empty-canvas` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8585 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
@@ -548,7 +549,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `components/chrome/file-name.tsx` | 156 | 5752 | Core file-name.tsx module | `file-name` |
 | `components/chrome/files-popover.tsx` | 239 | 9727 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 561 | 22694 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 670 | 26381 | Core inspector.tsx module | `inspector` |
 | `components/chrome/left-rail.tsx` | 164 | 4916 | Core left-rail.tsx module | `left-rail` |
 | `components/chrome/library-panel.tsx` | 433 | 17526 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
@@ -625,9 +626,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/cloud/trash.ts` | 417 | 11375 | Core trash.ts module | `trash` |
 | `lib/cloud/versions.ts` | 84 | 2630 | Core versions.ts module | `versions` |
 | `app/api/assets/proxy/route.ts` | 46 | 1340 | Core route.ts module | `route` |
-| `app/api/assets/signed-upload-url/route.ts` | 102 | 2886 | Core route.ts module | `route` |
+| `app/api/assets/signed-upload-url/route.ts` | 114 | 3325 | Core route.ts module | `route` |
 | `app/api/auth/callback/route.ts` | 27 | 933 | Core route.ts module | `route` |
-| `app/api/blob/upload/route.ts` | 83 | 2870 | Core route.ts module | `route` |
+| `app/api/blob/upload/route.ts` | 92 | 3376 | Core route.ts module | `route` |
 | `app/api/documents/[id]/invitations/route.ts` | 44 | 1589 | Core route.ts module | `route` |
 | `app/api/documents/[id]/og/route.ts` | 42 | 1799 | Core route.ts module | `route` |
 | `app/api/documents/[id]/route.ts` | 190 | 5730 | Core route.ts module | `route` |
@@ -641,8 +642,8 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `app/api/share/route.ts` | 93 | 3053 | Core route.ts module | `route` |
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
-| `lib/clipboard-payload.ts` | 147 | 5335 | Core clipboard-payload.ts module | `clipboard-payload` |
-| `lib/clipboard.ts` | 410 | 14920 | Core clipboard.ts module | `clipboard` |
+| `lib/clipboard-payload.ts` | 151 | 5657 | Core clipboard-payload.ts module | `clipboard-payload` |
+| `lib/clipboard.ts` | 525 | 18447 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 383 | 14676 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 31 | 1113 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 234 | 7768 | Core files.ts module | `files` |
@@ -714,6 +715,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-academic-syllabus.ts` | 218 | 9342 | Core test-academic-syllabus.ts module | `test-academic-syllabus` |
 | `scripts/test-clipboard.ts` | 124 | 5420 | Core test-clipboard.ts module | `test-clipboard` |
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
+| `scripts/test-document-attachments.ts` | 209 | 9332 | Core test-document-attachments.ts module | `test-document-attachments` |
 | `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
@@ -732,6 +734,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-text.ts` | 167 | 6090 | Core test-text.ts module | `test-text` |
 | `scripts/tsconfig.json` | 13 | 263 | Core tsconfig.json module | `tsconfig` |
 | `docs/multiselect-spec.md` | 179 | 12071 | Core multiselect-spec.md module | `multiselect-spec` |
+| `components/canvas/document-canvas-item.tsx` | 325 | 11137 | Core document-canvas-item.tsx module | `document-canvas-item` |
+| `components/canvas/document-viewer-modal.tsx` | 527 | 19443 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
+| `lib/storage/document-assets.ts` | 320 | 9703 | Core document-assets.ts module | `document-assets` |
 
 ---
 
@@ -1154,7 +1159,7 @@ export default nextConfig;
 
 - **Path**: `package.json`
 - **Lines**: 56
-- **Size**: 3648 bytes
+- **Size**: 3759 bytes
 
 ```json
 {
@@ -1171,7 +1176,7 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts"
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -3720,8 +3725,8 @@ export function generateUniqueSlug(
 ### File: `lib/store.ts`
 
 - **Path**: `lib/store.ts`
-- **Lines**: 1204
-- **Size**: 42985 bytes
+- **Lines**: 1206
+- **Size**: 43162 bytes
 
 ```tsx
 "use client"
@@ -3986,6 +3991,8 @@ function sanitize(
     // an imported file is a stranger's document: a picture in it carries its
     // own pixels or it doesn't render at all — never a URL we'd go and fetch
     if (node.type === "image" && !/^data:image\//i.test(node.src ?? "")) continue
+    // a document requires valid name, mimeType, and asset identity
+    if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
     clean[id] = node
   }
   const seen = new Set<string>()
@@ -5175,8 +5182,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 184
-- **Size**: 5788 bytes
+- **Lines**: 226
+- **Size**: 7454 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -5319,7 +5326,49 @@ export interface ImageNode extends BaseNode {
   name?: string
 }
 
-export type SquigNode = ComponentNode | ShapeNode | DrawNode | TextNode | ArrowNode | ImageNode
+/**
+ * A document or file attached directly to the canvas (PDF, text, JSON, CSV, MD, Office doc).
+ * Stored as a first-class canvas object backed by local IndexedDB binary asset storage
+ * and optional cloud blob sync.
+ */
+export interface DocumentNode extends BaseNode {
+  type: "document"
+  /** Stable unique asset ID referencing local/cloud asset storage */
+  assetId: string
+  /**
+   * Reference to the asset content:
+   * - "asset://<hash>" for IndexedDB local asset storage
+   * - "blob:..." for transient local object URLs
+   * - "https://..." for cloud Vercel Blob / Supabase Storage
+   */
+  src?: string
+  /** Document display name (e.g. "Calculus_Notes.pdf") */
+  name: string
+  /** MIME type (e.g. "application/pdf", "text/plain", "application/json", "text/csv") */
+  mimeType: string
+  /** File extension without dot (e.g. "pdf", "txt", "json", "csv", "md", "docx") */
+  extension?: string
+  /** File size in bytes */
+  sizeBytes?: number
+  /** Total page count (for multi-page documents like PDF) */
+  pageCount?: number
+  /** Currently selected preview page (1-indexed, default 1) */
+  currentPage?: number
+  /** First-page rendered thumbnail or preview image */
+  thumbnailUrl?: string
+  /** Visual presentation mode on canvas */
+  displayMode?: "preview" | "compact" | "icon"
+  /** Text content snippet for rapid offline preview of text/json/csv/md files */
+  textContent?: string
+  /** Timestamp when attached */
+  attachedAt?: number
+  /** Local/cloud sync status */
+  status?: "ready" | "uploading" | "local" | "syncing" | "error"
+  /** Optional custom metadata (e.g. author, title, tags) */
+  metadata?: Record<string, unknown>
+}
+
+export type SquigNode = ComponentNode | ShapeNode | DrawNode | TextNode | ArrowNode | ImageNode | DocumentNode
 
 export interface Viewport {
   x: number
@@ -6307,7 +6356,7 @@ export function editTarget(node: SquigNode): EditTarget | null {
 
 - **Path**: `lib/canvas/hit-test.ts`
 - **Lines**: 300
-- **Size**: 11063 bytes
+- **Size**: 11095 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -6426,9 +6475,9 @@ function polylineOf(n: SquigNode): [number, number][] | null {
 }
 
 /** Shapes are only solid to the pointer when they're actually filled. */
-function isSolid(n: SquigNode): boolean {
+export function isSolid(n: SquigNode): boolean {
   if (n.type === "shape") return normalizeFill(n.fill) !== "none"
-  return n.type === "component" || n.type === "text" || n.type === "image"
+  return n.type === "component" || n.type === "text" || n.type === "image" || n.type === "document"
 }
 
 // ---------------------------------------------------------------------------
@@ -8085,8 +8134,8 @@ export function useSpacebarPan() {
 ### File: `components/canvas/sketch.tsx`
 
 - **Path**: `components/canvas/sketch.tsx`
-- **Lines**: 368
-- **Size**: 13252 bytes
+- **Lines**: 370
+- **Size**: 13383 bytes
 
 ```tsx
 "use client"
@@ -8418,6 +8467,8 @@ export const NodeSketch = memo(function NodeSketch({
       case "image":
         // the src doesn't shape a single mark — only the frame's box does
         return `i:${node.w}:${node.h}:${flip}`
+      case "document":
+        return `doc:${node.name}:${node.w}:${node.h}:${flip}:${node.pageCount ?? 0}:${node.sizeBytes ?? 0}`
     }
   }, [node])
 
@@ -8876,8 +8927,8 @@ export { icon, ICON_NAMES, resolveIconName, type IconName } from "./icons"
 ### File: `lib/sketch/node-prims.ts`
 
 - **Path**: `lib/sketch/node-prims.ts`
-- **Lines**: 128
-- **Size**: 5297 bytes
+- **Lines**: 145
+- **Size**: 6350 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -8973,6 +9024,23 @@ export function basePrims(node: SquigNode): Prim[] {
     case "image": {
       const g = FRAME_GAP
       return [{ t: "rect", x: -g, y: -g, w: node.w + g * 2, h: node.h + g * 2, r: 2, o: { stroke: "muted" } }]
+    }
+    case "document": {
+      const ext = (node.extension || node.name.split(".").pop() || "doc").toUpperCase()
+      const meta = node.pageCount
+        ? `${node.pageCount} ${node.pageCount === 1 ? "page" : "pages"}`
+        : node.sizeBytes
+          ? `${(node.sizeBytes / 1024 >= 1024 ? (node.sizeBytes / (1024 * 1024)).toFixed(1) + " MB" : Math.round(node.sizeBytes / 1024) + " KB")}`
+          : "Document"
+
+      return [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: ext, size: 10, bold: true },
+        { t: "line", x1: 0, y1: Math.max(26, node.h - 38), x2: node.w, y2: Math.max(26, node.h - 38), o: { stroke: "faint" } },
+        { t: "text", x: 8, y: Math.max(38, node.h - 22), text: node.name, size: 11, bold: true },
+        { t: "text", x: 8, y: Math.max(48, node.h - 8), text: `${ext} · ${meta}`, size: 9 },
+      ]
     }
     case "text": {
       const anchor = textAnchorX(node.align, node.w)
@@ -9267,8 +9335,8 @@ export function textAnchorX(align: TextAlign | undefined, w: number): number {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 1856
-- **Size**: 69496 bytes
+- **Lines**: 1920
+- **Size**: 71383 bytes
 
 ```tsx
 "use client"
@@ -9291,7 +9359,7 @@ export function textAnchorX(align: TextAlign | undefined, w: number): number {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useSquig } from "@/lib/store"
-import type { SquigNode, TextNode } from "@/lib/types"
+import type { SquigNode, TextNode, DocumentNode } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
@@ -9300,6 +9368,7 @@ import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type H
 import { pickAt, pickInRect, pickSoftAt } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
+import { dropFiles } from "@/lib/clipboard"
 import { editTarget, hasEditableText } from "@/lib/canvas/edit-target"
 import { textBlockHeight } from "@/lib/sketch/text-layout"
 import { unionBounds, type Bounds } from "@/lib/selection"
@@ -9311,6 +9380,8 @@ import { ContextRow } from "./context-row"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
+import { DocumentCanvasItem } from "./document-canvas-item"
+import { DocumentViewerModal } from "./document-viewer-modal"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -9475,6 +9546,7 @@ export function Canvas() {
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
+  const [viewerNode, setViewerNode] = useState<DocumentNode | null>(null)
 
   const { isSpacebarHeld } = useSpacebarPan()
   // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
@@ -10373,6 +10445,10 @@ export function Canvas() {
       }
       // double-clicking inside a multi-selection narrows to what you clicked
       if (s.selection.length !== 1 || s.selection[0] !== hitId) s.setSelection([hitId])
+      if (n.type === "document") {
+        setViewerNode(n as DocumentNode)
+        return
+      }
       if (hasEditableText(n)) s.setEditing(hitId)
     },
     [st, pick, toWorld]
@@ -10424,6 +10500,24 @@ export function Canvas() {
   )
 
   const onPointerLeave = useCallback(() => setHover(null), [])
+
+  const onDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    e.dataTransfer.dropEffect = "copy"
+  }, [])
+
+  const onDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const files = Array.from(e.dataTransfer.files)
+      if (!files.length) return
+      const [wx, wy] = toWorld(e)
+      await dropFiles(files, [wx, wy])
+    },
+    [toWorld]
+  )
 
   /**
    * The placement ghost tracks the pointer on `window`, not on the canvas, so a
@@ -10824,6 +10918,8 @@ export function Canvas() {
       onPointerLeave={onPointerLeave}
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
     >
       <svg className="pointer-events-none absolute inset-0 h-full w-full" style={{ overflow: "visible" }}>
         <g transform={`translate(${v.x} ${v.y}) scale(${v.zoom})`}>
@@ -10831,7 +10927,7 @@ export function Canvas() {
             const n = nodes[id]
             if (!n) return null
             const def = n.type === "component" ? getDef(n.kind) : null
-            if (def?.interactive) {
+            if (def?.interactive || n.type === "document") {
               return null
             }
             return (
@@ -10874,29 +10970,57 @@ export function Canvas() {
       >
         {order.map((id) => {
           const n = nodes[id]
-          if (!n || n.type !== "component") return null
-          const def = getDef(n.kind)
-          const Component = INTERACTIVE_COMPONENTS[n.kind]
-          if (!def?.interactive || !Component) return null
-          return (
-            <div
-              key={id}
-              data-interactive-node={id}
-              className="absolute pointer-events-auto"
-              style={{
-                left: n.x,
-                top: n.y,
-                width: n.w,
-                height: n.h,
-              }}
-            >
-              <Component
-                node={n}
-                selected={selection.includes(id)}
-                zoom={v.zoom}
-              />
-            </div>
-          )
+          if (!n) return null
+
+          if (n.type === "document") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <DocumentCanvasItem
+                  node={n as DocumentNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                  onOpenViewer={(doc) => setViewerNode(doc)}
+                />
+              </div>
+            )
+          }
+
+          if (n.type === "component") {
+            const def = getDef(n.kind)
+            const Component = INTERACTIVE_COMPONENTS[n.kind]
+            if (!def?.interactive || !Component) return null
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <Component
+                  node={n}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
+          return null
         })}
       </div>
 
@@ -10959,6 +11083,14 @@ export function Canvas() {
 
       {/* empty-canvas nudge */}
       {order.length === 0 && !placing && <EmptyCanvas />}
+
+      {/* expanded document viewer modal */}
+      {viewerNode && (
+        <DocumentViewerModal
+          node={(nodes[viewerNode.id] as DocumentNode) || viewerNode}
+          onClose={() => setViewerNode(null)}
+        />
+      )}
     </div>
   )
 }
@@ -12893,8 +13025,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 561
-- **Size**: 22694 bytes
+- **Lines**: 670
+- **Size**: 26381 bytes
 
 ```tsx
 "use client"
@@ -12913,14 +13045,15 @@ export function InkPicker() {
 // somewhere else.
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
 import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
+import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -12938,6 +13071,8 @@ import {
   SelectionAllIcon,
   TrashIcon,
   X,
+  DownloadSimple,
+  ArrowsClockwise,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -13199,6 +13334,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const shapes = selected.filter((n): n is ShapeNode => n.type === "shape")
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
+  const documents = selected.filter((n): n is DocumentNode => n.type === "document")
   // components draw their own strokes from authored prims — a pen weight set
   // here would have nothing to apply to without rewriting the whole library
   const outlined = selected.filter((n) => n.type === "shape" || n.type === "draw" || n.type === "arrow")
@@ -13406,7 +13542,112 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           )}
         </>
       )}
+
+      {/* --- contextual: document ---------------------------------------- */}
+      {documents.length > 0 && <DocumentSection documents={documents} />}
     </>
+  )
+}
+
+function DocumentSection({ documents }: { documents: DocumentNode[] }) {
+  const st = useSquig.getState
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || documents.length === 0) return
+    try {
+      const res = await saveDocumentAsset(file, file.name)
+      const targetDoc = documents[0]
+      st().updateNode(targetDoc.id, {
+        assetId: res.assetId,
+        src: res.localUrl,
+        name: res.name,
+        mimeType: res.mimeType,
+        extension: res.extension,
+        sizeBytes: res.sizeBytes,
+        pageCount: res.pageCount,
+        textContent: res.textContent,
+        currentPage: 1,
+      } as Partial<DocumentNode>)
+    } catch (err: any) {
+      st().setNotice(err?.message || "Failed to replace file")
+    }
+  }
+
+  const doc = documents[0]
+  const sizeLabel = doc?.sizeBytes
+    ? doc.sizeBytes >= 1024 * 1024
+      ? `${(doc.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.round(doc.sizeBytes / 1024)} KB`
+    : null
+
+  return (
+    <PanelSection id="document" title="Document" count={documents.length > 1 ? documents.length : undefined}>
+      <StackRow label="File Name">
+        <MixedTextField
+          ariaLabel="File Name"
+          shared={shared(documents.map((n) => n.name))}
+          onCommit={(name) => {
+            const patches: Record<string, Partial<SquigNode>> = {}
+            documents.forEach((d) => {
+              patches[d.id] = { name } as Partial<DocumentNode>
+            })
+            st().updateNodes(patches)
+          }}
+        />
+      </StackRow>
+
+      {documents.length === 1 && (
+        <>
+          <Row label="Type">
+            <span className="text-xs font-mono uppercase opacity-75">{doc.extension || "FILE"}</span>
+          </Row>
+          {sizeLabel && (
+            <Row label="Size">
+              <span className="text-xs font-mono opacity-75">{sizeLabel}</span>
+            </Row>
+          )}
+          {doc.pageCount && doc.pageCount > 1 && (
+            <Row label="Pages">
+              <span className="text-xs font-mono opacity-75">{doc.pageCount} pages</span>
+            </Row>
+          )}
+        </>
+      )}
+
+      <div className="flex items-center gap-1.5 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label"
+          onClick={() => {
+            documents.forEach((d) => downloadDocument(d))
+          }}
+        >
+          <DownloadSimple className="size-3" /> Download
+        </Button>
+
+        {documents.length === 1 && (
+          <>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleReplace}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-ctl flex-1 rounded-chrome-sm text-label"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <ArrowsClockwise className="size-3" /> Replace
+            </Button>
+          </>
+        )}
+      </div>
+    </PanelSection>
   )
 }
 
@@ -29930,20 +30171,32 @@ export async function GET(request: Request) {
 ### File: `app/api/assets/signed-upload-url/route.ts`
 
 - **Path**: `app/api/assets/signed-upload-url/route.ts`
-- **Lines**: 102
-- **Size**: 2886 bytes
+- **Lines**: 114
+- **Size**: 3325 bytes
 
 ```tsx
 import { NextResponse, type NextRequest } from "next/server"
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 
-const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_UPLOAD_SIZE = 50 * 1024 * 1024 // 50MB
 const ALLOWED_MIME_TYPES = new Set([
   "image/png",
   "image/jpeg",
   "image/webp",
   "image/gif",
   "image/svg+xml",
+  "application/pdf",
+  "text/plain",
+  "text/markdown",
+  "text/csv",
+  "text/tab-separated-values",
+  "application/json",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
 ])
 
 export async function POST(request: NextRequest) {
@@ -30079,8 +30332,8 @@ export async function GET(request: Request) {
 ### File: `app/api/blob/upload/route.ts`
 
 - **Path**: `app/api/blob/upload/route.ts`
-- **Lines**: 83
-- **Size**: 2870 bytes
+- **Lines**: 92
+- **Size**: 3376 bytes
 
 ```tsx
 import { NextResponse, type NextRequest } from "next/server"
@@ -30109,8 +30362,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 "image/webp",
                 "image/svg+xml",
                 "text/plain",
+                "text/markdown",
+                "text/csv",
+                "text/tab-separated-values",
                 "application/json",
                 "application/pdf",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "application/vnd.ms-excel",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "application/vnd.ms-powerpoint",
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
               ],
             }
           },
@@ -31276,8 +31538,8 @@ export const config = {
 ### File: `lib/clipboard-payload.ts`
 
 - **Path**: `lib/clipboard-payload.ts`
-- **Lines**: 147
-- **Size**: 5335 bytes
+- **Lines**: 151
+- **Size**: 5657 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -31297,7 +31559,7 @@ export const config = {
 // Kept free of the store and the DOM so it can be tested on its own.
 // ---------------------------------------------------------------------------
 
-import type { SquigNode, TextNode } from "./types"
+import type { SquigNode, TextNode, DocumentNode } from "./types"
 
 const PAYLOAD_VERSION = 1
 /** the attribute the HTML carrier hides the payload in */
@@ -31359,15 +31621,15 @@ export function payloadFromHtml(html: string | null | undefined): string | null 
 /** The words in a selection, in document order — what `text/plain` carries. */
 export function wordsOf(nodes: readonly SquigNode[]): string {
   return nodes
-    .filter((n): n is TextNode => n.type === "text")
-    .map((n) => n.text)
+    .filter((n): n is TextNode | DocumentNode => n.type === "text" || n.type === "document")
+    .map((n) => (n.type === "text" ? n.text : (n.name || "Document")))
     .filter(Boolean)
     .join("\n")
 }
 
 // -- reading a stranger's nodes ---------------------------------------------
 
-const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image"])
+const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image", "document"])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
 
@@ -31414,6 +31676,10 @@ export function validNode(v: unknown): SquigNode | null {
       // a pasted document has no business pointing the canvas at a URL
       if (!str(n.src) || !/^data:image\//i.test(n.src)) return null
       break
+    case "document":
+      if (!str(n.name) || !n.name.trim() || !str(n.mimeType) || !n.mimeType.trim() || (!str(n.assetId) && !str(n.src))) return null
+      if (n.w <= 0 || n.h <= 0) return null
+      break
   }
 
   return {
@@ -31433,8 +31699,8 @@ export function validNode(v: unknown): SquigNode | null {
 ### File: `lib/clipboard.ts`
 
 - **Path**: `lib/clipboard.ts`
-- **Lines**: 410
-- **Size**: 14920 bytes
+- **Lines**: 525
+- **Size**: 18447 bytes
 
 ```tsx
 "use client"
@@ -31457,7 +31723,8 @@ import { decodeNodes, encodeNodes, payloadFromHtml, payloadHtml, wordsOf } from 
 import { useSquig } from "./store"
 import { measureTextWidth } from "./canvas/text-metrics"
 import { fitTextBox } from "./canvas/text-reflow"
-import { screenToWorld, type ImageNode, type SquigNode, type TextNode } from "./types"
+import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode } from "./types"
+import { saveDocumentAsset } from "./storage/document-assets"
 
 // -- copying out ------------------------------------------------------------
 
@@ -31650,6 +31917,56 @@ export async function imageNodeFrom(blob: Blob, name?: string): Promise<ImageNod
   }
 }
 
+/** Turn a document (PDF, TXT, CSV, JSON, MD, DOCX, XLSX, etc.) into a DocumentNode. */
+export async function documentNodeFrom(file: File | Blob, rawName?: string): Promise<DocumentNode | null> {
+  try {
+    const filename = rawName || (file instanceof File ? file.name : "document.pdf")
+    const res = await saveDocumentAsset(file, filename)
+    const isPdf = res.extension === "pdf"
+    const isTable = res.extension === "csv" || res.extension === "tsv"
+    const isCode = ["json", "js", "ts", "html", "css"].includes(res.extension)
+    const isOffice = ["doc", "docx", "xls", "xlsx", "ppt", "pptx"].includes(res.extension)
+
+    let w = 320
+    let h = 260
+    if (isPdf) {
+      w = 340
+      h = 440
+    } else if (isTable) {
+      w = 380
+      h = 300
+    } else if (isCode) {
+      w = 340
+      h = 280
+    } else if (isOffice) {
+      w = 260
+      h = 220
+    }
+
+    return {
+      id: nanoid(8),
+      type: "document",
+      assetId: res.assetId,
+      src: res.localUrl,
+      name: res.name,
+      mimeType: res.mimeType,
+      extension: res.extension,
+      sizeBytes: res.sizeBytes,
+      pageCount: res.pageCount,
+      currentPage: 1,
+      textContent: res.textContent,
+      x: 0,
+      y: 0,
+      w,
+      h,
+      seed: Math.floor(Math.random() * 2 ** 31),
+    }
+  } catch (err) {
+    console.error("Failed to create document node:", err)
+    return null
+  }
+}
+
 // -- words ------------------------------------------------------------------
 
 /** The size pasted words land at — the same one the text tool starts from. */
@@ -31719,14 +32036,15 @@ interface Incoming {
   html?: string | null
   text?: string | null
   images: Blob[]
+  documents?: File[]
 }
 
 /**
- * Everything a paste could be, in the order it should be tried.
+ * Everything a paste or drop could be, in the order it should be tried.
  *
  * Layers first: a zenithsui payload arrives as text, so reading the words before
  * looking for the payload would turn every cross-tab paste into a paragraph of
- * JSON. Pictures next, then whatever text is left over.
+ * JSON. Pictures next, documents next, then whatever text is left over.
  *
  * `at` is the top-left corner the paste lands on — the same convention ⌘V has
  * always had here. `inPlace` ignores it and puts the layers back at the
@@ -31767,6 +32085,28 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
       n.y = Math.round(oy + i * CASCADE)
     })
     s.addNodes(made)
+    s.setSelection(made.map((m) => m.id))
+    return true
+  }
+
+  if (c.documents?.length) {
+    const made: DocumentNode[] = []
+    for (const doc of c.documents) {
+      const node = await documentNodeFrom(doc, doc.name)
+      if (node) made.push(node)
+    }
+    if (!made.length) {
+      s.setNotice(c.documents.length > 1 ? "couldn't read those documents" : "couldn't read that document")
+      return false
+    }
+    const [px, py] = at ?? viewportCentre()
+    const [ox, oy] = at ? [px, py] : [px - made[0].w / 2, py - made[0].h / 2]
+    made.forEach((n, i) => {
+      n.x = Math.round(ox + i * CASCADE)
+      n.y = Math.round(oy + i * CASCADE)
+    })
+    s.addNodes(made)
+    s.setSelection(made.map((m) => m.id))
     return true
   }
 
@@ -31774,6 +32114,7 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
     const node = textNodeFrom(c.text, at ?? viewportCentre())
     if (node) {
       s.addNodes([node])
+      s.setSelection([node.id])
       return true
     }
   }
@@ -31781,22 +32122,55 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
   return false
 }
 
-/** Pictures on a paste or a drop, in the order the clipboard listed them. */
-function imagesIn(dt: DataTransfer): Blob[] {
-  const out: Blob[] = []
-  for (const item of dt.items) {
-    if (item.kind !== "file") continue
-    const file = item.getAsFile()
-    if (file && file.type.startsWith("image/")) out.push(file)
+/** Files on a paste or a drop, categorized into images and documents. */
+function filesIn(dt: DataTransfer): { images: Blob[]; documents: File[] } {
+  const images: Blob[] = []
+  const documents: File[] = []
+
+  if (dt.items && dt.items.length) {
+    for (const item of Array.from(dt.items)) {
+      if (item.kind !== "file") continue
+      const file = item.getAsFile()
+      if (!file) continue
+      if (file.type.startsWith("image/")) {
+        images.push(file)
+      } else {
+        documents.push(file)
+      }
+    }
+  } else if (dt.files && dt.files.length) {
+    for (const file of Array.from(dt.files)) {
+      if (file.type.startsWith("image/")) {
+        images.push(file)
+      } else {
+        documents.push(file)
+      }
+    }
   }
-  return out
+
+  return { images, documents }
+}
+
+/** Drop desktop files directly onto canvas at world coordinates. */
+export async function dropFiles(files: File[], at: [number, number]): Promise<boolean> {
+  const images: Blob[] = []
+  const documents: File[] = []
+  for (const file of files) {
+    if (file.type.startsWith("image/")) {
+      images.push(file)
+    } else {
+      documents.push(file)
+    }
+  }
+  return place({ images, documents }, at)
 }
 
 /** Handle a real paste event. Returns whether anything landed. */
 export function pasteFrom(dt: DataTransfer, at?: [number, number]): Promise<boolean> {
   // everything comes off the DataTransfer now: it is only alive for this turn
   // of the event loop, and placing a picture takes several
-  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images: imagesIn(dt) }, at)
+  const { images, documents } = filesIn(dt)
+  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, documents }, at)
 }
 
 /**
@@ -31828,11 +32202,18 @@ export async function pasteFromSystem(at?: [number, number], inPlace = false): P
     const items = await navigator.clipboard.read()
     if (settled) return
     settled = true
-    const c: Incoming = { images: [] }
+    const c: Incoming = { images: [], documents: [] }
     for (const item of items) {
       const imageType = item.types.find((t) => t.startsWith("image/"))
       if (imageType) {
         c.images.push(await item.getType(imageType))
+        continue
+      }
+      const docType = item.types.find((t) => t === "application/pdf" || t === "text/csv" || t === "application/json")
+      if (docType) {
+        const blob = await item.getType(docType)
+        const ext = docType.split("/")[1] || "pdf"
+        c.documents!.push(new File([blob], `pasted_document.${ext}`, { type: docType }))
         continue
       }
       if (!c.html && item.types.includes("text/html")) c.html = await (await item.getType("text/html")).text()
@@ -70634,6 +71015,225 @@ runTests().catch((err) => {
 
 ---
 
+### File: `scripts/test-document-attachments.ts`
+
+- **Path**: `scripts/test-document-attachments.ts`
+- **Lines**: 209
+- **Size**: 9332 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Document Attachments — Automated Test Suite
+//
+// Verifies:
+// 1. Filename sanitization (path traversal, control chars, length bounding)
+// 2. MIME type & extension inference across all supported document types
+// 3. Binary PDF parser (header check, /Pages /Count extraction, page counting)
+// 4. Text / CSV / JSON preview snippet parsing
+// 5. DocumentNode schema validation in clipboard payload & store sanitize
+// 6. Solid hit-test boundaries for document canvas items
+// 7. Node geometry scaling, bounds calculation, and cloning
+// ---------------------------------------------------------------------------
+
+import {
+  sanitizeDocumentFilename,
+  inferMimeType,
+  extractPdfInfo,
+} from "../lib/storage/document-assets.ts"
+
+import { isSolid } from "../lib/canvas/hit-test.ts"
+import { validNode, wordsOf, encodeNodes, decodeNodes } from "../lib/clipboard-payload.ts"
+import { unionBounds } from "../lib/selection.ts"
+import type { DocumentNode, SquigNode } from "../lib/types.ts"
+
+function assert(condition: boolean, message: string) {
+  if (!condition) {
+    throw new Error(`[Assertion Failed]: ${message}`)
+  }
+}
+
+console.log("=== Starting Zenithsui Document Attachments Test Suite ===")
+
+// ---------------------------------------------------------------------------
+// 1. Filename Sanitization
+// ---------------------------------------------------------------------------
+console.log("-> 1. Testing filename sanitization...")
+
+assert(sanitizeDocumentFilename("my_file.pdf") === "my_file.pdf", "Normal filename preserved")
+assert(sanitizeDocumentFilename("../../etc/passwd") === "etc_passwd", "Path traversal stripped")
+assert(sanitizeDocumentFilename("C:\\Users\\admin\\secret.docx") === "C_Users_admin_secret.docx", "Windows backslashes replaced")
+assert(sanitizeDocumentFilename("null\x00byte\x1f.txt") === "nullbyte.txt", "Control chars and null bytes stripped")
+assert(sanitizeDocumentFilename("") === "untitled_document", "Empty string defaults to untitled_document")
+assert(sanitizeDocumentFilename("...") === "untitled_document", "Dot-only defaults to untitled_document")
+assert(sanitizeDocumentFilename("   spaced name.json   ") === "spaced name.json", "Whitespace trimmed")
+
+const veryLongName = "a".repeat(200) + ".pdf"
+const sanitizedLong = sanitizeDocumentFilename(veryLongName)
+assert(sanitizedLong.endsWith(".pdf"), "Long name retains extension")
+assert(sanitizedLong.length <= 180, "Long name bounded to max 180 chars")
+
+// ---------------------------------------------------------------------------
+// 2. MIME Type & Extension Inference
+// ---------------------------------------------------------------------------
+console.log("-> 2. Testing MIME type & extension inference...")
+
+assert(inferMimeType("document.pdf").mimeType === "application/pdf", "Infers PDF mime")
+assert(inferMimeType("document.pdf").extension === "pdf", "Infers PDF extension")
+
+assert(inferMimeType("notes.txt").mimeType === "text/plain", "Infers TXT mime")
+assert(inferMimeType("data.csv").mimeType === "text/csv", "Infers CSV mime")
+assert(inferMimeType("data.tsv").mimeType === "text/tab-separated-values", "Infers TSV mime")
+assert(inferMimeType("config.json").mimeType === "application/json", "Infers JSON mime")
+assert(inferMimeType("README.md").mimeType === "text/markdown", "Infers MD mime")
+
+assert(inferMimeType("report.docx").mimeType.includes("wordprocessingml"), "Infers DOCX mime")
+assert(inferMimeType("sheet.xlsx").mimeType.includes("spreadsheetml"), "Infers XLSX mime")
+assert(inferMimeType("slides.pptx").mimeType.includes("presentationml"), "Infers PPTX mime")
+
+// Handles missing or generic declared types
+assert(inferMimeType("calc.csv", "application/octet-stream").mimeType === "text/csv", "Overrides generic octet-stream with extension")
+assert(inferMimeType("photo.custom", "image/png").mimeType === "image/png", "Honors valid explicit mime")
+
+// ---------------------------------------------------------------------------
+// 3. Binary PDF Parser
+// ---------------------------------------------------------------------------
+console.log("-> 3. Testing binary PDF parser...")
+
+// Invalid / non-PDF buffer
+const emptyBuffer = new ArrayBuffer(4)
+assert(!extractPdfInfo(emptyBuffer).valid, "Rejects short buffer")
+
+const textBuffer = new TextEncoder().encode("Hello world this is not a PDF").buffer
+assert(!extractPdfInfo(textBuffer).valid, "Rejects non-PDF header")
+
+// Valid synthetic PDF with /Count in /Pages
+const mockPdf1 = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 14 /Kids [3 0 R] >>
+endobj
+`
+const mockPdf1Buffer = new TextEncoder().encode(mockPdf1).buffer
+const res1 = extractPdfInfo(mockPdf1Buffer)
+assert(res1.valid === true, "Recognizes %PDF- header")
+assert(res1.pageCount === 14, `Extracted page count should be 14, got ${res1.pageCount}`)
+
+// Valid synthetic PDF with multiple /Type /Page objects
+const mockPdf2 = `%PDF-1.7
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R >> endobj
+4 0 obj << /Type /Page /Parent 2 0 R >> endobj
+5 0 obj << /Type /Page /Parent 2 0 R >> endobj
+trailer << /Root 1 0 R >>
+%%EOF`
+const mockPdf2Buffer = new TextEncoder().encode(mockPdf2).buffer
+const res2 = extractPdfInfo(mockPdf2Buffer)
+assert(res2.valid === true, "Recognizes PDF")
+assert(res2.pageCount === 3, `Counted individual /Type /Page objects: expected 3, got ${res2.pageCount}`)
+
+// Valid synthetic PDF with /Title
+const mockPdf3 = `%PDF-1.5
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Count 1 >> endobj
+3 0 obj << /Title (Quantum Mechanics Lecture Notes) >> endobj
+`
+const mockPdf3Buffer = new TextEncoder().encode(mockPdf3).buffer
+const res3 = extractPdfInfo(mockPdf3Buffer)
+assert(res3.valid === true, "Recognizes PDF")
+assert(res3.title === "Quantum Mechanics Lecture Notes", "Extracted PDF title")
+
+// ---------------------------------------------------------------------------
+// 4. DocumentNode Schema & Clipboard Validation
+// ---------------------------------------------------------------------------
+console.log("-> 4. Testing DocumentNode validation and clipboard encoding...")
+
+const sampleDocNode: DocumentNode = {
+  id: "doc_test1",
+  type: "document",
+  assetId: "asset_abc123",
+  src: "asset://abc123hash",
+  name: "Lecture Notes.pdf",
+  mimeType: "application/pdf",
+  extension: "pdf",
+  sizeBytes: 1048576,
+  pageCount: 12,
+  currentPage: 1,
+  x: 100,
+  y: 150,
+  w: 340,
+  h: 440,
+  seed: 42,
+}
+
+// Validation in validNode (clipboard payload parser)
+assert(validNode(sampleDocNode) !== null, "sampleDocNode passes validNode check")
+
+// Incomplete document nodes are rejected
+const invalidDocNode1 = { ...sampleDocNode, name: "" }
+assert(validNode(invalidDocNode1) === null, "Rejects document node with empty name")
+
+const invalidDocNode2 = { ...sampleDocNode, mimeType: "" }
+assert(validNode(invalidDocNode2) === null, "Rejects document node with empty mimeType")
+
+const invalidDocNode3 = { ...sampleDocNode, w: -50 }
+assert(validNode(invalidDocNode3) === null, "Rejects document node with negative width")
+
+// Encoding & decoding roundtrip
+const encoded = encodeNodes([sampleDocNode])
+const decoded = decodeNodes(encoded)
+assert(decoded !== null, "Decodes encoded document node array")
+assert(decoded!.length === 1, "Decodes exactly 1 node")
+const roundtripped = decoded![0] as DocumentNode
+assert(roundtripped.type === "document", "Retains type 'document'")
+assert(roundtripped.name === "Lecture Notes.pdf", "Retains name")
+assert(roundtripped.pageCount === 12, "Retains page count")
+assert(roundtripped.sizeBytes === 1048576, "Retains size bytes")
+
+// wordsOf includes document name
+const words = wordsOf([sampleDocNode])
+assert(words.includes("Lecture Notes.pdf"), "wordsOf includes document filename")
+
+// ---------------------------------------------------------------------------
+// 5. Solid Hit-Testing for Canvas
+// ---------------------------------------------------------------------------
+console.log("-> 5. Testing solid hit-test recognition...")
+
+assert(isSolid(sampleDocNode) === true, "DocumentNode is solid for canvas hit testing")
+
+// ---------------------------------------------------------------------------
+// 6. Geometry, Selection Bounds & Scaling
+// ---------------------------------------------------------------------------
+console.log("-> 6. Testing geometry & bounding boxes...")
+
+const bounds = unionBounds([sampleDocNode])
+assert(bounds !== null, "Calculates bounds")
+assert(bounds!.x === 100, "Bounds X matches")
+assert(bounds!.y === 150, "Bounds Y matches")
+assert(bounds!.w === 340, "Bounds W matches")
+assert(bounds!.h === 440, "Bounds H matches")
+
+const secondDoc: DocumentNode = {
+  ...sampleDocNode,
+  id: "doc_test2",
+  x: 500,
+  y: 600,
+  w: 200,
+  h: 200,
+}
+const multiBounds = unionBounds([sampleDocNode, secondDoc])
+assert(multiBounds !== null, "Calculates multi-node union bounds")
+assert(multiBounds!.x === 100, "Multi bounds min X")
+assert(multiBounds!.y === 150, "Multi bounds min Y")
+assert(multiBounds!.w === 600, "Multi bounds union width (700 - 100 = 600)")
+assert(multiBounds!.h === 650, "Multi bounds union height (800 - 150 = 650)")
+
+console.log("=== All Zenithsui Document Attachments Tests Passed Successfully! ===")
+```
+
+---
+
 ### File: `scripts/test-functional-calendar.ts`
 
 - **Path**: `scripts/test-functional-calendar.ts`
@@ -74151,6 +74751,1212 @@ threshold, pointer capture and pointer-id filtering, live modifiers, physical
 for panel fields, def-defaults resolution and min/max intersection for mixed
 values, one-step break-apart with z-order preserved, and non-finite guards on
 load.
+```
+
+---
+
+## Category 22: Additional Discovered Source Files
+
+*Supplementary project source files discovered in the workspace.*
+
+### File: `components/canvas/document-canvas-item.tsx`
+
+- **Path**: `components/canvas/document-canvas-item.tsx`
+- **Lines**: 325
+- **Size**: 11137 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Canvas — First-Class Interactive Document Node Component
+//
+// Renders live PDF, Text, JSON, CSV, Markdown, and Office document attachments
+// with real previews, page navigation, inline renaming, download, and viewer trigger.
+// Follows Zenithsui risograph ink & paper aesthetic.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useMemo, useCallback } from "react"
+import type { DocumentNode } from "@/lib/types"
+import { useSquig } from "@/lib/store"
+import { getDocumentObjectUrl, downloadDocument } from "@/lib/storage/document-assets"
+import {
+  FilePdf,
+  FileText,
+  FileCode,
+  FileCsv,
+  FileDoc,
+  FileXls,
+  FilePpt,
+  File,
+  DownloadSimple,
+  Eye,
+  CaretLeft,
+  CaretRight,
+  ArrowsOutSimple,
+  Table,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export interface DocumentCanvasItemProps {
+  node: DocumentNode
+  selected: boolean
+  zoom: number
+  onOpenViewer?: (node: DocumentNode) => void
+}
+
+export function DocumentCanvasItem({
+  node,
+  selected,
+  zoom,
+  onOpenViewer,
+}: DocumentCanvasItemProps) {
+  const [objectUrl, setObjectUrl] = useState<string | null>(null)
+  const [isHovered, setIsHovered] = useState(false)
+
+  // Resolve live object URL for the document asset
+  useEffect(() => {
+    let mounted = true
+    getDocumentObjectUrl(node).then((url) => {
+      if (mounted && url) {
+        setObjectUrl(url)
+      }
+    })
+    return () => {
+      mounted = false
+    }
+  }, [node.assetId, node.src])
+
+  const extension = (node.extension || node.name.split(".").pop() || "doc").toLowerCase()
+  const pageCount = node.pageCount || 1
+  const currentPage = Math.max(1, Math.min(pageCount, node.currentPage || 1))
+
+  // Page navigation handlers for multi-page documents (PDFs)
+  const handlePrevPage = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (currentPage > 1) {
+        useSquig.getState().updateNode(node.id, { currentPage: currentPage - 1 } as Partial<DocumentNode>)
+      }
+    },
+    [node.id, currentPage]
+  )
+
+  const handleNextPage = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (currentPage < pageCount) {
+        useSquig.getState().updateNode(node.id, { currentPage: currentPage + 1 } as Partial<DocumentNode>)
+      }
+    },
+    [node.id, currentPage, pageCount]
+  )
+
+  const handleDownload = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      downloadDocument(node)
+    },
+    [node]
+  )
+
+  const handleOpen = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation()
+      onOpenViewer?.(node)
+    },
+    [node, onOpenViewer]
+  )
+
+  // Formatted file size string
+  const sizeLabel = useMemo(() => {
+    if (!node.sizeBytes) return null
+    if (node.sizeBytes >= 1024 * 1024) {
+      return `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+    }
+    return `${Math.round(node.sizeBytes / 1024)} KB`
+  }, [node.sizeBytes])
+
+  // Select appropriate Phosphor icon based on extension
+  const FileIcon = useMemo(() => {
+    switch (extension) {
+      case "pdf":
+        return FilePdf
+      case "json":
+      case "js":
+      case "ts":
+        return FileCode
+      case "csv":
+      case "tsv":
+        return FileCsv
+      case "doc":
+      case "docx":
+        return FileDoc
+      case "xls":
+      case "xlsx":
+        return FileXls
+      case "ppt":
+      case "pptx":
+        return FilePpt
+      case "txt":
+      case "md":
+      case "markdown":
+        return FileText
+      default:
+        return File
+    }
+  }, [extension])
+
+  // CSV parsing for mini-table preview
+  const csvRows = useMemo(() => {
+    if (extension !== "csv" || !node.textContent) return null
+    const lines = node.textContent.split("\n").filter((l) => l.trim())
+    return lines.slice(0, 8).map((line) => {
+      // Basic comma split respecting basic quotes
+      return line.split(",").map((c) => c.replace(/^"|"$/g, "").trim()).slice(0, 4)
+    })
+  }, [extension, node.textContent])
+
+  return (
+    <div
+      className={cn(
+        "w-full h-full flex flex-col rounded-md overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] select-none transition-shadow",
+        selected
+          ? "ring-2 ring-[var(--sq-select)] shadow-md"
+          : "shadow-xs hover:border-[var(--sq-ink)]/60"
+      )}
+      style={{
+        boxShadow: selected
+          ? "0 0 0 1px var(--sq-ink), 3px 3px 0px rgba(0,0,0,0.08)"
+          : "2px 2px 0px rgba(0,0,0,0.06)",
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        onOpenViewer?.(node)
+      }}
+    >
+      {/* 1. Header Bar */}
+      <div className="h-7 px-2.5 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/40 shrink-0 text-xs">
+        <div className="flex items-center gap-1.5 min-w-0 font-bold uppercase tracking-wider text-[10px]">
+          <FileIcon size={14} className="shrink-0 text-[var(--sq-ink)]" weight="bold" />
+          <span className="truncate">{extension}</span>
+        </div>
+
+        {/* Action icons */}
+        <div className="flex items-center gap-1">
+          {pageCount > 1 && (
+            <div className="flex items-center gap-0.5 text-[10px] bg-[var(--sq-paper)] px-1.5 py-0.5 rounded border border-[var(--sq-border)]">
+              <button
+                type="button"
+                onClick={handlePrevPage}
+                disabled={currentPage <= 1}
+                className="hover:bg-[var(--sq-shade)] disabled:opacity-30 rounded p-0.5"
+                title="Previous page"
+              >
+                <CaretLeft size={10} />
+              </button>
+              <span className="font-mono">
+                {currentPage}/{pageCount}
+              </span>
+              <button
+                type="button"
+                onClick={handleNextPage}
+                disabled={currentPage >= pageCount}
+                className="hover:bg-[var(--sq-shade)] disabled:opacity-30 rounded p-0.5"
+                title="Next page"
+              >
+                <CaretRight size={10} />
+              </button>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handleOpen}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Open in Viewer (Double-click)"
+          >
+            <ArrowsOutSimple size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={handleDownload}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Download file"
+          >
+            <DownloadSimple size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Main Document Preview Body */}
+      <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)] flex flex-col">
+        {/* PDF Preview */}
+        {extension === "pdf" && objectUrl && (
+          <div className="w-full h-full relative overflow-hidden pointer-events-none">
+            <object
+              data={`${objectUrl}#page=${currentPage}&toolbar=0&navpanes=0&scrollbar=0`}
+              type="application/pdf"
+              className="w-full h-full border-none"
+              title={node.name}
+            >
+              {/* Fallback card if browser embedded PDF object is unsupported */}
+              <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+                <FilePdf size={40} className="mb-2 opacity-70" />
+                <span className="font-semibold text-xs">{node.name}</span>
+                <span className="text-[10px] opacity-60 mt-1">PDF · {pageCount} pages</span>
+              </div>
+            </object>
+          </div>
+        )}
+
+        {/* CSV Table Preview */}
+        {extension === "csv" && csvRows && (
+          <div className="w-full h-full overflow-hidden p-2 font-mono text-[10px]">
+            <table className="w-full border-collapse">
+              <tbody>
+                {csvRows.map((row, ri) => (
+                  <tr
+                    key={ri}
+                    className={cn(
+                      "border-b border-[var(--sq-border)]/50",
+                      ri === 0 ? "font-bold bg-[var(--sq-shade)]/30" : "hover:bg-[var(--sq-shade)]/20"
+                    )}
+                  >
+                    {row.map((cell, ci) => (
+                      <td key={ci} className="p-1 truncate max-w-[80px]">
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Text / Markdown / JSON Preview */}
+        {(extension === "txt" || extension === "md" || extension === "markdown" || extension === "json") && node.textContent && (
+          <div className="w-full h-full p-2.5 overflow-hidden text-[11px] font-mono leading-relaxed opacity-85 select-text">
+            <pre className="whitespace-pre-wrap break-words font-inherit">
+              {node.textContent.slice(0, 800)}
+            </pre>
+          </div>
+        )}
+
+        {/* Office / Other Document Fallback Preview */}
+        {(extension === "doc" ||
+          extension === "docx" ||
+          extension === "xls" ||
+          extension === "xlsx" ||
+          extension === "ppt" ||
+          extension === "pptx" ||
+          (!objectUrl && !node.textContent)) && (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 text-center">
+            <div className="p-3 rounded-full bg-[var(--sq-shade)]/60 text-[var(--sq-ink)] mb-2">
+              <FileIcon size={32} />
+            </div>
+            <span className="font-bold text-xs max-w-full truncate px-2">{node.name}</span>
+            <div className="text-[10px] opacity-60 mt-1 flex items-center gap-1.5">
+              <span>{extension.toUpperCase()}</span>
+              {sizeLabel && <span>• {sizeLabel}</span>}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 3. Footer Bar */}
+      <div className="px-2.5 py-1.5 border-t border-[var(--sq-border)] bg-[var(--sq-paper)] flex items-center justify-between shrink-0 text-xs">
+        <div className="min-w-0 flex-1 pr-2">
+          <div className="font-bold text-[11px] truncate" title={node.name}>
+            {node.name}
+          </div>
+          <div className="text-[9px] opacity-65 flex items-center gap-1.5 font-mono">
+            {pageCount > 1 ? `${pageCount} pages` : extension.toUpperCase()}
+            {sizeLabel && <span>• {sizeLabel}</span>}
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleOpen}
+          className="px-2 py-0.5 rounded text-[10px] font-semibold border border-[var(--sq-border)] hover:bg-[var(--sq-shade)] transition-colors shrink-0"
+        >
+          Open
+        </button>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/canvas/document-viewer-modal.tsx`
+
+- **Path**: `components/canvas/document-viewer-modal.tsx`
+- **Lines**: 527
+- **Size**: 19443 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Canvas — Expanded Document Viewer Modal
+//
+// Full-screen modal overlay for reading, inspecting, and navigating attached
+// documents (PDFs, CSVs, JSON, Markdown, Text, and Office files).
+// Isolates keyboard navigation (Escape, Arrow keys) and prevents canvas shortcuts.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useMemo, useCallback } from "react"
+import type { DocumentNode } from "@/lib/types"
+import { useSquig } from "@/lib/store"
+import {
+  getDocumentObjectUrl,
+  getDocumentBlob,
+  downloadDocument,
+} from "@/lib/storage/document-assets"
+import {
+  FilePdf,
+  FileText,
+  FileCode,
+  FileCsv,
+  FileDoc,
+  FileXls,
+  FilePpt,
+  File,
+  DownloadSimple,
+  ArrowSquareOut,
+  X,
+  CaretLeft,
+  CaretRight,
+  MagnifyingGlass,
+  Copy,
+  Check,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export interface DocumentViewerModalProps {
+  node: DocumentNode | null
+  onClose: () => void
+}
+
+export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps) {
+  const [objectUrl, setObjectUrl] = useState<string | null>(null)
+  const [fullText, setFullText] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [csvFilter, setCsvFilter] = useState<string>("")
+  const [copied, setCopied] = useState<boolean>(false)
+
+  // Sync current page from node
+  useEffect(() => {
+    if (node) {
+      setCurrentPage(node.currentPage || 1)
+      setCsvFilter("")
+      setCopied(false)
+    }
+  }, [node])
+
+  // Resolve object URL
+  useEffect(() => {
+    if (!node) {
+      setObjectUrl(null)
+      return
+    }
+    let mounted = true
+    getDocumentObjectUrl(node).then((url) => {
+      if (mounted) setObjectUrl(url)
+    })
+    return () => {
+      mounted = false
+    }
+  }, [node])
+
+  // Load full text content for textual files if needed
+  useEffect(() => {
+    if (!node) {
+      setFullText(null)
+      return
+    }
+    const ext = (node.extension || node.name.split(".").pop() || "").toLowerCase()
+    const isTextual =
+      ["txt", "md", "markdown", "json", "csv", "tsv", "js", "ts", "html", "css"].includes(ext) ||
+      (node.mimeType && (node.mimeType.startsWith("text/") || node.mimeType === "application/json"))
+
+    if (isTextual) {
+      if (node.textContent && node.textContent.length < 4000 && !node.assetId) {
+        setFullText(node.textContent)
+      } else {
+        getDocumentBlob(node).then((blob) => {
+          if (!blob) {
+            setFullText(node.textContent || "")
+            return
+          }
+          blob.text().then((txt) => {
+            if (ext === "json") {
+              try {
+                const parsed = JSON.parse(txt)
+                setFullText(JSON.stringify(parsed, null, 2))
+              } catch {
+                setFullText(txt)
+              }
+            } else {
+              setFullText(txt)
+            }
+          }).catch(() => {
+            setFullText(node.textContent || "")
+          })
+        })
+      }
+    } else {
+      setFullText(null)
+    }
+  }, [node])
+
+  const extension = useMemo(() => {
+    if (!node) return "doc"
+    return (node.extension || node.name.split(".").pop() || "doc").toLowerCase()
+  }, [node])
+
+  const pageCount = node?.pageCount || 1
+
+  // Page navigation
+  const handlePrevPage = useCallback(() => {
+    if (currentPage > 1 && node) {
+      const nextP = currentPage - 1
+      setCurrentPage(nextP)
+      useSquig.getState().updateNode(node.id, { currentPage: nextP } as Partial<DocumentNode>)
+    }
+  }, [currentPage, node])
+
+  const handleNextPage = useCallback(() => {
+    if (currentPage < pageCount && node) {
+      const nextP = currentPage + 1
+      setCurrentPage(nextP)
+      useSquig.getState().updateNode(node.id, { currentPage: nextP } as Partial<DocumentNode>)
+    }
+  }, [currentPage, pageCount, node])
+
+  // Keyboard navigation & isolation
+  useEffect(() => {
+    if (!node) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Isolate modal keys completely from canvas
+      if (e.key === "Escape") {
+        e.preventDefault()
+        e.stopPropagation()
+        onClose()
+      } else if (e.key === "ArrowLeft") {
+        if (pageCount > 1) {
+          e.preventDefault()
+          e.stopPropagation()
+          handlePrevPage()
+        }
+      } else if (e.key === "ArrowRight") {
+        if (pageCount > 1) {
+          e.preventDefault()
+          e.stopPropagation()
+          handleNextPage()
+        }
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown, true)
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, true)
+    }
+  }, [node, onClose, pageCount, handlePrevPage, handleNextPage])
+
+  // Copy text content
+  const handleCopyText = useCallback(() => {
+    const textToCopy = fullText || node?.textContent || ""
+    if (!textToCopy) return
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }, [fullText, node?.textContent])
+
+  // Download document
+  const handleDownload = useCallback(() => {
+    if (node) {
+      downloadDocument(node)
+    }
+  }, [node])
+
+  // Open in new window/tab
+  const handleOpenExternal = useCallback(() => {
+    if (objectUrl) {
+      window.open(objectUrl, "_blank", "noopener,noreferrer")
+    }
+  }, [objectUrl])
+
+  // Icon selection
+  const FileIcon = useMemo(() => {
+    switch (extension) {
+      case "pdf":
+        return FilePdf
+      case "json":
+      case "js":
+      case "ts":
+        return FileCode
+      case "csv":
+      case "tsv":
+        return FileCsv
+      case "doc":
+      case "docx":
+        return FileDoc
+      case "xls":
+      case "xlsx":
+        return FileXls
+      case "ppt":
+      case "pptx":
+        return FilePpt
+      case "txt":
+      case "md":
+      case "markdown":
+        return FileText
+      default:
+        return File
+    }
+  }, [extension])
+
+  // Formatted file size string
+  const sizeLabel = useMemo(() => {
+    if (!node?.sizeBytes) return null
+    if (node.sizeBytes >= 1024 * 1024) {
+      return `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+    }
+    return `${Math.round(node.sizeBytes / 1024)} KB`
+  }, [node?.sizeBytes])
+
+  // CSV parsed rows
+  const { csvHeaders, csvRows } = useMemo(() => {
+    if (extension !== "csv" && extension !== "tsv") {
+      return { csvHeaders: [], csvRows: [] }
+    }
+    const content = fullText || node?.textContent || ""
+    if (!content) return { csvHeaders: [], csvRows: [] }
+
+    const delimiter = extension === "tsv" ? "\t" : ","
+    const lines = content.split("\n").filter((l) => l.trim())
+    if (lines.length === 0) return { csvHeaders: [], csvRows: [] }
+
+    const parseLine = (line: string) => {
+      return line.split(delimiter).map((c) => c.replace(/^"|"$/g, "").trim())
+    }
+
+    const headers = parseLine(lines[0])
+    let rows = lines.slice(1).map(parseLine)
+
+    if (csvFilter.trim()) {
+      const q = csvFilter.toLowerCase().trim()
+      rows = rows.filter((r) => r.some((cell) => cell.toLowerCase().includes(q)))
+    }
+
+    return { csvHeaders: headers, csvRows: rows }
+  }, [extension, fullText, node?.textContent, csvFilter])
+
+  if (!node) return null
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Document Viewer: ${node.name}`}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
+    >
+      <div
+        className="w-full max-w-5xl h-[88vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
+        style={{
+          boxShadow: "0 20px 40px rgba(0,0,0,0.25), 4px 4px 0px rgba(0,0,0,0.12)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* 1. Modal Top Bar */}
+        <div className="h-12 px-4 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/30 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0 mr-4">
+            <div className="p-1.5 rounded bg-[var(--sq-paper)] border border-[var(--sq-border)] text-[var(--sq-ink)]">
+              <FileIcon size={18} weight="bold" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="font-bold text-sm truncate leading-tight">{node.name}</h2>
+              <div className="text-[10px] opacity-65 flex items-center gap-2 font-mono">
+                <span className="uppercase font-semibold">{extension}</span>
+                {sizeLabel && <span>• {sizeLabel}</span>}
+                {pageCount > 1 && <span>• {pageCount} pages</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Action controls */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Multi-page controls for PDFs */}
+            {extension === "pdf" && pageCount > 1 && (
+              <div className="flex items-center gap-1 bg-[var(--sq-paper)] px-2 py-1 rounded border border-[var(--sq-border)] text-xs">
+                <button
+                  type="button"
+                  onClick={handlePrevPage}
+                  disabled={currentPage <= 1}
+                  className="p-0.5 rounded hover:bg-[var(--sq-shade)] disabled:opacity-30 transition-colors"
+                  title="Previous page (Left Arrow)"
+                >
+                  <CaretLeft size={14} />
+                </button>
+                <span className="font-mono text-[11px] px-1">
+                  Page {currentPage} of {pageCount}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNextPage}
+                  disabled={currentPage >= pageCount}
+                  className="p-0.5 rounded hover:bg-[var(--sq-shade)] disabled:opacity-30 transition-colors"
+                  title="Next page (Right Arrow)"
+                >
+                  <CaretRight size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* Copy button for textual files */}
+            {fullText && (
+              <button
+                type="button"
+                onClick={handleCopyText}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
+                title="Copy contents to clipboard"
+              >
+                {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
+            )}
+
+            {/* Open in new tab */}
+            {objectUrl && (
+              <button
+                type="button"
+                onClick={handleOpenExternal}
+                className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
+                title="Open in new browser tab"
+              >
+                <ArrowSquareOut size={16} />
+              </button>
+            )}
+
+            {/* Download */}
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded text-xs border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors font-medium"
+              title="Download file to computer"
+            >
+              <DownloadSimple size={14} />
+              <span>Download</span>
+            </button>
+
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors ml-1"
+              title="Close viewer (Escape)"
+            >
+              <X size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* 2. Main Content Area */}
+        <div className="flex-1 min-h-0 relative overflow-hidden bg-[var(--sq-paper)]">
+          {/* PDF Viewer */}
+          {extension === "pdf" && objectUrl && (
+            <div className="w-full h-full">
+              <object
+                data={`${objectUrl}#page=${currentPage}`}
+                type="application/pdf"
+                className="w-full h-full border-none"
+                title={node.name}
+              >
+                <iframe
+                  src={`${objectUrl}#page=${currentPage}`}
+                  className="w-full h-full border-none"
+                  title={node.name}
+                >
+                  <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
+                    <FilePdf size={48} className="mb-4 opacity-60" />
+                    <p className="text-sm font-medium mb-3">
+                      Your browser does not support embedded PDF viewing.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleDownload}
+                      className="px-4 py-2 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] text-xs font-semibold"
+                    >
+                      Download PDF
+                    </button>
+                  </div>
+                </iframe>
+              </object>
+            </div>
+          )}
+
+          {/* CSV / TSV Table Viewer */}
+          {(extension === "csv" || extension === "tsv") && (
+            <div className="w-full h-full flex flex-col">
+              {/* CSV Toolbar */}
+              <div className="px-4 py-2 border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/20 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <MagnifyingGlass
+                      size={14}
+                      className="absolute left-2.5 top-1/2 -translate-y-1/2 opacity-50"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Filter rows..."
+                      value={csvFilter}
+                      onChange={(e) => setCsvFilter(e.target.value)}
+                      className="pl-8 pr-3 py-1 rounded bg-[var(--sq-paper)] border border-[var(--sq-border)] text-xs font-mono outline-hidden focus:ring-1 focus:ring-[var(--sq-select)] w-56"
+                    />
+                  </div>
+                  <span className="text-[11px] opacity-60 font-mono">
+                    {csvRows.length} rows {csvFilter ? "matching filter" : ""}
+                  </span>
+                </div>
+              </div>
+
+              {/* CSV Grid */}
+              <div className="flex-1 overflow-auto p-4">
+                <table className="w-full border-collapse font-mono text-xs">
+                  <thead>
+                    <tr className="border-b-2 border-[var(--sq-border)] bg-[var(--sq-shade)]/40 text-left">
+                      <th className="p-2 w-10 text-[10px] opacity-40">#</th>
+                      {csvHeaders.map((header, hi) => (
+                        <th key={hi} className="p-2 font-bold truncate max-w-[200px]">
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {csvRows.map((row, ri) => (
+                      <tr
+                        key={ri}
+                        className="border-b border-[var(--sq-border)]/40 hover:bg-[var(--sq-shade)]/30 transition-colors"
+                      >
+                        <td className="p-2 text-[10px] opacity-40 font-mono">{ri + 1}</td>
+                        {row.map((cell, ci) => (
+                          <td key={ci} className="p-2 truncate max-w-[240px]">
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                    {csvRows.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan={csvHeaders.length + 1}
+                          className="p-8 text-center opacity-60 italic text-xs"
+                        >
+                          No matching records found.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Code & Text Viewer (JSON, TXT, MD, etc.) */}
+          {fullText !== null && extension !== "csv" && extension !== "tsv" && (
+            <div className="w-full h-full overflow-auto p-6 font-mono text-xs leading-relaxed select-text bg-[var(--sq-paper)]">
+              <pre className="whitespace-pre-wrap break-words">{fullText}</pre>
+            </div>
+          )}
+
+          {/* Office Documents & Fallback */}
+          {extension !== "pdf" &&
+            extension !== "csv" &&
+            extension !== "tsv" &&
+            fullText === null && (
+              <div className="w-full h-full flex flex-col items-center justify-center p-8 text-center">
+                <div className="p-5 rounded-2xl bg-[var(--sq-shade)]/60 text-[var(--sq-ink)] mb-4">
+                  <FileIcon size={56} />
+                </div>
+                <h3 className="font-bold text-base max-w-md truncate px-4">{node.name}</h3>
+                <p className="text-xs opacity-65 mt-1 max-w-sm">
+                  {extension.toUpperCase()} document ({sizeLabel || "Unknown size"}).
+                </p>
+                <p className="text-[11px] opacity-50 mt-1 max-w-md">
+                  Direct in-browser interactive rendering for this office binary format is limited.
+                  Download the file to view in its native desktop or web suite.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleDownload}
+                  className="mt-5 flex items-center gap-2 px-5 py-2 rounded-md bg-[var(--sq-ink)] text-[var(--sq-paper)] text-xs font-semibold hover:opacity-90 transition-opacity"
+                >
+                  <DownloadSimple size={16} />
+                  <span>Download Document</span>
+                </button>
+              </div>
+            )}
+        </div>
+
+        {/* 3. Modal Footer Bar */}
+        <div className="h-9 px-4 flex items-center justify-between border-t border-[var(--sq-border)] bg-[var(--sq-shade)]/20 shrink-0 text-[11px] opacity-70">
+          <div className="truncate font-mono">
+            {node.assetId ? `Asset ID: ${node.assetId}` : "Local attachment"}
+          </div>
+          <div className="flex items-center gap-3">
+            <span>Press <kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">Esc</kbd> to close</span>
+            {pageCount > 1 && (
+              <span><kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">←</kbd> <kbd className="px-1 py-0.5 rounded border border-[var(--sq-border)] font-mono text-[9px]">→</kbd> to turn pages</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+### File: `lib/storage/document-assets.ts`
+
+- **Path**: `lib/storage/document-assets.ts`
+- **Lines**: 320
+- **Size**: 9703 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Document Attachment & Asset Storage Engine
+//
+// Handles local-first persistence in IndexedDB (STORES.ASSET_BLOBS),
+// binary PDF parsing, text/JSON/CSV preview extraction, file validation,
+// thumbnail generation, and secure downloads.
+// ---------------------------------------------------------------------------
+
+import { openZenithsuiDb, STORES, withTransaction } from "./db"
+import { computeBlobHash, cacheAssetBlob, getAssetBlob } from "../cloud/assets"
+import type { DocumentNode } from "../types"
+
+export const MAX_ATTACHMENT_SIZE_BYTES = 50 * 1024 * 1024 // 50MB limit
+
+export interface DocumentAssetResult {
+  assetId: string
+  hash: string
+  name: string
+  mimeType: string
+  extension: string
+  sizeBytes: number
+  pageCount?: number
+  textContent?: string
+  localUrl: string
+  thumbnailUrl?: string
+}
+
+/** In-memory cache of active ObjectURLs to prevent memory leaks */
+const activeObjectUrls = new Map<string, string>()
+
+/**
+ * Normalizes and sanitizes document filenames:
+ * Removes malicious path traversal, control chars, and keeps clean human names.
+ */
+export function sanitizeDocumentFilename(rawName: string): string {
+  if (!rawName || typeof rawName !== "string") return "untitled_document"
+  // Remove null bytes and control characters
+  let clean = rawName.replace(/[\x00-\x1f\x7f]/g, "").trim()
+  // Remove directory traversal characters (.. / \ :)
+  clean = clean.replace(/^[./\\]+/, "").replace(/[/\\:]+/g, "_")
+  // Trim spaces and dots
+  clean = clean.trim()
+  if (!clean || clean === "." || clean === "..") return "untitled_document"
+  // Limit length
+  if (clean.length > 180) {
+    const ext = clean.split(".").pop() || ""
+    const base = clean.slice(0, 170)
+    clean = ext ? `${base}.${ext}` : base
+  }
+  return clean
+}
+
+/**
+ * Infers normalized MIME type from filename extension when browser MIME is missing or generic.
+ */
+export function inferMimeType(filename: string, declaredType?: string): { mimeType: string; extension: string } {
+  const parts = filename.split(".")
+  const ext = (parts.length > 1 ? parts.pop() || "" : "").toLowerCase()
+
+  if (declaredType && declaredType !== "application/octet-stream" && declaredType !== "") {
+    return { mimeType: declaredType, extension: ext || "bin" }
+  }
+
+  const MIME_MAP: Record<string, string> = {
+    pdf: "application/pdf",
+    txt: "text/plain",
+    md: "text/markdown",
+    markdown: "text/markdown",
+    json: "application/json",
+    csv: "text/csv",
+    tsv: "text/tab-separated-values",
+    doc: "application/msword",
+    docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    xls: "application/vnd.ms-excel",
+    xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    webp: "image/webp",
+    gif: "image/gif",
+    svg: "image/svg+xml",
+  }
+
+  return {
+    mimeType: MIME_MAP[ext] || declaredType || "application/octet-stream",
+    extension: ext || "bin",
+  }
+}
+
+/**
+ * Pure binary PDF inspection:
+ * Validates %PDF- header and calculates page count without any external heavy libraries.
+ */
+export function extractPdfInfo(buffer: ArrayBuffer): { valid: boolean; pageCount: number; title?: string } {
+  const bytes = new Uint8Array(buffer)
+  if (bytes.length < 8) return { valid: false, pageCount: 1 }
+
+  // %PDF-
+  const isPdf =
+    bytes[0] === 0x25 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x44 &&
+    bytes[3] === 0x46 &&
+    bytes[4] === 0x2d
+
+  if (!isPdf) return { valid: false, pageCount: 1 }
+
+  // Decode text chunks to look for /Count in /Pages dictionary or count /Type /Page
+  let pageCount = 1
+  try {
+    const text = new TextDecoder("latin1").decode(bytes)
+
+    // Strategy 1: Look for /Count (\d+) in /Type /Pages
+    const pagesMatch = text.match(/\/Type\s*\/Pages[^>]*?\/Count\s+(\d+)/)
+    if (pagesMatch && pagesMatch[1]) {
+      const parsed = parseInt(pagesMatch[1], 10)
+      if (parsed > 0 && parsed < 20000) {
+        pageCount = parsed
+      }
+    } else {
+      // Strategy 2: Count occurrences of /Type\s*\/Page\b (not /Pages)
+      const pageMatches = text.match(/\/Type\s*\/Page\b/g)
+      if (pageMatches && pageMatches.length > 0) {
+        pageCount = pageMatches.length
+      }
+    }
+
+    // Extract title if present: /Title (My Document) or /Title <HEX>
+    let title: string | undefined
+    const titleMatch = text.match(/\/Title\s*\(([^)]+)\)/)
+    if (titleMatch && titleMatch[1]) {
+      title = titleMatch[1].trim()
+    }
+
+    return { valid: true, pageCount: Math.max(1, pageCount), title }
+  } catch {
+    return { valid: true, pageCount: 1 }
+  }
+}
+
+/**
+ * Extracts a safe text preview snippet for TXT, JSON, CSV, MD files (up to 64KB).
+ */
+export async function extractTextPreview(file: Blob, mimeType: string): Promise<string | undefined> {
+  const isTextual =
+    mimeType.startsWith("text/") ||
+    mimeType === "application/json" ||
+    mimeType === "application/javascript" ||
+    mimeType === "text/csv" ||
+    mimeType === "text/markdown"
+
+  if (!isTextual) return undefined
+
+  try {
+    const slice = file.slice(0, 65536) // max 64KB for snippet
+    const rawText = await slice.text()
+
+    if (mimeType === "application/json") {
+      try {
+        const obj = JSON.parse(rawText)
+        return JSON.stringify(obj, null, 2).slice(0, 4000)
+      } catch {
+        return rawText.slice(0, 4000)
+      }
+    }
+
+    return rawText.slice(0, 4000)
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Saves an uploaded or dropped document to local-first IndexedDB asset storage.
+ */
+export async function saveDocumentAsset(
+  file: File | Blob,
+  rawName: string
+): Promise<DocumentAssetResult> {
+  const name = sanitizeDocumentFilename(rawName)
+  const { mimeType, extension } = inferMimeType(name, file.type)
+  const sizeBytes = file.size
+
+  if (sizeBytes > MAX_ATTACHMENT_SIZE_BYTES) {
+    throw new Error(
+      `File exceeds maximum attachment limit of ${Math.round(MAX_ATTACHMENT_SIZE_BYTES / (1024 * 1024))} MB.`
+    )
+  }
+
+  // 1. Compute SHA-256 hash for content deduplication & stable identity
+  const hash = await computeBlobHash(file)
+  const assetId = `asset_${hash.slice(0, 16)}`
+
+  // 2. Cache in IndexedDB (STORES.ASSET_BLOBS)
+  await cacheAssetBlob(file, assetId)
+
+  // 3. Extract metadata
+  let pageCount: number | undefined
+  let textContent: string | undefined
+
+  if (mimeType === "application/pdf" || extension === "pdf") {
+    const buffer = await file.slice(0, Math.min(sizeBytes, 5 * 1024 * 1024)).arrayBuffer()
+    const pdfInfo = extractPdfInfo(buffer)
+    pageCount = pdfInfo.pageCount
+  } else {
+    textContent = await extractTextPreview(file, mimeType)
+  }
+
+  // 4. Generate local object URL for instant UI rendering
+  const localUrl = URL.createObjectURL(file)
+  activeObjectUrls.set(assetId, localUrl)
+
+  return {
+    assetId,
+    hash,
+    name,
+    mimeType,
+    extension,
+    sizeBytes,
+    pageCount,
+    textContent,
+    localUrl,
+  }
+}
+
+/**
+ * Resolves a DocumentNode's underlying Blob from local IndexedDB or remote URL.
+ */
+export async function getDocumentBlob(node: DocumentNode): Promise<Blob | null> {
+  // Case 1: "asset://<hash>" from local IndexedDB
+  if (node.src && node.src.startsWith("asset://")) {
+    const hash = node.src.replace("asset://", "")
+    const blob = await getAssetBlob(hash)
+    if (blob) return blob
+  }
+
+  // Case 2: assetId matches in IndexedDB
+  if (node.assetId) {
+    const hash = node.assetId.replace(/^asset_/, "")
+    const blob = await getAssetBlob(hash)
+    if (blob) return blob
+  }
+
+  // Case 3: Remote URL
+  if (node.src && (node.src.startsWith("http://") || node.src.startsWith("https://") || node.src.startsWith("/"))) {
+    try {
+      const res = await fetch(node.src)
+      if (res.ok) {
+        return await res.blob()
+      }
+    } catch {
+      // Fallback through asset proxy
+      try {
+        const proxyRes = await fetch(`/api/assets/proxy?url=${encodeURIComponent(node.src)}`)
+        if (proxyRes.ok) {
+          return await proxyRes.blob()
+        }
+      } catch {}
+    }
+  }
+
+  return null
+}
+
+/**
+ * Resolves a live playable/renderable ObjectURL for a DocumentNode.
+ */
+export async function getDocumentObjectUrl(node: DocumentNode): Promise<string | null> {
+  // If we already have a cached live ObjectURL, return it
+  if (node.assetId && activeObjectUrls.has(node.assetId)) {
+    return activeObjectUrls.get(node.assetId)!
+  }
+
+  const blob = await getDocumentBlob(node)
+  if (!blob) return node.src || null
+
+  const url = URL.createObjectURL(blob)
+  if (node.assetId) {
+    activeObjectUrls.set(node.assetId, url)
+  }
+  return url
+}
+
+/**
+ * Triggers a real browser download for a DocumentNode.
+ */
+export async function downloadDocument(node: DocumentNode): Promise<void> {
+  const blob = await getDocumentBlob(node)
+  const downloadUrl = blob ? URL.createObjectURL(blob) : node.src
+  if (!downloadUrl) {
+    throw new Error("Document content is unavailable for download.")
+  }
+
+  const a = document.createElement("a")
+  a.href = downloadUrl
+  a.download = node.name || "document"
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+
+  if (blob) {
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 5000)
+  }
+}
+
+/**
+ * Cleans up allocated ObjectURLs on unmount/session teardown.
+ */
+export function revokeDocumentUrl(assetId: string): void {
+  const url = activeObjectUrls.get(assetId)
+  if (url) {
+    URL.revokeObjectURL(url)
+    activeObjectUrls.delete(assetId)
+  }
+}
 ```
 
 ---
