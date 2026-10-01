@@ -9,7 +9,6 @@
 
 import { useState } from "react"
 import type { CalendarEvent } from "@/lib/calendar/types"
-import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { cn } from "@/lib/utils"
 import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil } from "@phosphor-icons/react"
 
@@ -31,7 +30,6 @@ export function CalendarEventPill({
   onDragStart,
 }: CalendarEventPillProps) {
   const isCompleted = event.status === "completed"
-  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
 
   return (
     <div
@@ -48,8 +46,6 @@ export function CalendarEventPill({
       )}
       style={{
         boxShadow: "1px 1px 0px rgba(0,0,0,0.06)",
-        borderLeftWidth: "3px",
-        borderLeftColor: colorPreset.hex,
       }}
       title={`${event.title}${event.startTime ? ` (${event.startTime})` : ""}`}
     >
