@@ -494,7 +494,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `eslint.config.mjs` | 28 | 647 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
-| `package.json` | 55 | 3625 | Core package.json module | `package` |
+| `package.json` | 56 | 3648 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 44 | 729 | Core tsconfig.json module | `tsconfig` |
@@ -665,14 +665,14 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/library/defs-study.ts` | 1127 | 50077 | Core defs-study.ts module | `defs-study` |
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
-| `components/calendar/calendar-agenda-drawer.tsx` | 439 | 14728 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
-| `components/calendar/calendar-event-card.tsx` | 263 | 9469 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
+| `components/calendar/calendar-event-card.tsx` | 263 | 9731 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 535 | 20261 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
-| `components/calendar/calendar-event-pill.tsx` | 90 | 3198 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
+| `components/calendar/calendar-event-pill.tsx` | 90 | 3287 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 302 | 10914 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 209 | 6910 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
-| `components/calendar/calendar-reminder-toast.tsx` | 143 | 4746 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
+| `components/calendar/calendar-month-year-picker.tsx` | 209 | 7118 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
 | `components/calendar/functional-calendar.tsx` | 542 | 18563 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
@@ -693,9 +693,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 266 | 8018 | Core date-utils.ts module | `date-utils` |
 | `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
-| `lib/calendar/ics.ts` | 312 | 8885 | Core ics.ts module | `ics` |
+| `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6670 | Core layout.ts module | `layout` |
-| `lib/calendar/types.ts` | 146 | 3264 | Core types.ts module | `types` |
+| `lib/calendar/types.ts` | 146 | 3409 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
@@ -1153,8 +1153,8 @@ export default nextConfig;
 ### File: `package.json`
 
 - **Path**: `package.json`
-- **Lines**: 55
-- **Size**: 3625 bytes
+- **Lines**: 56
+- **Size**: 3648 bytes
 
 ```json
 {
@@ -1207,7 +1207,8 @@ export default nextConfig;
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "sharp"
+      "sharp",
+      "unrs-resolver"
     ]
   }
 }
@@ -44870,7 +44871,7 @@ export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: C
 
 - **Path**: `components/calendar/calendar-agenda-drawer.tsx`
 - **Lines**: 439
-- **Size**: 14728 bytes
+- **Size**: 15166 bytes
 
 ```tsx
 "use client"
@@ -45319,7 +45320,7 @@ function AgendaItem({
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
 - **Lines**: 263
-- **Size**: 9469 bytes
+- **Size**: 9731 bytes
 
 ```tsx
 "use client"
@@ -46137,7 +46138,7 @@ export function CalendarEventEditor({
 
 - **Path**: `components/calendar/calendar-event-pill.tsx`
 - **Lines**: 90
-- **Size**: 3198 bytes
+- **Size**: 3287 bytes
 
 ```tsx
 "use client"
@@ -46803,7 +46804,7 @@ export function CalendarMonthView({
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
 - **Lines**: 209
-- **Size**: 6910 bytes
+- **Size**: 7118 bytes
 
 ```tsx
 "use client"
@@ -47022,7 +47023,7 @@ export function CalendarMonthYearPicker({
 
 - **Path**: `components/calendar/calendar-reminder-toast.tsx`
 - **Lines**: 143
-- **Size**: 4746 bytes
+- **Size**: 4888 bytes
 
 ```tsx
 "use client"
@@ -59063,7 +59064,7 @@ export const useCalendarStore = {
 
 - **Path**: `lib/calendar/ics.ts`
 - **Lines**: 312
-- **Size**: 8885 bytes
+- **Size**: 9196 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -59596,7 +59597,7 @@ export function clampTimeToDay(minutes: number): number {
 
 - **Path**: `lib/calendar/types.ts`
 - **Lines**: 146
-- **Size**: 3264 bytes
+- **Size**: 3409 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
