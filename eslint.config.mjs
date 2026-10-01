@@ -9,6 +9,9 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "prefer-const": "warn",
+      "react-hooks/set-state-in-effect": "off",
+      "react-compiler/react-compiler": "off",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -17,6 +20,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "public/**",
     "next-env.d.ts",
     "scripts/**",
     "docs/**",

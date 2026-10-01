@@ -193,13 +193,11 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
   }, [extension])
 
   // Formatted file size string
-  const sizeLabel = useMemo(() => {
-    if (!node?.sizeBytes) return null
-    if (node.sizeBytes >= 1024 * 1024) {
-      return `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
-    }
-    return `${Math.round(node.sizeBytes / 1024)} KB`
-  }, [node?.sizeBytes])
+  const sizeLabel = node?.sizeBytes
+    ? node.sizeBytes >= 1024 * 1024
+      ? `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.round(node.sizeBytes / 1024)} KB`
+    : null
 
   // CSV parsed rows
   const { csvHeaders, csvRows } = useMemo(() => {

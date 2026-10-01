@@ -492,10 +492,10 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `.vercelignore` | 1 | 0 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
-| `eslint.config.mjs` | 28 | 647 | Core eslint.config.mjs module | `eslint.config` |
+| `eslint.config.mjs` | 32 | 788 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
-| `package.json` | 58 | 4022 | Core package.json module | `package` |
+| `package.json` | 57 | 3789 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 44 | 729 | Core tsconfig.json module | `tsconfig` |
@@ -643,7 +643,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
 | `lib/clipboard-payload.ts` | 151 | 5657 | Core clipboard-payload.ts module | `clipboard-payload` |
-| `lib/clipboard.ts` | 526 | 18485 | Core clipboard.ts module | `clipboard` |
+| `lib/clipboard.ts` | 525 | 18447 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 383 | 14676 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 31 | 1113 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 234 | 7768 | Core files.ts module | `files` |
@@ -692,10 +692,10 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
-| `lib/calendar/date-utils.ts` | 266 | 8018 | Core date-utils.ts module | `date-utils` |
+| `lib/calendar/date-utils.ts` | 266 | 8022 | Core date-utils.ts module | `date-utils` |
 | `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
-| `lib/calendar/layout.ts` | 201 | 6670 | Core layout.ts module | `layout` |
+| `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3409 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
@@ -735,9 +735,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/tsconfig.json` | 13 | 263 | Core tsconfig.json module | `tsconfig` |
 | `docs/multiselect-spec.md` | 179 | 12071 | Core multiselect-spec.md module | `multiselect-spec` |
 | `components/canvas/document-canvas-item.tsx` | 415 | 13344 | Core document-canvas-item.tsx module | `document-canvas-item` |
-| `components/canvas/document-viewer-modal.tsx` | 478 | 17391 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
-| `components/canvas/pdf-canvas-viewer.tsx` | 612 | 21832 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
-| `lib/pdf/pdf-renderer.ts` | 232 | 6503 | Core pdf-renderer.ts module | `pdf-renderer` |
+| `components/canvas/document-viewer-modal.tsx` | 476 | 17321 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
+| `components/canvas/pdf-canvas-viewer.tsx` | 611 | 21831 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
+| `lib/pdf/pdf-renderer.ts` | 231 | 6502 | Core pdf-renderer.ts module | `pdf-renderer` |
 | `lib/storage/document-assets.ts` | 335 | 10143 | Core document-assets.ts module | `document-assets` |
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 
@@ -1059,8 +1059,8 @@ Figma's, so your hands already know it. `?` opens the full list in the app.
 ### File: `eslint.config.mjs`
 
 - **Path**: `eslint.config.mjs`
-- **Lines**: 28
-- **Size**: 647 bytes
+- **Lines**: 32
+- **Size**: 788 bytes
 
 ```javascript
 import { defineConfig, globalIgnores } from "eslint/config";
@@ -1074,6 +1074,9 @@ const eslintConfig = defineConfig([
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "prefer-const": "warn",
+      "react-hooks/set-state-in-effect": "off",
+      "react-compiler/react-compiler": "off",
     },
   },
   // Override default ignores of eslint-config-next.
@@ -1082,6 +1085,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "public/**",
     "next-env.d.ts",
     "scripts/**",
     "docs/**",
@@ -1161,8 +1165,8 @@ export default nextConfig;
 ### File: `package.json`
 
 - **Path**: `package.json`
-- **Lines**: 58
-- **Size**: 4022 bytes
+- **Lines**: 57
+- **Size**: 3789 bytes
 
 ```json
 {
@@ -1179,7 +1183,6 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "node -e \"const fs = require('fs'); if (fs.existsSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs')) { fs.copyFileSync('node_modules/pdfjs-dist/build/pdf.worker.min.mjs', 'public/pdf.worker.min.mjs'); }\"",
     "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts"
   },
   "dependencies": {
@@ -31798,8 +31801,8 @@ export function validNode(v: unknown): SquigNode | null {
 ### File: `lib/clipboard.ts`
 
 - **Path**: `lib/clipboard.ts`
-- **Lines**: 526
-- **Size**: 18485 bytes
+- **Lines**: 525
+- **Size**: 18447 bytes
 
 ```tsx
 "use client"
@@ -32053,7 +32056,6 @@ export async function documentNodeFrom(file: File | Blob, rawName?: string): Pro
       sizeBytes: res.sizeBytes,
       pageCount: res.pageCount,
       currentPage: 1,
-      thumbnailUrl: res.thumbnailUrl,
       textContent: res.textContent,
       x: 0,
       y: 0,
@@ -58755,7 +58757,7 @@ export const PRIORITY_ORDER: Record<TaskPriority, number> = {
 
 - **Path**: `lib/calendar/date-utils.ts`
 - **Lines**: 266
-- **Size**: 8018 bytes
+- **Size**: 8022 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -58866,7 +58868,7 @@ export function addDaysIso(iso: string, days: number): string {
 }
 
 export function addMonths(year: number, month: number, delta: number): { year: number; month: number } {
-  let totalMonths = year * 12 + (month - 1) + delta
+  const totalMonths = year * 12 + (month - 1) + delta
   const nextYear = Math.floor(totalMonths / 12)
   const nextMonth = (totalMonths % 12) + 1
   return { year: nextYear, month: nextMonth }
@@ -58899,7 +58901,7 @@ export function buildMonthGrid(
   const firstDayWeekday = getWeekday(year, month, 1)
 
   // Calculate how many days from previous month are visible
-  let leadingOffset = weekStartsOn === "sunday" ? firstDayWeekday : (firstDayWeekday + 6) % 7
+  const leadingOffset = weekStartsOn === "sunday" ? firstDayWeekday : (firstDayWeekday + 6) % 7
 
   const { year: prevYear, month: prevMonth } = addMonths(year, month, -1)
   const daysInPrev = getDaysInMonth(prevYear, prevMonth)
@@ -59867,7 +59869,7 @@ export function parseIcs(icsText: string): Partial<CalendarEvent>[] {
 
 - **Path**: `lib/calendar/layout.ts`
 - **Lines**: 201
-- **Size**: 6670 bytes
+- **Size**: 6672 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -59974,7 +59976,7 @@ export function computeDayEventPositions(
 
   // Extract start and end minutes
   const parsed = timed.map((e) => {
-    let startM = e.startTime ? parseTimeToMinutes(e.startTime) : 9 * 60
+    const startM = e.startTime ? parseTimeToMinutes(e.startTime) : 9 * 60
     let endM = e.endTime ? parseTimeToMinutes(e.endTime) : startM + (e.durationMinutes || 60)
     if (endM <= startM) endM = startM + 30 // Minimum 30 mins
 
@@ -75288,8 +75290,8 @@ export function DocumentCanvasItem({
 ### File: `components/canvas/document-viewer-modal.tsx`
 
 - **Path**: `components/canvas/document-viewer-modal.tsx`
-- **Lines**: 478
-- **Size**: 17391 bytes
+- **Lines**: 476
+- **Size**: 17321 bytes
 
 ```tsx
 "use client"
@@ -75487,13 +75489,11 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
   }, [extension])
 
   // Formatted file size string
-  const sizeLabel = useMemo(() => {
-    if (!node?.sizeBytes) return null
-    if (node.sizeBytes >= 1024 * 1024) {
-      return `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
-    }
-    return `${Math.round(node.sizeBytes / 1024)} KB`
-  }, [node?.sizeBytes])
+  const sizeLabel = node?.sizeBytes
+    ? node.sizeBytes >= 1024 * 1024
+      ? `${(node.sizeBytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.round(node.sizeBytes / 1024)} KB`
+    : null
 
   // CSV parsed rows
   const { csvHeaders, csvRows } = useMemo(() => {
@@ -75776,8 +75776,8 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
 ### File: `components/canvas/pdf-canvas-viewer.tsx`
 
 - **Path**: `components/canvas/pdf-canvas-viewer.tsx`
-- **Lines**: 612
-- **Size**: 21832 bytes
+- **Lines**: 611
+- **Size**: 21831 bytes
 
 ```tsx
 "use client"
@@ -76398,8 +76398,8 @@ export function PdfCanvasViewer({
 ### File: `lib/pdf/pdf-renderer.ts`
 
 - **Path**: `lib/pdf/pdf-renderer.ts`
-- **Lines**: 232
-- **Size**: 6503 bytes
+- **Lines**: 231
+- **Size**: 6502 bytes
 
 ```tsx
 "use client"

@@ -106,7 +106,7 @@ export function addDaysIso(iso: string, days: number): string {
 }
 
 export function addMonths(year: number, month: number, delta: number): { year: number; month: number } {
-  let totalMonths = year * 12 + (month - 1) + delta
+  const totalMonths = year * 12 + (month - 1) + delta
   const nextYear = Math.floor(totalMonths / 12)
   const nextMonth = (totalMonths % 12) + 1
   return { year: nextYear, month: nextMonth }
@@ -139,7 +139,7 @@ export function buildMonthGrid(
   const firstDayWeekday = getWeekday(year, month, 1)
 
   // Calculate how many days from previous month are visible
-  let leadingOffset = weekStartsOn === "sunday" ? firstDayWeekday : (firstDayWeekday + 6) % 7
+  const leadingOffset = weekStartsOn === "sunday" ? firstDayWeekday : (firstDayWeekday + 6) % 7
 
   const { year: prevYear, month: prevMonth } = addMonths(year, month, -1)
   const daysInPrev = getDaysInMonth(prevYear, prevMonth)

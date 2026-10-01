@@ -102,7 +102,7 @@ export function computeDayEventPositions(
 
   // Extract start and end minutes
   const parsed = timed.map((e) => {
-    let startM = e.startTime ? parseTimeToMinutes(e.startTime) : 9 * 60
+    const startM = e.startTime ? parseTimeToMinutes(e.startTime) : 9 * 60
     let endM = e.endTime ? parseTimeToMinutes(e.endTime) : startM + (e.durationMinutes || 60)
     if (endM <= startM) endM = startM + 30 // Minimum 30 mins
 
