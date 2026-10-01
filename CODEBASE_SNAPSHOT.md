@@ -665,12 +665,16 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/library/defs-study.ts` | 1127 | 50077 | Core defs-study.ts module | `defs-study` |
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
-| `components/calendar/calendar-event-editor.tsx` | 473 | 17418 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
-| `components/calendar/calendar-event-pill.tsx` | 86 | 2975 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
-| `components/calendar/calendar-header.tsx` | 216 | 7756 | Core calendar-header.tsx module | `calendar-header` |
+| `components/calendar/calendar-agenda-drawer.tsx` | 416 | 13853 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
+| `components/calendar/calendar-event-card.tsx` | 274 | 9664 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 535 | 20261 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-event-pill.tsx` | 91 | 3248 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
+| `components/calendar/calendar-header.tsx` | 302 | 10914 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
+| `components/calendar/calendar-month-year-picker.tsx` | 207 | 6852 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-reminder-toast.tsx` | 125 | 4375 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
-| `components/calendar/functional-calendar.tsx` | 316 | 10644 | Core functional-calendar.tsx module | `functional-calendar` |
+| `components/calendar/functional-calendar.tsx` | 542 | 18563 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
 | `lib/academic/announcements.ts` | 326 | 10058 | Core announcements.ts module | `announcements` |
 | `lib/academic/assignments.ts` | 860 | 23538 | Core assignments.ts module | `assignments` |
@@ -689,8 +693,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 266 | 8018 | Core date-utils.ts module | `date-utils` |
 | `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
+| `lib/calendar/ics.ts` | 304 | 8744 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6670 | Core layout.ts module | `layout` |
-| `lib/calendar/types.ts` | 73 | 1849 | Core types.ts module | `types` |
+| `lib/calendar/types.ts` | 88 | 2794 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
@@ -709,7 +714,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-academic-syllabus.ts` | 218 | 9342 | Core test-academic-syllabus.ts module | `test-academic-syllabus` |
 | `scripts/test-clipboard.ts` | 124 | 5420 | Core test-clipboard.ts module | `test-clipboard` |
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
-| `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
+| `scripts/test-functional-calendar.ts` | 509 | 21005 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-phase2-invitations.ts` | 71 | 3035 | Core test-phase2-invitations.ts module | `test-phase2-invitations` |
@@ -44861,11 +44866,721 @@ export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: C
 
 *Comprehensive study suite & interactive calendar engine: pure date math, overlap lane clustering, event CRUD, Month/Week views, syllabus progress, revision, test simulator, and IndexedDB persistence.*
 
+### File: `components/calendar/calendar-agenda-drawer.tsx`
+
+- **Path**: `components/calendar/calendar-agenda-drawer.tsx`
+- **Lines**: 416
+- **Size**: 13853 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Agenda & Mini Calendar Side Drawer (Android / Windows)
+//
+// Features:
+// 1. Compact Mini Month Calendar with date dots & instant navigation
+// 2. Upcoming Agenda List grouped by Today, Tomorrow, and Later
+// 3. Category Visibility Filters with checkboxes and color indicators
+// ---------------------------------------------------------------------------
+
+import { useState, useMemo } from "react"
+import type { CalendarEvent } from "@/lib/calendar/types"
+import { CALENDAR_COLORS } from "@/lib/calendar/types"
+import {
+  buildMonthGrid,
+  formatMonthYear,
+  getTodayIso,
+  addDaysIso,
+  parseDateIso,
+  type WeekStartsOn,
+} from "@/lib/calendar/date-utils"
+import {
+  CaretLeft,
+  CaretRight,
+  X,
+  CheckCircle,
+  CalendarBlank,
+  Clock,
+  MapPin,
+  ListBullets,
+  Tag,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+interface CalendarAgendaDrawerProps {
+  isOpen: boolean
+  onClose: () => void
+  events: CalendarEvent[]
+  selectedDate: string
+  onSelectDate: (date: string) => void
+  onEventClick: (event: CalendarEvent) => void
+  onToggleComplete: (id: string) => void
+  onNewEventAtDate: (date: string) => void
+  hiddenCategories: Set<string>
+  onToggleCategory: (category: string) => void
+  weekStartsOn: WeekStartsOn
+}
+
+export function CalendarAgendaDrawer({
+  isOpen,
+  onClose,
+  events,
+  selectedDate,
+  onSelectDate,
+  onEventClick,
+  onToggleComplete,
+  onNewEventAtDate,
+  hiddenCategories,
+  onToggleCategory,
+  weekStartsOn,
+}: CalendarAgendaDrawerProps) {
+  const todayIso = useMemo(() => getTodayIso(), [])
+  const { year: curYear, month: curMonth } = useMemo(
+    () => parseDateIso(selectedDate || todayIso),
+    [selectedDate, todayIso]
+  )
+
+  const [miniYear, setMiniYear] = useState<number>(curYear)
+  const [miniMonth, setMiniMonth] = useState<number>(curMonth)
+
+  // Mini month grid
+  const monthGrid = useMemo(
+    () => buildMonthGrid(miniYear, miniMonth, weekStartsOn),
+    [miniYear, miniMonth, weekStartsOn]
+  )
+
+  // Dates with events in the current mini month
+  const datesWithEvents = useMemo(() => {
+    const set = new Set<string>()
+    for (const ev of events) {
+      set.add(ev.date.slice(0, 10))
+    }
+    return set
+  }, [events])
+
+  // Group upcoming events into Today, Tomorrow, and Upcoming
+  const tomorrowIso = useMemo(() => addDaysIso(todayIso, 1), [todayIso])
+  const nextWeekIso = useMemo(() => addDaysIso(todayIso, 7), [todayIso])
+
+  const { todayEvents, tomorrowEvents, upcomingEvents } = useMemo(() => {
+    const todayList: CalendarEvent[] = []
+    const tomorrowList: CalendarEvent[] = []
+    const upcomingList: CalendarEvent[] = []
+
+    // Sort by date then start time
+    const sorted = [...events].sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date)
+      const aT = a.startTime || "00:00"
+      const bT = b.startTime || "00:00"
+      return aT.localeCompare(bT)
+    })
+
+    for (const ev of sorted) {
+      if (hiddenCategories.has(ev.type?.toLowerCase())) continue
+      const d = ev.date.slice(0, 10)
+      if (d === todayIso) {
+        todayList.push(ev)
+      } else if (d === tomorrowIso) {
+        tomorrowList.push(ev)
+      } else if (d > tomorrowIso && d <= nextWeekIso) {
+        upcomingList.push(ev)
+      }
+    }
+
+    return {
+      todayEvents: todayList,
+      tomorrowEvents: tomorrowList,
+      upcomingEvents: upcomingList,
+    }
+  }, [events, todayIso, tomorrowIso, nextWeekIso, hiddenCategories])
+
+  // Category summary for checkboxes
+  const categoryCounts = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const ev of events) {
+      const type = ev.type || "General"
+      map.set(type, (map.get(type) || 0) + 1)
+    }
+    return Array.from(map.entries())
+  }, [events])
+
+  if (!isOpen) return null
+
+  const handleMiniPrev = () => {
+    if (miniMonth === 1) {
+      setMiniYear((y) => y - 1)
+      setMiniMonth(12)
+    } else {
+      setMiniMonth((m) => m - 1)
+    }
+  }
+
+  const handleMiniNext = () => {
+    if (miniMonth === 12) {
+      setMiniYear((y) => y + 1)
+      setMiniMonth(1)
+    } else {
+      setMiniMonth((m) => m + 1)
+    }
+  }
+
+  return (
+    <div className="absolute inset-y-0 right-0 z-40 w-72 sm:w-80 flex flex-col bg-[var(--sq-paper)] text-[var(--sq-ink)] border-l border-[var(--sq-border)] shadow-xl select-none animate-in slide-in-from-right duration-200">
+      {/* Drawer Header */}
+      <div className="flex items-center justify-between px-3 py-2.5 border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/30">
+        <div className="flex items-center gap-1.5 font-bold text-xs">
+          <ListBullets size={16} weight="bold" />
+          <span>Agenda & Date Navigator</span>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
+          title="Close drawer"
+        >
+          <X size={15} />
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-4 text-xs">
+        {/* 1. Mini Month Calendar */}
+        <div className="rounded-md border border-[var(--sq-border)] p-2.5 bg-[var(--sq-paper)] shadow-2xs">
+          {/* Month Header Navigation */}
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-bold text-xs">
+              {formatMonthYear(miniYear, miniMonth)}
+            </span>
+            <div className="flex items-center gap-0.5">
+              <button
+                type="button"
+                onClick={handleMiniPrev}
+                className="p-1 rounded hover:bg-[var(--sq-shade)]"
+              >
+                <CaretLeft size={12} weight="bold" />
+              </button>
+              <button
+                type="button"
+                onClick={handleMiniNext}
+                className="p-1 rounded hover:bg-[var(--sq-shade)]"
+              >
+                <CaretRight size={12} weight="bold" />
+              </button>
+            </div>
+          </div>
+
+          {/* DOW headers */}
+          <div className="grid grid-cols-7 text-center text-[10px] opacity-60 mb-1">
+            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+              <span key={i}>{d}</span>
+            ))}
+          </div>
+
+          {/* Grid Cells */}
+          <div className="grid grid-cols-7 gap-0.5 text-center text-[11px]">
+            {monthGrid.map((cell) => {
+              const isSelected = cell.date === selectedDate
+              const hasEvents = datesWithEvents.has(cell.date)
+              return (
+                <button
+                  key={cell.date}
+                  type="button"
+                  onClick={() => onSelectDate(cell.date)}
+                  className={cn(
+                    "h-6 rounded relative flex items-center justify-center transition-colors font-medium",
+                    !cell.isCurrentMonth && "opacity-30",
+                    cell.isToday && "font-bold text-red-600 dark:text-red-400",
+                    isSelected
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold"
+                      : "hover:bg-[var(--sq-shade)]"
+                  )}
+                >
+                  <span>{cell.dayNumber}</span>
+                  {hasEvents && !isSelected && (
+                    <span className="absolute bottom-0.5 w-1 h-1 rounded-full bg-[var(--sq-ink)] opacity-70" />
+                  )}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* 2. Category Filter Toggles */}
+        {categoryCounts.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+              Calendars & Layers
+            </span>
+            <div className="flex flex-col gap-1">
+              {categoryCounts.map(([cat, count]) => {
+                const isHidden = hiddenCategories.has(cat.toLowerCase())
+                return (
+                  <label
+                    key={cat}
+                    className="flex items-center justify-between p-1.5 rounded hover:bg-[var(--sq-shade)] cursor-pointer transition-colors"
+                  >
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={!isHidden}
+                        onChange={() => onToggleCategory(cat.toLowerCase())}
+                        className="rounded border-[var(--sq-border)]"
+                      />
+                      <span className="font-medium text-xs">{cat}</span>
+                    </div>
+                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[var(--sq-shade)] font-mono opacity-70">
+                      {count}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 3. Upcoming Agenda List */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
+              Upcoming Schedule
+            </span>
+            <button
+              type="button"
+              onClick={() => onNewEventAtDate(todayIso)}
+              className="text-[11px] font-bold text-blue-600 hover:underline"
+            >
+              + Add Event
+            </button>
+          </div>
+
+          {/* Today Group */}
+          <div>
+            <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1 flex items-center gap-1">
+              <span>Today</span>
+              <span className="text-[10px] opacity-60 font-normal">({todayIso})</span>
+            </div>
+            {todayEvents.length === 0 ? (
+              <div className="p-2 rounded bg-[var(--sq-shade)]/30 text-[11px] opacity-60 italic">
+                No events scheduled for today
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {todayEvents.map((ev) => (
+                  <AgendaItem
+                    key={ev.id}
+                    event={ev}
+                    onClick={() => onEventClick(ev)}
+                    onToggleComplete={() => onToggleComplete(ev.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tomorrow Group */}
+          <div>
+            <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1">
+              Tomorrow
+            </div>
+            {tomorrowEvents.length === 0 ? (
+              <div className="p-2 rounded bg-[var(--sq-shade)]/30 text-[11px] opacity-60 italic">
+                No events scheduled for tomorrow
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {tomorrowEvents.map((ev) => (
+                  <AgendaItem
+                    key={ev.id}
+                    event={ev}
+                    onClick={() => onEventClick(ev)}
+                    onToggleComplete={() => onToggleComplete(ev.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* This Week Group */}
+          {upcomingEvents.length > 0 && (
+            <div>
+              <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1">
+                Later This Week
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {upcomingEvents.map((ev) => (
+                  <AgendaItem
+                    key={ev.id}
+                    event={ev}
+                    onClick={() => onEventClick(ev)}
+                    onToggleComplete={() => onToggleComplete(ev.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AgendaItem({
+  event,
+  onClick,
+  onToggleComplete,
+}: {
+  event: CalendarEvent
+  onClick: () => void
+  onToggleComplete: () => void
+}) {
+  const isCompleted = event.status === "completed"
+  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
+
+  return (
+    <div
+      onClick={onClick}
+      className={cn(
+        "p-2 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)] flex items-start gap-2 cursor-pointer transition-all",
+        isCompleted && "opacity-60 bg-[var(--sq-shade)]/30"
+      )}
+      style={{
+        borderLeftWidth: "3px",
+        borderLeftColor: colorPreset.hex,
+      }}
+    >
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation()
+          onToggleComplete()
+        }}
+        className={cn(
+          "mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors",
+          isCompleted
+            ? "bg-emerald-600 text-white border-emerald-700"
+            : "border-[var(--sq-border)] hover:border-[var(--sq-ink)]"
+        )}
+      >
+        {isCompleted && <CheckCircle size={12} weight="fill" />}
+      </button>
+
+      <div className="flex-1 min-w-0">
+        <div
+          className={cn(
+            "font-semibold text-xs truncate",
+            isCompleted && "line-through"
+          )}
+        >
+          {event.title}
+        </div>
+        <div className="text-[10px] opacity-70 flex items-center gap-1.5 mt-0.5">
+          <Clock size={10} />
+          <span>
+            {event.isAllDay ? "All Day" : event.startTime || "Timed"}
+          </span>
+          {event.location && (
+            <span className="truncate flex items-center gap-0.5">
+              • <MapPin size={9} /> {event.location}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/calendar/calendar-event-card.tsx`
+
+- **Path**: `components/calendar/calendar-event-card.tsx`
+- **Lines**: 274
+- **Size**: 9664 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Event Details Peek Card (Android & Windows Style)
+//
+// Shows complete event metadata, status, recurrence, location, and quick actions
+// without immediately popping open the form editor.
+// ---------------------------------------------------------------------------
+
+import type { CalendarEvent } from "@/lib/calendar/types"
+import { CALENDAR_COLORS } from "@/lib/calendar/types"
+import { formatTime, parseDateIso } from "@/lib/calendar/date-utils"
+import { exportToIcs, downloadIcsFile } from "@/lib/calendar/ics"
+import {
+  Clock,
+  CalendarBlank,
+  MapPin,
+  Tag,
+  CheckCircle,
+  PencilSimple,
+  Trash,
+  Copy,
+  DownloadSimple,
+  X,
+  Bell,
+  ArrowsClockwise,
+  WarningCircle,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+interface CalendarEventCardProps {
+  event: CalendarEvent | null
+  isOpen: boolean
+  onClose: () => void
+  onEdit: (event: CalendarEvent) => void
+  onToggleComplete: (id: string) => void
+  onDuplicate: (event: CalendarEvent) => void
+  onDelete: (id: string) => void
+}
+
+export function CalendarEventCard({
+  event,
+  isOpen,
+  onClose,
+  onEdit,
+  onToggleComplete,
+  onDuplicate,
+  onDelete,
+}: CalendarEventCardProps) {
+  if (!isOpen || !event) return null
+
+  const isCompleted = event.status === "completed"
+  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
+
+  // Formatted date string
+  const { year, month, day } = parseDateIso(event.date)
+  const dateObj = new Date(year, month - 1, day)
+  const dateLabel = dateObj.toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  })
+
+  // Time label
+  let timeLabel = "All day"
+  if (!event.isAllDay && event.startTime) {
+    const sStr = event.startTime
+    const eStr = event.endTime || ""
+    timeLabel = eStr ? `${sStr} – ${eStr}` : sStr
+  }
+
+  // Duration label
+  const durationText =
+    event.durationMinutes >= 60
+      ? `${Math.floor(event.durationMinutes / 60)}h${
+          event.durationMinutes % 60 > 0 ? ` ${event.durationMinutes % 60}m` : ""
+        }`
+      : `${event.durationMinutes || 60}m`
+
+  const handleExportSingle = () => {
+    const icsData = exportToIcs([event], event.title)
+    downloadIcsFile(`${event.title.replace(/\s+/g, "_")}.ics`, icsData)
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-sm rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)] shadow-2xl transition-all"
+        style={{
+          boxShadow: "5px 5px 0px var(--sq-ink)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top Color Banner */}
+        <div
+          className="h-2.5 w-full"
+          style={{ backgroundColor: colorPreset.hex }}
+        />
+
+        <div className="p-4 flex flex-col gap-3">
+          {/* Header toolbar */}
+          <div className="flex items-center justify-between">
+            {/* Category tag */}
+            <div className="flex items-center gap-1.5">
+              <span
+                className="w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: colorPreset.hex }}
+              />
+              <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">
+                {event.type || "Event"}
+              </span>
+              {event.priority === "High" && (
+                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-800 border border-red-300">
+                  Urgent
+                </span>
+              )}
+            </div>
+
+            {/* Quick Actions Toolbar */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onEdit(event)}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
+                title="Edit event"
+              >
+                <PencilSimple size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => onDuplicate(event)}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
+                title="Duplicate event"
+              >
+                <Copy size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={handleExportSingle}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
+                title="Export to .ics"
+              >
+                <DownloadSimple size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm(`Delete "${event.title}"?`)) {
+                    onDelete(event.id)
+                    onClose()
+                  }
+                }}
+                className="p-1 rounded hover:bg-red-100 hover:text-red-700 transition-colors"
+                title="Delete event"
+              >
+                <Trash size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors ml-1"
+                title="Close"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* Event Title with Completion Checkbox */}
+          <div className="flex items-start gap-2.5">
+            <button
+              type="button"
+              onClick={() => onToggleComplete(event.id)}
+              className={cn(
+                "mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors",
+                isCompleted
+                  ? "bg-emerald-600 text-white border-emerald-700"
+                  : "border-[var(--sq-border)] hover:border-[var(--sq-ink)] bg-[var(--sq-paper)]"
+              )}
+              title={isCompleted ? "Mark incomplete" : "Mark completed"}
+            >
+              {isCompleted && <CheckCircle size={14} weight="fill" />}
+            </button>
+
+            <div className="flex-1">
+              <h2
+                className={cn(
+                  "text-base font-bold leading-tight",
+                  isCompleted && "line-through opacity-60"
+                )}
+              >
+                {event.title}
+              </h2>
+              {isCompleted && (
+                <span className="text-[10px] text-emerald-700 font-semibold">
+                  ✓ Completed
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Details list */}
+          <div className="flex flex-col gap-2 pt-2 border-t border-[var(--sq-border)] text-xs">
+            {/* Date & Time */}
+            <div className="flex items-start gap-2">
+              <CalendarBlank size={14} className="mt-0.5 opacity-60 shrink-0" />
+              <div>
+                <div className="font-medium">{dateLabel}</div>
+                <div className="text-[11px] opacity-70 flex items-center gap-1.5">
+                  <Clock size={12} />
+                  <span>{timeLabel}</span>
+                  {!event.isAllDay && <span>({durationText})</span>}
+                </div>
+              </div>
+            </div>
+
+            {/* Recurrence */}
+            {event.recurrence && event.recurrence !== "none" && (
+              <div className="flex items-center gap-2 text-[11px] opacity-80">
+                <ArrowsClockwise size={13} className="shrink-0" />
+                <span className="capitalize">Repeats {event.recurrence}</span>
+              </div>
+            )}
+
+            {/* Reminder alert */}
+            {typeof event.reminderMinutes === "number" && event.reminderMinutes >= 0 && (
+              <div className="flex items-center gap-2 text-[11px] opacity-80">
+                <Bell size={13} className="shrink-0 text-amber-600" />
+                <span>
+                  {event.reminderMinutes === 0
+                    ? "Alert at time of event"
+                    : `Alert ${event.reminderMinutes} minutes before`}
+                </span>
+              </div>
+            )}
+
+            {/* Location */}
+            {event.location && (
+              <div className="flex items-center gap-2 text-[11px]">
+                <MapPin size={13} className="opacity-60 shrink-0" />
+                <span className="font-medium underline decoration-dotted">
+                  {event.location}
+                </span>
+              </div>
+            )}
+
+            {/* Description / Notes */}
+            {event.description && (
+              <div className="mt-1 p-2 rounded bg-[var(--sq-shade)]/50 border border-[var(--sq-border)]/60 text-[11px] whitespace-pre-wrap leading-relaxed">
+                {event.description}
+              </div>
+            )}
+          </div>
+
+          {/* Footer Action: Quick Edit Button */}
+          <div className="pt-2 border-t border-[var(--sq-border)] flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => onEdit(event)}
+              className="px-3 py-1.5 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold text-xs hover:opacity-90 transition-opacity"
+            >
+              Edit Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
 ### File: `components/calendar/calendar-event-editor.tsx`
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
-- **Lines**: 473
-- **Size**: 17418 bytes
+- **Lines**: 535
+- **Size**: 20261 bytes
 
 ```tsx
 "use client"
@@ -44879,10 +45594,11 @@ export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: C
 
 import { useEffect, useState, useMemo, useRef } from "react"
 import type { CalendarEvent, CalendarEventType, CalendarEventPriority, CalendarRecurrence } from "@/lib/calendar/types"
+import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { checkEventConflict, getAvailableFreeSlots } from "@/lib/calendar/event-store"
 import { parseTimeToMinutes, minutesToTimeString, formatTime } from "@/lib/calendar/date-utils"
 import { Button } from "@/components/ui/button"
-import { X, WarningCircle, Clock, Trash, CalendarBlank, MapPin, Sparkle, Tag } from "@phosphor-icons/react"
+import { X, WarningCircle, Clock, Trash, CalendarBlank, MapPin, Sparkle, Tag, Bell, PaintBrush } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface CalendarEventEditorProps {
@@ -44931,11 +45647,14 @@ export function CalendarEventEditor({
 }: CalendarEventEditorProps) {
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [startTime, setStartTime] = useState("09:00")
   const [endTime, setEndTime] = useState("10:00")
   const [isAllDay, setIsAllDay] = useState(false)
   const [type, setType] = useState<CalendarEventType>("Study")
   const [priority, setPriority] = useState<CalendarEventPriority>("Medium")
+  const [color, setColor] = useState<string>("default")
+  const [reminderMinutes, setReminderMinutes] = useState<number>(15)
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
   const [recurrence, setRecurrence] = useState<CalendarRecurrence>("none")
@@ -44950,22 +45669,28 @@ export function CalendarEventEditor({
     if (event) {
       setTitle(event.title || "")
       setDate(event.date || initialDate || "")
+      setEndDate(event.endDate || "")
       setStartTime(event.startTime || "09:00")
       setEndTime(event.endTime || "10:00")
       setIsAllDay(event.isAllDay ?? false)
       setType((event.type as CalendarEventType) || "Study")
       setPriority(event.priority || "Medium")
+      setColor(event.color || "default")
+      setReminderMinutes(typeof event.reminderMinutes === "number" ? event.reminderMinutes : 15)
       setDescription(event.description || "")
       setLocation(event.location || "")
       setRecurrence(event.recurrence || "none")
     } else {
       setTitle("")
       setDate(initialDate || new Date().toISOString().slice(0, 10))
+      setEndDate("")
       setStartTime(initialStartTime || "09:00")
       setEndTime(initialEndTime || "10:00")
       setIsAllDay(false)
       setType("Study")
       setPriority("Medium")
+      setColor("default")
+      setReminderMinutes(15)
       setDescription("")
       setLocation("")
       setRecurrence("none")
@@ -45028,12 +45753,15 @@ export function CalendarEventEditor({
     onSave({
       title: trimmedTitle,
       date,
+      endDate: endDate && endDate > date ? endDate : undefined,
       startTime: isAllDay ? undefined : startTime,
       endTime: isAllDay ? undefined : endTime,
       durationMinutes: duration,
       isAllDay,
       type,
       priority,
+      color,
+      reminderMinutes: reminderMinutes >= 0 ? reminderMinutes : undefined,
       description: description.trim() || undefined,
       location: location.trim() || undefined,
       recurrence,
@@ -45235,22 +45963,71 @@ export function CalendarEventEditor({
             </div>
           </div>
 
-          {/* Recurrence */}
+          {/* Recurrence & Reminder */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
+                Repeat
+              </label>
+              <select
+                value={recurrence}
+                onChange={(e) => setRecurrence(e.target.value as CalendarRecurrence)}
+                className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
+              >
+                {RECURRENCES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70 flex items-center gap-1">
+                <Bell size={12} /> Reminder
+              </label>
+              <select
+                value={reminderMinutes}
+                onChange={(e) => setReminderMinutes(parseInt(e.target.value, 10))}
+                className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
+              >
+                <option value={-1}>No alert</option>
+                <option value={0}>At time of event</option>
+                <option value={5}>5m before</option>
+                <option value={10}>10m before</option>
+                <option value={15}>15m before</option>
+                <option value={30}>30m before</option>
+                <option value={60}>1h before</option>
+                <option value={1440}>1d before</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Color Tag Picker */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
-              Repeat
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70 flex items-center gap-1">
+              <PaintBrush size={12} /> Color Tag
             </label>
-            <select
-              value={recurrence}
-              onChange={(e) => setRecurrence(e.target.value as CalendarRecurrence)}
-              className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
-            >
-              {RECURRENCES.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2 flex-wrap">
+              {CALENDAR_COLORS.map((c) => {
+                const isSelected = color === c.id
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setColor(c.id)}
+                    title={c.name}
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer",
+                      isSelected
+                        ? "ring-2 ring-offset-2 ring-[var(--sq-ink)] scale-110"
+                        : "opacity-80 hover:opacity-100 hover:scale-105"
+                    )}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                )
+              })}
+            </div>
           </div>
 
           {/* Location */}
@@ -45347,8 +46124,8 @@ export function CalendarEventEditor({
 ### File: `components/calendar/calendar-event-pill.tsx`
 
 - **Path**: `components/calendar/calendar-event-pill.tsx`
-- **Lines**: 86
-- **Size**: 2975 bytes
+- **Lines**: 91
+- **Size**: 3248 bytes
 
 ```tsx
 "use client"
@@ -45362,6 +46139,7 @@ export function CalendarEventEditor({
 
 import { useState } from "react"
 import type { CalendarEvent } from "@/lib/calendar/types"
+import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { cn } from "@/lib/utils"
 import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil } from "@phosphor-icons/react"
 
@@ -45383,6 +46161,7 @@ export function CalendarEventPill({
   onDragStart,
 }: CalendarEventPillProps) {
   const isCompleted = event.status === "completed"
+  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color)
 
   return (
     <div
@@ -45399,6 +46178,9 @@ export function CalendarEventPill({
       )}
       style={{
         boxShadow: "1px 1px 0px rgba(0,0,0,0.06)",
+        ...(colorPreset && colorPreset.id !== "default"
+          ? { borderLeftWidth: "3px", borderLeftColor: colorPreset.hex }
+          : {}),
       }}
       title={`${event.title}${event.startTime ? ` (${event.startTime})` : ""}`}
     >
@@ -45443,8 +46225,8 @@ export function CalendarEventPill({
 ### File: `components/calendar/calendar-header.tsx`
 
 - **Path**: `components/calendar/calendar-header.tsx`
-- **Lines**: 216
-- **Size**: 7756 bytes
+- **Lines**: 302
+- **Size**: 10914 bytes
 
 ```tsx
 "use client"
@@ -45456,17 +46238,21 @@ export function CalendarEventPill({
 // filters, search, and a dedicated drag-handle for canvas positioning.
 // ---------------------------------------------------------------------------
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import type { CalendarView } from "@/lib/calendar/types"
 import {
   CaretLeft,
   CaretRight,
+  CaretDown,
   Plus,
   MagnifyingGlass,
   X,
   DotsSixVertical,
   CalendarBlank,
   Funnel,
+  ListBullets,
+  DownloadSimple,
+  UploadSimple,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -45483,6 +46269,11 @@ interface CalendarHeaderProps {
   onSearchChange: (query: string) => void
   onNewEvent: () => void
   nodeWidth: number
+  onTitleClick?: () => void
+  onToggleAgenda?: () => void
+  isAgendaOpen?: boolean
+  onExportIcs?: () => void
+  onImportIcs?: (content: string) => void
 }
 
 const FILTER_OPTIONS = [
@@ -45510,15 +46301,44 @@ export function CalendarHeader({
   onSearchChange,
   onNewEvent,
   nodeWidth,
+  onTitleClick,
+  onToggleAgenda,
+  isAgendaOpen,
+  onExportIcs,
+  onImportIcs,
 }: CalendarHeaderProps) {
   const [showSearch, setShowSearch] = useState(false)
   const isCompact = nodeWidth < 600
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const text = event.target?.result as string
+      if (text && onImportIcs) {
+        onImportIcs(text)
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ""
+  }
 
   return (
     <div className="flex flex-col border-b border-[var(--sq-border)] bg-[var(--sq-paper)] select-none">
+      {/* Hidden file input for .ics import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".ics,text/calendar"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Top drag handle & title row */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--sq-border)]/60 bg-[var(--sq-shade)]/30">
-        {/* Left: Drag Handle & Title */}
+        {/* Left: Drag Handle, Clickable Title, Agenda Button */}
         <div className="flex items-center gap-2">
           {/* Canvas Drag Handle: user can drag node from here */}
           <div
@@ -45529,12 +46349,37 @@ export function CalendarHeader({
             <DotsSixVertical size={16} weight="bold" />
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <CalendarBlank size={16} weight="bold" className="text-[var(--sq-ink)]" />
+          {/* Windows-style clickable Month/Year title */}
+          <button
+            type="button"
+            onClick={onTitleClick}
+            className="flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-[var(--sq-shade)] transition-colors cursor-pointer text-left"
+            title="Click to jump to another month or year"
+          >
+            <CalendarBlank size={16} weight="bold" className="text-[var(--sq-ink)] shrink-0" />
             <h1 className="text-sm font-bold tracking-tight text-[var(--sq-ink)]">
               {title}
             </h1>
-          </div>
+            <CaretDown size={11} weight="bold" className="opacity-60" />
+          </button>
+
+          {/* Agenda / Mini-Calendar Toggle Button */}
+          {onToggleAgenda && (
+            <button
+              type="button"
+              onClick={onToggleAgenda}
+              className={cn(
+                "flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium border transition-colors",
+                isAgendaOpen
+                  ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] font-bold shadow-2xs"
+                  : "border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              )}
+              title="Toggle Agenda & Date Navigator"
+            >
+              <ListBullets size={13} weight="bold" />
+              {!isCompact && <span>Agenda</span>}
+            </button>
+          )}
         </div>
 
         {/* Right: View Mode Toggle (MONTH | WEEK) */}
@@ -45645,6 +46490,29 @@ export function CalendarHeader({
               title="Search events"
             >
               <MagnifyingGlass size={13} weight="bold" />
+            </button>
+          )}
+
+          {/* iCalendar Export & Import */}
+          {onExportIcs && (
+            <button
+              type="button"
+              onClick={onExportIcs}
+              className="p-1 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] opacity-80 hover:opacity-100 transition-colors"
+              title="Export calendar to .ics (Outlook / Google Calendar / Apple)"
+            >
+              <DownloadSimple size={13} weight="bold" />
+            </button>
+          )}
+
+          {onImportIcs && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-1 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] opacity-80 hover:opacity-100 transition-colors"
+              title="Import .ics calendar file"
+            >
+              <UploadSimple size={13} weight="bold" />
             </button>
           )}
 
@@ -45913,6 +46781,358 @@ export function CalendarMonthView({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/calendar/calendar-month-year-picker.tsx`
+
+- **Path**: `components/calendar/calendar-month-year-picker.tsx`
+- **Lines**: 207
+- **Size**: 6852 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Windows-Style Month & Year Quick Jump Picker
+//
+// Fast date jumping matching Windows Calendar:
+// Clicking the month title opens a 12-month grid with decade navigation.
+// ---------------------------------------------------------------------------
+
+import { useState } from "react"
+import { CaretLeft, CaretRight, X, CalendarCheck } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+interface MonthYearPickerProps {
+  isOpen: boolean
+  currentYear: number
+  currentMonth: number // 1-indexed (1..12)
+  onSelect: (year: number, month: number) => void
+  onClose: () => void
+}
+
+const MONTHS_SHORT = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+]
+
+export function CalendarMonthYearPicker({
+  isOpen,
+  currentYear,
+  currentMonth,
+  onSelect,
+  onClose,
+}: MonthYearPickerProps) {
+  // Mode: "months" (picking month within year) or "years" (picking year within decade)
+  const [mode, setMode] = useState<"months" | "years">("months")
+  const [pickerYear, setPickerYear] = useState<number>(currentYear)
+
+  if (!isOpen) return null
+
+  // Calculate 12-year decade window (e.g. 2020 - 2031)
+  const decadeStart = Math.floor(pickerYear / 10) * 10
+  const decadeYears: number[] = []
+  for (let y = decadeStart - 1; y <= decadeStart + 10; y++) {
+    decadeYears.push(y)
+  }
+
+  const handlePrev = () => {
+    if (mode === "months") {
+      setPickerYear((prev) => prev - 1)
+    } else {
+      setPickerYear((prev) => prev - 10)
+    }
+  }
+
+  const handleNext = () => {
+    if (mode === "months") {
+      setPickerYear((prev) => prev + 1)
+    } else {
+      setPickerYear((prev) => prev + 10)
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-72 rounded-lg p-4 bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)] shadow-xl"
+        style={{
+          boxShadow: "4px 4px 0px var(--sq-ink)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header navigation */}
+        <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-2 mb-3">
+          <button
+            type="button"
+            onClick={() => setMode(mode === "months" ? "years" : "months")}
+            className="px-2 py-0.5 rounded text-sm font-bold hover:bg-[var(--sq-shade)] transition-colors flex items-center gap-1"
+          >
+            {mode === "months" ? (
+              <span>{pickerYear}</span>
+            ) : (
+              <span>
+                {decadeStart} – {decadeStart + 9}
+              </span>
+            )}
+            <span className="text-[10px] opacity-60">
+              {mode === "months" ? "(Change Year)" : "(Back to Months)"}
+            </span>
+          </button>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={handlePrev}
+              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              title="Previous"
+            >
+              <CaretLeft size={14} weight="bold" />
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              title="Next"
+            >
+              <CaretRight size={14} weight="bold" />
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] ml-1"
+              title="Close"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* Grid: Months or Years */}
+        {mode === "months" ? (
+          <div className="grid grid-cols-3 gap-2">
+            {MONTHS_SHORT.map((mName, idx) => {
+              const mIndex = idx + 1
+              const isSelected = pickerYear === currentYear && mIndex === currentMonth
+              return (
+                <button
+                  key={mName}
+                  type="button"
+                  onClick={() => {
+                    onSelect(pickerYear, mIndex)
+                    onClose()
+                  }}
+                  className={cn(
+                    "py-2.5 text-xs font-semibold rounded-md border transition-all text-center",
+                    isSelected
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] font-bold shadow-xs"
+                      : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+                  )}
+                >
+                  {mName}
+                </button>
+              )
+            })}
+          </div>
+        ) : (
+          <div className="grid grid-cols-3 gap-2">
+            {decadeYears.map((yr) => {
+              const isCurrentDecade = yr >= decadeStart && yr <= decadeStart + 9
+              const isSelected = yr === pickerYear
+              return (
+                <button
+                  key={yr}
+                  type="button"
+                  onClick={() => {
+                    setPickerYear(yr)
+                    setMode("months")
+                  }}
+                  className={cn(
+                    "py-2 text-xs rounded-md border transition-all text-center",
+                    isSelected
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] font-bold shadow-xs"
+                      : !isCurrentDecade
+                      ? "opacity-40 border-transparent hover:bg-[var(--sq-shade)]"
+                      : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)] font-medium"
+                  )}
+                >
+                  {yr}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Footer: Jump to Current Month */}
+        <div className="mt-3 pt-2 border-t border-[var(--sq-border)] flex items-center justify-between text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              const now = new Date()
+              onSelect(now.getFullYear(), now.getMonth() + 1)
+              onClose()
+            }}
+            className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[var(--sq-shade)] font-semibold transition-colors text-[11px]"
+          >
+            <CalendarCheck size={14} weight="bold" />
+            <span>This Month</span>
+          </button>
+          <span className="text-[10px] opacity-60">Windows Calendar Style</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/calendar/calendar-reminder-toast.tsx`
+
+- **Path**: `components/calendar/calendar-reminder-toast.tsx`
+- **Lines**: 125
+- **Size**: 4375 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Real-time Event Reminder Toast & Notification
+//
+// Matches Windows Action Center and Android notifications:
+// Triggers visual banner + synthesised audio chime when an event is due.
+// ---------------------------------------------------------------------------
+
+import { useEffect } from "react"
+import type { CalendarEvent } from "@/lib/calendar/types"
+import { Bell, Clock, X, Eye } from "@phosphor-icons/react"
+
+interface ReminderToastProps {
+  event: CalendarEvent | null
+  minutesBefore: number
+  onDismiss: () => void
+  onView: (event: CalendarEvent) => void
+}
+
+/**
+ * Synthesizes a subtle, pleasant calendar notification chime using Web Audio API.
+ * 100% offline, requires no external sound files.
+ */
+function playChime() {
+  try {
+    if (typeof window === "undefined") return
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextClass) return
+    const ctx = new AudioContextClass()
+
+    const now = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = "sine"
+    osc.frequency.setValueAtTime(587.33, now) // D5
+    osc.frequency.setValueAtTime(880.0, now + 0.12) // A5
+
+    gain.gain.setValueAtTime(0.001, now)
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.05)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.45)
+  } catch {}
+}
+
+export function CalendarReminderToast({
+  event,
+  minutesBefore,
+  onDismiss,
+  onView,
+}: ReminderToastProps) {
+  useEffect(() => {
+    if (!event) return
+    playChime()
+
+    // Request & trigger browser notification if available
+    try {
+      if (typeof window !== "undefined" && "Notification" in window) {
+        if (Notification.permission === "granted") {
+          new Notification(`Reminder: ${event.title}`, {
+            body: minutesBefore === 0 ? "Event is starting now" : `Starts in ${minutesBefore} minutes (${event.startTime || "Today"})`,
+            icon: "/icon.png",
+          })
+        }
+      }
+    } catch {}
+  }, [event, minutesBefore])
+
+  if (!event) return null
+
+  return (
+    <div className="absolute top-3 right-3 z-50 max-w-sm rounded-lg border-2 border-[var(--sq-ink)] bg-[var(--sq-paper)] text-[var(--sq-ink)] shadow-2xl p-3.5 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+      <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 shrink-0">
+        <Bell size={20} weight="fill" className="animate-bounce" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+            {minutesBefore === 0 ? "Event Starting Now" : `Upcoming in ${minutesBefore}m`}
+          </span>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="p-0.5 rounded opacity-60 hover:opacity-100"
+          >
+            <X size={13} />
+          </button>
+        </div>
+
+        <h4 className="font-bold text-xs truncate mt-0.5">{event.title}</h4>
+
+        <div className="flex items-center gap-1.5 text-[11px] opacity-70 mt-1">
+          <Clock size={11} />
+          <span>{event.startTime ? `${event.startTime} (${event.date})` : event.date}</span>
+        </div>
+
+        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--sq-border)]">
+          <button
+            type="button"
+            onClick={() => onView(event)}
+            className="px-2 py-1 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
+          >
+            <Eye size={12} />
+            <span>View Details</span>
+          </button>
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="px-2 py-1 rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)] text-[10px] font-medium transition-colors"
+          >
+            Dismiss
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
@@ -46328,8 +47548,8 @@ export function CalendarWeekView({
 ### File: `components/calendar/functional-calendar.tsx`
 
 - **Path**: `components/calendar/functional-calendar.tsx`
-- **Lines**: 316
-- **Size**: 10644 bytes
+- **Lines**: 542
+- **Size**: 18563 bytes
 
 ```tsx
 "use client"
@@ -46339,10 +47559,12 @@ export function CalendarWeekView({
 //
 // Production-grade interactive calendar supporting Month & Week display modes,
 // event creation/editing, drag-and-drop rescheduling, duration resizing,
-// offline IndexedDB persistence, and academic planner synchronization.
+// Windows-style Month/Year decade jump picker, Android-style Event Peek Card,
+// Collapsible Agenda & Mini-Calendar side drawer, RFC 5545 iCalendar sync,
+// offline Web Audio API reminder chime, and academic planner synchronization.
 // ---------------------------------------------------------------------------
 
-import { useState, useMemo, useCallback } from "react"
+import { useState, useMemo, useCallback, useEffect } from "react"
 import type { ComponentNode } from "@/lib/types"
 import { useSquig } from "@/lib/store"
 import {
@@ -46351,15 +47573,22 @@ import {
   addMonths,
   addWeeksIso,
   getTodayIso,
+  parseTimeToMinutes,
   type WeekStartsOn,
 } from "@/lib/calendar/date-utils"
 import { expandRecurringEvents } from "@/lib/calendar/layout"
 import { useCalendarEvents } from "@/lib/calendar/event-store"
 import type { CalendarEvent, CalendarView } from "@/lib/calendar/types"
+import { exportToIcs, downloadIcsFile, parseIcs } from "@/lib/calendar/ics"
+
 import { CalendarHeader } from "./calendar-header"
 import { CalendarMonthView } from "./calendar-month-view"
 import { CalendarWeekView } from "./calendar-week-view"
 import { CalendarEventEditor } from "./calendar-event-editor"
+import { CalendarMonthYearPicker } from "./calendar-month-year-picker"
+import { CalendarEventCard } from "./calendar-event-card"
+import { CalendarAgendaDrawer } from "./calendar-agenda-drawer"
+import { CalendarReminderToast } from "./calendar-reminder-toast"
 
 export interface FunctionalCalendarProps {
   node: ComponentNode
@@ -46367,7 +47596,7 @@ export interface FunctionalCalendarProps {
   zoom: number
 }
 
-export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarProps) {
+export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCalendarProps) {
   const props = node.props || {}
   const nodeWidth = node.w
   const nodeHeight = node.h
@@ -46391,12 +47620,18 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
   // Filtering & search state
   const [filterType, setFilterType] = useState<string>("all")
   const [searchQuery, setSearchQuery] = useState<string>("")
+  const [hiddenCategories, setHiddenCategories] = useState<Set<string>>(new Set())
 
-  // Event modal state
+  // Event modal & peek state
   const [isEditorOpen, setIsEditorOpen] = useState(false)
   const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null)
+  const [peekEvent, setPeekEvent] = useState<CalendarEvent | null>(null)
   const [slotDate, setSlotDate] = useState<string>(todayIso)
   const [slotStartTime, setSlotStartTime] = useState<string>("09:00")
+
+  // Windows & Android feature dialogs
+  const [isPickerOpen, setIsPickerOpen] = useState(false)
+  const [isAgendaOpen, setIsAgendaOpen] = useState(false)
 
   // Calendar configuration options from props
   const weekStartsOn = ((props.weekStartsOn as string) || "sunday") as WeekStartsOn
@@ -46415,18 +47650,82 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
     toggleComplete,
   } = useCalendarEvents()
 
+  // Real-time reminder monitoring
+  const [activeReminder, setActiveReminder] = useState<{
+    event: CalendarEvent
+    minutesBefore: number
+  } | null>(null)
+  const [dismissedReminders, setDismissedReminders] = useState<Set<string>>(new Set())
+
+  // Periodic reminder checking interval (every 30 seconds)
+  useEffect(() => {
+    const checkReminders = () => {
+      if (typeof window === "undefined") return
+      const now = new Date()
+      const currentIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+      const currentMinutes = now.getHours() * 60 + now.getMinutes()
+
+      for (const ev of events) {
+        if (ev.status === "completed") continue
+        if (typeof ev.reminderMinutes !== "number" || ev.reminderMinutes < 0) continue
+
+        const reminderKey = `${ev.id}_${ev.date}_${ev.reminderMinutes}`
+        if (dismissedReminders.has(reminderKey)) continue
+
+        if (ev.date === currentIso) {
+          let eventStartMinutes = 9 * 60 // Default 9 AM for all-day
+          if (ev.startTime) {
+            eventStartMinutes = parseTimeToMinutes(ev.startTime)
+          }
+
+          const diffMinutes = eventStartMinutes - currentMinutes
+          // Trigger reminder if within configured window (e.g. 10m before) and not past by more than 15m
+          if (diffMinutes <= ev.reminderMinutes && diffMinutes >= -15) {
+            setActiveReminder({ event: ev, minutesBefore: ev.reminderMinutes })
+            break
+          }
+        }
+      }
+    }
+
+    const intervalId = window.setInterval(checkReminders, 30000)
+    checkReminders()
+
+    return () => window.clearInterval(intervalId)
+  }, [events, dismissedReminders])
+
+  // Category toggle handler for Agenda drawer
+  const handleToggleCategory = useCallback((cat: string) => {
+    setHiddenCategories((prev) => {
+      const next = new Set(prev)
+      if (next.has(cat)) {
+        next.delete(cat)
+      } else {
+        next.add(cat)
+      }
+      return next
+    })
+  }, [])
+
   // Filter & Search events
   const filteredEvents = useMemo(() => {
     let result = events
 
-    // 1. Category Filter
+    // 1. Hidden Category Filter (from Agenda drawer)
+    if (hiddenCategories.size > 0) {
+      result = result.filter(
+        (e) => !e.type || !hiddenCategories.has(e.type)
+      )
+    }
+
+    // 2. Category Filter (from Header dropdown)
     if (filterType !== "all") {
       result = result.filter(
         (e) => e.type?.toLowerCase() === filterType.toLowerCase()
       )
     }
 
-    // 2. Text Search Query
+    // 3. Text Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim()
       result = result.filter(
@@ -46437,11 +47736,11 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
       )
     }
 
-    // 3. Expand Recurring Events across visible boundary (+/- 2 months)
+    // 4. Expand Recurring Events across visible boundary (+/- 2 months)
     const rangeStart = `${navYear - 1}-01-01`
     const rangeEnd = `${navYear + 1}-12-31`
     return expandRecurringEvents(result, rangeStart, rangeEnd)
-  }, [events, filterType, searchQuery, navYear])
+  }, [events, hiddenCategories, filterType, searchQuery, navYear])
 
   // View mode switcher: saves to node.props for canvas persistence
   const handleViewChange = useCallback(
@@ -46512,6 +47811,37 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
     setIsEditorOpen(true)
   }, [])
 
+  const handleEditFromPeek = useCallback((event: CalendarEvent) => {
+    setPeekEvent(null)
+    setEditingEvent(event)
+    setIsEditorOpen(true)
+  }, [])
+
+  const handleDuplicateEvent = useCallback(
+    (event: CalendarEvent) => {
+      createEvent({
+        title: `${event.title} (Copy)`,
+        date: event.date,
+        endDate: event.endDate,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        durationMinutes: event.durationMinutes || 60,
+        isAllDay: event.isAllDay ?? false,
+        type: event.type || "Study",
+        priority: event.priority || "Medium",
+        description: event.description,
+        location: event.location,
+        url: event.url,
+        recurrence: event.recurrence || "none",
+        status: "pending",
+        color: event.color || "blue",
+        reminderMinutes: event.reminderMinutes,
+      })
+      setPeekEvent(null)
+    },
+    [createEvent]
+  )
+
   const handleSaveEvent = useCallback(
     (data: Partial<CalendarEvent>) => {
       if (editingEvent) {
@@ -46520,6 +47850,7 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
         createEvent({
           title: data.title || "New Event",
           date: data.date || slotDate,
+          endDate: data.endDate,
           startTime: data.startTime,
           endTime: data.endTime,
           durationMinutes: data.durationMinutes || 60,
@@ -46528,8 +47859,11 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
           priority: data.priority || "Medium",
           description: data.description,
           location: data.location,
+          url: data.url,
           recurrence: data.recurrence || "none",
           status: data.status || "pending",
+          color: data.color || "blue",
+          reminderMinutes: data.reminderMinutes,
         })
       }
       setIsEditorOpen(false)
@@ -46541,13 +47875,53 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
     (id: string) => {
       deleteEvent(id)
       setIsEditorOpen(false)
+      setPeekEvent(null)
     },
     [deleteEvent]
   )
 
+  // RFC 5545 iCalendar Export & Import
+  const handleExportIcs = useCallback(() => {
+    const icsContent = exportToIcs(events)
+    downloadIcsFile("zenithsui-calendar.ics", icsContent)
+  }, [events])
+
+  const handleImportIcs = useCallback(
+    (icsContent: string) => {
+      try {
+        const parsed = parseIcs(icsContent)
+        if (!parsed.length) return
+        for (const item of parsed) {
+          if (item.title && item.date) {
+            createEvent({
+              title: item.title,
+              date: item.date,
+              endDate: item.endDate,
+              startTime: item.startTime,
+              endTime: item.endTime,
+              durationMinutes: item.durationMinutes || 60,
+              isAllDay: item.isAllDay ?? false,
+              type: item.type || "Study",
+              priority: item.priority || "Medium",
+              description: item.description,
+              location: item.location,
+              recurrence: item.recurrence || "none",
+              status: item.status || "pending",
+              color: item.color || "blue",
+              reminderMinutes: item.reminderMinutes,
+            })
+          }
+        }
+      } catch (err) {
+        console.error("Failed to import iCalendar file:", err)
+      }
+    },
+    [createEvent]
+  )
+
   return (
     <div
-      className="w-full h-full flex flex-col rounded-md overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)]"
+      className="w-full h-full flex flex-col rounded-md overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] relative"
       style={{
         boxShadow: selected ? "0 0 0 1px var(--sq-ink), 3px 3px 0px rgba(0,0,0,0.08)" : "2px 2px 0px rgba(0,0,0,0.06)",
       }}
@@ -46594,6 +47968,11 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
         onSearchChange={setSearchQuery}
         onNewEvent={() => handleOpenNewEvent()}
         nodeWidth={nodeWidth}
+        onTitleClick={() => setIsPickerOpen(true)}
+        onToggleAgenda={() => setIsAgendaOpen((prev) => !prev)}
+        isAgendaOpen={isAgendaOpen}
+        onExportIcs={handleExportIcs}
+        onImportIcs={handleImportIcs}
       />
 
       {/* 2. Main Viewport (Month or Week) */}
@@ -46606,7 +47985,7 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
             selectedDate={selectedDate}
             events={filteredEvents}
             onSelectDate={handleSelectDate}
-            onEventClick={handleEditEvent}
+            onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
             onMoveEvent={(id, newDate) => moveEvent(id, newDate)}
             onNewEventAtDate={(d) => handleOpenNewEvent(d)}
@@ -46623,7 +48002,7 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
             events={filteredEvents}
             selectedDate={selectedDate}
             onSelectDate={handleSelectDate}
-            onEventClick={handleEditEvent}
+            onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
             onMoveEvent={(id, newDate, newS, newE) => moveEvent(id, newDate, newS, newE)}
             onResizeEvent={(id, newEndTime) => resizeEvent(id, newEndTime)}
@@ -46632,9 +48011,56 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
             nodeHeight={nodeHeight}
           />
         )}
+
+        {/* 3. Collapsible Agenda & Mini-Calendar Side Drawer */}
+        <CalendarAgendaDrawer
+          isOpen={isAgendaOpen}
+          onClose={() => setIsAgendaOpen(false)}
+          events={events}
+          selectedDate={selectedDate}
+          onSelectDate={handleSelectDate}
+          onEventClick={(ev) => setPeekEvent(ev)}
+          onToggleComplete={toggleComplete}
+          onNewEventAtDate={(d) => handleOpenNewEvent(d)}
+          hiddenCategories={hiddenCategories}
+          onToggleCategory={handleToggleCategory}
+          weekStartsOn={weekStartsOn}
+        />
       </div>
 
-      {/* 3. Event Editor Modal */}
+      {/* 4. Windows-Style Month & Year Quick Jump Picker */}
+      <CalendarMonthYearPicker
+        isOpen={isPickerOpen}
+        currentYear={navYear}
+        currentMonth={navMonth}
+        onSelect={(y, m) => {
+          setNavYear(y)
+          setNavMonth(m)
+          setIsPickerOpen(false)
+        }}
+        onClose={() => setIsPickerOpen(false)}
+      />
+
+      {/* 5. Android/Windows Event Details Peek Card */}
+      <CalendarEventCard
+        event={peekEvent}
+        isOpen={!!peekEvent}
+        onClose={() => setPeekEvent(null)}
+        onEdit={handleEditFromPeek}
+        onToggleComplete={(id) => {
+          toggleComplete(id)
+          if (peekEvent && peekEvent.id === id) {
+            setPeekEvent({
+              ...peekEvent,
+              status: peekEvent.status === "completed" ? "pending" : "completed",
+            })
+          }
+        }}
+        onDuplicate={handleDuplicateEvent}
+        onDelete={handleDeleteEvent}
+      />
+
+      {/* 6. Event Editor Modal */}
       <CalendarEventEditor
         isOpen={isEditorOpen}
         event={editingEvent}
@@ -46643,6 +48069,26 @@ export function FunctionalCalendar({ node, selected, zoom }: FunctionalCalendarP
         onSave={handleSaveEvent}
         onDelete={handleDeleteEvent}
         onClose={() => setIsEditorOpen(false)}
+      />
+
+      {/* 7. Real-Time Reminder Toast & Offline Chime */}
+      <CalendarReminderToast
+        event={activeReminder?.event || null}
+        minutesBefore={activeReminder?.minutesBefore || 0}
+        onDismiss={() => {
+          if (activeReminder) {
+            setDismissedReminders((prev) =>
+              new Set(prev).add(
+                `${activeReminder.event.id}_${activeReminder.event.date}_${activeReminder.minutesBefore}`
+              )
+            )
+            setActiveReminder(null)
+          }
+        }}
+        onView={(ev) => {
+          setPeekEvent(ev)
+          setActiveReminder(null)
+        }}
       />
     </div>
   )
@@ -57582,6 +59028,320 @@ export const useCalendarStore = {
 
 ---
 
+### File: `lib/calendar/ics.ts`
+
+- **Path**: `lib/calendar/ics.ts`
+- **Lines**: 304
+- **Size**: 8744 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — iCalendar (.ics) Interoperability Engine
+//
+// Compliant with RFC 5545 (Internet Calendaring and Scheduling Core Object).
+// Supports exporting to and importing from Windows Calendar, Google Calendar,
+// Outlook, Apple Calendar, and Android Calendar.
+// ---------------------------------------------------------------------------
+
+import type { CalendarEvent, CalendarRecurrence } from "./types"
+import { parseTimeToMinutes, minutesToTimeString, addDaysIso } from "./date-utils"
+
+/**
+ * Escapes text for RFC 5545 iCalendar values.
+ */
+function escapeIcsText(text: string): string {
+  if (!text) return ""
+  return text
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r?\n/g, "\\n")
+}
+
+/**
+ * Unescapes RFC 5545 text back to plain text.
+ */
+function unescapeIcsText(text: string): string {
+  if (!text) return ""
+  return text
+    .replace(/\\n/gi, "\n")
+    .replace(/\\,/g, ",")
+    .replace(/\\;/g, ";")
+    .replace(/\\\\/g, "\\")
+}
+
+/**
+ * Formats a Date or ISO date string into iCalendar DTSTART / DTEND format.
+ */
+function formatIcsDateTime(dateIso: string, timeStr?: string, isAllDay = false): string {
+  const cleanDate = dateIso.slice(0, 10).replace(/-/g, "")
+  if (isAllDay || !timeStr) {
+    return `;VALUE=DATE:${cleanDate}`
+  }
+  const cleanTime = timeStr.replace(":", "").padEnd(4, "0") + "00"
+  return `:${cleanDate}T${cleanTime}`
+}
+
+/**
+ * Exports a list of CalendarEvent objects into an RFC 5545 .ics calendar string.
+ */
+export function exportToIcs(
+  events: CalendarEvent[],
+  calendarName = "Zenithsui Calendar"
+): string {
+  const lines: string[] = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Zenithsui//Functional Calendar//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    `X-WR-CALNAME:${escapeIcsText(calendarName)}`,
+    "X-WR-TIMEZONE:UTC",
+  ]
+
+  const nowStamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z"
+
+  for (const ev of events) {
+    lines.push("BEGIN:VEVENT")
+    lines.push(`UID:${ev.id}@zenithsui.local`)
+    lines.push(`DTSTAMP:${nowStamp}`)
+
+    // Start & End date/time
+    if (ev.isAllDay) {
+      lines.push(`DTSTART${formatIcsDateTime(ev.date, undefined, true)}`)
+      // All day end date is non-inclusive in RFC 5545
+      const nextDay = addDaysIso(ev.endDate || ev.date, 1)
+      lines.push(`DTEND${formatIcsDateTime(nextDay, undefined, true)}`)
+    } else {
+      const startTime = ev.startTime || "09:00"
+      lines.push(`DTSTART${formatIcsDateTime(ev.date, startTime, false)}`)
+      const endTime = ev.endTime || minutesToTimeString(parseTimeToMinutes(startTime) + (ev.durationMinutes || 60))
+      lines.push(`DTEND${formatIcsDateTime(ev.endDate || ev.date, endTime, false)}`)
+    }
+
+    lines.push(`SUMMARY:${escapeIcsText(ev.title)}`)
+
+    if (ev.description) {
+      lines.push(`DESCRIPTION:${escapeIcsText(ev.description)}`)
+    }
+
+    if (ev.location) {
+      lines.push(`LOCATION:${escapeIcsText(ev.location)}`)
+    }
+
+    if (ev.type) {
+      lines.push(`CATEGORIES:${escapeIcsText(ev.type)}`)
+    }
+
+    if (ev.status === "completed") {
+      lines.push("STATUS:COMPLETED")
+    } else {
+      lines.push("STATUS:CONFIRMED")
+    }
+
+    // Priority mapping (1=High, 5=Medium, 9=Low)
+    if (ev.priority === "High") {
+      lines.push("PRIORITY:1")
+    } else if (ev.priority === "Medium") {
+      lines.push("PRIORITY:5")
+    } else if (ev.priority === "Low") {
+      lines.push("PRIORITY:9")
+    }
+
+    // Recurrence Rule
+    if (ev.recurrence && ev.recurrence !== "none") {
+      let rrule = `RRULE:FREQ=${ev.recurrence.toUpperCase()}`
+      if (ev.recurrenceEnd) {
+        const until = ev.recurrenceEnd.replace(/-/g, "") + "T235959Z"
+        rrule += `;UNTIL=${until}`
+      }
+      lines.push(rrule)
+    }
+
+    // Alarm / Reminder (Windows / Android notification alert)
+    if (typeof ev.reminderMinutes === "number" && ev.reminderMinutes >= 0) {
+      lines.push("BEGIN:VALARM")
+      lines.push(`TRIGGER:-PT${ev.reminderMinutes}M`)
+      lines.push("ACTION:DISPLAY")
+      lines.push(`DESCRIPTION:Reminder: ${escapeIcsText(ev.title)}`)
+      lines.push("END:VALARM")
+    }
+
+    lines.push("END:VEVENT")
+  }
+
+  lines.push("END:VCALENDAR")
+  return lines.join("\r\n")
+}
+
+/**
+ * Triggers a browser download of an .ics file.
+ */
+export function downloadIcsFile(filename: string, icsContent: string): void {
+  if (typeof window === "undefined") return
+
+  const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename.endsWith(".ics") ? filename : `${filename}.ics`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+/**
+ * Unfolds folded lines in RFC 5545 iCalendar content.
+ */
+function unfoldIcsLines(raw: string): string[] {
+  const rawLines = raw.split(/\r?\n/)
+  const unfolded: string[] = []
+
+  for (const line of rawLines) {
+    if ((line.startsWith(" ") || line.startsWith("\t")) && unfolded.length > 0) {
+      unfolded[unfolded.length - 1] += line.slice(1)
+    } else if (line.trim()) {
+      unfolded.push(line)
+    }
+  }
+
+  return unfolded
+}
+
+/**
+ * Parses RFC 5545 iCalendar (.ics) string into an array of partial CalendarEvent items.
+ */
+export function parseIcs(icsContent: string): Partial<CalendarEvent>[] {
+  const lines = unfoldIcsLines(icsContent)
+  const events: Partial<CalendarEvent>[] = []
+
+  let inEvent = false
+  let current: Partial<CalendarEvent> = {}
+
+  for (const line of lines) {
+    const upper = line.toUpperCase()
+
+    if (upper.startsWith("BEGIN:VEVENT")) {
+      inEvent = true
+      current = {
+        status: "pending",
+        priority: "Medium",
+        type: "Study",
+        recurrence: "none",
+        durationMinutes: 60,
+      }
+      continue
+    }
+
+    if (upper.startsWith("END:VEVENT")) {
+      if (inEvent && current.title && current.date) {
+        events.push(current)
+      }
+      inEvent = false
+      current = {}
+      continue
+    }
+
+    if (!inEvent) continue
+
+    const colonIdx = line.indexOf(":")
+    if (colonIdx === -1) continue
+
+    const propHeader = line.slice(0, colonIdx)
+    const val = line.slice(colonIdx + 1)
+    const propName = propHeader.split(";")[0].toUpperCase()
+
+    switch (propName) {
+      case "SUMMARY":
+        current.title = unescapeIcsText(val)
+        break
+
+      case "DESCRIPTION":
+        current.description = unescapeIcsText(val)
+        break
+
+      case "LOCATION":
+        current.location = unescapeIcsText(val)
+        break
+
+      case "CATEGORIES": {
+        const cat = unescapeIcsText(val).split(",")[0]
+        if (cat) current.type = cat.trim()
+        break
+      }
+
+      case "DTSTART": {
+        // e.g. 20261015, or 20261015T140000, or 20261015T140000Z
+        const isAllDay = propHeader.includes("VALUE=DATE")
+        const dateMatch = val.match(/(\d{4})(\d{2})(\d{2})/)
+        if (dateMatch) {
+          const y = dateMatch[1]
+          const m = dateMatch[2]
+          const d = dateMatch[3]
+          current.date = `${y}-${m}-${d}`
+        }
+
+        const timeMatch = val.match(/T(\d{2})(\d{2})/)
+        if (timeMatch && !isAllDay) {
+          current.startTime = `${timeMatch[1]}:${timeMatch[2]}`
+          current.isAllDay = false
+        } else {
+          current.isAllDay = true
+        }
+        break
+      }
+
+      case "DTEND": {
+        const timeMatch = val.match(/T(\d{2})(\d{2})/)
+        if (timeMatch && !current.isAllDay) {
+          current.endTime = `${timeMatch[1]}:${timeMatch[2]}`
+        }
+        break
+      }
+
+      case "STATUS":
+        current.status = val.toUpperCase() === "COMPLETED" ? "completed" : "pending"
+        break
+
+      case "PRIORITY": {
+        const pNum = parseInt(val, 10)
+        if (pNum >= 1 && pNum <= 3) current.priority = "High"
+        else if (pNum >= 4 && pNum <= 6) current.priority = "Medium"
+        else if (pNum >= 7) current.priority = "Low"
+        break
+      }
+
+      case "RRULE": {
+        const freqMatch = val.match(/FREQ=([A-Z]+)/i)
+        if (freqMatch) {
+          const freq = freqMatch[1].toLowerCase() as CalendarRecurrence
+          if (["daily", "weekly", "monthly", "yearly"].includes(freq)) {
+            current.recurrence = freq
+          }
+        }
+        break
+      }
+    }
+  }
+
+  // Calculate durationMinutes for parsed events
+  for (const ev of events) {
+    if (ev.startTime && ev.endTime) {
+      const sM = parseTimeToMinutes(ev.startTime)
+      const eM = parseTimeToMinutes(ev.endTime)
+      if (eM > sM) {
+        ev.durationMinutes = eM - sM
+      }
+    }
+  }
+
+  return events
+}
+```
+
+---
+
 ### File: `lib/calendar/layout.ts`
 
 - **Path**: `lib/calendar/layout.ts`
@@ -57796,8 +59556,8 @@ export function clampTimeToDay(minutes: number): number {
 ### File: `lib/calendar/types.ts`
 
 - **Path**: `lib/calendar/types.ts`
-- **Lines**: 73
-- **Size**: 1849 bytes
+- **Lines**: 88
+- **Size**: 2794 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -57805,6 +59565,7 @@ export function clampTimeToDay(minutes: number): number {
 // ---------------------------------------------------------------------------
 
 export type CalendarView = "month" | "week"
+export type { WeekStartsOn } from "./date-utils"
 
 export type CalendarEventType =
   | "Study"
@@ -57835,6 +59596,10 @@ export interface CalendarEvent {
   type: CalendarEventType | string
   status: "pending" | "completed"
   priority: CalendarEventPriority
+  color?: string // custom hex or color id
+  reminderMinutes?: number // minutes before event to alert (e.g. 0, 5, 10, 15, 30, 60, 1440)
+  reminderTriggered?: boolean
+  url?: string
   location?: string
   subjectId?: string
   subjectName?: string
@@ -57845,6 +59610,16 @@ export interface CalendarEvent {
   updatedAt: string
   metadata?: Record<string, unknown>
 }
+
+export const CALENDAR_COLORS = [
+  { id: "default", name: "Default Ink", hex: "var(--sq-ink)", bg: "var(--sq-shade)", border: "var(--sq-border)" },
+  { id: "blue", name: "Blue (Classes)", hex: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
+  { id: "red", name: "Red (Exams)", hex: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
+  { id: "green", name: "Green (Study)", hex: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" },
+  { id: "amber", name: "Amber (Deadlines)", hex: "#d97706", bg: "#fffbeb", border: "#fde68a" },
+  { id: "purple", name: "Purple (Labs)", hex: "#9333ea", bg: "#faf5ff", border: "#e9d5ff" },
+  { id: "pink", name: "Pink (Personal)", hex: "#db2777", bg: "#fdf2f8", border: "#fbcfe8" },
+] as const
 
 export type CreateCalendarEventInput = Omit<CalendarEvent, "id" | "createdAt" | "updatedAt"> & {
   id?: string
@@ -68764,8 +70539,8 @@ runTests().catch((err) => {
 ### File: `scripts/test-functional-calendar.ts`
 
 - **Path**: `scripts/test-functional-calendar.ts`
-- **Lines**: 424
-- **Size**: 17163 bytes
+- **Lines**: 509
+- **Size**: 21005 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -68813,6 +70588,8 @@ import {
 } from "../lib/calendar/event-store.ts"
 
 import type { CalendarEvent } from "../lib/calendar/types.ts"
+import { CALENDAR_COLORS } from "../lib/calendar/types.ts"
+import { exportToIcs, parseIcs } from "../lib/calendar/ics.ts"
 import { getDef, ALL_DEFS } from "../lib/library/registry.ts"
 
 function assert(condition: boolean, message: string) {
@@ -69189,6 +70966,89 @@ const foundByKeyword = ALL_DEFS.filter((d) => d.keywords.includes("schedule") ||
 assert(foundByKeyword.some((d) => d.kind === "functional-calendar"), "Searchable by 'schedule' or 'calendar' keywords")
 
 console.log("✓ Library registry & backward compatibility tests passed.")
+
+// ---------------------------------------------------------------------------
+// 8. RFC 5545 iCalendar (.ics) Export & Import Engine
+// ---------------------------------------------------------------------------
+console.log("-> 8. Testing RFC 5545 iCalendar (.ics) export and import...")
+
+const sampleEvents: CalendarEvent[] = [
+  {
+    id: "ics-test-1",
+    title: "Midterm Examination",
+    description: "Covers chapters 1 through 8 with multiple choice and proofs.",
+    date: "2026-10-15",
+    startTime: "09:00",
+    endTime: "11:00",
+    durationMinutes: 120,
+    isAllDay: false,
+    type: "Exam",
+    priority: "High",
+    status: "pending",
+    recurrence: "none",
+    location: "Hall B, Room 204",
+    reminderMinutes: 30,
+    color: "red",
+  },
+  {
+    id: "ics-test-2",
+    title: "Project Hackathon",
+    date: "2026-10-25",
+    isAllDay: true,
+    type: "Personal",
+    priority: "Medium",
+    status: "completed",
+    recurrence: "weekly",
+    color: "purple",
+  },
+]
+
+// 8a. Test Export
+const icsOutput = exportToIcs(sampleEvents, "Test Calendar")
+assert(icsOutput.includes("BEGIN:VCALENDAR"), "ICS has BEGIN:VCALENDAR")
+assert(icsOutput.includes("VERSION:2.0"), "ICS specifies VERSION:2.0")
+assert(icsOutput.includes("SUMMARY:Midterm Examination"), "ICS contains event title")
+assert(icsOutput.includes("LOCATION:Hall B\\, Room 204"), "ICS escapes commas in location")
+assert(icsOutput.includes("BEGIN:VALARM"), "ICS generates VALARM block for 30m reminder")
+assert(icsOutput.includes("TRIGGER:-PT30M"), "ICS specifies -PT30M trigger")
+assert(icsOutput.includes("RRULE:FREQ=WEEKLY"), "ICS specifies weekly recurrence")
+assert(icsOutput.includes("VALUE=DATE:20261025"), "ICS formats all-day date properly")
+assert(icsOutput.includes("END:VCALENDAR"), "ICS terminates with END:VCALENDAR")
+
+// 8b. Test Parser
+const parsedEvents = parseIcs(icsOutput)
+assert(parsedEvents.length === 2, "Parsed back 2 events from .ics string")
+
+const parsedExam = parsedEvents.find((e) => e.title === "Midterm Examination")
+assert(Boolean(parsedExam), "Found parsed Midterm Examination")
+assert(parsedExam!.date === "2026-10-15", "Parsed date matches 2026-10-15")
+assert(parsedExam!.startTime === "09:00", "Parsed start time 09:00")
+assert(parsedExam!.endTime === "11:00", "Parsed end time 11:00")
+assert(parsedExam!.durationMinutes === 120, "Calculated duration 120 minutes")
+assert(parsedExam!.location === "Hall B, Room 204", "Unescaped location accurately")
+assert(parsedExam!.priority === "High", "Parsed high priority")
+
+const parsedHackathon = parsedEvents.find((e) => e.title === "Project Hackathon")
+assert(Boolean(parsedHackathon), "Found parsed Project Hackathon")
+assert(parsedHackathon!.isAllDay === true, "Identified as all-day event")
+assert(parsedHackathon!.status === "completed", "Identified status completed")
+assert(parsedHackathon!.recurrence === "weekly", "Identified weekly recurrence")
+
+console.log("✓ RFC 5545 iCalendar export and import tests passed.")
+
+// ---------------------------------------------------------------------------
+// 9. Windows & Android Feature Set Verification
+// ---------------------------------------------------------------------------
+console.log("-> 9. Testing Windows & Android calendar presets & features...")
+
+// Color presets
+assert(CALENDAR_COLORS.length >= 7, "At least 7 calendar color tag options")
+const blueColor = CALENDAR_COLORS.find((c) => c.id === "blue")
+assert(Boolean(blueColor && blueColor.hex.startsWith("#")), "Valid blue color preset")
+const redColor = CALENDAR_COLORS.find((c) => c.id === "red")
+assert(Boolean(redColor && redColor.hex.startsWith("#")), "Valid red color preset")
+
+console.log("✓ Windows & Android calendar presets verified.")
 
 console.log("=== All Zenithsui Functional Calendar Tests Passed Successfully! ===")
 ```

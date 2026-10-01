@@ -9,10 +9,11 @@
 
 import { useEffect, useState, useMemo, useRef } from "react"
 import type { CalendarEvent, CalendarEventType, CalendarEventPriority, CalendarRecurrence } from "@/lib/calendar/types"
+import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { checkEventConflict, getAvailableFreeSlots } from "@/lib/calendar/event-store"
 import { parseTimeToMinutes, minutesToTimeString, formatTime } from "@/lib/calendar/date-utils"
 import { Button } from "@/components/ui/button"
-import { X, WarningCircle, Clock, Trash, CalendarBlank, MapPin, Sparkle, Tag } from "@phosphor-icons/react"
+import { X, WarningCircle, Clock, Trash, CalendarBlank, MapPin, Sparkle, Tag, Bell, PaintBrush } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface CalendarEventEditorProps {
@@ -61,11 +62,14 @@ export function CalendarEventEditor({
 }: CalendarEventEditorProps) {
   const [title, setTitle] = useState("")
   const [date, setDate] = useState("")
+  const [endDate, setEndDate] = useState("")
   const [startTime, setStartTime] = useState("09:00")
   const [endTime, setEndTime] = useState("10:00")
   const [isAllDay, setIsAllDay] = useState(false)
   const [type, setType] = useState<CalendarEventType>("Study")
   const [priority, setPriority] = useState<CalendarEventPriority>("Medium")
+  const [color, setColor] = useState<string>("default")
+  const [reminderMinutes, setReminderMinutes] = useState<number>(15)
   const [description, setDescription] = useState("")
   const [location, setLocation] = useState("")
   const [recurrence, setRecurrence] = useState<CalendarRecurrence>("none")
@@ -80,22 +84,28 @@ export function CalendarEventEditor({
     if (event) {
       setTitle(event.title || "")
       setDate(event.date || initialDate || "")
+      setEndDate(event.endDate || "")
       setStartTime(event.startTime || "09:00")
       setEndTime(event.endTime || "10:00")
       setIsAllDay(event.isAllDay ?? false)
       setType((event.type as CalendarEventType) || "Study")
       setPriority(event.priority || "Medium")
+      setColor(event.color || "default")
+      setReminderMinutes(typeof event.reminderMinutes === "number" ? event.reminderMinutes : 15)
       setDescription(event.description || "")
       setLocation(event.location || "")
       setRecurrence(event.recurrence || "none")
     } else {
       setTitle("")
       setDate(initialDate || new Date().toISOString().slice(0, 10))
+      setEndDate("")
       setStartTime(initialStartTime || "09:00")
       setEndTime(initialEndTime || "10:00")
       setIsAllDay(false)
       setType("Study")
       setPriority("Medium")
+      setColor("default")
+      setReminderMinutes(15)
       setDescription("")
       setLocation("")
       setRecurrence("none")
@@ -158,12 +168,15 @@ export function CalendarEventEditor({
     onSave({
       title: trimmedTitle,
       date,
+      endDate: endDate && endDate > date ? endDate : undefined,
       startTime: isAllDay ? undefined : startTime,
       endTime: isAllDay ? undefined : endTime,
       durationMinutes: duration,
       isAllDay,
       type,
       priority,
+      color,
+      reminderMinutes: reminderMinutes >= 0 ? reminderMinutes : undefined,
       description: description.trim() || undefined,
       location: location.trim() || undefined,
       recurrence,
@@ -365,22 +378,71 @@ export function CalendarEventEditor({
             </div>
           </div>
 
-          {/* Recurrence */}
+          {/* Recurrence & Reminder */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
+                Repeat
+              </label>
+              <select
+                value={recurrence}
+                onChange={(e) => setRecurrence(e.target.value as CalendarRecurrence)}
+                className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
+              >
+                {RECURRENCES.map((r) => (
+                  <option key={r.value} value={r.value}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70 flex items-center gap-1">
+                <Bell size={12} /> Reminder
+              </label>
+              <select
+                value={reminderMinutes}
+                onChange={(e) => setReminderMinutes(parseInt(e.target.value, 10))}
+                className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
+              >
+                <option value={-1}>No alert</option>
+                <option value={0}>At time of event</option>
+                <option value={5}>5m before</option>
+                <option value={10}>10m before</option>
+                <option value={15}>15m before</option>
+                <option value={30}>30m before</option>
+                <option value={60}>1h before</option>
+                <option value={1440}>1d before</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Color Tag Picker */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70">
-              Repeat
+            <label className="block text-xs font-semibold uppercase tracking-wider mb-1 opacity-70 flex items-center gap-1">
+              <PaintBrush size={12} /> Color Tag
             </label>
-            <select
-              value={recurrence}
-              onChange={(e) => setRecurrence(e.target.value as CalendarRecurrence)}
-              className="w-full px-2.5 py-1.5 text-xs rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]"
-            >
-              {RECURRENCES.map((r) => (
-                <option key={r.value} value={r.value}>
-                  {r.label}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2 flex-wrap">
+              {CALENDAR_COLORS.map((c) => {
+                const isSelected = color === c.id
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setColor(c.id)}
+                    title={c.name}
+                    className={cn(
+                      "w-6 h-6 rounded-full flex items-center justify-center transition-all cursor-pointer",
+                      isSelected
+                        ? "ring-2 ring-offset-2 ring-[var(--sq-ink)] scale-110"
+                        : "opacity-80 hover:opacity-100 hover:scale-105"
+                    )}
+                    style={{ backgroundColor: c.hex }}
+                  />
+                )
+              })}
+            </div>
           </div>
 
           {/* Location */}
