@@ -37,6 +37,11 @@ import { copyAsPngWithNotice } from "@/lib/export-image"
 import { ContextRow } from "./context-row"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
+import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
+
+const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
+  "functional-calendar": FunctionalCalendar,
+}
 
 const MIN_ZOOM = 0.1
 const MAX_ZOOM = 4
@@ -932,6 +937,21 @@ export function Canvas() {
         s.setEditing(null)
       }
 
+      // Check if press landed on an interactive component
+      const interactiveEl = (e.target as HTMLElement).closest?.("[data-interactive-node]")
+      const targetInteractiveId = interactiveEl?.getAttribute("data-interactive-node")
+      const isDragHandle = Boolean((e.target as HTMLElement).closest?.("[data-node-drag-handle]"))
+
+      if (targetInteractiveId) {
+        if (!s.selection.includes(targetInteractiveId)) {
+          s.setSelection([targetInteractiveId])
+        }
+        if (!isDragHandle) {
+          // Inner control click (buttons, dates, tabs, inputs) — do not initiate canvas marquee or pan
+          return
+        }
+      }
+
       modsRef.current = readMods(e)
       lastPointRef.current = { clientX: e.clientX, clientY: e.clientY }
       const mods = modsRef.current
@@ -985,7 +1005,7 @@ export function Canvas() {
       }
 
       // -- select tool ------------------------------------------------------
-      const hitId = pickAt(s.nodes, s.order, wx, wy, s.viewport.zoom)
+      const hitId = (isDragHandle && targetInteractiveId) || pickAt(s.nodes, s.order, wx, wy, s.viewport.zoom)
 
       if (hitId) {
         const grouped = !!s.nodes[hitId]?.groupIds?.length
@@ -1537,6 +1557,10 @@ export function Canvas() {
           {order.map((id) => {
             const n = nodes[id]
             if (!n) return null
+            const def = n.type === "component" ? getDef(n.kind) : null
+            if (def?.interactive) {
+              return null
+            }
             return (
               <g key={id} transform={`translate(${n.x} ${n.y})`}>
                 <NodeSketch node={n} hiddenText={id === editingId ? editing?.hidden : undefined} />
@@ -1566,6 +1590,42 @@ export function Canvas() {
           )}
         </g>
       </svg>
+
+      {/* interactive HTML component layer (transformed by canvas viewport) */}
+      <div
+        className="pointer-events-none absolute inset-0 overflow-visible"
+        style={{
+          transform: `translate(${v.x}px, ${v.y}px) scale(${v.zoom})`,
+          transformOrigin: "0 0",
+        }}
+      >
+        {order.map((id) => {
+          const n = nodes[id]
+          if (!n || n.type !== "component") return null
+          const def = getDef(n.kind)
+          const Component = INTERACTIVE_COMPONENTS[n.kind]
+          if (!def?.interactive || !Component) return null
+          return (
+            <div
+              key={id}
+              data-interactive-node={id}
+              className="absolute pointer-events-auto"
+              style={{
+                left: n.x,
+                top: n.y,
+                width: n.w,
+                height: n.h,
+              }}
+            >
+              <Component
+                node={n}
+                selected={selection.includes(id)}
+                zoom={v.zoom}
+              />
+            </div>
+          )
+        })}
+      </div>
 
       {/* hover hint — shows what a click would grab */}
       {hoverNode && !editingId && !gestureKind && (

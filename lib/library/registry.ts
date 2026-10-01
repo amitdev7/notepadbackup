@@ -37,6 +37,8 @@ export const GROUPS: Record<Category, string[]> = {
   blocks: ["Marketing", "Content", "Commerce", "App", "AI", "Screens", "Education"],
 }
 
+import { functionalCalendarDef } from "./defs-functional-calendar"
+
 export interface ComponentDef {
   kind: string
   name: string
@@ -48,9 +50,11 @@ export interface ComponentDef {
   defaults: Props
   controls: ControlDef[]
   render: (props: Props, w: number, h: number) => Prim[]
+  interactive?: boolean
 }
 
 const SOURCES: ComponentDef[][] = [
+  [functionalCalendarDef],
   BASIC_DEFS,
   DISPLAY_DEFS,
   NAV_DEFS,

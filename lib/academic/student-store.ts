@@ -40,6 +40,7 @@ export interface CalendarActivity {
   status: "pending" | "completed"
   priority: ActivityPriority
   notes?: string
+  location?: string
   isAllDay?: boolean
   recurrence?: "none" | "daily" | "weekly"
   completedAt?: string | null
@@ -749,7 +750,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     // ── Activities ────────────────────────────────────────────────────────────
     addActivity: (input) => {
-      const id = generateAcademicId("act")
+      const id = (input as any).id || generateAcademicId("act")
       const newAct: CalendarActivity = {
         ...input,
         id,
