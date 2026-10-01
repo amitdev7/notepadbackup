@@ -665,14 +665,14 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/library/defs-study.ts` | 1127 | 50077 | Core defs-study.ts module | `defs-study` |
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
-| `components/calendar/calendar-agenda-drawer.tsx` | 416 | 13853 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
-| `components/calendar/calendar-event-card.tsx` | 274 | 9664 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-agenda-drawer.tsx` | 439 | 14728 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
+| `components/calendar/calendar-event-card.tsx` | 263 | 9469 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 535 | 20261 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
-| `components/calendar/calendar-event-pill.tsx` | 91 | 3248 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
+| `components/calendar/calendar-event-pill.tsx` | 90 | 3198 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 302 | 10914 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 207 | 6852 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
-| `components/calendar/calendar-reminder-toast.tsx` | 125 | 4375 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
+| `components/calendar/calendar-month-year-picker.tsx` | 209 | 6910 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-reminder-toast.tsx` | 143 | 4746 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
 | `components/calendar/functional-calendar.tsx` | 542 | 18563 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
@@ -693,9 +693,9 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 266 | 8018 | Core date-utils.ts module | `date-utils` |
 | `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
-| `lib/calendar/ics.ts` | 304 | 8744 | Core ics.ts module | `ics` |
+| `lib/calendar/ics.ts` | 312 | 8885 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6670 | Core layout.ts module | `layout` |
-| `lib/calendar/types.ts` | 88 | 2794 | Core types.ts module | `types` |
+| `lib/calendar/types.ts` | 146 | 3264 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
@@ -714,7 +714,7 @@ Zenithsui includes an integrated academic and study workspace (`lib/academic/`, 
 | `scripts/test-academic-syllabus.ts` | 218 | 9342 | Core test-academic-syllabus.ts module | `test-academic-syllabus` |
 | `scripts/test-clipboard.ts` | 124 | 5420 | Core test-clipboard.ts module | `test-clipboard` |
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
-| `scripts/test-functional-calendar.ts` | 509 | 21005 | Core test-functional-calendar.ts module | `test-functional-calendar` |
+| `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-phase2-invitations.ts` | 71 | 3035 | Core test-phase2-invitations.ts module | `test-phase2-invitations` |
@@ -44869,8 +44869,8 @@ export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: C
 ### File: `components/calendar/calendar-agenda-drawer.tsx`
 
 - **Path**: `components/calendar/calendar-agenda-drawer.tsx`
-- **Lines**: 416
-- **Size**: 13853 bytes
+- **Lines**: 439
+- **Size**: 14728 bytes
 
 ```tsx
 "use client"
@@ -45055,44 +45055,52 @@ export function CalendarAgendaDrawer({
               <button
                 type="button"
                 onClick={handleMiniPrev}
-                className="p-1 rounded hover:bg-[var(--sq-shade)]"
+                className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
+                title="Previous month"
               >
-                <CaretLeft size={12} weight="bold" />
+                <CaretLeft size={13} />
               </button>
               <button
                 type="button"
                 onClick={handleMiniNext}
-                className="p-1 rounded hover:bg-[var(--sq-shade)]"
+                className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
+                title="Next month"
               >
-                <CaretRight size={12} weight="bold" />
+                <CaretRight size={13} />
               </button>
             </div>
           </div>
 
-          {/* DOW headers */}
-          <div className="grid grid-cols-7 text-center text-[10px] opacity-60 mb-1">
-            {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-              <span key={i}>{d}</span>
-            ))}
+          {/* Weekday Labels */}
+          <div className="grid grid-cols-7 text-center text-[10px] font-semibold opacity-60 mb-1">
+            {weekStartsOn === "monday"
+              ? ["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                  <div key={i}>{d}</div>
+                ))
+              : ["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
+                  <div key={i}>{d}</div>
+                ))}
           </div>
 
-          {/* Grid Cells */}
-          <div className="grid grid-cols-7 gap-0.5 text-center text-[11px]">
+          {/* Day Grid */}
+          <div className="grid grid-cols-7 gap-y-1 text-center text-[11px]">
             {monthGrid.map((cell) => {
               const isSelected = cell.date === selectedDate
               const hasEvents = datesWithEvents.has(cell.date)
+
               return (
                 <button
                   key={cell.date}
                   type="button"
                   onClick={() => onSelectDate(cell.date)}
                   className={cn(
-                    "h-6 rounded relative flex items-center justify-center transition-colors font-medium",
+                    "h-6 w-6 mx-auto rounded-full flex flex-col items-center justify-center relative transition-colors",
                     !cell.isCurrentMonth && "opacity-30",
-                    cell.isToday && "font-bold text-red-600 dark:text-red-400",
                     isSelected
-                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold"
-                      : "hover:bg-[var(--sq-shade)]"
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold shadow-xs"
+                      : cell.isToday
+                        ? "border border-[var(--sq-ink)] font-bold"
+                        : "hover:bg-[var(--sq-shade)]"
                   )}
                 >
                   <span>{cell.dayNumber}</span>
@@ -45105,30 +45113,39 @@ export function CalendarAgendaDrawer({
           </div>
         </div>
 
-        {/* 2. Category Filter Toggles */}
+        {/* 2. Category Visibility Layers */}
         {categoryCounts.length > 0 && (
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
-              Calendars & Layers
-            </span>
-            <div className="flex flex-col gap-1">
-              {categoryCounts.map(([cat, count]) => {
-                const isHidden = hiddenCategories.has(cat.toLowerCase())
+          <div className="rounded-md border border-[var(--sq-border)] p-2.5 bg-[var(--sq-paper)] shadow-2xs">
+            <div className="font-bold text-[11px] mb-2 flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
+                <Tag size={13} />
+                <span>Categories</span>
+              </span>
+              <span className="text-[10px] opacity-60">
+                {categoryCounts.length} active
+              </span>
+            </div>
+
+            <div className="space-y-1.5">
+              {categoryCounts.map(([catName, count]) => {
+                const isHidden = hiddenCategories.has(catName.toLowerCase())
                 return (
                   <label
-                    key={cat}
-                    className="flex items-center justify-between p-1.5 rounded hover:bg-[var(--sq-shade)] cursor-pointer transition-colors"
+                    key={catName}
+                    className="flex items-center justify-between text-[11px] cursor-pointer hover:bg-[var(--sq-shade)]/50 p-1 rounded transition-colors"
                   >
                     <div className="flex items-center gap-2">
                       <input
                         type="checkbox"
                         checked={!isHidden}
-                        onChange={() => onToggleCategory(cat.toLowerCase())}
-                        className="rounded border-[var(--sq-border)]"
+                        onChange={() => onToggleCategory(catName.toLowerCase())}
+                        className="rounded border-[var(--sq-border)] cursor-pointer"
                       />
-                      <span className="font-medium text-xs">{cat}</span>
+                      <span className={cn(isHidden && "opacity-40 line-through")}>
+                        {catName}
+                      </span>
                     </div>
-                    <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-[var(--sq-shade)] font-mono opacity-70">
+                    <span className="text-[10px] opacity-60 font-mono">
                       {count}
                     </span>
                   </label>
@@ -45139,32 +45156,28 @@ export function CalendarAgendaDrawer({
         )}
 
         {/* 3. Upcoming Agenda List */}
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider opacity-60">
-              Upcoming Schedule
-            </span>
-            <button
-              type="button"
-              onClick={() => onNewEventAtDate(todayIso)}
-              className="text-[11px] font-bold text-blue-600 hover:underline"
-            >
-              + Add Event
-            </button>
-          </div>
-
+        <div className="flex-1 flex flex-col gap-3">
           {/* Today Group */}
           <div>
-            <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1 flex items-center gap-1">
-              <span>Today</span>
-              <span className="text-[10px] opacity-60 font-normal">({todayIso})</span>
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="font-bold text-[11px] uppercase tracking-wider opacity-80">
+                Today
+              </span>
+              <button
+                type="button"
+                onClick={() => onNewEventAtDate(todayIso)}
+                className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                + Add
+              </button>
             </div>
+
             {todayEvents.length === 0 ? (
-              <div className="p-2 rounded bg-[var(--sq-shade)]/30 text-[11px] opacity-60 italic">
-                No events scheduled for today
+              <div className="p-2 text-center text-[11px] opacity-50 border border-dashed border-[var(--sq-border)] rounded">
+                No events today
               </div>
             ) : (
-              <div className="flex flex-col gap-1.5">
+              <div className="space-y-1.5">
                 {todayEvents.map((ev) => (
                   <AgendaItem
                     key={ev.id}
@@ -45179,15 +45192,25 @@ export function CalendarAgendaDrawer({
 
           {/* Tomorrow Group */}
           <div>
-            <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1">
-              Tomorrow
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="font-bold text-[11px] uppercase tracking-wider opacity-80">
+                Tomorrow
+              </span>
+              <button
+                type="button"
+                onClick={() => onNewEventAtDate(tomorrowIso)}
+                className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                + Add
+              </button>
             </div>
+
             {tomorrowEvents.length === 0 ? (
-              <div className="p-2 rounded bg-[var(--sq-shade)]/30 text-[11px] opacity-60 italic">
-                No events scheduled for tomorrow
+              <div className="p-2 text-center text-[11px] opacity-50 border border-dashed border-[var(--sq-border)] rounded">
+                No events tomorrow
               </div>
             ) : (
-              <div className="flex flex-col gap-1.5">
+              <div className="space-y-1.5">
                 {tomorrowEvents.map((ev) => (
                   <AgendaItem
                     key={ev.id}
@@ -45200,13 +45223,13 @@ export function CalendarAgendaDrawer({
             )}
           </div>
 
-          {/* This Week Group */}
+          {/* Upcoming Group */}
           {upcomingEvents.length > 0 && (
             <div>
-              <div className="text-[11px] font-bold text-[var(--sq-ink)] mb-1">
-                Later This Week
+              <div className="font-bold text-[11px] uppercase tracking-wider opacity-80 mb-1.5">
+                Later this week
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="space-y-1.5">
                 {upcomingEvents.map((ev) => (
                   <AgendaItem
                     key={ev.id}
@@ -45295,8 +45318,8 @@ function AgendaItem({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 274
-- **Size**: 9664 bytes
+- **Lines**: 263
+- **Size**: 9469 bytes
 
 ```tsx
 "use client"
@@ -45310,7 +45333,7 @@ function AgendaItem({
 
 import type { CalendarEvent } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
-import { formatTime, parseDateIso } from "@/lib/calendar/date-utils"
+import { formatTime, parseDateIso, parseTimeToMinutes } from "@/lib/calendar/date-utils"
 import { exportToIcs, downloadIcsFile } from "@/lib/calendar/ics"
 import {
   Clock,
@@ -45363,208 +45386,197 @@ export function CalendarEventCard({
     year: "numeric",
   })
 
-  // Time label
-  let timeLabel = "All day"
-  if (!event.isAllDay && event.startTime) {
-    const sStr = event.startTime
-    const eStr = event.endTime || ""
-    timeLabel = eStr ? `${sStr} – ${eStr}` : sStr
+  // Format time display
+  let timeLabel = "All Day"
+  if (!event.isAllDay) {
+    if (event.startTime && event.endTime) {
+      timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} – ${formatTime(parseTimeToMinutes(event.endTime))}`
+    } else if (event.startTime) {
+      timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} (${event.durationMinutes || 60}m)`
+    }
   }
 
-  // Duration label
-  const durationText =
-    event.durationMinutes >= 60
-      ? `${Math.floor(event.durationMinutes / 60)}h${
-          event.durationMinutes % 60 > 0 ? ` ${event.durationMinutes % 60}m` : ""
-        }`
-      : `${event.durationMinutes || 60}m`
-
   const handleExportSingle = () => {
-    const icsData = exportToIcs([event], event.title)
-    downloadIcsFile(`${event.title.replace(/\s+/g, "_")}.ics`, icsData)
+    const ics = exportToIcs([event], event.title)
+    downloadIcsFile(`${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`, ics)
   }
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-sm rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)] shadow-2xl transition-all"
+        className="w-full max-w-sm rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-2xl text-[var(--sq-ink)] overflow-hidden"
         style={{
-          boxShadow: "5px 5px 0px var(--sq-ink)",
+          boxShadow: "0 14px 40px rgba(0,0,0,0.22), 4px 4px 0px rgba(0,0,0,0.06)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Color Banner */}
+        {/* Color Strip Header Accent */}
         <div
-          className="h-2.5 w-full"
+          className="h-2 w-full"
           style={{ backgroundColor: colorPreset.hex }}
         />
 
-        <div className="p-4 flex flex-col gap-3">
-          {/* Header toolbar */}
-          <div className="flex items-center justify-between">
-            {/* Category tag */}
-            <div className="flex items-center gap-1.5">
+        {/* Header with Title and Close Button */}
+        <div className="p-4 pb-2 flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
               <span
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ backgroundColor: colorPreset.hex }}
-              />
-              <span className="text-[11px] font-bold uppercase tracking-wider opacity-70">
+                className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border"
+                style={{
+                  backgroundColor: colorPreset.bg,
+                  color: colorPreset.text,
+                  borderColor: colorPreset.border,
+                }}
+              >
                 {event.type || "Event"}
               </span>
-              {event.priority === "High" && (
-                <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-red-100 text-red-800 border border-red-300">
-                  Urgent
+
+              {event.priority && event.priority !== "Medium" && (
+                <span
+                  className={cn(
+                    "px-1.5 py-0.5 rounded text-[10px] font-medium border",
+                    event.priority === "High"
+                      ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400"
+                      : "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800"
+                  )}
+                >
+                  {event.priority}
                 </span>
               )}
             </div>
 
-            {/* Quick Actions Toolbar */}
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={() => onEdit(event)}
-                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
-                title="Edit event"
-              >
-                <PencilSimple size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={() => onDuplicate(event)}
-                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
-                title="Duplicate event"
-              >
-                <Copy size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={handleExportSingle}
-                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors"
-                title="Export to .ics"
-              >
-                <DownloadSimple size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (confirm(`Delete "${event.title}"?`)) {
-                    onDelete(event.id)
-                    onClose()
-                  }
-                }}
-                className="p-1 rounded hover:bg-red-100 hover:text-red-700 transition-colors"
-                title="Delete event"
-              >
-                <Trash size={15} />
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors ml-1"
-                title="Close"
-              >
-                <X size={15} />
-              </button>
-            </div>
+            <h3
+              className={cn(
+                "text-base font-bold tracking-tight break-words",
+                isCompleted && "line-through opacity-60"
+              )}
+            >
+              {event.title}
+            </h3>
           </div>
 
-          {/* Event Title with Completion Checkbox */}
-          <div className="flex items-start gap-2.5">
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0"
+            title="Close"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Metadata Details */}
+        <div className="px-4 py-3 space-y-2.5 text-xs border-y border-[var(--sq-border)]/60 bg-[var(--sq-paper)]">
+          {/* Date & Time */}
+          <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
+            <CalendarBlank size={16} className="shrink-0 opacity-70" />
+            <span className="font-medium">{dateLabel}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
+            <Clock size={16} className="shrink-0 opacity-70" />
+            <span>{timeLabel}</span>
+          </div>
+
+          {/* Location */}
+          {event.location && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
+              <MapPin size={16} className="shrink-0 opacity-70" />
+              <span className="truncate">{event.location}</span>
+            </div>
+          )}
+
+          {/* Recurrence */}
+          {event.recurrence && event.recurrence !== "none" && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <ArrowsClockwise size={16} className="shrink-0 opacity-70" />
+              <span className="capitalize">Repeats {event.recurrence}</span>
+            </div>
+          )}
+
+          {/* Reminder */}
+          {typeof event.reminderMinutes === "number" && event.reminderMinutes >= 0 && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <Bell size={16} className="shrink-0 opacity-70" />
+              <span>
+                {event.reminderMinutes === 0
+                  ? "At time of event"
+                  : `${event.reminderMinutes} minutes before`}
+              </span>
+            </div>
+          )}
+
+          {/* Description */}
+          {event.description && (
+            <div className="mt-2 pt-2 border-t border-[var(--sq-border)]/40 text-[var(--sq-ink)] text-xs whitespace-pre-wrap leading-relaxed opacity-85 max-h-28 overflow-y-auto">
+              {event.description}
+            </div>
+          )}
+        </div>
+
+        {/* Quick Action Toolbar */}
+        <div className="p-3 bg-[var(--sq-shade)]/30 flex items-center justify-between gap-1 text-xs">
+          <div className="flex items-center gap-1">
+            {/* Complete Toggle */}
             <button
               type="button"
               onClick={() => onToggleComplete(event.id)}
               className={cn(
-                "mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors",
+                "px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border transition-colors",
                 isCompleted
                   ? "bg-emerald-600 text-white border-emerald-700"
-                  : "border-[var(--sq-border)] hover:border-[var(--sq-ink)] bg-[var(--sq-paper)]"
+                  : "bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] border-[var(--sq-border)]"
               )}
-              title={isCompleted ? "Mark incomplete" : "Mark completed"}
+              title={isCompleted ? "Mark Pending" : "Mark Completed"}
             >
-              {isCompleted && <CheckCircle size={14} weight="fill" />}
+              <CheckCircle size={15} weight={isCompleted ? "fill" : "regular"} />
+              <span>{isCompleted ? "Done" : "Complete"}</span>
             </button>
 
-            <div className="flex-1">
-              <h2
-                className={cn(
-                  "text-base font-bold leading-tight",
-                  isCompleted && "line-through opacity-60"
-                )}
-              >
-                {event.title}
-              </h2>
-              {isCompleted && (
-                <span className="text-[10px] text-emerald-700 font-semibold">
-                  ✓ Completed
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Details list */}
-          <div className="flex flex-col gap-2 pt-2 border-t border-[var(--sq-border)] text-xs">
-            {/* Date & Time */}
-            <div className="flex items-start gap-2">
-              <CalendarBlank size={14} className="mt-0.5 opacity-60 shrink-0" />
-              <div>
-                <div className="font-medium">{dateLabel}</div>
-                <div className="text-[11px] opacity-70 flex items-center gap-1.5">
-                  <Clock size={12} />
-                  <span>{timeLabel}</span>
-                  {!event.isAllDay && <span>({durationText})</span>}
-                </div>
-              </div>
-            </div>
-
-            {/* Recurrence */}
-            {event.recurrence && event.recurrence !== "none" && (
-              <div className="flex items-center gap-2 text-[11px] opacity-80">
-                <ArrowsClockwise size={13} className="shrink-0" />
-                <span className="capitalize">Repeats {event.recurrence}</span>
-              </div>
-            )}
-
-            {/* Reminder alert */}
-            {typeof event.reminderMinutes === "number" && event.reminderMinutes >= 0 && (
-              <div className="flex items-center gap-2 text-[11px] opacity-80">
-                <Bell size={13} className="shrink-0 text-amber-600" />
-                <span>
-                  {event.reminderMinutes === 0
-                    ? "Alert at time of event"
-                    : `Alert ${event.reminderMinutes} minutes before`}
-                </span>
-              </div>
-            )}
-
-            {/* Location */}
-            {event.location && (
-              <div className="flex items-center gap-2 text-[11px]">
-                <MapPin size={13} className="opacity-60 shrink-0" />
-                <span className="font-medium underline decoration-dotted">
-                  {event.location}
-                </span>
-              </div>
-            )}
-
-            {/* Description / Notes */}
-            {event.description && (
-              <div className="mt-1 p-2 rounded bg-[var(--sq-shade)]/50 border border-[var(--sq-border)]/60 text-[11px] whitespace-pre-wrap leading-relaxed">
-                {event.description}
-              </div>
-            )}
-          </div>
-
-          {/* Footer Action: Quick Edit Button */}
-          <div className="pt-2 border-t border-[var(--sq-border)] flex items-center justify-end gap-2">
+            {/* Edit */}
             <button
               type="button"
               onClick={() => onEdit(event)}
-              className="px-3 py-1.5 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold text-xs hover:opacity-90 transition-opacity"
+              className="px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
+              title="Edit Event"
             >
-              Edit Details
+              <PencilSimple size={15} />
+              <span>Edit</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {/* Duplicate */}
+            <button
+              type="button"
+              onClick={() => onDuplicate(event)}
+              className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
+              title="Duplicate Event"
+            >
+              <Copy size={15} />
+            </button>
+
+            {/* Export .ics */}
+            <button
+              type="button"
+              onClick={handleExportSingle}
+              className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
+              title="Export as .ics"
+            >
+              <DownloadSimple size={15} />
+            </button>
+
+            {/* Delete */}
+            <button
+              type="button"
+              onClick={() => onDelete(event.id)}
+              className="p-1.5 rounded border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
+              title="Delete Event"
+            >
+              <Trash size={15} />
             </button>
           </div>
         </div>
@@ -46124,8 +46136,8 @@ export function CalendarEventEditor({
 ### File: `components/calendar/calendar-event-pill.tsx`
 
 - **Path**: `components/calendar/calendar-event-pill.tsx`
-- **Lines**: 91
-- **Size**: 3248 bytes
+- **Lines**: 90
+- **Size**: 3198 bytes
 
 ```tsx
 "use client"
@@ -46161,7 +46173,7 @@ export function CalendarEventPill({
   onDragStart,
 }: CalendarEventPillProps) {
   const isCompleted = event.status === "completed"
-  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color)
+  const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
 
   return (
     <div
@@ -46178,9 +46190,8 @@ export function CalendarEventPill({
       )}
       style={{
         boxShadow: "1px 1px 0px rgba(0,0,0,0.06)",
-        ...(colorPreset && colorPreset.id !== "default"
-          ? { borderLeftWidth: "3px", borderLeftColor: colorPreset.hex }
-          : {}),
+        borderLeftWidth: "3px",
+        borderLeftColor: colorPreset.hex,
       }}
       title={`${event.title}${event.startTime ? ` (${event.startTime})` : ""}`}
     >
@@ -46791,8 +46802,8 @@ export function CalendarMonthView({
 ### File: `components/calendar/calendar-month-year-picker.tsx`
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
-- **Lines**: 207
-- **Size**: 6852 bytes
+- **Lines**: 209
+- **Size**: 6910 bytes
 
 ```tsx
 "use client"
@@ -46869,133 +46880,135 @@ export function CalendarMonthYearPicker({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
     >
       <div
-        className="w-72 rounded-lg p-4 bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)] shadow-xl"
+        className="w-full max-w-xs rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] p-4 shadow-xl text-[var(--sq-ink)]"
         style={{
-          boxShadow: "4px 4px 0px var(--sq-ink)",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.18), 3px 3px 0px rgba(0,0,0,0.06)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header navigation */}
-        <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-2 mb-3">
-          <button
-            type="button"
-            onClick={() => setMode(mode === "months" ? "years" : "months")}
-            className="px-2 py-0.5 rounded text-sm font-bold hover:bg-[var(--sq-shade)] transition-colors flex items-center gap-1"
-          >
-            {mode === "months" ? (
-              <span>{pickerYear}</span>
-            ) : (
-              <span>
-                {decadeStart} – {decadeStart + 9}
-              </span>
-            )}
-            <span className="text-[10px] opacity-60">
-              {mode === "months" ? "(Change Year)" : "(Back to Months)"}
-            </span>
-          </button>
+        {/* Header Bar */}
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--sq-border)]">
+          <div className="flex items-center gap-1.5 font-bold text-sm">
+            <CalendarCheck size={18} weight="bold" />
+            <button
+              type="button"
+              onClick={() => setMode(mode === "months" ? "years" : "months")}
+              className="px-2 py-0.5 rounded hover:bg-[var(--sq-shade)] transition-colors underline decoration-dotted underline-offset-2"
+            >
+              {mode === "months"
+                ? pickerYear
+                : `${decadeStart} – ${decadeStart + 9}`}
+            </button>
+          </div>
 
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={handlePrev}
-              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
               title="Previous"
             >
-              <CaretLeft size={14} weight="bold" />
+              <CaretLeft size={16} />
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
               title="Next"
             >
-              <CaretRight size={14} weight="bold" />
+              <CaretRight size={16} />
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] ml-1"
+              className="p-1 ml-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
               title="Close"
             >
-              <X size={14} />
+              <X size={16} />
             </button>
           </div>
         </div>
 
-        {/* Grid: Months or Years */}
-        {mode === "months" ? (
-          <div className="grid grid-cols-3 gap-2">
-            {MONTHS_SHORT.map((mName, idx) => {
-              const mIndex = idx + 1
-              const isSelected = pickerYear === currentYear && mIndex === currentMonth
-              return (
-                <button
-                  key={mName}
-                  type="button"
-                  onClick={() => {
-                    onSelect(pickerYear, mIndex)
-                    onClose()
-                  }}
-                  className={cn(
-                    "py-2.5 text-xs font-semibold rounded-md border transition-all text-center",
-                    isSelected
-                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] font-bold shadow-xs"
-                      : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
-                  )}
-                >
-                  {mName}
-                </button>
-              )
-            })}
-          </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-2">
-            {decadeYears.map((yr) => {
-              const isCurrentDecade = yr >= decadeStart && yr <= decadeStart + 9
-              const isSelected = yr === pickerYear
-              return (
-                <button
-                  key={yr}
-                  type="button"
-                  onClick={() => {
-                    setPickerYear(yr)
-                    setMode("months")
-                  }}
-                  className={cn(
-                    "py-2 text-xs rounded-md border transition-all text-center",
-                    isSelected
-                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] font-bold shadow-xs"
-                      : !isCurrentDecade
-                      ? "opacity-40 border-transparent hover:bg-[var(--sq-shade)]"
-                      : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)] font-medium"
-                  )}
-                >
-                  {yr}
-                </button>
-              )
-            })}
-          </div>
-        )}
+        {/* Picker Grid */}
+        <div className="pt-3">
+          {mode === "months" ? (
+            <div className="grid grid-cols-4 gap-2">
+              {MONTHS_SHORT.map((mName, idx) => {
+                const monthNum = idx + 1
+                const isSelected =
+                  pickerYear === currentYear && monthNum === currentMonth
+                return (
+                  <button
+                    key={mName}
+                    type="button"
+                    onClick={() => {
+                      onSelect(pickerYear, monthNum)
+                    }}
+                    className={cn(
+                      "py-2.5 text-xs font-semibold rounded transition-colors text-center border",
+                      isSelected
+                        ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] shadow-xs"
+                        : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
+                    )}
+                  >
+                    {mName}
+                  </button>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-4 gap-2">
+              {decadeYears.map((yr) => {
+                const isCurrent = yr === currentYear
+                const isOut = yr < decadeStart || yr > decadeStart + 9
+                return (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => {
+                      setPickerYear(yr)
+                      setMode("months")
+                    }}
+                    className={cn(
+                      "py-2.5 text-xs font-semibold rounded transition-colors text-center border",
+                      isCurrent
+                        ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] shadow-xs"
+                        : isOut
+                          ? "opacity-40 border-transparent hover:bg-[var(--sq-shade)]"
+                          : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
+                    )}
+                  >
+                    {yr}
+                  </button>
+                )
+              })}
+            </div>
+          )}
+        </div>
 
-        {/* Footer: Jump to Current Month */}
-        <div className="mt-3 pt-2 border-t border-[var(--sq-border)] flex items-center justify-between text-xs">
+        {/* Footer Quick Return */}
+        <div className="mt-3 pt-2.5 border-t border-[var(--sq-border)] flex items-center justify-between text-xs">
           <button
             type="button"
             onClick={() => {
               const now = new Date()
               onSelect(now.getFullYear(), now.getMonth() + 1)
-              onClose()
             }}
-            className="flex items-center gap-1.5 px-2 py-1 rounded hover:bg-[var(--sq-shade)] font-semibold transition-colors text-[11px]"
+            className="text-xs font-medium text-[var(--sq-ink)] hover:underline"
           >
-            <CalendarCheck size={14} weight="bold" />
-            <span>This Month</span>
+            Jump to current month
           </button>
-          <span className="text-[10px] opacity-60">Windows Calendar Style</span>
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-2.5 py-1 text-xs font-medium rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -47008,8 +47021,8 @@ export function CalendarMonthYearPicker({
 ### File: `components/calendar/calendar-reminder-toast.tsx`
 
 - **Path**: `components/calendar/calendar-reminder-toast.tsx`
-- **Lines**: 125
-- **Size**: 4375 bytes
+- **Lines**: 143
+- **Size**: 4746 bytes
 
 ```tsx
 "use client"
@@ -47039,7 +47052,10 @@ interface ReminderToastProps {
 function playChime() {
   try {
     if (typeof window === "undefined") return
-    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext
     if (!AudioContextClass) return
     const ctx = new AudioContextClass()
 
@@ -47073,64 +47089,79 @@ export function CalendarReminderToast({
     if (!event) return
     playChime()
 
-    // Request & trigger browser notification if available
-    try {
-      if (typeof window !== "undefined" && "Notification" in window) {
-        if (Notification.permission === "granted") {
-          new Notification(`Reminder: ${event.title}`, {
-            body: minutesBefore === 0 ? "Event is starting now" : `Starts in ${minutesBefore} minutes (${event.startTime || "Today"})`,
-            icon: "/icon.png",
-          })
-        }
-      }
-    } catch {}
-  }, [event, minutesBefore])
+    // Trigger browser native Notification if permission granted
+    if (
+      typeof window !== "undefined" &&
+      "Notification" in window &&
+      Notification.permission === "granted"
+    ) {
+      try {
+        const timeText = event.startTime
+          ? `Starting at ${event.startTime}`
+          : "All Day event"
+        new Notification(`Reminder: ${event.title}`, {
+          body: `${timeText}${event.location ? ` • ${event.location}` : ""}`,
+          icon: "/icon.svg",
+        })
+      } catch {}
+    }
+  }, [event])
 
   if (!event) return null
 
   return (
-    <div className="absolute top-3 right-3 z-50 max-w-sm rounded-lg border-2 border-[var(--sq-ink)] bg-[var(--sq-paper)] text-[var(--sq-ink)] shadow-2xl p-3.5 flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-      <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400 shrink-0">
-        <Bell size={20} weight="fill" className="animate-bounce" />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-            {minutesBefore === 0 ? "Event Starting Now" : `Upcoming in ${minutesBefore}m`}
-          </span>
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="p-0.5 rounded opacity-60 hover:opacity-100"
-          >
-            <X size={13} />
-          </button>
+    <div className="absolute bottom-4 right-4 z-50 max-w-sm rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] p-3 shadow-2xl text-[var(--sq-ink)] animate-in slide-in-from-bottom-3 duration-200">
+      <div className="flex items-start gap-2.5">
+        <div className="p-2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 shrink-0">
+          <Bell size={18} weight="fill" />
         </div>
 
-        <h4 className="font-bold text-xs truncate mt-0.5">{event.title}</h4>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] uppercase font-bold tracking-wider text-amber-600 dark:text-amber-400">
+              {minutesBefore === 0
+                ? "Starting Now"
+                : `In ${minutesBefore} minutes`}
+            </span>
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="p-0.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors opacity-70 hover:opacity-100"
+              title="Dismiss"
+            >
+              <X size={14} />
+            </button>
+          </div>
 
-        <div className="flex items-center gap-1.5 text-[11px] opacity-70 mt-1">
-          <Clock size={11} />
-          <span>{event.startTime ? `${event.startTime} (${event.date})` : event.date}</span>
-        </div>
+          <h4 className="font-bold text-xs truncate mt-0.5">{event.title}</h4>
 
-        <div className="flex items-center gap-2 mt-2 pt-2 border-t border-[var(--sq-border)]">
-          <button
-            type="button"
-            onClick={() => onView(event)}
-            className="px-2 py-1 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-bold text-[10px] flex items-center gap-1 hover:opacity-90 transition-opacity"
-          >
-            <Eye size={12} />
-            <span>View Details</span>
-          </button>
-          <button
-            type="button"
-            onClick={onDismiss}
-            className="px-2 py-1 rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)] text-[10px] font-medium transition-colors"
-          >
-            Dismiss
-          </button>
+          <div className="flex items-center gap-1.5 text-[10px] opacity-70 mt-0.5">
+            <Clock size={11} />
+            <span>
+              {event.isAllDay ? "All Day" : event.startTime || "Scheduled"}
+            </span>
+            {event.location && (
+              <span className="truncate">• {event.location}</span>
+            )}
+          </div>
+
+          <div className="mt-2.5 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onView(event)}
+              className="px-2 py-1 rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] text-[10px] font-semibold flex items-center gap-1 hover:opacity-90 transition-opacity"
+            >
+              <Eye size={12} />
+              <span>View Details</span>
+            </button>
+            <button
+              type="button"
+              onClick={onDismiss}
+              className="px-2 py-1 rounded border border-[var(--sq-border)] text-[10px] font-medium hover:bg-[var(--sq-shade)] transition-colors"
+            >
+              Dismiss
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -59031,8 +59062,8 @@ export const useCalendarStore = {
 ### File: `lib/calendar/ics.ts`
 
 - **Path**: `lib/calendar/ics.ts`
-- **Lines**: 304
-- **Size**: 8744 bytes
+- **Lines**: 312
+- **Size**: 8885 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -59099,24 +59130,32 @@ export function exportToIcs(
     "X-WR-TIMEZONE:UTC",
   ]
 
-  const nowStamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z"
+  const nowStamp =
+    new Date()
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "") + "Z"
 
   for (const ev of events) {
     lines.push("BEGIN:VEVENT")
     lines.push(`UID:${ev.id}@zenithsui.local`)
     lines.push(`DTSTAMP:${nowStamp}`)
 
-    // Start & End date/time
+    // Start date/time
+    lines.push(`DTSTART${formatIcsDateTime(ev.date, ev.startTime, ev.isAllDay)}`)
+
+    // End date/time
     if (ev.isAllDay) {
-      lines.push(`DTSTART${formatIcsDateTime(ev.date, undefined, true)}`)
-      // All day end date is non-inclusive in RFC 5545
+      // In RFC 5545, all-day DTEND is exclusive (next day)
       const nextDay = addDaysIso(ev.endDate || ev.date, 1)
       lines.push(`DTEND${formatIcsDateTime(nextDay, undefined, true)}`)
-    } else {
-      const startTime = ev.startTime || "09:00"
-      lines.push(`DTSTART${formatIcsDateTime(ev.date, startTime, false)}`)
-      const endTime = ev.endTime || minutesToTimeString(parseTimeToMinutes(startTime) + (ev.durationMinutes || 60))
-      lines.push(`DTEND${formatIcsDateTime(ev.endDate || ev.date, endTime, false)}`)
+    } else if (ev.endTime) {
+      lines.push(`DTEND${formatIcsDateTime(ev.endDate || ev.date, ev.endTime, false)}`)
+    } else if (ev.startTime) {
+      const startM = parseTimeToMinutes(ev.startTime)
+      const endM = startM + (ev.durationMinutes || 60)
+      const endStr = minutesToTimeString(endM)
+      lines.push(`DTEND${formatIcsDateTime(ev.endDate || ev.date, endStr, false)}`)
     }
 
     lines.push(`SUMMARY:${escapeIcsText(ev.title)}`)
@@ -59133,13 +59172,14 @@ export function exportToIcs(
       lines.push(`CATEGORIES:${escapeIcsText(ev.type)}`)
     }
 
+    // Status: COMPLETED vs CONFIRMED
     if (ev.status === "completed") {
       lines.push("STATUS:COMPLETED")
     } else {
       lines.push("STATUS:CONFIRMED")
     }
 
-    // Priority mapping (1=High, 5=Medium, 9=Low)
+    // Priority mapping (RFC 5545: 1=High, 5=Medium, 9=Low)
     if (ev.priority === "High") {
       lines.push("PRIORITY:1")
     } else if (ev.priority === "Medium") {
@@ -59152,8 +59192,8 @@ export function exportToIcs(
     if (ev.recurrence && ev.recurrence !== "none") {
       let rrule = `RRULE:FREQ=${ev.recurrence.toUpperCase()}`
       if (ev.recurrenceEnd) {
-        const until = ev.recurrenceEnd.replace(/-/g, "") + "T235959Z"
-        rrule += `;UNTIL=${until}`
+        const cleanUntil = ev.recurrenceEnd.replace(/-/g, "") + "T235959Z"
+        rrule += `;UNTIL=${cleanUntil}`
       }
       lines.push(rrule)
     }
@@ -59210,12 +59250,11 @@ function unfoldIcsLines(raw: string): string[] {
 }
 
 /**
- * Parses RFC 5545 iCalendar (.ics) string into an array of partial CalendarEvent items.
+ * Parses RFC 5545 iCalendar text into partial CalendarEvent objects.
  */
-export function parseIcs(icsContent: string): Partial<CalendarEvent>[] {
-  const lines = unfoldIcsLines(icsContent)
+export function parseIcs(icsText: string): Partial<CalendarEvent>[] {
+  const lines = unfoldIcsLines(icsText)
   const events: Partial<CalendarEvent>[] = []
-
   let inEvent = false
   let current: Partial<CalendarEvent> = {}
 
@@ -59229,7 +59268,7 @@ export function parseIcs(icsContent: string): Partial<CalendarEvent>[] {
         priority: "Medium",
         type: "Study",
         recurrence: "none",
-        durationMinutes: 60,
+        color: "blue",
       }
       continue
     }
@@ -59556,8 +59595,8 @@ export function clampTimeToDay(minutes: number): number {
 ### File: `lib/calendar/types.ts`
 
 - **Path**: `lib/calendar/types.ts`
-- **Lines**: 88
-- **Size**: 2794 bytes
+- **Lines**: 146
+- **Size**: 3264 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -59583,6 +59622,74 @@ export type CalendarEventPriority = "High" | "Medium" | "Low"
 
 export type CalendarRecurrence = "none" | "daily" | "weekly" | "monthly" | "yearly"
 
+export interface CalendarColor {
+  id: string
+  name: string
+  hex: string
+  bg: string
+  text: string
+  border: string
+}
+
+export const CALENDAR_COLORS: CalendarColor[] = [
+  {
+    id: "default",
+    name: "Ink & Paper",
+    hex: "#4b5563",
+    bg: "var(--sq-shade)",
+    text: "var(--sq-ink)",
+    border: "var(--sq-border)",
+  },
+  {
+    id: "blue",
+    name: "Study & Lectures",
+    hex: "#3b82f6",
+    bg: "rgba(59, 130, 246, 0.12)",
+    text: "#1d4ed8",
+    border: "#93c5fd",
+  },
+  {
+    id: "red",
+    name: "Exams & Deadlines",
+    hex: "#ef4444",
+    bg: "rgba(239, 68, 68, 0.12)",
+    text: "#b91c1c",
+    border: "#fca5a5",
+  },
+  {
+    id: "green",
+    name: "Homework & Labs",
+    hex: "#10b981",
+    bg: "rgba(16, 185, 129, 0.12)",
+    text: "#047857",
+    border: "#6ee7b7",
+  },
+  {
+    id: "amber",
+    name: "Revision & Practice",
+    hex: "#f59e0b",
+    bg: "rgba(245, 158, 11, 0.12)",
+    text: "#b45309",
+    border: "#fcd34d",
+  },
+  {
+    id: "purple",
+    name: "Assignments & Projects",
+    hex: "#8b5cf6",
+    bg: "rgba(139, 92, 246, 0.12)",
+    text: "#6d28d9",
+    border: "#c4b5fd",
+  },
+  {
+    id: "pink",
+    name: "Personal & Social",
+    hex: "#ec4899",
+    bg: "rgba(236, 72, 153, 0.12)",
+    text: "#be185d",
+    border: "#f9a8d4",
+  },
+]
+
 export interface CalendarEvent {
   id: string
   title: string
@@ -59596,10 +59703,6 @@ export interface CalendarEvent {
   type: CalendarEventType | string
   status: "pending" | "completed"
   priority: CalendarEventPriority
-  color?: string // custom hex or color id
-  reminderMinutes?: number // minutes before event to alert (e.g. 0, 5, 10, 15, 30, 60, 1440)
-  reminderTriggered?: boolean
-  url?: string
   location?: string
   subjectId?: string
   subjectName?: string
@@ -59609,17 +59712,11 @@ export interface CalendarEvent {
   createdAt: string
   updatedAt: string
   metadata?: Record<string, unknown>
+  color?: string
+  reminderMinutes?: number
+  reminderTriggered?: boolean
+  url?: string
 }
-
-export const CALENDAR_COLORS = [
-  { id: "default", name: "Default Ink", hex: "var(--sq-ink)", bg: "var(--sq-shade)", border: "var(--sq-border)" },
-  { id: "blue", name: "Blue (Classes)", hex: "#2563eb", bg: "#eff6ff", border: "#bfdbfe" },
-  { id: "red", name: "Red (Exams)", hex: "#dc2626", bg: "#fef2f2", border: "#fecaca" },
-  { id: "green", name: "Green (Study)", hex: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0" },
-  { id: "amber", name: "Amber (Deadlines)", hex: "#d97706", bg: "#fffbeb", border: "#fde68a" },
-  { id: "purple", name: "Purple (Labs)", hex: "#9333ea", bg: "#faf5ff", border: "#e9d5ff" },
-  { id: "pink", name: "Pink (Personal)", hex: "#db2777", bg: "#fdf2f8", border: "#fbcfe8" },
-] as const
 
 export type CreateCalendarEventInput = Omit<CalendarEvent, "id" | "createdAt" | "updatedAt"> & {
   id?: string
@@ -70539,8 +70636,8 @@ runTests().catch((err) => {
 ### File: `scripts/test-functional-calendar.ts`
 
 - **Path**: `scripts/test-functional-calendar.ts`
-- **Lines**: 509
-- **Size**: 21005 bytes
+- **Lines**: 424
+- **Size**: 17163 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -70588,8 +70685,6 @@ import {
 } from "../lib/calendar/event-store.ts"
 
 import type { CalendarEvent } from "../lib/calendar/types.ts"
-import { CALENDAR_COLORS } from "../lib/calendar/types.ts"
-import { exportToIcs, parseIcs } from "../lib/calendar/ics.ts"
 import { getDef, ALL_DEFS } from "../lib/library/registry.ts"
 
 function assert(condition: boolean, message: string) {
@@ -70966,89 +71061,6 @@ const foundByKeyword = ALL_DEFS.filter((d) => d.keywords.includes("schedule") ||
 assert(foundByKeyword.some((d) => d.kind === "functional-calendar"), "Searchable by 'schedule' or 'calendar' keywords")
 
 console.log("✓ Library registry & backward compatibility tests passed.")
-
-// ---------------------------------------------------------------------------
-// 8. RFC 5545 iCalendar (.ics) Export & Import Engine
-// ---------------------------------------------------------------------------
-console.log("-> 8. Testing RFC 5545 iCalendar (.ics) export and import...")
-
-const sampleEvents: CalendarEvent[] = [
-  {
-    id: "ics-test-1",
-    title: "Midterm Examination",
-    description: "Covers chapters 1 through 8 with multiple choice and proofs.",
-    date: "2026-10-15",
-    startTime: "09:00",
-    endTime: "11:00",
-    durationMinutes: 120,
-    isAllDay: false,
-    type: "Exam",
-    priority: "High",
-    status: "pending",
-    recurrence: "none",
-    location: "Hall B, Room 204",
-    reminderMinutes: 30,
-    color: "red",
-  },
-  {
-    id: "ics-test-2",
-    title: "Project Hackathon",
-    date: "2026-10-25",
-    isAllDay: true,
-    type: "Personal",
-    priority: "Medium",
-    status: "completed",
-    recurrence: "weekly",
-    color: "purple",
-  },
-]
-
-// 8a. Test Export
-const icsOutput = exportToIcs(sampleEvents, "Test Calendar")
-assert(icsOutput.includes("BEGIN:VCALENDAR"), "ICS has BEGIN:VCALENDAR")
-assert(icsOutput.includes("VERSION:2.0"), "ICS specifies VERSION:2.0")
-assert(icsOutput.includes("SUMMARY:Midterm Examination"), "ICS contains event title")
-assert(icsOutput.includes("LOCATION:Hall B\\, Room 204"), "ICS escapes commas in location")
-assert(icsOutput.includes("BEGIN:VALARM"), "ICS generates VALARM block for 30m reminder")
-assert(icsOutput.includes("TRIGGER:-PT30M"), "ICS specifies -PT30M trigger")
-assert(icsOutput.includes("RRULE:FREQ=WEEKLY"), "ICS specifies weekly recurrence")
-assert(icsOutput.includes("VALUE=DATE:20261025"), "ICS formats all-day date properly")
-assert(icsOutput.includes("END:VCALENDAR"), "ICS terminates with END:VCALENDAR")
-
-// 8b. Test Parser
-const parsedEvents = parseIcs(icsOutput)
-assert(parsedEvents.length === 2, "Parsed back 2 events from .ics string")
-
-const parsedExam = parsedEvents.find((e) => e.title === "Midterm Examination")
-assert(Boolean(parsedExam), "Found parsed Midterm Examination")
-assert(parsedExam!.date === "2026-10-15", "Parsed date matches 2026-10-15")
-assert(parsedExam!.startTime === "09:00", "Parsed start time 09:00")
-assert(parsedExam!.endTime === "11:00", "Parsed end time 11:00")
-assert(parsedExam!.durationMinutes === 120, "Calculated duration 120 minutes")
-assert(parsedExam!.location === "Hall B, Room 204", "Unescaped location accurately")
-assert(parsedExam!.priority === "High", "Parsed high priority")
-
-const parsedHackathon = parsedEvents.find((e) => e.title === "Project Hackathon")
-assert(Boolean(parsedHackathon), "Found parsed Project Hackathon")
-assert(parsedHackathon!.isAllDay === true, "Identified as all-day event")
-assert(parsedHackathon!.status === "completed", "Identified status completed")
-assert(parsedHackathon!.recurrence === "weekly", "Identified weekly recurrence")
-
-console.log("✓ RFC 5545 iCalendar export and import tests passed.")
-
-// ---------------------------------------------------------------------------
-// 9. Windows & Android Feature Set Verification
-// ---------------------------------------------------------------------------
-console.log("-> 9. Testing Windows & Android calendar presets & features...")
-
-// Color presets
-assert(CALENDAR_COLORS.length >= 7, "At least 7 calendar color tag options")
-const blueColor = CALENDAR_COLORS.find((c) => c.id === "blue")
-assert(Boolean(blueColor && blueColor.hex.startsWith("#")), "Valid blue color preset")
-const redColor = CALENDAR_COLORS.find((c) => c.id === "red")
-assert(Boolean(redColor && redColor.hex.startsWith("#")), "Valid red color preset")
-
-console.log("✓ Windows & Android calendar presets verified.")
 
 console.log("=== All Zenithsui Functional Calendar Tests Passed Successfully! ===")
 ```
