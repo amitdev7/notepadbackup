@@ -174,6 +174,8 @@ export interface DocumentNode extends BaseNode {
   textContent?: string
   /** Timestamp when attached */
   attachedAt?: number
+  /** Cloud storage bucket path if synced */
+  storagePath?: string
   /** Local/cloud sync status */
   status?: "ready" | "uploading" | "local" | "syncing" | "error"
   /** Optional custom metadata (e.g. author, title, tags) */

@@ -13,6 +13,7 @@ import {
   type QueuedMutation,
 } from "./queue"
 import { getLocalDocument, saveLocalDocument, type LocalSyncStatus } from "../storage/documents"
+import { syncPendingDocumentAssets } from "../storage/document-assets"
 import { useAuthStore } from "../auth-store"
 import type { CanvasDocumentJson } from "../db/types"
 
@@ -236,6 +237,9 @@ async function processMutation(mutation: QueuedMutation): Promise<{
         method: "DELETE",
       })
       return { success: response.ok }
+    } else if (mutation.type === "upload_asset") {
+      await syncPendingDocumentAssets()
+      return { success: true }
     }
 
     return { success: true }
@@ -249,6 +253,7 @@ async function processMutation(mutation: QueuedMutation): Promise<{
 if (typeof window !== "undefined") {
   window.addEventListener("online", () => {
     useSyncStore.getState().setStatus("saved-locally")
+    void syncPendingDocumentAssets()
     runSyncWorker()
   })
 

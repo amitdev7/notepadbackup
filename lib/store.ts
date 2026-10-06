@@ -2,7 +2,7 @@
 
 import { create } from "zustand"
 import { nanoid } from "nanoid"
-import type { ComponentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind } from "./types"
+import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind } from "./types"
 import { normalizeFill, screenToWorld, unionBox } from "./types"
 import { repeatStep, type DupTrail } from "./canvas/duplicate"
 import { getDef } from "./library/registry"
