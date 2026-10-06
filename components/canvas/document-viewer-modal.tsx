@@ -47,6 +47,7 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
   const [fullText, setFullText] = useState<string | null>(null)
   const [csvFilter, setCsvFilter] = useState<string>("")
   const [copied, setCopied] = useState<boolean>(false)
+  const [mdViewMode, setMdViewMode] = useState<"formatted" | "raw">("formatted")
 
   // Resolve document blob
   const loadBlob = useCallback(() => {
@@ -70,7 +71,7 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
           try {
             const url = URL.createObjectURL(blob)
             setObjectUrl(url)
-          } catch {}
+          } catch { }
         } else {
           setDocBlob(null)
           setIsBlobLoading(false)
@@ -344,6 +345,36 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
 
           {/* Action controls */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Markdown mode toggle */}
+            {(extension === "md" || extension === "markdown") && fullText && (
+              <div className="flex items-center rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] overflow-hidden text-xs">
+                <button
+                  type="button"
+                  onClick={() => setMdViewMode("formatted")}
+                  className={cn(
+                    "px-2.5 py-1 transition-colors font-medium",
+                    mdViewMode === "formatted"
+                      ? "bg-[var(--sq-shade)] text-[var(--sq-ink)] font-semibold"
+                      : "hover:bg-[var(--sq-shade)]/50 opacity-70"
+                  )}
+                >
+                  Formatted
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMdViewMode("raw")}
+                  className={cn(
+                    "px-2.5 py-1 transition-colors font-medium",
+                    mdViewMode === "raw"
+                      ? "bg-[var(--sq-shade)] text-[var(--sq-ink)] font-semibold"
+                      : "hover:bg-[var(--sq-shade)]/50 opacity-70"
+                  )}
+                >
+                  Raw
+                </button>
+              </div>
+            )}
+
             {/* Copy button for textual files */}
             {fullText && (
               <button
@@ -462,12 +493,29 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
             </div>
           )}
 
-          {/* Code & Text Viewer (JSON, TXT, MD, etc.) */}
-          {fullText !== null && extension !== "csv" && extension !== "tsv" && (
-            <div className="w-full h-full overflow-auto p-6 font-mono text-xs leading-relaxed select-text bg-[var(--sq-paper)]">
-              <pre className="whitespace-pre-wrap break-words">{fullText}</pre>
+          {/* Markdown Viewer */}
+          {(extension === "md" || extension === "markdown") && fullText !== null && (
+            <div className="w-full h-full overflow-auto p-6 leading-relaxed select-text bg-[var(--sq-paper)]">
+              {mdViewMode === "formatted" ? (
+                <div className="max-w-3xl mx-auto py-2">
+                  <SimpleMarkdown content={fullText} />
+                </div>
+              ) : (
+                <pre className="font-mono text-xs whitespace-pre-wrap break-words">{fullText}</pre>
+              )}
             </div>
           )}
+
+          {/* Code & Text Viewer (JSON, TXT, etc.) */}
+          {fullText !== null &&
+            extension !== "csv" &&
+            extension !== "tsv" &&
+            extension !== "md" &&
+            extension !== "markdown" && (
+              <div className="w-full h-full overflow-auto p-6 font-mono text-xs leading-relaxed select-text bg-[var(--sq-paper)]">
+                <pre className="whitespace-pre-wrap break-words">{fullText}</pre>
+              </div>
+            )}
 
           {/* Office Documents & Fallback */}
           {extension !== "csv" &&
@@ -511,4 +559,148 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
       </div>
     </div>
   )
+}
+
+// ---------------------------------------------------------------------------
+// Lightweight, Safe React Markdown Renderer (Zero unsafe HTML injection)
+// ---------------------------------------------------------------------------
+
+function SimpleMarkdown({ content }: { content: string }) {
+  const lines = content.split("\n")
+  const elements: React.ReactNode[] = []
+  let inCodeBlock = false
+  let codeBlockLines: string[] = []
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i]
+    if (line.startsWith("```")) {
+      if (inCodeBlock) {
+        elements.push(
+          <pre
+            key={`code-${i}`}
+            className="my-3 p-3 rounded-md bg-[var(--sq-shade)]/60 border border-[var(--sq-border)] font-mono text-xs overflow-x-auto whitespace-pre leading-normal"
+          >
+            <code>{codeBlockLines.join("\n")}</code>
+          </pre>
+        )
+        codeBlockLines = []
+        inCodeBlock = false
+      } else {
+        inCodeBlock = true
+      }
+      continue
+    }
+
+    if (inCodeBlock) {
+      codeBlockLines.push(line)
+      continue
+    }
+
+    if (line.startsWith("# ")) {
+      elements.push(
+        <h1 key={i} className="text-xl font-bold mt-4 mb-2 border-b border-[var(--sq-border)] pb-1">
+          {renderInline(line.slice(2))}
+        </h1>
+      )
+    } else if (line.startsWith("## ")) {
+      elements.push(
+        <h2 key={i} className="text-lg font-bold mt-3 mb-1.5 border-b border-[var(--sq-border)]/60 pb-1">
+          {renderInline(line.slice(3))}
+        </h2>
+      )
+    } else if (line.startsWith("### ")) {
+      elements.push(
+        <h3 key={i} className="text-base font-semibold mt-2.5 mb-1">
+          {renderInline(line.slice(4))}
+        </h3>
+      )
+    } else if (line.startsWith("#### ")) {
+      elements.push(
+        <h4 key={i} className="text-sm font-semibold mt-2 mb-1">
+          {renderInline(line.slice(5))}
+        </h4>
+      )
+    } else if (line.startsWith("> ")) {
+      elements.push(
+        <blockquote
+          key={i}
+          className="border-l-4 border-[var(--sq-border)] pl-3 my-2 italic opacity-80"
+        >
+          {renderInline(line.slice(2))}
+        </blockquote>
+      )
+    } else if (line.startsWith("- ") || line.startsWith("* ")) {
+      elements.push(
+        <li key={i} className="ml-4 list-disc my-0.5 leading-relaxed">
+          {renderInline(line.slice(2))}
+        </li>
+      )
+    } else if (/^\d+\.\s/.test(line)) {
+      const match = line.match(/^(\d+\.)\s(.*)/)
+      elements.push(
+        <li key={i} className="ml-4 list-decimal my-0.5 leading-relaxed">
+          {renderInline(match ? match[2] : line)}
+        </li>
+      )
+    } else if (line.trim() === "---" || line.trim() === "***") {
+      elements.push(<hr key={i} className="my-3 border-[var(--sq-border)]" />)
+    } else if (line.trim() === "") {
+      elements.push(<div key={i} className="h-2" />)
+    } else {
+      elements.push(
+        <p key={i} className="my-1 leading-relaxed">
+          {renderInline(line)}
+        </p>
+      )
+    }
+  }
+
+  // Handle trailing unclosed code block
+  if (inCodeBlock && codeBlockLines.length > 0) {
+    elements.push(
+      <pre
+        key="code-final"
+        className="my-3 p-3 rounded-md bg-[var(--sq-shade)]/60 border border-[var(--sq-border)] font-mono text-xs overflow-x-auto whitespace-pre leading-normal"
+      >
+        <code>{codeBlockLines.join("\n")}</code>
+      </pre>
+    )
+  }
+
+  return <div className="space-y-0.5 text-xs sm:text-sm">{elements}</div>
+}
+
+function renderInline(text: string): React.ReactNode {
+  const parts: React.ReactNode[] = []
+  const tokenRegex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g
+  let lastIdx = 0
+  let match: RegExpExecArray | null
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    if (match.index > lastIdx) {
+      parts.push(text.slice(lastIdx, match.index))
+    }
+    const token = match[0]
+    if (token.startsWith("**") && token.endsWith("**")) {
+      parts.push(<strong key={match.index}>{token.slice(2, -2)}</strong>)
+    } else if (token.startsWith("*") && token.endsWith("*")) {
+      parts.push(<em key={match.index}>{token.slice(1, -1)}</em>)
+    } else if (token.startsWith("`") && token.endsWith("`")) {
+      parts.push(
+        <code
+          key={match.index}
+          className="px-1 py-0.5 rounded bg-[var(--sq-shade)]/60 font-mono text-[11px] border border-[var(--sq-border)]"
+        >
+          {token.slice(1, -1)}
+        </code>
+      )
+    }
+    lastIdx = match.index + token.length
+  }
+
+  if (lastIdx < text.length) {
+    parts.push(text.slice(lastIdx))
+  }
+
+  return parts.length > 0 ? parts : text
 }

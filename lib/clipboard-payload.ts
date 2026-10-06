@@ -135,10 +135,12 @@ export function validNode(v: unknown): SquigNode | null {
     case "document":
       if (!str(n.name) || !n.name.trim() || !str(n.mimeType) || !n.mimeType.trim() || (!str(n.assetId) && !str(n.src))) return null
       if (n.w <= 0 || n.h <= 0) return null
+      if (n.src !== undefined && (!str(n.src) || !safeDocumentSrc(n.src))) return null
+      if (n.assetId !== undefined && (!str(n.assetId) || !/^[\w-]{1,128}$/.test(n.assetId))) return null
       break
   }
 
-  return {
+  const out = {
     ...n,
     // both are replaced when the paste is placed, so a payload that forgot
     // them shouldn't be the thing that stops it
@@ -146,5 +148,36 @@ export function validNode(v: unknown): SquigNode | null {
     seed: num(n.seed) ? n.seed : 1,
     w: Math.max(0, n.w),
     h: Math.max(0, n.h),
+  } as SquigNode
+
+  if (out.type === "document") {
+    // optional references: an unsafe one is dropped, not fatal — the node still
+    // resolves its bytes through assetId
+    if (out.thumbnailUrl !== undefined && !(str(out.thumbnailUrl) && /^data:image\/(png|jpeg|webp|gif);/i.test(out.thumbnailUrl))) {
+      delete out.thumbnailUrl
+    }
+    if (out.storagePath !== undefined && !(str(out.storagePath) && SAFE_STORAGE_PATH.test(out.storagePath))) {
+      delete out.storagePath
+    }
+    if (out.pageCount !== undefined && !(num(out.pageCount) && out.pageCount >= 1)) delete out.pageCount
+    if (out.currentPage !== undefined && !(num(out.currentPage) && out.currentPage >= 1)) delete out.currentPage
+    if (out.sizeBytes !== undefined && !(num(out.sizeBytes) && out.sizeBytes >= 0)) delete out.sizeBytes
   }
+
+  return out
+}
+
+/** "<uuid>/<sha256>/<name>" — never absolute, never climbing out of its folder */
+const SAFE_STORAGE_PATH = /^[0-9a-f-]{36}\/[0-9a-f]{64}\/(?!\.{1,2}$)[^/\\]{1,200}$/i
+
+/**
+ * Where a document's bytes may come from. Local content addresses, live object
+ * URLs, same-origin paths and https — nothing that executes (javascript:,
+ * data:text/html, file:, protocol-relative "//host").
+ */
+export function safeDocumentSrc(src: string): boolean {
+  if (/^asset:\/\/[0-9a-zA-Z_-]{6,128}$/i.test(src)) return true
+  if (/^blob:[^\s]+$/i.test(src)) return true
+  if (/^\/(?!\/)/.test(src)) return true
+  return /^https:\/\/[^\s]+$/i.test(src)
 }

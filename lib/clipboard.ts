@@ -225,8 +225,13 @@ export async function documentNodeFrom(file: File | Blob, rawName?: string): Pro
     let w = 320
     let h = 260
     if (isPdf) {
-      w = 340
-      h = 440
+      if (res.naturalW && res.naturalH && res.naturalW > res.naturalH) {
+        w = 440
+        h = 340 // landscape PDF
+      } else {
+        w = 340
+        h = 440 // portrait PDF
+      }
     } else if (isTable) {
       w = 380
       h = 300
@@ -251,6 +256,8 @@ export async function documentNodeFrom(file: File | Blob, rawName?: string): Pro
       currentPage: 1,
       textContent: res.textContent,
       thumbnailUrl: res.thumbnailUrl,
+      attachedAt: Date.now(),
+      status: "local",
       x: 0,
       y: 0,
       w,
@@ -358,49 +365,50 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
     return true
   }
 
-  if (c.images.length) {
-    const made: ImageNode[] = []
+  const hasFiles = (c.images && c.images.length > 0) || (c.documents && c.documents.length > 0)
+  if (hasFiles) {
+    const made: (ImageNode | DocumentNode)[] = []
     for (const blob of c.images) {
       const node = await imageNodeFrom(blob, blob instanceof File ? blob.name : undefined)
       if (node) made.push(node)
     }
-    // a picture that won't decode leaves the canvas exactly as it was, so the
-    // paste would otherwise read as a keystroke that did nothing
-    if (!made.length) {
-      s.setNotice(c.images.length > 1 ? "couldn't read those pictures" : "couldn't read that picture")
-      return false
+    if (c.documents?.length) {
+      for (const doc of c.documents) {
+        const node = await documentNodeFrom(doc, doc.name)
+        if (node) made.push(node)
+      }
     }
-    // the pointer may well have moved while those were decoding, so the
-    // position captured when the paste began is the one that counts. With no
-    // pointer at all we're aiming at the middle of the view, and "top-left
-    // there" would hang the picture off the corner — centre it instead
-    const [px, py] = at ?? viewportCentre()
-    const [ox, oy] = at ? [px, py] : [px - made[0].w / 2, py - made[0].h / 2]
-    made.forEach((n, i) => {
-      n.x = Math.round(ox + i * CASCADE)
-      n.y = Math.round(oy + i * CASCADE)
-    })
-    s.addNodes(made)
-    s.setSelection(made.map((m) => m.id))
-    return true
-  }
 
-  if (c.documents?.length) {
-    const made: DocumentNode[] = []
-    for (const doc of c.documents) {
-      const node = await documentNodeFrom(doc, doc.name)
-      if (node) made.push(node)
-    }
     if (!made.length) {
-      s.setNotice(c.documents.length > 1 ? "couldn't read those documents" : "couldn't read that document")
+      s.setNotice("couldn't read those attachments")
       return false
     }
+
     const [px, py] = at ?? viewportCentre()
     const [ox, oy] = at ? [px, py] : [px - made[0].w / 2, py - made[0].h / 2]
+
+    // Multi-file layout: clean grid with up to 3 columns and 28px gaps (Section 73)
+    const cols = made.length <= 4 ? made.length : 3
+    const GAP_X = 28
+    const GAP_Y = 28
+    let curX = ox
+    let curY = oy
+    let rowMaxH = 0
+
     made.forEach((n, i) => {
-      n.x = Math.round(ox + i * CASCADE)
-      n.y = Math.round(oy + i * CASCADE)
+      const col = i % cols
+      const row = Math.floor(i / cols)
+      if (col === 0 && row > 0) {
+        curX = ox
+        curY += rowMaxH + GAP_Y
+        rowMaxH = 0
+      }
+      n.x = Math.round(curX)
+      n.y = Math.round(curY)
+      curX += n.w + GAP_X
+      rowMaxH = Math.max(rowMaxH, n.h)
     })
+
     s.addNodes(made)
     s.setSelection(made.map((m) => m.id))
     return true

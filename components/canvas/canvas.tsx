@@ -84,70 +84,70 @@ const marqueeMode = (m: Mods): MarqueeMode => (m.shift || m.toggle ? "xor" : "re
 type Gesture =
   | { kind: "pan"; sx: number; sy: number; ox: number; oy: number; pointerId: number; exceeded: boolean }
   | {
-      kind: "move"
-      /** world anchor */
-      wx: number
-      wy: number
-      /** screen anchor, for the drag threshold only */
-      sx: number
-      sy: number
-      pointerId: number
-      exceeded: boolean
-      /** the nodes the gesture started on, in document order */
-      sourceIds: string[]
-      /** positions at gesture start, keyed by source id */
-      sourcePos: Record<string, { x: number; y: number }>
-      /** ids of the alt-drag copies, while alt is held */
-      cloneIds: string[] | null
-      /** whether a checkpoint has been taken for this gesture */
-      dirty: boolean
-      /** set when the press landed inside a bigger selection: a click with no
-       *  drag narrows to exactly this set. Carries the set rather than the id
-       *  because ⌘-click means "just this piece" while a plain click means
-       *  "this piece's whole group". */
-      collapseTo: string[] | null
-    }
+    kind: "move"
+    /** world anchor */
+    wx: number
+    wy: number
+    /** screen anchor, for the drag threshold only */
+    sx: number
+    sy: number
+    pointerId: number
+    exceeded: boolean
+    /** the nodes the gesture started on, in document order */
+    sourceIds: string[]
+    /** positions at gesture start, keyed by source id */
+    sourcePos: Record<string, { x: number; y: number }>
+    /** ids of the alt-drag copies, while alt is held */
+    cloneIds: string[] | null
+    /** whether a checkpoint has been taken for this gesture */
+    dirty: boolean
+    /** set when the press landed inside a bigger selection: a click with no
+     *  drag narrows to exactly this set. Carries the set rather than the id
+     *  because ⌘-click means "just this piece" while a plain click means
+     *  "this piece's whole group". */
+    collapseTo: string[] | null
+  }
   | {
-      kind: "marquee"
-      wx: number
-      wy: number
-      sx: number
-      sy: number
-      pointerId: number
-      exceeded: boolean
-      base: string[]
-      /** the hollow shape whose middle the press landed in, if any. A press
-       *  there reads two ways — a click means "select this shape", a drag
-       *  means "marquee, it just happened to start inside" — so the candidate
-       *  rides along and the release picks the reading. */
-      softHitId: string | null
-    }
+    kind: "marquee"
+    wx: number
+    wy: number
+    sx: number
+    sy: number
+    pointerId: number
+    exceeded: boolean
+    base: string[]
+    /** the hollow shape whose middle the press landed in, if any. A press
+     *  there reads two ways — a click means "select this shape", a drag
+     *  means "marquee, it just happened to start inside" — so the candidate
+     *  rides along and the release picks the reading. */
+    softHitId: string | null
+  }
   | { kind: "draw"; points: [number, number][]; sx: number; sy: number; pointerId: number; exceeded: boolean }
   | {
-      kind: "create"
-      wx: number
-      wy: number
-      sx: number
-      sy: number
-      pointerId: number
-      exceeded: boolean
-      id: string | null
-      what: "shape" | "arrow"
-    }
+    kind: "create"
+    wx: number
+    wy: number
+    sx: number
+    sy: number
+    pointerId: number
+    exceeded: boolean
+    id: string | null
+    what: "shape" | "arrow"
+  }
   | {
-      kind: "resize"
-      handle: Handle
-      wx: number
-      wy: number
-      sx: number
-      sy: number
-      pointerId: number
-      exceeded: boolean
-      ids: string[]
-      origNodes: SquigNode[]
-      origBounds: Bounds
-      dirty: boolean
-    }
+    kind: "resize"
+    handle: Handle
+    wx: number
+    wy: number
+    sx: number
+    sy: number
+    pointerId: number
+    exceeded: boolean
+    ids: string[]
+    origNodes: SquigNode[]
+    origBounds: Bounds
+    dirty: boolean
+  }
 
 const canAutoPan = (g: Gesture | null) =>
   !!g && (g.kind === "marquee" || g.kind === "move" || g.kind === "resize" || g.kind === "create")
@@ -174,7 +174,7 @@ export function Canvas() {
   const lastHandlePress = useRef<{ handle: Handle; t: number } | null>(null)
   const swallowDblClickUntil = useRef(0)
   const autoPanRef = useRef<number | null>(null)
-  const autoPanTickRef = useRef<() => void>(() => {})
+  const autoPanTickRef = useRef<() => void>(() => { })
   const hoverRafRef = useRef<number | null>(null)
   /** last world position of the pointer — ⌘V pastes here */
   const pointerWorld = useRef<[number, number] | null>(null)
@@ -205,7 +205,8 @@ export function Canvas() {
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
-  const [viewerNode, setViewerNode] = useState<DocumentNode | null>(null)
+  const viewerDoc = useSquig((s) => s.viewerDoc)
+  const setViewerDoc = useSquig((s) => s.setViewerDoc)
 
   const { isSpacebarHeld } = useSpacebarPan()
   // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
@@ -682,24 +683,24 @@ export function Canvas() {
         id =
           g.what === "shape"
             ? s.addNode(
-                { type: "shape", shape: s.shapeKind, fill: "none", x: g.wx, y: g.wy, w, h } as Omit<SquigNode, "id" | "seed">,
-                { select: false }
-              )
+              { type: "shape", shape: s.shapeKind, fill: "none", x: g.wx, y: g.wy, w, h } as Omit<SquigNode, "id" | "seed">,
+              { select: false }
+            )
             : s.addNode(
-                {
-                  type: "arrow",
-                  head: true,
-                  x: g.wx,
-                  y: g.wy,
-                  w,
-                  h,
-                  points: [
-                    [0, 0],
-                    [w, h],
-                  ],
-                } as Omit<SquigNode, "id" | "seed">,
-                { select: false }
-              )
+              {
+                type: "arrow",
+                head: true,
+                x: g.wx,
+                y: g.wy,
+                w,
+                h,
+                points: [
+                  [0, 0],
+                  [w, h],
+                ],
+              } as Omit<SquigNode, "id" | "seed">,
+              { select: false }
+            )
       } else {
         const n = st().nodes[id]
         // BOTH dimensions, not either: a horizontal arrow is 2 units tall by
@@ -944,7 +945,8 @@ export function Canvas() {
       // Check if press landed on an interactive component
       const interactiveEl = (e.target as HTMLElement).closest?.("[data-interactive-node]")
       const targetInteractiveId = interactiveEl?.getAttribute("data-interactive-node")
-      const isDragHandle = Boolean((e.target as HTMLElement).closest?.("[data-node-drag-handle]"))
+      const isInteractiveControl = Boolean((e.target as HTMLElement).closest?.("button, input, select, textarea, [role=button]"))
+      const isDragHandle = Boolean((e.target as HTMLElement).closest?.("[data-node-drag-handle]")) && !isInteractiveControl
 
       if (targetInteractiveId) {
         if (!s.selection.includes(targetInteractiveId)) {
@@ -1105,7 +1107,7 @@ export function Canvas() {
       // double-clicking inside a multi-selection narrows to what you clicked
       if (s.selection.length !== 1 || s.selection[0] !== hitId) s.setSelection([hitId])
       if (n.type === "document") {
-        setViewerNode(n as DocumentNode)
+        s.setViewerDoc(n as DocumentNode)
         return
       }
       if (hasEditableText(n)) s.setEditing(hitId)
@@ -1463,7 +1465,13 @@ export function Canvas() {
           // Only on a lone node: with several selected there's no "the" text.
           if (e.shiftKey || s.selection.length !== 1) break
           const n = s.nodes[s.selection[0]]
-          if (!n || !hasEditableText(n)) break
+          if (!n) break
+          if (n.type === "document") {
+            e.preventDefault()
+            s.setViewerDoc(n as DocumentNode)
+            break
+          }
+          if (!hasEditableText(n)) break
           e.preventDefault()
           s.setEditing(n.id)
           break
@@ -1648,7 +1656,7 @@ export function Canvas() {
                   node={n as DocumentNode}
                   selected={selection.includes(id)}
                   zoom={v.zoom}
-                  onOpenViewer={(doc) => setViewerNode(doc)}
+                  onOpenViewer={(doc) => setViewerDoc(doc)}
                 />
               </div>
             )
@@ -1744,10 +1752,10 @@ export function Canvas() {
       {order.length === 0 && !placing && <EmptyCanvas />}
 
       {/* expanded document viewer modal */}
-      {viewerNode && (
+      {viewerDoc && (
         <DocumentViewerModal
-          node={(nodes[viewerNode.id] as DocumentNode) || viewerNode}
-          onClose={() => setViewerNode(null)}
+          node={(nodes[viewerDoc.id] as DocumentNode) || viewerDoc}
+          onClose={() => setViewerDoc(null)}
         />
       )}
     </div>

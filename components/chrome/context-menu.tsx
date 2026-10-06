@@ -47,8 +47,12 @@ import {
   StackIcon,
   TextTIcon,
   TrashIcon,
+  DownloadSimple,
+  Eye,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
+import { downloadDocument } from "@/lib/storage/document-assets"
+import type { DocumentNode } from "@/lib/types"
 
 interface Item {
   label: string
@@ -131,6 +135,23 @@ export function CanvasContextMenu() {
       ...(one && hasEditableText(one)
         ? [{ label: "Edit text", hint: kbd("enter"), icon: TextTIcon, run: () => st().setEditing(one.id) } as Entry]
         : []),
+      ...(one && one.type === "document"
+        ? [
+          {
+            label: "Open in viewer",
+            hint: kbd("enter"),
+            icon: Eye,
+            run: () => st().setViewerDoc(one as DocumentNode),
+          } as Entry,
+          {
+            label: "Download document",
+            icon: DownloadSimple,
+            run: () => {
+              void downloadDocument(one as DocumentNode)
+            },
+          } as Entry,
+        ]
+        : []),
       { separator: true },
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },
       { label: "Bring forward", hint: kbd("mod+]"), icon: ArrowUpIcon, run: () => st().bringForward(targets) },
@@ -141,14 +162,14 @@ export function CanvasContextMenu() {
       { label: "Flip vertical", hint: kbd("shift+v"), icon: FlipVerticalIcon, run: () => st().flipSelected("y") },
       ...(selection.length > 1
         ? ([
-            { separator: true },
-            { label: "Align left", icon: AlignLeftSimpleIcon, run: () => st().alignSelected("left") },
-            { label: "Align centres", icon: AlignCenterVerticalSimpleIcon, run: () => st().alignSelected("hcenter") },
-            { label: "Align right", icon: AlignRightSimpleIcon, run: () => st().alignSelected("right") },
-            { label: "Align top", icon: AlignTopSimpleIcon, run: () => st().alignSelected("top") },
-            { label: "Align middles", icon: AlignCenterHorizontalSimpleIcon, run: () => st().alignSelected("vcenter") },
-            { label: "Align bottom", icon: AlignBottomSimpleIcon, run: () => st().alignSelected("bottom") },
-          ] as Entry[])
+          { separator: true },
+          { label: "Align left", icon: AlignLeftSimpleIcon, run: () => st().alignSelected("left") },
+          { label: "Align centres", icon: AlignCenterVerticalSimpleIcon, run: () => st().alignSelected("hcenter") },
+          { label: "Align right", icon: AlignRightSimpleIcon, run: () => st().alignSelected("right") },
+          { label: "Align top", icon: AlignTopSimpleIcon, run: () => st().alignSelected("top") },
+          { label: "Align middles", icon: AlignCenterHorizontalSimpleIcon, run: () => st().alignSelected("vcenter") },
+          { label: "Align bottom", icon: AlignBottomSimpleIcon, run: () => st().alignSelected("bottom") },
+        ] as Entry[])
         : []),
       { separator: true },
       { label: "Delete", hint: kbd("del"), icon: TrashIcon, danger: true, run: () => st().removeNodes(targets) },
@@ -209,9 +230,8 @@ export function CanvasContextMenu() {
               entry.run?.()
               close()
             }}
-            className={`group flex h-ctl-lg w-full items-center gap-2.5 rounded-chrome-sm px-2.5 text-left text-row hover:bg-accent ${
-              entry.danger ? "text-muted-foreground hover:text-destructive" : ""
-            }`}
+            className={`group flex h-ctl-lg w-full items-center gap-2.5 rounded-chrome-sm px-2.5 text-left text-row hover:bg-accent ${entry.danger ? "text-muted-foreground hover:text-destructive" : ""
+              }`}
           >
             <entry.icon
               className={`size-4 shrink-0 ${entry.danger ? "" : "text-muted-foreground group-hover:text-foreground"}`}

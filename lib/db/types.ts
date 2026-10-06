@@ -153,16 +153,21 @@ export interface DocumentVersionRecord {
 
 export interface AssetRecord {
   id: string
-  workspace_id: string | null
+  workspace_id: string
   document_id: string | null
   uploaded_by: string
-  filename: string
+  file_name: string
+  file_size_bytes: number
   mime_type: string
-  size_bytes: number
-  storage_path: string
+  storage_key: string
+  /** null for private attachments (read through signed URLs) */
+  public_url: string | null
   width: number | null
   height: number | null
+  sha256_hash: string
+  metadata: Record<string, unknown>
   created_at: string
+  deleted_at: string | null
 }
 
 export interface ActivityLogRecord {
@@ -724,11 +729,13 @@ export interface BaseDatabase {
       assets: {
         Row: AssetRecord
         Insert: Partial<AssetRecord> & {
+          workspace_id: string
           uploaded_by: string
-          filename: string
+          file_name: string
+          file_size_bytes: number
           mime_type: string
-          size_bytes: number
-          storage_path: string
+          storage_key: string
+          sha256_hash: string
         }
         Update: Partial<AssetRecord>
       }

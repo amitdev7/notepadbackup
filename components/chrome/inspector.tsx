@@ -568,6 +568,25 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
         />
       </StackRow>
 
+      <StackRow label="Display Mode">
+        <Segmented
+          ariaLabel="Display Mode"
+          value={doc?.displayMode || "preview"}
+          options={[
+            { value: "preview", label: "Preview" },
+            { value: "compact", label: "Compact" },
+            { value: "icon", label: "Icon" },
+          ]}
+          onChange={(mode) => {
+            const patches: Record<string, Partial<SquigNode>> = {}
+            documents.forEach((d) => {
+              patches[d.id] = { displayMode: mode as "preview" | "compact" | "icon" } as Partial<DocumentNode>
+            })
+            st().updateNodes(patches)
+          }}
+        />
+      </StackRow>
+
       {documents.length === 1 && (
         <>
           <Row label="Type">
@@ -583,10 +602,28 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
               <span className="text-xs font-mono opacity-75">{doc.pageCount} pages</span>
             </Row>
           )}
+          {doc.attachedAt && (
+            <Row label="Attached">
+              <span className="text-xs font-mono opacity-75">
+                {new Date(doc.attachedAt).toLocaleDateString()}
+              </span>
+            </Row>
+          )}
         </>
       )}
 
       <div className="flex items-center gap-1.5 pt-2">
+        {documents.length === 1 && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl flex-1 rounded-chrome-sm text-label"
+            onClick={() => st().setViewerDoc(doc)}
+          >
+            <ArrowsOutIcon className="size-3" /> Open
+          </Button>
+        )}
+
         <Button
           variant="outline"
           size="sm"

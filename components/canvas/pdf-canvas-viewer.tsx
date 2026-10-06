@@ -100,7 +100,7 @@ export function PdfCanvasViewer({
     if (!blob) {
       setLoadError(
         blobError ||
-          "The PDF document binary is currently unavailable. Ensure the file exists in local storage or remote storage."
+        "The PDF document binary is currently unavailable. Ensure the file exists in local storage or remote storage."
       )
       setIsLoading(false)
       return
@@ -258,10 +258,12 @@ export function PdfCanvasViewer({
     const matches: { page: number; count: number }[] = []
 
     try {
+      const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      const regex = new RegExp(escaped, "gi")
       for (let i = 1; i <= pdfDoc.numPages; i++) {
         const page = await pdfDoc.getPage(i)
         const text = await extractPdfPageText(page)
-        const count = (text.toLowerCase().match(new RegExp(q, "g")) || []).length
+        const count = (text.match(regex) || []).length
         if (count > 0) {
           matches.push({ page: i, count })
         }

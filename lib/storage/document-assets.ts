@@ -23,6 +23,8 @@ export interface DocumentAssetResult {
   extension: string
   sizeBytes: number
   pageCount?: number
+  naturalW?: number
+  naturalH?: number
   textContent?: string
   localUrl: string
   thumbnailUrl?: string
@@ -201,6 +203,8 @@ export async function saveDocumentAsset(
 
   // 3. Extract metadata
   let pageCount: number | undefined
+  let naturalW: number | undefined
+  let naturalH: number | undefined
   let textContent: string | undefined
   let thumbnailUrl: string | undefined
 
@@ -210,6 +214,8 @@ export async function saveDocumentAsset(
         const thumb = await generatePdfThumbnail(file, 480)
         thumbnailUrl = thumb.thumbnailUrl
         pageCount = thumb.pageCount
+        naturalW = thumb.naturalW
+        naturalH = thumb.naturalH
       } catch (err) {
         console.warn("PDF thumbnail generation notice:", err)
       }
@@ -236,6 +242,8 @@ export async function saveDocumentAsset(
     extension,
     sizeBytes,
     pageCount: pageCount || 1,
+    naturalW,
+    naturalH,
     textContent,
     localUrl,
     thumbnailUrl,
@@ -311,7 +319,7 @@ export async function getDocumentBlob(node: DocumentNode): Promise<Blob | null> 
             return blob
           }
         }
-      } catch {}
+      } catch { }
     }
   }
 
@@ -328,7 +336,7 @@ export async function getDocumentBlob(node: DocumentNode): Promise<Blob | null> 
           return blob
         }
       }
-    } catch {}
+    } catch { }
   }
 
   return null
@@ -384,5 +392,99 @@ export function revokeDocumentUrl(assetId: string): void {
     URL.revokeObjectURL(url)
     activeObjectUrls.delete(assetId)
   }
+}
+
+/**
+ * Automatically reconciles and uploads pending local document assets to cloud storage
+ * when the client is online and authenticated.
+ * Implements Section 8: Offline -> Online Reconciliation.
+ */
+export async function syncPendingDocumentAssets(): Promise<number> {
+  if (typeof window === "undefined" || !navigator.onLine) return 0
+
+  try {
+    const { useSquig } = await import("../store")
+    const s = useSquig.getState()
+    const docNodes = Object.values(s.nodes).filter(
+      (n): n is DocumentNode => n.type === "document" && (!n.storagePath || n.status === "local" || n.status === "error")
+    )
+    if (!docNodes.length) return 0
+
+    let syncedCount = 0
+    for (const node of docNodes) {
+      try {
+        const blob = await getDocumentBlob(node)
+        if (!blob || blob.size === 0) continue
+
+        s.updateNode(node.id, { status: "syncing" })
+        const hash = await computeBlobHash(blob)
+
+        // Try uploading to cloud via signed-upload-url
+        const res = await fetch("/api/assets/signed-upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            filename: node.name,
+            mimeType: node.mimeType,
+            sizeBytes: node.sizeBytes || blob.size,
+            sha256: hash,
+            documentId: s.cloudDocId || undefined,
+          }),
+        })
+
+        if (res.ok) {
+          const json = await res.json()
+          if (json.ok && json.data) {
+            const { storagePath, token, alreadyUploaded } = json.data
+            if (!alreadyUploaded && token) {
+              const { getSupabaseBrowserClient } = await import("../supabase/client")
+              const supabase = getSupabaseBrowserClient()
+              await supabase.storage.from("zenithsui-assets").uploadToSignedUrl(storagePath, token, blob)
+            }
+            s.updateNode(node.id, {
+              storagePath,
+              status: "ready",
+            })
+            syncedCount++
+            continue
+          }
+        }
+
+        // Fallback: try /api/blob/upload
+        const blobRes = await fetch(`/api/blob/upload?filename=${encodeURIComponent(node.name)}`, {
+          method: "POST",
+          body: blob,
+        })
+        if (blobRes.ok) {
+          const blobData = await blobRes.json()
+          if (blobData?.url) {
+            s.updateNode(node.id, {
+              src: blobData.url,
+              status: "ready",
+            })
+            syncedCount++
+            continue
+          }
+        }
+
+        // If network or server rejected, safely retain local copy
+        s.updateNode(node.id, { status: "local" })
+      } catch (e) {
+        console.warn("Background asset sync notice for node", node.id, e)
+        s.updateNode(node.id, { status: "local" })
+      }
+    }
+
+    return syncedCount
+  } catch {
+    return 0
+  }
+}
+
+// Background online event listener
+if (typeof window !== "undefined") {
+  window.addEventListener("online", () => {
+    void syncPendingDocumentAssets()
+  })
 }
 

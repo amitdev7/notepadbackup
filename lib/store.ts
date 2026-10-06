@@ -114,6 +114,7 @@ interface SquigState {
   /** a one-line flash in the corner; the id makes a repeat of the same words
    *  count as a new message */
   notice: { id: number; text: string } | null
+  viewerDoc: DocumentNode | null
 
   past: DocSnapshot[]
   future: DocSnapshot[]
@@ -146,6 +147,7 @@ interface SquigState {
   setEffectiveRole: (role: "owner" | "editor" | "viewer") => void
   setNotice: (text: string | null) => void
   setShowPage: (on: boolean) => void
+  setViewerDoc: (doc: DocumentNode | null) => void
 
   /** snapshot current doc onto the undo stack (call once at gesture start) */
   checkpoint: () => void
@@ -447,6 +449,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   clipboard: [],
   dupTrail: null,
   notice: null,
+  viewerDoc: null,
   past: [],
   future: [],
 
@@ -484,8 +487,9 @@ export const useSquig = create<SquigState>((set, get) => ({
     set({ showPage: on })
     try {
       localStorage.setItem("zenithsui:show_page", String(on))
-    } catch {}
+    } catch { }
   },
+  setViewerDoc: (doc) => set({ viewerDoc: doc }),
   setViewport: (v) => set({ viewport: v }),
   // a selection is a set, so store it in one canonical order: document order.
   // everything downstream (clipboard, duplicate, align, the type summary) then
@@ -725,7 +729,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     try {
       const sp = localStorage.getItem("zenithsui:show_page")
       if (sp !== null) initialShowPage = sp === "true"
-    } catch {}
+    } catch { }
 
     set({
       docId: doc?.id ?? nanoid(8),
