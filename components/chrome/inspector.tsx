@@ -42,6 +42,9 @@ import {
   X,
   DownloadSimple,
   ArrowsClockwise,
+  SquaresFour,
+  Lock,
+  LockOpen,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -378,6 +381,25 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
             <FlipVerticalIcon className="size-3.5" />
           </IconAction>
         </Row>
+
+        <Row spread label="Lock">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl text-xs gap-1.5"
+            onClick={() => st().toggleLockSelected()}
+          >
+            {selected.some((n) => n.locked) ? (
+              <>
+                <Lock className="size-3.5 text-amber-600" /> Unlock
+              </>
+            ) : (
+              <>
+                <LockOpen className="size-3.5" /> Lock
+              </>
+            )}
+          </Button>
+        </Row>
       </PanelSection>
 
       {/* --- contextual: text ------------------------------------------- */}
@@ -437,18 +459,42 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
         </PanelSection>
       )}
 
-      {/* --- contextual: fill ------------------------------------------- */}
+      {/* --- contextual: fill & shape ----------------------------------- */}
       {shapes.length > 0 && (
-        <PanelSection id="fill" title="Fill" count={partial(shapes.length)}>
-          <Row label="Tone">
-            <Segmented
-              ariaLabel="Fill tone"
-              options={FILL_OPTIONS}
-              shared={shared(shapes.map((n) => normalizeFill(n.fill)))}
-              onChange={(tone) => patch((n) => (n.type === "shape" ? ({ fill: tone } as Partial<SquigNode>) : null))}
-            />
-          </Row>
-        </PanelSection>
+        <>
+          <PanelSection id="shape-props" title="Shape" count={partial(shapes.length)}>
+            <Row label="Kind">
+              <Segmented
+                ariaLabel="Shape kind"
+                options={[
+                  { value: "rect", label: "Box" },
+                  { value: "ellipse", label: "Circle" },
+                  { value: "diamond", label: "Diamond" },
+                ]}
+                shared={shared(shapes.map((n) => n.shape))}
+                onChange={(kind) => patch((n) => (n.type === "shape" ? ({ shape: kind } as Partial<SquigNode>) : null))}
+              />
+            </Row>
+            <Row spread label="Rounded">
+              <MixedSwitch
+                ariaLabel="Rounded corners"
+                shared={shared(shapes.map((n) => !!n.roundness))}
+                onChange={(on) => patch((n) => (n.type === "shape" ? ({ roundness: on } as Partial<SquigNode>) : null))}
+              />
+            </Row>
+          </PanelSection>
+
+          <PanelSection id="fill" title="Fill" count={partial(shapes.length)}>
+            <Row label="Tone">
+              <Segmented
+                ariaLabel="Fill tone"
+                options={FILL_OPTIONS}
+                shared={shared(shapes.map((n) => normalizeFill(n.fill)))}
+                onChange={(tone) => patch((n) => (n.type === "shape" ? ({ fill: tone } as Partial<SquigNode>) : null))}
+              />
+            </Row>
+          </PanelSection>
+        </>
       )}
 
       {/* --- contextual: outline ---------------------------------------- */}
@@ -480,6 +526,14 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
               ariaLabel="Arrowhead"
               shared={shared(arrows.map((n) => n.head))}
               onChange={(on) => patch((n) => (n.type === "arrow" ? ({ head: on } as Partial<SquigNode>) : null))}
+            />
+          </Row>
+          <Row label="Label">
+            <MixedTextField
+              ariaLabel="Arrow label"
+              placeholder="Label text…"
+              shared={shared(arrows.map((n) => n.label ?? ""))}
+              onCommit={(lbl) => patch((n) => (n.type === "arrow" ? ({ label: lbl } as Partial<SquigNode>) : null))}
             />
           </Row>
         </PanelSection>
@@ -654,6 +708,19 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
           </>
         )}
       </div>
+
+      {documents.length === 1 && (doc.extension?.toLowerCase() === "pdf" || doc.mimeType === "application/pdf") && (
+        <div className="pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl w-full rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+            onClick={() => st().setPdfToCanvasDialog({ open: true, node: doc })}
+          >
+            <SquaresFour className="size-3.5" /> Extract pages to canvas
+          </Button>
+        </div>
+      )}
     </PanelSection>
   )
 }

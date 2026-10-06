@@ -5,6 +5,7 @@ import { nanoid } from "nanoid"
 import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind } from "./types"
 import { normalizeFill, screenToWorld, unionBox } from "./types"
 import { repeatStep, type DupTrail } from "./canvas/duplicate"
+import { getArrowPatchesForMovedNodes, cleanBindingsForDeletedNodes } from "./canvas/arrow-binding"
 import { getDef } from "./library/registry"
 import { breakApart } from "./library/break-apart"
 import {
@@ -115,6 +116,9 @@ interface SquigState {
    *  count as a new message */
   notice: { id: number; text: string } | null
   viewerDoc: DocumentNode | null
+  pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
+  searchOpen: boolean
+  statsOpen: boolean
 
   past: DocSnapshot[]
   future: DocSnapshot[]
@@ -143,11 +147,17 @@ interface SquigState {
   setTrashOpen: (on: boolean) => void
   setShareOpen: (on: boolean) => void
   setHistoryOpen: (on: boolean) => void
+  setSearchOpen: (open: boolean) => void
+  setStatsOpen: (open: boolean) => void
+  toggleLockSelected: () => void
+  unlockAll: () => void
+  isSelectionLocked: () => boolean
   setCloudDocId: (id: string | null) => void
   setEffectiveRole: (role: "owner" | "editor" | "viewer") => void
   setNotice: (text: string | null) => void
   setShowPage: (on: boolean) => void
   setViewerDoc: (doc: DocumentNode | null) => void
+  setPdfToCanvasDialog: (dialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null) => void
 
   /** snapshot current doc onto the undo stack (call once at gesture start) */
   checkpoint: () => void
@@ -450,6 +460,9 @@ export const useSquig = create<SquigState>((set, get) => ({
   dupTrail: null,
   notice: null,
   viewerDoc: null,
+  pdfToCanvasDialog: null,
+  searchOpen: false,
+  statsOpen: false,
   past: [],
   future: [],
 
@@ -490,6 +503,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     } catch { }
   },
   setViewerDoc: (doc) => set({ viewerDoc: doc }),
+  setPdfToCanvasDialog: (dialog) => set({ pdfToCanvasDialog: dialog }),
   setViewport: (v) => set({ viewport: v }),
   // a selection is a set, so store it in one canonical order: document order.
   // everything downstream (clipboard, duplicate, align, the type summary) then
@@ -518,6 +532,34 @@ export const useSquig = create<SquigState>((set, get) => ({
   setTrashOpen: (on) => set({ trashOpen: on, commandOpen: false, contextMenu: null }),
   setShareOpen: (on) => set({ shareOpen: on, commandOpen: false, contextMenu: null }),
   setHistoryOpen: (on) => set({ historyOpen: on, commandOpen: false, contextMenu: null }),
+  setSearchOpen: (open) => set({ searchOpen: open, contextMenu: null }),
+  setStatsOpen: (open) => set({ statsOpen: open, contextMenu: null }),
+  toggleLockSelected: () => {
+    const { selection, nodes } = get()
+    if (!selection.length) return
+    const allLocked = selection.every((id) => nodes[id]?.locked)
+    const patches: Record<string, Partial<SquigNode>> = {}
+    for (const id of selection) {
+      patches[id] = { locked: !allLocked }
+    }
+    get().checkpoint()
+    get().updateNodes(patches)
+  },
+  unlockAll: () => {
+    const { nodes } = get()
+    const patches: Record<string, Partial<SquigNode>> = {}
+    for (const [id, n] of Object.entries(nodes)) {
+      if (n.locked) patches[id] = { locked: false }
+    }
+    if (Object.keys(patches).length > 0) {
+      get().checkpoint()
+      get().updateNodes(patches)
+    }
+  },
+  isSelectionLocked: () => {
+    const { selection, nodes } = get()
+    return selection.length > 0 && selection.some((id) => nodes[id]?.locked)
+  },
   setCloudDocId: (id) => set({ cloudDocId: id }),
   setEffectiveRole: (role) => set({ effectiveRole: role }),
   setNotice: (text) => set((s) => ({ notice: text === null ? null : { id: (s.notice?.id ?? 0) + 1, text } })),
@@ -597,9 +639,23 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (opts?.checkpoint) get().checkpoint()
     set((s) => {
       const map = { ...s.nodes }
+      const movedIds = new Set<string>()
       for (const [id, patch] of Object.entries(patches)) {
         const cur = map[id]
-        if (cur) map[id] = { ...cur, ...patch } as SquigNode
+        if (cur) {
+          map[id] = { ...cur, ...patch } as SquigNode
+          if ("x" in patch || "y" in patch || "w" in patch || "h" in patch) {
+            movedIds.add(id)
+          }
+        }
+      }
+      if (movedIds.size > 0) {
+        const arrowPatches = getArrowPatchesForMovedNodes(map, movedIds)
+        for (const [aId, aPatch] of Object.entries(arrowPatches)) {
+          if (map[aId]) {
+            map[aId] = { ...map[aId], ...aPatch } as SquigNode
+          }
+        }
       }
       stampSelAfter(s.past, s.selection)
       return { nodes: map }
@@ -613,6 +669,13 @@ export const useSquig = create<SquigState>((set, get) => ({
     set((s) => {
       const map = { ...s.nodes }
       for (const id of ids) delete map[id]
+      const deletedSet = new Set(ids)
+      const arrowPatches = cleanBindingsForDeletedNodes(map, deletedSet)
+      for (const [aId, aPatch] of Object.entries(arrowPatches)) {
+        if (map[aId]) {
+          map[aId] = { ...map[aId], ...aPatch } as SquigNode
+        }
+      }
       stampSelAfter(s.past, s.selection.filter((i) => !ids.includes(i)))
       return {
         nodes: map,
@@ -625,7 +688,13 @@ export const useSquig = create<SquigState>((set, get) => ({
     scheduleSave(get)
   },
 
-  deleteSelected: () => get().removeNodes(get().selection),
+  deleteSelected: () => {
+    const { selection, nodes } = get()
+    const unlocked = selection.filter((id) => !nodes[id]?.locked)
+    if (unlocked.length > 0) {
+      get().removeNodes(unlocked)
+    }
+  },
 
   duplicateSelected: (offset = 16) => {
     const { selection, nodes, order, dupTrail } = get()
@@ -856,7 +925,7 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   flipSelected: (axis) => {
     const { selection, nodes } = get()
-    const sel = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
+    const sel = selection.map((id) => nodes[id]).filter((n) => n && !n.locked) as SquigNode[]
     if (!sel.length) return
     const box = unionBox(sel)
     if (!box) return
@@ -1003,7 +1072,7 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   distributeSelected: (axis) => {
     const { selection, nodes, order } = get()
-    const sel = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
+    const sel = selection.map((id) => nodes[id]).filter((n) => n && !n.locked) as SquigNode[]
     // fewer than three and there is no gap to even out
     if (sel.length < 3) return
     const size = (n: SquigNode) => (axis === "h" ? n.w : n.h)
@@ -1071,7 +1140,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   alignSelected: (edge) => {
     const { selection, nodes } = get()
     if (selection.length < 2) return
-    const sel = selection.map((id) => nodes[id]).filter(Boolean)
+    const sel = selection.map((id) => nodes[id]).filter((n) => n && !n.locked) as SquigNode[]
     if (sel.length < 2) return
     get().checkpoint()
     const minX = Math.min(...sel.map((n) => n.x))

@@ -23,6 +23,8 @@ const eslintConfig = defineConfig([
     "docs/**",
     "supabase/**",
     "public/**",
+    "sources/**",
+    "mouse/**",
   ]),
 ]);
 

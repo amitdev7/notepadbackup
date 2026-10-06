@@ -21,6 +21,10 @@ import { ConflictDialog } from "@/components/chrome/conflict-dialog"
 import { MigrationDialog } from "@/components/chrome/migration-dialog"
 import { VersionHistoryPanel } from "@/components/chrome/version-history-panel"
 import { TrashDialog } from "@/components/chrome/trash-dialog"
+import { PdfToCanvasDialog } from "@/components/canvas/pdf-to-canvas-dialog"
+import { CanvasSearch } from "@/components/canvas/canvas-search"
+import { CanvasStats } from "@/components/canvas/canvas-stats"
+import { LaserOverlay } from "@/components/canvas/laser-overlay"
 import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
 import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
@@ -90,6 +94,10 @@ export default function Home() {
       <MigrationDialog />
       <VersionHistoryPanel isOpen={historyOpen} onClose={() => setHistoryOpen(false)} cloudDocId={cloudDocId || undefined} />
       <TrashDialog />
+      <PdfToCanvasDialog />
+      <CanvasSearch />
+      <CanvasStats />
+      <LaserOverlay />
     </main>
   )
 }

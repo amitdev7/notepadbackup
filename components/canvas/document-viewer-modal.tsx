@@ -301,6 +301,10 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
             }}
             onDownload={handleDownload}
             onOpenExternal={handleOpenExternal}
+            onExtractToCanvas={() => {
+              onClose()
+              useSquig.getState().setPdfToCanvasDialog({ open: true, node })
+            }}
             onClose={onClose}
           />
         </div>

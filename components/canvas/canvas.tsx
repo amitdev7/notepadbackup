@@ -20,6 +20,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSquig } from "@/lib/store"
 import type { SquigNode, TextNode, DocumentNode } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
+import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
 import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
@@ -722,6 +723,21 @@ export function Canvas() {
           }
         }
       }
+      if (id) {
+        const n = st().nodes[id]
+        if (n && n.type === "arrow") {
+          const startWorld: [number, number] = [n.x + n.points[0][0], n.y + n.points[0][1]]
+          const endWorld: [number, number] = [n.x + n.points[1][0], n.y + n.points[1][1]]
+          const startCand = findSnapCandidateNode(startWorld[0], startWorld[1], s.nodes, id)
+          const endCand = findSnapCandidateNode(endWorld[0], endWorld[1], s.nodes, id)
+          if (startCand || endCand) {
+            s.updateNode(id, {
+              startBinding: startCand ? { elementId: startCand.id, focus: 0 } : undefined,
+              endBinding: endCand ? { elementId: endCand.id, focus: 0 } : undefined,
+            })
+          }
+        }
+      }
       s.setSelection([id])
       s.setTool("select")
     }
@@ -903,6 +919,7 @@ export function Canvas() {
         resetTextWidth()
         return
       }
+      if (sel.some((n) => n.locked)) return
       modsRef.current = readMods(e)
       const [wx, wy] = toWorld(e)
       beginGesture(
@@ -964,8 +981,8 @@ export function Canvas() {
       const [wx, wy] = toWorld(e)
       const common = { sx: e.clientX, sy: e.clientY, pointerId: e.pointerId, exceeded: false }
 
-      // middle mouse or space = pan, any tool
-      if (e.button === 1 || isSpacebarHeld) {
+      // middle mouse or space or hand tool = pan, any tool
+      if (e.button === 1 || isSpacebarHeld || tool === "hand") {
         beginGesture({ kind: "pan", ...common, ox: s.viewport.x, oy: s.viewport.y }, e)
         return
       }
@@ -979,13 +996,70 @@ export function Canvas() {
         return
       }
 
+      if (tool === "eraser") {
+        const hitId = pickAt(s.nodes, s.order, wx, wy, s.viewport.zoom)
+        if (hitId && !s.nodes[hitId]?.locked) {
+          s.removeNodes([hitId])
+        }
+        return
+      }
+
+      if (tool === "laser") {
+        // Laser trail handled by LaserOverlay
+        return
+      }
+
       if (tool === "draw") {
         s.checkpoint()
         beginGesture({ kind: "draw", ...common, points: [[wx, wy]] }, e)
         return
       }
-      if (tool === "shape" || tool === "arrow") {
+      if (tool === "shape" || tool === "arrow" || tool === "line") {
+        if (tool === "line") s.setArrowHead(false)
         beginGesture({ kind: "create", ...common, wx, wy, id: null, what: tool === "shape" ? "shape" : "arrow" }, e)
+        return
+      }
+      if (tool === "sticky") {
+        e.preventDefault()
+        const id = s.addNode({
+          type: "sticky",
+          text: "Note",
+          tone: "yellow",
+          fontSize: 14,
+          x: Math.round(wx),
+          y: Math.round(wy),
+          w: 160,
+          h: 160,
+        } as Omit<SquigNode, "id" | "seed">)
+        s.setTool("select")
+        s.setEditing(id)
+        return
+      }
+      if (tool === "frame") {
+        e.preventDefault()
+        const id = s.addNode({
+          type: "frame",
+          name: "Frame 1",
+          x: Math.round(wx),
+          y: Math.round(wy),
+          w: 360,
+          h: 240,
+        } as Omit<SquigNode, "id" | "seed">)
+        s.setTool("select")
+        return
+      }
+      if (tool === "embed") {
+        e.preventDefault()
+        const id = s.addNode({
+          type: "embed",
+          url: "https://zenithsui.com",
+          title: "Web Embed",
+          x: Math.round(wx),
+          y: Math.round(wy),
+          w: 320,
+          h: 200,
+        } as Omit<SquigNode, "id" | "seed">)
+        s.setTool("select")
         return
       }
       if (tool === "text") {
@@ -1054,6 +1128,10 @@ export function Canvas() {
           }
         }
         if (!sourceIds.length) return
+        if (sel.some((id) => s.nodes[id]?.locked)) {
+          s.setNotice("Element is locked (⌘L to unlock)")
+          return
+        }
         beginGesture({ kind: "move", ...common, wx, wy, sourceIds, sourcePos, cloneIds: null, dirty: false, collapseTo }, e)
         return
       }
@@ -1286,7 +1364,7 @@ export function Canvas() {
       }
       if (mod && e.code === "Slash") {
         e.preventDefault()
-        s.setCommandOpen(!s.commandOpen)
+        s.setStatsOpen(!s.statsOpen)
         return
       }
       if (s.commandOpen) return
@@ -1329,6 +1407,14 @@ export function Canvas() {
           case "KeyI":
             e.preventDefault()
             s.toggleTextStyle("italic")
+            return
+          case "KeyF":
+            e.preventDefault()
+            s.setSearchOpen(true)
+            return
+          case "KeyL":
+            e.preventDefault()
+            s.toggleLockSelected()
             return
           case "KeyU":
             e.preventDefault()
@@ -1487,6 +1573,12 @@ export function Canvas() {
           break
         }
         case "v": s.setTool("select"); break
+        case "h": s.setTool("hand"); break
+        case "e": s.setTool("eraser"); break
+        case "k": s.setTool("laser"); break
+        case "s": s.setTool("sticky"); break
+        case "f": s.setTool("frame"); break
+        case "d": s.setShapeKind("diamond"); s.setTool("shape"); break
         case "r": s.setShapeKind("rect"); s.setTool("shape"); break
         case "o": s.setShapeKind("ellipse"); s.setTool("shape"); break
         case "p": s.setTool("draw"); break
@@ -1558,15 +1650,21 @@ export function Canvas() {
   // marquees, and a move cursor would promise a drag this press won't do
   const cursorStyle = isSpacebarHeld && !gestureKind
     ? "var(--cursor-grab, grab)"
-    : placing || tool === "shape" || tool === "arrow" || tool === "text"
-      ? "var(--cursor-crosshair, crosshair)"
-      : tool === "draw"
-        ? "var(--cursor-pen, crosshair)"
-        : gestureKind === "move"
-          ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
-          : hover && !hover.soft && tool === "select"
-            ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
-            : "var(--cursor-default, default)"
+    : tool === "hand"
+      ? "var(--cursor-grab, grab)"
+      : tool === "eraser"
+        ? "crosshair"
+        : tool === "laser"
+          ? "crosshair"
+          : placing || tool === "shape" || tool === "arrow" || tool === "line" || tool === "text" || tool === "sticky" || tool === "frame" || tool === "embed"
+            ? "var(--cursor-crosshair, crosshair)"
+            : tool === "draw"
+              ? "var(--cursor-pen, crosshair)"
+              : gestureKind === "move"
+                ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
+                : hover && !hover.soft && tool === "select"
+                  ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
+                  : "var(--cursor-default, default)"
 
   return (
     <div

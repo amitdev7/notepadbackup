@@ -5,6 +5,7 @@
 import { pdfDocumentService } from "../lib/pdf/pdf-service.ts"
 import { cacheAssetBlob } from "../lib/cloud/assets.ts"
 import type { DocumentNode } from "../lib/types.ts"
+import { parsePageRange } from "../lib/pdf/pdf-to-canvas.ts"
 
 function assert(condition: boolean, message: string) {
   if (!condition) {
@@ -71,6 +72,21 @@ try {
   assert(e.message.includes("No binary document data available"), "Reports clear binary missing error")
 }
 assert(missingCaught, "Correctly handles missing binary data without hanging")
+
+// 3. PDF to Canvas page range parser
+console.log("-> 3. Testing PDF-to-Canvas page range parser...")
+
+const allPages = parsePageRange("all", 5)
+assert(JSON.stringify(allPages) === JSON.stringify([1, 2, 3, 4, 5]), "Parses 'all' pages correctly")
+
+const rangePages = parsePageRange("1-3, 5", 8)
+assert(JSON.stringify(rangePages) === JSON.stringify([1, 2, 3, 5]), "Parses compound range correctly")
+
+const clampedPages = parsePageRange("2-10", 4)
+assert(JSON.stringify(clampedPages) === JSON.stringify([2, 3, 4]), "Clamps ranges to total page count")
+
+const emptyFallback = parsePageRange("", 3)
+assert(JSON.stringify(emptyFallback) === JSON.stringify([1, 2, 3]), "Empty range defaults to all pages")
 
 console.log("=== All Zenithsui PDF Service Tests Passed Successfully! ===")
 

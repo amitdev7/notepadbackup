@@ -33,6 +33,12 @@ import {
   ArrowClockwise,
   GithubLogo,
   Sparkle,
+  Hand,
+  Eraser,
+  Note,
+  Crop,
+  Flashlight,
+  ChartBar,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -53,10 +59,15 @@ interface ToolDef {
 
 const TOOLS: ToolDef[] = [
   { id: "select", label: "Select", icon: Cursor, shortcut: "V" },
-  { id: "shape", label: "Rectangle", icon: Rectangle, shortcut: "R" },
-  { id: "draw", label: "Draw", icon: PencilLine, shortcut: "D" },
-  { id: "text", label: "Text", icon: TextT, shortcut: "T" },
+  { id: "hand", label: "Hand (Pan)", icon: Hand, shortcut: "H" },
+  { id: "shape", label: "Shape", icon: Rectangle, shortcut: "R" },
+  { id: "draw", label: "Draw", icon: PencilLine, shortcut: "P" },
+  { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E" },
   { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A" },
+  { id: "text", label: "Text", icon: TextT, shortcut: "T" },
+  { id: "sticky", label: "Sticky Note", icon: Note, shortcut: "S" },
+  { id: "frame", label: "Frame", icon: Crop, shortcut: "F" },
+  { id: "laser", label: "Laser Pointer", icon: Flashlight, shortcut: "K" },
   { id: "library", label: "Library", icon: Sparkle, shortcut: "L" },
 ]
 
@@ -77,6 +88,8 @@ export function BottomDock() {
   const setViewport = useSquig((s) => s.setViewport)
   const setShareOpen = useSquig((s) => s.setShareOpen)
   const setHistoryOpen = useSquig((s) => s.setHistoryOpen)
+  const setSearchOpen = useSquig((s) => s.setSearchOpen)
+  const setStatsOpen = useSquig((s) => s.setStatsOpen)
 
   const togglePagePopover = useShellStore((s) => s.togglePagePopover)
   const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
@@ -198,15 +211,26 @@ export function BottomDock() {
 
       {/* ── Quick Actions: Search / Page / Settings / Student ── */}
       <div className="flex items-center gap-0.5 shrink-0">
-        {/* Search / Command Palette */}
+        {/* Find in canvas (⌘F) */}
         <button
           type="button"
-          onClick={() => setCommandOpen(true)}
-          title="Search (⌘K)"
-          aria-label="Search (⌘K)"
+          onClick={() => setSearchOpen(true)}
+          title="Find in canvas (⌘F)"
+          aria-label="Find in canvas (⌘F)"
           className="flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           <MagnifyingGlass size={16} aria-hidden="true" />
+        </button>
+
+        {/* Canvas Stats (⌘/) */}
+        <button
+          type="button"
+          onClick={() => setStatsOpen(true)}
+          title="Canvas Statistics (⌘/)"
+          aria-label="Canvas Statistics (⌘/)"
+          className="flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+        >
+          <ChartBar size={16} aria-hidden="true" />
         </button>
 
         {/* Page Popover Toggle */}

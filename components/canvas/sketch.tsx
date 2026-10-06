@@ -315,11 +315,11 @@ export const NodeSketch = memo(function NodeSketch({
       case "component":
         return `c:${node.kind}:${node.w}:${node.h}:${flip}:${JSON.stringify(node.props)}`
       case "shape":
-        return `s:${node.shape}:${node.w}:${node.h}:${flip}:${node.fill}:${pen}`
+        return `s:${node.shape}:${node.w}:${node.h}:${flip}:${node.fill}:${pen}:${node.roundness ? 1 : 0}`
       case "draw":
         return `d:${node.points.length}:${node.w}:${node.h}:${flip}:${node.points[0]?.join()}:${node.points.at(-1)?.join()}:${pen}`
       case "arrow":
-        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.points.flat().join()}:${pen}`
+        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.points.flat().join()}:${pen}:${node.label ?? ""}`
       case "text":
         // w and align place the anchor, so a resize or a realignment is a
         // different set of marks even when the words haven't changed
@@ -329,6 +329,12 @@ export const NodeSketch = memo(function NodeSketch({
         return `i:${node.w}:${node.h}:${flip}`
       case "document":
         return `doc:${node.name}:${node.w}:${node.h}:${flip}:${node.pageCount ?? 0}:${node.sizeBytes ?? 0}`
+      case "sticky":
+        return `stk:${node.text}:${node.tone ?? "yellow"}:${node.w}:${node.h}:${flip}`
+      case "frame":
+        return `frm:${node.name}:${node.w}:${node.h}:${flip}`
+      case "embed":
+        return `emb:${node.url}:${node.title ?? ""}:${node.w}:${node.h}:${flip}`
     }
   }, [node])
 

@@ -49,6 +49,7 @@ import {
   TrashIcon,
   DownloadSimple,
   Eye,
+  LockSimple as LockSimpleIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 import { downloadDocument } from "@/lib/storage/document-assets"
@@ -150,6 +151,15 @@ export function CanvasContextMenu() {
               void downloadDocument(one as DocumentNode)
             },
           } as Entry,
+          ...(((one as DocumentNode).extension?.toLowerCase() === "pdf" || (one as DocumentNode).mimeType === "application/pdf")
+            ? [
+              {
+                label: "Extract pages to canvas…",
+                icon: SquaresFourIcon,
+                run: () => st().setPdfToCanvasDialog({ open: true, node: one as DocumentNode }),
+              } as Entry,
+            ]
+            : []),
         ]
         : []),
       { separator: true },
@@ -172,11 +182,26 @@ export function CanvasContextMenu() {
         ] as Entry[])
         : []),
       { separator: true },
+      {
+        label: st().isSelectionLocked() ? "Unlock" : "Lock",
+        hint: kbd("mod+l"),
+        icon: LockSimpleIcon,
+        run: () => st().toggleLockSelected(),
+      },
+      { separator: true },
       { label: "Delete", hint: kbd("del"), icon: TrashIcon, danger: true, run: () => st().removeNodes(targets) },
     ]
   } else {
     entries = [
       { label: "Search everything", hint: kbd("mod+k"), icon: MagnifyingGlassIcon, run: () => st().setCommandOpen(true) },
+      { label: "Find in canvas…", hint: kbd("mod+f"), icon: MagnifyingGlassIcon, run: () => st().setSearchOpen(true) },
+      { label: "Canvas statistics…", hint: kbd("mod+/"), icon: StackIcon, run: () => st().setStatsOpen(true) },
+      {
+        label: "Import PDF as Canvas Pages…",
+        icon: SquaresFourIcon,
+        run: () => st().setPdfToCanvasDialog({ open: true }),
+      },
+      { separator: true },
       { label: "Components", hint: kbd("c"), icon: SquaresFourIcon, run: () => st().setPanel("components") },
       { label: "Blocks", hint: kbd("b"), icon: StackIcon, run: () => st().setPanel("blocks") },
       { separator: true },

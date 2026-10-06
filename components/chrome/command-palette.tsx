@@ -55,6 +55,8 @@ import {
   Globe as GlobeIcon,
   Gear as GearIcon,
   Sparkle as SparkleIcon,
+  SquaresFour as SquaresFourIcon,
+  LockSimple as LockSimpleIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 
@@ -118,16 +120,36 @@ function Palette() {
   const hasComponent = selection.some((id) => nodes[id]?.type === "component")
   const hasText = selection.some((id) => nodes[id]?.type === "text")
   const hasGroup = selection.some((id) => nodes[id]?.groupIds?.length)
+  const selectedPdfDoc = useMemo(() => {
+    if (selection.length !== 1) return null
+    const n = nodes[selection[0]]
+    if (n && n.type === "document") {
+      const d = n as any
+      if (d.extension?.toLowerCase() === "pdf" || d.mimeType === "application/pdf") {
+        return d
+      }
+    }
+    return null
+  }, [selection, nodes])
 
   const actions = useMemo<Action[]>(
     () => [
       { id: "select", label: "Select tool", hint: kbd("v"), section: "Tools", icon: CursorIcon, run: () => st().setTool("select") },
+      { id: "hand", label: "Hand (Pan) tool", hint: kbd("h"), section: "Tools", keywords: "pan canvas view move", icon: CursorIcon, run: () => st().setTool("hand") },
       { id: "rect", label: "Rectangle", hint: kbd("r"), section: "Tools", keywords: "shape box square", icon: SquareIcon, run: () => { st().setShapeKind("rect"); st().setTool("shape") } },
       { id: "ellipse", label: "Ellipse", hint: kbd("o"), section: "Tools", keywords: "circle oval shape", icon: CircleIcon, run: () => { st().setShapeKind("ellipse"); st().setTool("shape") } },
+      { id: "diamond", label: "Diamond (Rhombus)", hint: kbd("d"), section: "Tools", keywords: "diamond rhombus decision shape", icon: SquareIcon, run: () => { st().setShapeKind("diamond"); st().setTool("shape") } },
       { id: "draw", label: "Draw", hint: kbd("p"), section: "Tools", keywords: "pencil pen freehand scribble", icon: PencilSimpleIcon, run: () => st().setTool("draw") },
+      { id: "eraser", label: "Eraser tool", hint: kbd("e"), section: "Tools", keywords: "delete remove erase clear", icon: TrashIcon, run: () => st().setTool("eraser") },
+      { id: "laser", label: "Laser pointer", hint: kbd("k"), section: "Tools", keywords: "laser pointer present trail highlight", icon: SparkleIcon, run: () => st().setTool("laser") },
       { id: "text", label: "Text", hint: kbd("t"), section: "Tools", keywords: "type label", icon: TextTIcon, run: () => st().setTool("text") },
+      { id: "sticky", label: "Sticky Note", hint: kbd("s"), section: "Tools", keywords: "sticky postit memo note", icon: TextTIcon, run: () => st().setTool("sticky") },
+      { id: "frame", label: "Frame", hint: kbd("f"), section: "Tools", keywords: "frame container artboard section", icon: SquareIcon, run: () => st().setTool("frame") },
       { id: "line", label: "Line", hint: kbd("l"), section: "Tools", keywords: "rule divider stroke", icon: LineSegmentIcon, run: () => { st().setArrowHead(false); st().setTool("arrow") } },
-      { id: "arrow", label: "Arrow", hint: kbd("shift+l"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
+      { id: "arrow", label: "Arrow", hint: kbd("a"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
+      { id: "find-canvas", label: "Find in canvas…", hint: kbd("mod+f"), section: "Tools", keywords: "search query jump locate find text sticky", icon: MagnifyingGlassIcon, run: () => st().setSearchOpen(true) },
+      { id: "canvas-stats", label: "Canvas Statistics…", hint: kbd("mod+/"), section: "Tools", keywords: "stats elements count dimensions hud", icon: StackIcon, run: () => st().setStatsOpen(true) },
+      { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
 
       { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
 
@@ -184,6 +206,26 @@ function Palette() {
       { id: "save", label: "Save", hint: kbd("mod+s"), section: "File", keywords: "keep store local", icon: FloppyDiskIcon, run: () => st().saveNow() },
       { id: "export", label: "Export .zenithsui", hint: kbd("mod+shift+s"), section: "File", keywords: "save download json copy backup", icon: DownloadSimpleIcon, run: exportDoc },
       { id: "import", label: "Import .zenithsui", section: "File", keywords: "open load json disk", icon: UploadSimpleIcon, run: importDoc },
+      {
+        id: "import-pdf-pages",
+        label: "Import PDF as Canvas Pages…",
+        section: "File",
+        keywords: "pdf explode extract pages convert pdf-to-canvas",
+        icon: SquaresFourIcon,
+        run: () => st().setPdfToCanvasDialog({ open: true }),
+      },
+      ...(selectedPdfDoc
+        ? [
+          {
+            id: "extract-pdf-pages",
+            label: `Extract "${selectedPdfDoc.name}" to Canvas Pages…`,
+            section: "Edit",
+            keywords: "pdf explode extract pages convert pdf-to-canvas",
+            icon: SquaresFourIcon,
+            run: () => st().setPdfToCanvasDialog({ open: true, node: selectedPdfDoc }),
+          },
+        ]
+        : []),
 
       { id: "share-doc", label: "Share document", section: "Share", keywords: "collaborate invite permissions link", icon: ShareNetworkIcon, run: () => st().setShareOpen(true) },
       { id: "copy-link", label: "Copy share link", section: "Share", keywords: "url share link", icon: LinkIcon, run: () => st().setShareOpen(true) },
@@ -203,7 +245,7 @@ function Palette() {
           run: () => st().openFile(f.id),
         })),
     ],
-    [st, hasSel, hasComponent, hasText, hasGroup, selection.length, files, docId]
+    [st, hasSel, hasComponent, hasText, hasGroup, selectedPdfDoc, selection.length, files, docId]
   )
 
   const rows = useMemo<Row[]>(() => {
@@ -249,7 +291,7 @@ function Palette() {
   return (
     <>
       <div data-zenithsui-chrome
-      className="fixed inset-0 z-50 flex flex-col justify-end" onPointerDown={close}>
+        className="fixed inset-0 z-50 flex flex-col justify-end" onPointerDown={close}>
         <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px]" />
         <div
           className="animate-in slide-in-from-bottom-4 fade-in relative mx-auto flex max-h-[62vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-chrome-lg border border-b-0 border-border/80 bg-background shadow-popup duration-150"
@@ -349,9 +391,8 @@ function PaletteRow({
       data-active={active}
       onMouseMove={onHover}
       onClick={onPick}
-      className={`flex h-ctl-lg w-full items-center gap-3 rounded-chrome-sm px-2.5 text-left text-row ${
-        active ? "bg-accent text-accent-foreground" : "text-foreground"
-      }`}
+      className={`flex h-ctl-lg w-full items-center gap-3 rounded-chrome-sm px-2.5 text-left text-row ${active ? "bg-accent text-accent-foreground" : "text-foreground"
+        }`}
     >
       {row.kind === "action" ? (
         <>

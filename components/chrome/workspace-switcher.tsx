@@ -1,6 +1,7 @@
 "use client"
 
 import { useAuthStore } from "@/lib/auth-store"
+import { useSquig } from "@/lib/store"
 import { Buildings, CaretDown, Plus } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -39,7 +40,7 @@ export function WorkspaceSwitcher() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            alert("Team workspace invitations will be available in Phase 2.")
+            useSquig.getState().setNotice("Team workspace invitations will be available soon.")
           }}
           className="cursor-pointer gap-2 text-muted-foreground"
         >

@@ -39,6 +39,7 @@ import {
   X,
   CircleNotch,
   WarningCircle,
+  SquaresFour,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -52,6 +53,7 @@ export interface PdfCanvasViewerProps {
   onPageChange?: (page: number, total: number) => void
   onDownload?: () => void
   onOpenExternal?: () => void
+  onExtractToCanvas?: () => void
   onClose?: () => void
 }
 
@@ -65,6 +67,7 @@ export function PdfCanvasViewer({
   onPageChange,
   onDownload,
   onOpenExternal,
+  onExtractToCanvas,
   onClose,
 }: PdfCanvasViewerProps) {
   const [pdfDoc, setPdfDoc] = useState<PDFDocumentProxy | null>(null)
@@ -383,6 +386,18 @@ export function PdfCanvasViewer({
             >
               <DownloadSimple size={14} />
               <span>Download</span>
+            </button>
+          )}
+
+          {onExtractToCanvas && (
+            <button
+              type="button"
+              onClick={onExtractToCanvas}
+              className="flex items-center gap-1.5 px-3 py-1 rounded text-xs border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors font-medium"
+              title="Extract pages to canvas as individual images"
+            >
+              <SquaresFour size={14} weight="bold" />
+              <span>Extract to Canvas</span>
             </button>
           )}
 

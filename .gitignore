@@ -51,3 +51,6 @@ next-env.d.ts
 *.zenithsui.json
 # …except the drawing the empty canvas is generated from
 !scripts/doodle.zenithsui.json
+
+# reference source projects
+sources/

@@ -8,8 +8,15 @@ export type Tool =
   | "draw"
   | "text"
   | "arrow"
+  | "line"
+  | "hand"
+  | "eraser"
+  | "laser"
+  | "sticky"
+  | "frame"
+  | "embed"
 
-export type ShapeKind = "rect" | "ellipse"
+export type ShapeKind = "rect" | "ellipse" | "diamond"
 
 /**
  * Area fill for a hand-drawn shape — the same three-tone ladder the library
@@ -58,6 +65,10 @@ export interface BaseNode {
   /** Mirrored along its own box — see mirrorPrims, which flips layout not glyphs */
   flipX?: boolean
   flipY?: boolean
+  /** Locked state prevents accidental drag, resize, alignment, or deletion */
+  locked?: boolean
+  /** Opacity percentage (0-100) */
+  opacity?: number
 }
 
 export interface ComponentNode extends BaseNode {
@@ -73,6 +84,8 @@ export interface ShapeNode extends BaseNode, Outlined {
   shape: ShapeKind
   /** older documents wrote a boolean here — read it through normalizeFill */
   fill: FillTone
+  /** Rounded corners toggle */
+  roundness?: boolean
 }
 
 export interface DrawNode extends BaseNode, Outlined {
@@ -110,11 +123,20 @@ export interface TextNode extends BaseNode {
   link?: string
 }
 
+export interface ArrowBinding {
+  elementId: string
+  focus: number
+  gap?: number
+}
+
 export interface ArrowNode extends BaseNode, Outlined {
   type: "arrow"
   /** [start, end] relative to node origin — components of w/h so they scale on resize */
   points: [[number, number], [number, number]]
   head: boolean
+  startBinding?: ArrowBinding | null
+  endBinding?: ArrowBinding | null
+  label?: string
 }
 
 /**
@@ -182,7 +204,35 @@ export interface DocumentNode extends BaseNode {
   metadata?: Record<string, unknown>
 }
 
-export type SquigNode = ComponentNode | ShapeNode | DrawNode | TextNode | ArrowNode | ImageNode | DocumentNode
+export interface StickyNoteNode extends BaseNode, Outlined {
+  type: "sticky"
+  text: string
+  tone?: "yellow" | "blue" | "green" | "pink" | "orange"
+  fontSize?: number
+}
+
+export interface FrameNode extends BaseNode {
+  type: "frame"
+  name: string
+}
+
+export interface EmbedNode extends BaseNode {
+  type: "embed"
+  url: string
+  title?: string
+}
+
+export type SquigNode =
+  | ComponentNode
+  | ShapeNode
+  | DrawNode
+  | TextNode
+  | ArrowNode
+  | ImageNode
+  | DocumentNode
+  | StickyNoteNode
+  | FrameNode
+  | EmbedNode
 
 export interface Viewport {
   x: number

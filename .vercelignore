@@ -1,0 +1,13 @@
+# Vercel Deployment Ignore File
+# Exclude massive reference archives, docs, and local test artifacts to keep builds lightning-fast
+
+sources/
+mouse/
+scripts/
+docs/
+scratch/
+*.zip
+*.tar.gz
+*.log
+.git/
+.agents/

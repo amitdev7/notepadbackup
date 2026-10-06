@@ -56,7 +56,22 @@ export function basePrims(node: SquigNode): Prim[] {
     case "shape": {
       const o = outline(node, HAND.strokeWidth, FILL_OPTS[normalizeFill(node.fill)])
       if (node.shape === "ellipse") return [{ t: "ellipse", x: 0, y: 0, w: node.w, h: node.h, o }]
-      return [{ t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o }]
+      if (node.shape === "diamond") {
+        return [
+          {
+            t: "poly",
+            pts: [
+              [node.w / 2, 0],
+              [node.w, node.h / 2],
+              [node.w / 2, node.h],
+              [0, node.h / 2],
+              [node.w / 2, 0],
+            ],
+            o,
+          },
+        ]
+      }
+      return [{ t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: node.roundness ? 16 : 6, o }]
     }
     case "draw":
       // freehand is already the user's own line — barely roughen it
@@ -78,6 +93,14 @@ export function basePrims(node: SquigNode): Prim[] {
           // a dashed arrowhead reads as a rendering fault, not a style
           o: { ...o, dashed: false },
         })
+      }
+      if (node.label) {
+        const midX = (x1 + x2) / 2
+        const midY = (y1 + y2) / 2
+        out.push(
+          { t: "rect", x: midX - 28, y: midY - 10, w: 56, h: 20, r: 4, o: { fill: "solid", fillColor: "paper", stroke: "faint" } },
+          { t: "text", x: midX, y: midY + 4, text: node.label, size: 10, align: "center", bold: true }
+        )
       }
       return out
     }
@@ -128,6 +151,39 @@ export function basePrims(node: SquigNode): Prim[] {
         // a link is a link because it's underlined — no blue in a wireframe
         underline: node.underline || !!node.link,
       }))
+    }
+    case "sticky": {
+      const o = outline(node, 1.2, { fill: "solid", fillColor: "paper" })
+      const lines = wrapText(node.text || "", Math.max(20, node.w - 18), { size: node.fontSize || 13 })
+      const out: Prim[] = [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 4, o },
+        { t: "line", x1: node.w - 12, y1: 0, x2: node.w, y2: 12, o: { stroke: "muted" } },
+      ]
+      lines.slice(0, 10).forEach((line, i) => {
+        out.push({
+          t: "text",
+          x: 9,
+          y: textBaseline(i, node.fontSize || 13) + 10,
+          text: line,
+          size: node.fontSize || 13,
+        })
+      })
+      return out
+    }
+    case "frame": {
+      return [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 0, o: { stroke: "faint", dashed: true } },
+        { t: "rect", x: 0, y: -20, w: Math.min(node.w, 140), h: 20, r: 2, o: { fill: "solid", fillColor: "paper", stroke: "faint" } },
+        { t: "text", x: 6, y: -6, text: `# ${node.name || "Frame"}`, size: 10, bold: true },
+      ]
+    }
+    case "embed": {
+      return [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 24, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 16, text: node.title || "Web Embed", size: 11, bold: true },
+        { t: "text", x: 8, y: Math.max(36, node.h / 2), text: node.url, size: 9 },
+      ]
     }
   }
 }
