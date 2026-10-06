@@ -88,6 +88,7 @@ export function PdfCanvasViewer({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const activeTaskRef = useRef<ActiveRenderTask | null>(null)
+  const loadedDocRef = useRef<PDFDocumentProxy | null>(null)
 
   // 1. Load PDF Document from Blob
   useEffect(() => {
@@ -116,6 +117,7 @@ export function PdfCanvasViewer({
           destroyPdfDocument(doc)
           return
         }
+        loadedDocRef.current = doc
         setPdfDoc(doc)
         setPageCount(doc.numPages)
         const initial = Math.max(1, Math.min(doc.numPages, initialPage))
@@ -137,8 +139,9 @@ export function PdfCanvasViewer({
 
     return () => {
       isMounted = false
-      if (pdfDoc) {
-        destroyPdfDocument(pdfDoc)
+      if (loadedDocRef.current) {
+        destroyPdfDocument(loadedDocRef.current)
+        loadedDocRef.current = null
       }
     }
   }, [blob, isLoadingBlob, blobError, initialPage, onPageChange])

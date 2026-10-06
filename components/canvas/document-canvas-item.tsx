@@ -109,6 +109,7 @@ function PdfCardPreview({
   if (hasThumb) {
     return (
       <div className="w-full h-full relative overflow-hidden bg-white flex items-center justify-center pointer-events-none p-1.5">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={node.thumbnailUrl}
           alt={node.name}

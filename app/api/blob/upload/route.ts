@@ -44,7 +44,6 @@ function namespaced(userId: string, raw: unknown): string {
     String(raw ?? "")
       .split(/[\\/]/)
       .pop()!
-      // eslint-disable-next-line no-control-regex
       .replace(/[\u0000-\u001f\u007f]/g, "")
       .replace(/[^\w.\- ()]+/g, "_")
       .replace(/^\.+/, "")
@@ -93,7 +92,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             }
             return { allowedContentTypes: ALLOWED_CONTENT_TYPES, maximumSizeInBytes: MAX_BYTES }
           },
-          onUploadCompleted: async () => {},
+          onUploadCompleted: async () => { },
         })
         return NextResponse.json(jsonResponse)
       } catch (err: unknown) {

@@ -571,7 +571,7 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
       <StackRow label="Display Mode">
         <Segmented
           ariaLabel="Display Mode"
-          value={doc?.displayMode || "preview"}
+          shared={shared(documents.map((n) => n.displayMode || "preview"))}
           options={[
             { value: "preview", label: "Preview" },
             { value: "compact", label: "Compact" },

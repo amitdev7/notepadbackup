@@ -45,7 +45,6 @@ function safeObjectName(raw: unknown): string {
   const base = String(raw ?? "")
     .split(/[\\/]/)
     .pop()!
-    // eslint-disable-next-line no-control-regex
     .replace(/[\u0000-\u001f\u007f]/g, "")
     .replace(/[^\w.\- ()[\]]+/g, "_")
     .replace(/^\.+/, "")
