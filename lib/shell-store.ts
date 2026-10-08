@@ -16,6 +16,7 @@ export type SettingsSectionId =
   | "text"
   | "canvas"
   | "page"
+  | "performance"
   | "keyboard"
   | "storage"
   | "cloud"
@@ -36,6 +37,37 @@ export type AnimationMode = "full" | "reduced"
 export type PanelStyle = "default" | "minimal"
 export type StartPage = "canvas" | "dashboard"
 export type LibraryFilterType = "all" | "components" | "blocks" | "templates"
+
+export type PerformanceProfile = "balanced" | "quality" | "performance"
+export type CullingBufferMode = "aggressive" | "standard" | "relaxed" | "off"
+
+export interface PerformanceSettings {
+  profile: PerformanceProfile
+  viewportCulling: boolean
+  cullingBuffer: CullingBufferMode
+  levelOfDetail: boolean
+  adaptiveLevelOfDetail: boolean
+  hardwareAcceleration: boolean
+  hardwareCompositing: boolean
+  workerOffload: boolean
+  useWebWorkers: boolean
+  telemetryHud: boolean
+  showFpsHud: boolean
+}
+
+export const DEFAULT_PERFORMANCE_SETTINGS: PerformanceSettings = {
+  profile: "balanced",
+  viewportCulling: true,
+  cullingBuffer: "standard",
+  levelOfDetail: true,
+  adaptiveLevelOfDetail: true,
+  hardwareAcceleration: true,
+  hardwareCompositing: true,
+  workerOffload: true,
+  useWebWorkers: true,
+  telemetryHud: false,
+  showFpsHud: false,
+}
 
 export interface LaserSettings {
   color: string
@@ -186,6 +218,7 @@ export interface ShellPreferences {
   laserSettings: LaserSettings
   drawSettings: DrawSettings
   textSettings: TextSettings
+  performanceSettings: PerformanceSettings
   dockControls: DockControlsVisibility
 }
 
@@ -210,6 +243,7 @@ const DEFAULT_PREFERENCES: ShellPreferences = {
   laserSettings: DEFAULT_LASER_SETTINGS,
   drawSettings: DEFAULT_DRAW_SETTINGS,
   textSettings: DEFAULT_TEXT_SETTINGS,
+  performanceSettings: DEFAULT_PERFORMANCE_SETTINGS,
   dockControls: DEFAULT_DOCK_CONTROLS,
 }
 
@@ -233,6 +267,10 @@ function loadInitialPreferences(): ShellPreferences {
         textSettings: {
           ...DEFAULT_TEXT_SETTINGS,
           ...(parsed.textSettings || {}),
+        },
+        performanceSettings: {
+          ...DEFAULT_PERFORMANCE_SETTINGS,
+          ...(parsed.performanceSettings || {}),
         },
         dockControls: {
           ...DEFAULT_DOCK_CONTROLS,
@@ -288,6 +326,7 @@ interface ShellState {
   updateLaserSettings: (updates: Partial<LaserSettings>) => void
   updateDrawSettings: (updates: Partial<DrawSettings>) => void
   updateTextSettings: (updates: Partial<TextSettings>) => void
+  updatePerformanceSettings: (updates: Partial<PerformanceSettings>) => void
   updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
   setAllDockControls: (visible: boolean) => void
   resetDockControls: () => void
@@ -452,6 +491,15 @@ export const useShellStore = create<ShellState>((set, get) => ({
     set((state) => {
       const nextText = { ...state.preferences.textSettings, ...updates }
       const next = { ...state.preferences, textSettings: nextText }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updatePerformanceSettings: (updates) => {
+    set((state) => {
+      const nextPerf = { ...state.preferences.performanceSettings, ...updates }
+      const next = { ...state.preferences, performanceSettings: nextPerf }
       savePreferences(next)
       return { preferences: next }
     })

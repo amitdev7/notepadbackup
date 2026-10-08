@@ -20,6 +20,7 @@ import {
   DEFAULT_LASER_SETTINGS,
   DEFAULT_DRAW_SETTINGS,
   DEFAULT_TEXT_SETTINGS,
+  DEFAULT_PERFORMANCE_SETTINGS,
   type SettingsSectionId,
   type ThemeMode,
   type UIDensity,
@@ -47,6 +48,7 @@ import {
   WifiHigh,
   ShieldCheck,
   Eye,
+  Lightning,
   Cpu,
   Info,
   Sparkle,
@@ -103,6 +105,7 @@ const SECTIONS: SectionItem[] = [
   { id: "laser", label: "Laser Pointer", description: "Laser beam color, trail lifetime, width and glow effects", icon: Flashlight },
   { id: "drawing", label: "Drawing & Inking", description: "Default stroke color, line weights, smoothing and pressure", icon: PencilLine },
   { id: "text", label: "Text & Typography", description: "Default text color, typography faces, font sizes and alignments", icon: TextT },
+  { id: "performance", label: "Performance & Engine", description: "Hardware acceleration, viewport culling, LoD, and worker offload", icon: Lightning },
   { id: "canvas", label: "Toolbar & Dock", description: "Dock tool toggles, quick action buttons and menu items", icon: PaintBrush },
   { id: "page", label: "Page & Paper", description: "Document palettes, dot grid and paper shade defaults", icon: File },
   { id: "keyboard", label: "Keyboard", description: "Shortcuts and navigation hotkeys", icon: Keyboard },
@@ -555,6 +558,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const updateLaserSettings = useShellStore((s) => s.updateLaserSettings)
   const updateDrawSettings = useShellStore((s) => s.updateDrawSettings)
   const updateTextSettings = useShellStore((s) => s.updateTextSettings)
+  const updatePerformanceSettings = useShellStore((s) => s.updatePerformanceSettings)
   const dockControls = useShellStore((s) => s.preferences.dockControls)
   const updateDockControl = useShellStore((s) => s.updateDockControl)
   const setAllDockControls = useShellStore((s) => s.setAllDockControls)
@@ -1129,10 +1133,10 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                     <button
                       key={swatch.id}
                       type="button"
+                      title={swatch.label}
                       onClick={() => {
                         updateDrawSettings({ colorMode: "custom", customColor: swatch.hex })
                       }}
-                      title={swatch.label}
                       className={cn(
                         "size-6 rounded-md flex items-center justify-center transition-all cursor-pointer shadow-2xs border border-stone-200/50 dark:border-stone-700/50",
                         isSelected
@@ -1346,10 +1350,10 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                     <button
                       key={swatch.id}
                       type="button"
+                      title={swatch.label}
                       onClick={() => {
                         updateTextSettings({ colorMode: "custom", customColor: swatch.hex })
                       }}
-                      title={swatch.label}
                       className={cn(
                         "size-6 rounded-md flex items-center justify-center transition-all cursor-pointer shadow-2xs border border-stone-200/50 dark:border-stone-700/50",
                         isSelected
@@ -1532,6 +1536,233 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )
+    }
+
+    case "performance": {
+      const perf = prefs.performanceSettings ?? DEFAULT_PERFORMANCE_SETTINGS
+
+      return (
+        <div className="space-y-6">
+          {/* Header Banner */}
+          <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 dark:bg-blue-500/10 flex items-start gap-3">
+            <Lightning size={20} className="text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" weight="fill" />
+            <div className="text-xs space-y-1">
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                Zero-Jank Graphics & Compute Engine
+              </span>
+              <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
+                Tune rendering profiles, viewport culling, hardware GPU compositing, and background Web Worker offloading for 60/120 FPS infinite canvas responsiveness.
+              </p>
+            </div>
+          </div>
+
+          {/* 1. Performance Profile */}
+          <div className="space-y-2.5 pb-4 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <label className="font-semibold text-stone-900 dark:text-stone-100 block mb-0.5">
+                Engine Performance Profile
+              </label>
+              <span className="text-[11px] text-stone-500">
+                Select your device capability profile or let Zenithsui auto-balance
+              </span>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                {
+                  id: "balanced",
+                  label: "Balanced",
+                  desc: "Standard 60fps with dynamic culling",
+                  culling: "standard" as const,
+                  gpu: true,
+                  lod: true,
+                },
+                {
+                  id: "quality",
+                  label: "Quality",
+                  desc: "Max fidelity, full drawing buffers",
+                  culling: "relaxed" as const,
+                  gpu: true,
+                  lod: false,
+                },
+                {
+                  id: "performance",
+                  label: "Speed Priority",
+                  desc: "Aggressive culling, 120fps lock",
+                  culling: "aggressive" as const,
+                  gpu: true,
+                  lod: true,
+                },
+              ].map((p) => {
+                const isSelected = perf.profile === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() =>
+                      updatePerformanceSettings({
+                        profile: p.id as "balanced" | "quality" | "performance",
+                        cullingBuffer: p.culling,
+                        hardwareCompositing: p.gpu,
+                        adaptiveLevelOfDetail: p.lod,
+                      })
+                    }
+                    className={cn(
+                      "p-3 rounded-xl border text-left transition-all cursor-pointer",
+                      isSelected
+                        ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 shadow-2xs font-semibold"
+                        : "border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 bg-white/40 dark:bg-stone-900/30 text-stone-700 dark:text-stone-300"
+                    )}
+                  >
+                    <div className="text-xs font-semibold mb-0.5 flex items-center justify-between">
+                      {p.label}
+                      {isSelected && <Check size={13} weight="bold" className="text-blue-600 dark:text-blue-400" />}
+                    </div>
+                    <div className="text-[10px] text-stone-500 leading-snug">{p.desc}</div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* 2. Viewport Culling & Buffer Margin */}
+          <div className="space-y-3 pb-4 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                  Offscreen Viewport Culling
+                </span>
+                <span className="text-[11px] text-stone-500">
+                  Prunes offscreen nodes outside camera bounds from SVG DOM to maintain constant 60 FPS
+                </span>
+              </div>
+              <Switch
+                checked={perf.viewportCulling}
+                onCheckedChange={(checked) => updatePerformanceSettings({ viewportCulling: checked })}
+              />
+            </div>
+
+            {perf.viewportCulling && (
+              <div className="flex items-center justify-between pl-3 border-l-2 border-blue-500/40">
+                <div>
+                  <span className="text-xs font-medium text-stone-800 dark:text-stone-200 block">
+                    Culling Buffer Margin
+                  </span>
+                  <span className="text-[10px] text-stone-500">
+                    Pre-renders surrounding area to eliminate pop-in during fast panning
+                  </span>
+                </div>
+                <div className="flex items-center gap-1 p-0.5 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700">
+                  {[
+                    { id: "aggressive", label: "Tight (150px)" },
+                    { id: "standard", label: "Standard (400px)" },
+                    { id: "relaxed", label: "Wide (1000px)" },
+                  ].map((buf) => (
+                    <button
+                      key={buf.id}
+                      type="button"
+                      onClick={() =>
+                        updatePerformanceSettings({
+                          cullingBuffer: buf.id as "aggressive" | "standard" | "relaxed",
+                        })
+                      }
+                      className={cn(
+                        "px-2 py-0.5 rounded-md text-[11px] transition-all cursor-pointer",
+                        perf.cullingBuffer === buf.id
+                          ? "bg-white dark:bg-stone-700 text-stone-950 dark:text-white shadow-2xs font-semibold"
+                          : "text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
+                      )}
+                    >
+                      {buf.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. Hardware GPU Compositing */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                Hardware GPU Compositing
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Promote canvas layers to GPU render surfaces (translate3d & will-change) during pan/zoom
+              </span>
+            </div>
+            <Switch
+              checked={perf.hardwareCompositing}
+              onCheckedChange={(checked) => updatePerformanceSettings({ hardwareCompositing: checked })}
+            />
+          </div>
+
+          {/* 4. Adaptive Level of Detail */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                Adaptive Level of Detail (LoD)
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Simplifies geometric complexity and fills at zoom levels under 35% for maximum zoom-out speed
+              </span>
+            </div>
+            <Switch
+              checked={perf.adaptiveLevelOfDetail}
+              onCheckedChange={(checked) => updatePerformanceSettings({ adaptiveLevelOfDetail: checked })}
+            />
+          </div>
+
+          {/* 5. Web Worker Background Offload */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                Web Worker Background Offloading
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Moves heavy document snapshot serialization and text search indexing to separate background threads
+              </span>
+            </div>
+            <Switch
+              checked={perf.useWebWorkers}
+              onCheckedChange={(checked) => updatePerformanceSettings({ useWebWorkers: checked })}
+            />
+          </div>
+
+          {/* 6. Live Framerate & Performance HUD */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-stone-900 dark:text-stone-100">
+                  Live Telemetry HUD (Alt+P)
+                </span>
+                <span className="text-[10px] text-blue-600 dark:text-blue-400 font-mono bg-blue-500/10 px-1.5 py-0.5 rounded">
+                  Overlay
+                </span>
+              </div>
+              <span className="text-[11px] text-stone-500">
+                Display floating real-time FPS counter, frame latency (ms), node counts, and JS heap telemetry
+              </span>
+            </div>
+            <Switch
+              checked={perf.showFpsHud}
+              onCheckedChange={(checked) => updatePerformanceSettings({ showFpsHud: checked })}
+            />
+          </div>
+
+          {/* 7. Reset to Defaults */}
+          <div className="pt-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => updatePerformanceSettings(DEFAULT_PERFORMANCE_SETTINGS)}
+              className="px-3 py-1.5 text-xs rounded-xl border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 transition-colors cursor-pointer flex items-center gap-1.5"
+            >
+              <ArrowCounterClockwise size={13} />
+              Reset Performance Defaults
+            </button>
           </div>
         </div>
       )

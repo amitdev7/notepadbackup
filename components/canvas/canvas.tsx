@@ -43,6 +43,7 @@ import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
+import { PerfHud } from "./perf-hud"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -180,6 +181,8 @@ export function Canvas() {
   const hoverRafRef = useRef<number | null>(null)
   /** last world position of the pointer — ⌘V pastes here */
   const pointerWorld = useRef<[number, number] | null>(null)
+  const gestureRafRef = useRef<number | null>(null)
+  const pendingPointRef = useRef<{ clientX: number; clientY: number } | null>(null)
 
   const nodes = useSquig((s) => s.nodes)
   const order = useSquig((s) => s.order)
@@ -209,6 +212,54 @@ export function Canvas() {
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
   const setViewerDoc = useSquig((s) => s.setViewerDoc)
+
+  const perfSettings = useShellStore((s) => s.preferences.performanceSettings)
+  const [canvasSize, setCanvasSize] = useState({ w: 1920, h: 1080 })
+
+  useEffect(() => {
+    const updateSize = () => {
+      const el = containerRef.current
+      if (el) {
+        setCanvasSize({ w: el.clientWidth || window.innerWidth, h: el.clientHeight || window.innerHeight })
+      }
+    }
+    updateSize()
+    window.addEventListener("resize", updateSize)
+    return () => window.removeEventListener("resize", updateSize)
+  }, [])
+
+  // Viewport culling calculation
+  const visibleOrder = useMemo(() => {
+    if (!perfSettings?.viewportCulling || perfSettings.cullingBuffer === "off") {
+      return order
+    }
+
+    const marginPx =
+      perfSettings.cullingBuffer === "aggressive"
+        ? 150
+        : perfSettings.cullingBuffer === "relaxed"
+          ? 1000
+          : 400
+
+    const w = canvasSize.w
+    const h = canvasSize.h
+
+    const minX = -viewport.x / viewport.zoom - marginPx
+    const minY = -viewport.y / viewport.zoom - marginPx
+    const maxX = (-viewport.x + w) / viewport.zoom + marginPx
+    const maxY = (-viewport.y + h) / viewport.zoom + marginPx
+
+    const selectionSet = new Set(selection)
+
+    return order.filter((id) => {
+      if (id === editingId || selectionSet.has(id)) return true
+      const n = nodes[id]
+      if (!n) return false
+      const nw = n.w || 0
+      const nh = n.h || 0
+      return n.x <= maxX && n.x + nw >= minX && n.y <= maxY && n.y + nh >= minY
+    })
+  }, [order, nodes, viewport, selection, editingId, perfSettings, canvasSize])
 
   const { isSpacebarHeld } = useSpacebarPan()
   // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
@@ -623,6 +674,11 @@ export function Canvas() {
   // -- gesture lifecycle ----------------------------------------------------
 
   const teardownGesture = useCallback(() => {
+    if (gestureRafRef.current !== null) {
+      cancelAnimationFrame(gestureRafRef.current)
+      gestureRafRef.current = null
+    }
+    pendingPointRef.current = null
     const g = gestureRef.current
     const el = containerRef.current
     if (g && el?.hasPointerCapture?.(g.pointerId)) {
@@ -644,6 +700,14 @@ export function Canvas() {
 
   /** Pointer up, or anything else that means "keep what they did". */
   const finishGesture = useCallback(() => {
+    if (gestureRafRef.current !== null) {
+      cancelAnimationFrame(gestureRafRef.current)
+      gestureRafRef.current = null
+    }
+    if (pendingPointRef.current) {
+      updateGesture(pendingPointRef.current.clientX, pendingPointRef.current.clientY)
+      pendingPointRef.current = null
+    }
     const g = gestureRef.current
     if (!g) return
     const s = st()
@@ -790,7 +854,7 @@ export function Canvas() {
     }
 
     teardownGesture()
-  }, [st, stopAutoPan, teardownGesture])
+  }, [st, stopAutoPan, teardownGesture, updateGesture])
 
   /** Escape or pointercancel: undo whatever the gesture has done so far. */
   const cancelGesture = useCallback(() => {
@@ -819,13 +883,24 @@ export function Canvas() {
       if (!g || e.pointerId !== g.pointerId) return
       modsRef.current = readMods(e)
       lastPointRef.current = { clientX: e.clientX, clientY: e.clientY }
+      pendingPointRef.current = { clientX: e.clientX, clientY: e.clientY }
       // the button came up somewhere we couldn't see it — keep the work
       if (e.buttons === 0) {
+        if (gestureRafRef.current !== null) {
+          cancelAnimationFrame(gestureRafRef.current)
+          gestureRafRef.current = null
+        }
         finishGesture()
         return
       }
-      updateGesture(e.clientX, e.clientY)
-      maybeAutoPan()
+      if (gestureRafRef.current === null) {
+        gestureRafRef.current = requestAnimationFrame(() => {
+          gestureRafRef.current = null
+          if (!gestureRef.current || !pendingPointRef.current) return
+          updateGesture(pendingPointRef.current.clientX, pendingPointRef.current.clientY)
+          maybeAutoPan()
+        })
+      }
     },
     [updateGesture, maybeAutoPan, finishGesture]
   )
@@ -1695,6 +1770,8 @@ export function Canvas() {
         backgroundImage: grid ? "radial-gradient(circle, var(--sq-grid) 1px, transparent 1px)" : "none",
         backgroundSize: `${24 * v.zoom}px ${24 * v.zoom}px`,
         backgroundPosition: `${v.x}px ${v.y}px`,
+        transform: perfSettings?.hardwareCompositing ? "translate3d(0, 0, 0)" : undefined,
+        backfaceVisibility: perfSettings?.hardwareCompositing ? "hidden" : undefined,
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMoveLocal}
@@ -1705,8 +1782,15 @@ export function Canvas() {
       onDrop={onDrop}
     >
       <svg className="pointer-events-none absolute inset-0 h-full w-full" style={{ overflow: "visible" }}>
-        <g transform={`translate(${v.x} ${v.y}) scale(${v.zoom})`}>
-          {order.map((id) => {
+        <g
+          transform={`translate(${v.x} ${v.y}) scale(${v.zoom})`}
+          style={
+            perfSettings?.hardwareCompositing && gestureKind
+              ? { willChange: "transform" }
+              : undefined
+          }
+        >
+          {visibleOrder.map((id) => {
             const n = nodes[id]
             if (!n) return null
             const def = n.type === "component" ? getDef(n.kind) : null
@@ -1751,7 +1835,7 @@ export function Canvas() {
           transformOrigin: "0 0",
         }}
       >
-        {order.map((id) => {
+        {visibleOrder.map((id) => {
           const n = nodes[id]
           if (!n) return null
 
@@ -1874,6 +1958,14 @@ export function Canvas() {
           onClose={() => setViewerDoc(null)}
         />
       )}
+
+      {/* Performance & Framerate Telemetry HUD */}
+      <PerfHud
+        totalNodes={order.length}
+        renderedNodes={visibleOrder.length}
+        zoom={v.zoom}
+        isDragging={!!gestureKind}
+      />
     </div>
   )
 }
