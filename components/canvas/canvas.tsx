@@ -47,7 +47,6 @@ import { PerfHud } from "./perf-hud"
 import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
-import { ToolPropertiesPanel } from "./tool-properties-panel"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -579,32 +578,19 @@ export function Canvas() {
         }
         if (!g.id) {
           if (!g.exceeded) return
-          const activeStyle = s.activeStyle
-          const customColor = activeStyle.strokeColor !== "#1e1e1e" ? activeStyle.strokeColor : undefined
-          const fill = activeStyle.fill === "solid" ? "paper" : activeStyle.fill === "hachure" ? "light" : activeStyle.fill === "cross-hatch" ? "strong" : "none"
           if (g.what === "shape") {
             g.id = s.addNode(
-              {
-                type: "shape",
-                shape: s.shapeKind,
-                fill,
-                x,
-                y,
-                w: Math.max(w, 8),
-                h: Math.max(h, 8),
-                stroke: activeStyle.strokeWidth,
-                dashed: activeStyle.strokeStyle === "dashed",
-                roundness: activeStyle.roundness,
-                color: customColor,
-                opacity: activeStyle.opacity,
-              } as Omit<SquigNode, "id" | "seed">,
+              { type: "shape", shape: s.shapeKind, fill: "none", x, y, w: Math.max(w, 8), h: Math.max(h, 8) } as Omit<
+                SquigNode,
+                "id" | "seed"
+              >,
               { select: false }
             )
           } else {
             g.id = s.addNode(
               {
                 type: "arrow",
-                head: activeStyle.arrowHead,
+                head: true,
                 x,
                 y,
                 w: Math.max(w, 8),
@@ -613,10 +599,6 @@ export function Canvas() {
                   [0, 0],
                   [Math.max(w, 8), Math.max(h, 8)],
                 ],
-                stroke: activeStyle.strokeWidth,
-                dashed: activeStyle.strokeStyle === "dashed",
-                color: customColor,
-                opacity: activeStyle.opacity,
               } as Omit<SquigNode, "id" | "seed">,
               { select: false }
             )
@@ -742,8 +724,8 @@ export function Canvas() {
         const y = Math.min(...ys)
         const w = Math.max(Math.max(...xs) - x, 2)
         const h = Math.max(Math.max(...ys) - y, 2)
-        const activeStyle = s.activeStyle
-        const customColor = activeStyle.strokeColor !== "#1e1e1e" ? activeStyle.strokeColor : undefined
+        const drawPrefs = useShellStore.getState().preferences.drawSettings
+        const customColor = drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined
         s.addNode(
           {
             type: "draw",
@@ -752,14 +734,12 @@ export function Canvas() {
             w,
             h,
             points: g.points.map((p) => [p[0] - x, p[1] - y] as [number, number]),
-            stroke: activeStyle.strokeWidth ?? "regular",
-            dashed: activeStyle.strokeStyle === "dashed",
+            stroke: drawPrefs?.strokeWeight ?? "regular",
+            dashed: drawPrefs?.dashed ?? false,
             color: customColor,
-            opacity: activeStyle.opacity,
           } as Omit<SquigNode, "id" | "seed">,
           { select: false, checkpoint: false }
         )
-        const drawPrefs = useShellStore.getState().preferences.drawSettings
         if (drawPrefs?.autoSelectAfterDraw) {
           s.setTool("select")
         }
@@ -777,44 +757,24 @@ export function Canvas() {
       let id = g.id
       if (!id) {
         const [w, h] = [140, 90]
-        const activeStyle = s.activeStyle
-        const customColor = activeStyle.strokeColor !== "#1e1e1e" ? activeStyle.strokeColor : undefined
-        const fill = activeStyle.fill === "solid" ? "paper" : activeStyle.fill === "hachure" ? "light" : activeStyle.fill === "cross-hatch" ? "strong" : "none"
         id =
           g.what === "shape"
             ? s.addNode(
-              {
-                type: "shape",
-                shape: s.shapeKind,
-                fill,
-                x: g.wx,
-                y: g.wy,
-                w,
-                h,
-                stroke: activeStyle.strokeWidth,
-                dashed: activeStyle.strokeStyle === "dashed",
-                roundness: activeStyle.roundness,
-                color: customColor,
-                opacity: activeStyle.opacity,
-              } as Omit<SquigNode, "id" | "seed">,
+              { type: "shape", shape: s.shapeKind, fill: "none", x: g.wx, y: g.wy, w, h } as Omit<SquigNode, "id" | "seed">,
               { select: false }
             )
             : s.addNode(
               {
                 type: "arrow",
-                head: activeStyle.arrowHead,
+                head: true,
                 x: g.wx,
                 y: g.wy,
                 w,
                 h,
-                stroke: activeStyle.strokeWidth,
-                dashed: activeStyle.strokeStyle === "dashed",
                 points: [
                   [0, 0],
                   [w, h],
                 ],
-                color: customColor,
-                opacity: activeStyle.opacity,
               } as Omit<SquigNode, "id" | "seed">,
               { select: false }
             )
@@ -1841,11 +1801,7 @@ export function Canvas() {
               return null
             }
             return (
-              <g
-                key={id}
-                transform={`translate(${n.x} ${n.y})`}
-                opacity={n.opacity !== undefined ? n.opacity / 100 : undefined}
-              >
+              <g key={id} transform={`translate(${n.x} ${n.y})`}>
                 <NodeSketch node={n} hiddenText={id === editingId ? editing?.hidden : undefined} />
               </g>
             )
@@ -2018,9 +1974,6 @@ export function Canvas() {
       <ChartDialog />
       <MermaidDialog />
       <StatsDialog />
-
-      {/* Floating Excalidraw-Style Tool Properties Panel */}
-      <ToolPropertiesPanel />
     </div>
   )
 }

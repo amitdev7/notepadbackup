@@ -15,8 +15,6 @@ import { cn } from "@/lib/utils"
 import {
   Cursor,
   Rectangle,
-  Circle,
-  Diamond,
   PencilLine,
   TextT,
   ArrowRight,
@@ -56,10 +54,8 @@ import type { DockControlsVisibility } from "@/lib/shell-store"
 
 // ── Tool definitions ──────────────────────────────────────────────────────────
 
-type DockToolId = Tool | "library" | "rect" | "diamond" | "ellipse" | "line"
-
 interface ToolDef {
-  id: DockToolId
+  id: Tool | "library"
   label: string
   icon: React.ElementType
   shortcut?: string
@@ -69,16 +65,13 @@ interface ToolDef {
 const ALL_TOOLS: ToolDef[] = [
   { id: "select", label: "Select", icon: Cursor, shortcut: "V", prefKey: "toolSelect" },
   { id: "hand", label: "Hand (Pan)", icon: Hand, shortcut: "H", prefKey: "toolHand" },
-  { id: "rect", label: "Rectangle", icon: Rectangle, shortcut: "R", prefKey: "toolShape" },
-  { id: "diamond", label: "Diamond", icon: Diamond, shortcut: "D", prefKey: "toolShape" },
-  { id: "ellipse", label: "Ellipse", icon: Circle, shortcut: "O", prefKey: "toolShape" },
-  { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A", prefKey: "toolArrow" },
-  { id: "line", label: "Line", icon: Minus, shortcut: "L", prefKey: "toolArrow" },
+  { id: "shape", label: "Shape", icon: Rectangle, shortcut: "R", prefKey: "toolShape" },
   { id: "draw", label: "Draw", icon: PencilLine, shortcut: "P", prefKey: "toolDraw" },
+  { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E", prefKey: "toolEraser" },
+  { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A", prefKey: "toolArrow" },
   { id: "text", label: "Text", icon: TextT, shortcut: "T", prefKey: "toolText" },
   { id: "sticky", label: "Sticky Note", icon: Note, shortcut: "S", prefKey: "toolSticky" },
   { id: "frame", label: "Frame", icon: Crop, shortcut: "F", prefKey: "toolFrame" },
-  { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E", prefKey: "toolEraser" },
   { id: "laser", label: "Laser Pointer", icon: Flashlight, shortcut: "K", prefKey: "toolLaser" },
   { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary" },
 ]
@@ -91,10 +84,6 @@ export function BottomDock() {
 
   const tool = useSquig((s) => s.tool)
   const setTool = useSquig((s) => s.setTool)
-  const shapeKind = useSquig((s) => s.shapeKind)
-  const setShapeKind = useSquig((s) => s.setShapeKind)
-  const arrowHead = useSquig((s) => s.arrowHead)
-  const setArrowHead = useSquig((s) => s.setArrowHead)
   const panel = useSquig((s) => s.panel)
   const setPanel = useSquig((s) => s.setPanel)
   const zoomPercent = useSquig((s) => Math.round(s.viewport.zoom * 100))
@@ -121,26 +110,6 @@ export function BottomDock() {
   const handleToolClick = (t: ToolDef) => {
     if (t.id === "library") {
       setPanel(panel === "components" || panel === "blocks" ? null : "components")
-    } else if (t.id === "rect") {
-      setPanel(null)
-      setShapeKind("rect")
-      setTool("shape")
-    } else if (t.id === "diamond") {
-      setPanel(null)
-      setShapeKind("diamond")
-      setTool("shape")
-    } else if (t.id === "ellipse") {
-      setPanel(null)
-      setShapeKind("ellipse")
-      setTool("shape")
-    } else if (t.id === "line") {
-      setPanel(null)
-      setArrowHead(false)
-      setTool("arrow")
-    } else if (t.id === "arrow") {
-      setPanel(null)
-      setArrowHead(true)
-      setTool("arrow")
     } else {
       setPanel(null)
       setTool(t.id as Tool)
@@ -149,11 +118,6 @@ export function BottomDock() {
 
   const isToolActive = (t: ToolDef): boolean => {
     if (t.id === "library") return panel === "components" || panel === "blocks"
-    if (t.id === "rect") return tool === "shape" && shapeKind === "rect" && panel === null
-    if (t.id === "diamond") return tool === "shape" && shapeKind === "diamond" && panel === null
-    if (t.id === "ellipse") return tool === "shape" && shapeKind === "ellipse" && panel === null
-    if (t.id === "arrow") return tool === "arrow" && arrowHead && panel === null
-    if (t.id === "line") return tool === "arrow" && !arrowHead && panel === null
     return tool === t.id && panel === null
   }
 
