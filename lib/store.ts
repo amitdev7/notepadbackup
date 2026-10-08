@@ -33,6 +33,8 @@ import {
   softDeleteLocalDocument,
   getLocalDocument,
 } from "./storage/documents"
+import { useShellStore } from "./shell-store"
+import { useAuthStore } from "./auth-store"
 import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./excalidraw/index"
 
 // ---------------------------------------------------------------------------
@@ -494,6 +496,37 @@ function flushSave(get: () => SquigState, force = false) {
     }).catch((err) => {
       console.warn("[storage] IndexedDB save error:", err)
     })
+
+    // Cloud database synchronization if enabled and not local-only
+    try {
+      const dbSettings = useShellStore.getState().preferences?.databaseSettings
+      const auth = useAuthStore.getState()
+      if (
+        dbSettings?.enabled &&
+        dbSettings?.storageMode !== "local" &&
+        auth.state === "authenticated" &&
+        s.cloudDocId
+      ) {
+        import("./sync/queue").then(({ enqueueMutation }) => {
+          enqueueMutation(s.cloudDocId!, "upsert_document", 1, {
+            name: s.fileName,
+            documentJson: {
+              nodes: s.nodes,
+              order: s.order,
+              look: lookOf(s),
+            },
+          }).then(() => {
+            import("./sync/engine").then(({ runSyncWorker }) => {
+              runSyncWorker()
+            })
+          }).catch((err) => {
+            console.warn("[sync] enqueueMutation error:", err)
+          })
+        }).catch(() => { })
+      }
+    } catch {
+      // Safe fallback
+    }
   }
 
   dirty = false

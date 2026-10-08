@@ -38,6 +38,24 @@ export type PanelStyle = "default" | "minimal"
 export type StartPage = "canvas" | "dashboard"
 export type LibraryFilterType = "all" | "components" | "blocks" | "templates"
 
+export type StorageMode = "hybrid" | "cloud" | "local"
+
+export interface DatabaseSettings {
+  enabled: boolean
+  storageMode: StorageMode
+  autoSync: boolean
+  syncIntervalMs: number
+  allowTelemetry: boolean
+}
+
+export const DEFAULT_DATABASE_SETTINGS: DatabaseSettings = {
+  enabled: true,
+  storageMode: "hybrid",
+  autoSync: true,
+  syncIntervalMs: 5000,
+  allowTelemetry: false,
+}
+
 export type PerformanceProfile = "balanced" | "quality" | "performance"
 export type CullingBufferMode = "aggressive" | "standard" | "relaxed" | "off"
 
@@ -220,6 +238,7 @@ export interface ShellPreferences {
   textSettings: TextSettings
   performanceSettings: PerformanceSettings
   dockControls: DockControlsVisibility
+  databaseSettings: DatabaseSettings
 }
 
 const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -245,6 +264,7 @@ const DEFAULT_PREFERENCES: ShellPreferences = {
   textSettings: DEFAULT_TEXT_SETTINGS,
   performanceSettings: DEFAULT_PERFORMANCE_SETTINGS,
   dockControls: DEFAULT_DOCK_CONTROLS,
+  databaseSettings: DEFAULT_DATABASE_SETTINGS,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -275,6 +295,10 @@ function loadInitialPreferences(): ShellPreferences {
         dockControls: {
           ...DEFAULT_DOCK_CONTROLS,
           ...(parsed.dockControls || {}),
+        },
+        databaseSettings: {
+          ...DEFAULT_DATABASE_SETTINGS,
+          ...(parsed.databaseSettings || {}),
         },
       }
     }
@@ -327,6 +351,9 @@ interface ShellState {
   updateDrawSettings: (updates: Partial<DrawSettings>) => void
   updateTextSettings: (updates: Partial<TextSettings>) => void
   updatePerformanceSettings: (updates: Partial<PerformanceSettings>) => void
+  updateDatabaseSettings: (updates: Partial<DatabaseSettings>) => void
+  setStorageMode: (mode: StorageMode) => void
+  toggleDatabase: (enabled?: boolean) => void
   updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
   setAllDockControls: (visible: boolean) => void
   resetDockControls: () => void
@@ -541,6 +568,35 @@ export const useShellStore = create<ShellState>((set, get) => ({
         ...state.preferences,
         dockControls: DEFAULT_DOCK_CONTROLS,
       }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updateDatabaseSettings: (updates) => {
+    set((state) => {
+      const nextDb = { ...state.preferences.databaseSettings, ...updates }
+      const next = { ...state.preferences, databaseSettings: nextDb }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setStorageMode: (mode) => {
+    set((state) => {
+      const nextDb = { ...state.preferences.databaseSettings, storageMode: mode }
+      const next = { ...state.preferences, databaseSettings: nextDb }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleDatabase: (enabled) => {
+    set((state) => {
+      const current = state.preferences.databaseSettings.enabled
+      const nextVal = typeof enabled === "boolean" ? enabled : !current
+      const nextDb = { ...state.preferences.databaseSettings, enabled: nextVal }
+      const next = { ...state.preferences, databaseSettings: nextDb }
       savePreferences(next)
       return { preferences: next }
     })

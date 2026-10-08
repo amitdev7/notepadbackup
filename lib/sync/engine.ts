@@ -15,6 +15,7 @@ import {
 import { getLocalDocument, saveLocalDocument, type LocalSyncStatus } from "../storage/documents"
 import { syncPendingDocumentAssets } from "../storage/document-assets"
 import { useAuthStore } from "../auth-store"
+import { useShellStore } from "../shell-store"
 import type { CanvasDocumentJson } from "../db/types"
 
 export interface ConflictInfo {
@@ -49,6 +50,11 @@ export const useSyncStore = create<SyncEngineStore>((set, get) => ({
   setConflict: (conflictInfo) => set({ conflictInfo, status: conflictInfo ? "conflict" : "synced" }),
 
   triggerSync: () => {
+    const dbSettings = useShellStore.getState().preferences?.databaseSettings
+    if (dbSettings && (!dbSettings.enabled || dbSettings.storageMode === "local")) {
+      useSyncStore.getState().setStatus("local-only")
+      return
+    }
     runSyncWorker()
   },
 
@@ -144,6 +150,13 @@ export async function runSyncWorker(): Promise<void> {
   }
 
   if (authStore.state !== "authenticated") {
+    syncStore.setStatus("local-only")
+    isWorkerRunning = false
+    return
+  }
+
+  const dbSettings = useShellStore.getState().preferences?.databaseSettings
+  if (dbSettings && (!dbSettings.enabled || dbSettings.storageMode === "local")) {
     syncStore.setStatus("local-only")
     isWorkerRunning = false
     return

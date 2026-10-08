@@ -28,6 +28,7 @@ import {
   type UIBlur,
   type StartPage,
   type DockControlsVisibility,
+  type StorageMode,
 } from "@/lib/shell-store"
 import { useSquig } from "@/lib/store"
 import { useAuthStore } from "@/lib/auth-store"
@@ -90,6 +91,12 @@ import {
   Moon,
   Desktop,
   BookOpen,
+  Database,
+  HardDrives,
+  ArrowsClockwise,
+  CircleNotch,
+  CheckCircle,
+  WarningCircle,
 } from "@phosphor-icons/react"
 
 interface SectionItem {
@@ -109,7 +116,7 @@ const SECTIONS: SectionItem[] = [
   { id: "canvas", label: "Toolbar & Dock", description: "Dock tool toggles, quick action buttons and menu items", icon: PaintBrush },
   { id: "page", label: "Page & Paper", description: "Document palettes, dot grid and paper shade defaults", icon: File },
   { id: "keyboard", label: "Keyboard", description: "Shortcuts and navigation hotkeys", icon: Keyboard },
-  { id: "storage", label: "Files & Storage", description: "Local database usage, export formats and cache", icon: Folder },
+  { id: "storage", label: "Database & Storage", description: "PostgreSQL database connectivity, storage modes (Cloud/Local), and backups", icon: Database },
   { id: "cloud", label: "Cloud & Sync", description: "Supabase cloud synchronization status", icon: CloudCheck },
   { id: "sharing", label: "Sharing", description: "Collaboration permissions and public link rules", icon: ShareNetwork },
   { id: "notifications", label: "Notifications", description: "Deadline alerts and audio reminders", icon: Bell },
@@ -543,6 +550,541 @@ function TypographyPreview({
       <p className="text-[10px] text-stone-400 text-center">
         Type above to test your custom typography style in real-time
       </p>
+    </div>
+  )
+}
+
+function StorageSection() {
+  const prefs = useShellStore((s) => s.preferences)
+  const dbSettings = prefs.databaseSettings
+  const updateDbSettings = useShellStore((s) => s.updateDatabaseSettings)
+  const setStorageMode = useShellStore((s) => s.setStorageMode)
+  const toggleDatabase = useShellStore((s) => s.toggleDatabase)
+  const resetPrefs = useShellStore((s) => s.resetPreferences)
+  const user = useAuthStore((s) => s.user)
+
+  // DB Diagnostic & Health state
+  const [testing, setTesting] = useState(false)
+  const [statusData, setStatusData] = useState<{
+    ok?: boolean
+    connected?: boolean
+    latencyMs?: number
+    host?: string
+    database?: string
+    engine?: string
+    region?: string
+    tablesCount?: number
+    documentsCount?: number
+    error?: string
+    timestamp?: string
+  } | null>(null)
+  const [lastTestedAt, setLastTestedAt] = useState<Date | null>(null)
+
+  // Migration state
+  const [migrating, setMigrating] = useState(false)
+  const [migrationStatus, setMigrationStatus] = useState<{
+    successCount: number
+    failedCount: number
+    message?: string
+  } | null>(null)
+
+  // Proactively check DB connection on mount
+  useEffect(() => {
+    let active = true
+    const checkDb = async () => {
+      try {
+        const res = await fetch("/api/db/status")
+        const json = await res.json()
+        if (active) {
+          setStatusData(json)
+          setLastTestedAt(new Date())
+        }
+      } catch (err: any) {
+        if (active) {
+          setStatusData({
+            ok: false,
+            connected: false,
+            error: err?.message || "Failed to reach database API",
+          })
+          setLastTestedAt(new Date())
+        }
+      }
+    }
+    checkDb()
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const handleTestConnection = async () => {
+    setTesting(true)
+    try {
+      const res = await fetch("/api/db/status")
+      const json = await res.json()
+      setStatusData(json)
+      setLastTestedAt(new Date())
+    } catch (err: any) {
+      setStatusData({
+        ok: false,
+        connected: false,
+        error: err?.message || "Failed to contact database endpoint",
+      })
+      setLastTestedAt(new Date())
+    } finally {
+      setTesting(false)
+    }
+  }
+
+  const handleSyncToDatabase = async () => {
+    if (!user) {
+      setMigrationStatus({
+        successCount: 0,
+        failedCount: 0,
+        message: "Please sign in first to sync local documents to your cloud workspace.",
+      })
+      return
+    }
+    setMigrating(true)
+    try {
+      const { listLocalDocuments } = await import("@/lib/storage/documents")
+      const docs = await listLocalDocuments(false)
+      const docIds = docs.map((d) => d.id)
+      if (docIds.length === 0) {
+        setMigrationStatus({
+          successCount: 0,
+          failedCount: 0,
+          message: "No local documents found to sync.",
+        })
+        return
+      }
+      const { migrateLocalDocumentsToCloud } = await import("@/lib/cloud/migration")
+      const result = await migrateLocalDocumentsToCloud(docIds)
+      setMigrationStatus({
+        ...result,
+        message: `Successfully synced ${result.successCount} document${result.successCount === 1 ? "" : "s"} to database!`,
+      })
+    } catch (err: any) {
+      setMigrationStatus({
+        successCount: 0,
+        failedCount: 1,
+        message: err?.message || "Sync to database encountered an error.",
+      })
+    } finally {
+      setMigrating(false)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 1. Master Database Connectivity Toggle */}
+      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-900/40 backdrop-blur-xs space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className={cn(
+                "size-10 rounded-xl flex items-center justify-center transition-colors",
+                dbSettings.enabled
+                  ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                  : "bg-stone-200 dark:bg-stone-800 text-stone-500"
+              )}
+            >
+              <Database size={22} weight="duotone" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-stone-900 dark:text-stone-100 text-sm">
+                  PostgreSQL Database Connectivity
+                </span>
+                <span
+                  className={cn(
+                    "px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider",
+                    dbSettings.enabled
+                      ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                      : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                  )}
+                >
+                  {dbSettings.enabled ? "Database Enabled" : "Offline / Local"}
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+                Toggle live connection to Supabase PostgreSQL 17 for persistent cloud storage and collaboration.
+              </p>
+            </div>
+          </div>
+          <Switch
+            checked={dbSettings.enabled}
+            onCheckedChange={(checked) => toggleDatabase(checked)}
+          />
+        </div>
+      </div>
+
+      {/* 2. Storage Mode Selection (3 Modes) */}
+      <div className="space-y-2.5">
+        <div>
+          <label className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+            Storage Engine & Architecture Mode
+          </label>
+          <span className="text-[11px] text-stone-500">
+            Choose how Zenithsui allocates work between local client storage and cloud PostgreSQL
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+          {/* Hybrid Mode */}
+          <button
+            type="button"
+            onClick={() => {
+              toggleDatabase(true)
+              setStorageMode("hybrid")
+            }}
+            className={cn(
+              "p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between",
+              dbSettings.storageMode === "hybrid" && dbSettings.enabled
+                ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20 shadow-2xs"
+                : "border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/30 hover:border-stone-300 dark:hover:border-stone-700"
+            )}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+                  <ArrowsClockwise size={16} weight="bold" />
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">Hybrid Mode</span>
+                </div>
+                <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-snug">
+                Local-first 0ms instant canvas speed + automatic background cloud PostgreSQL sync when connected.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-stone-200/50 dark:border-stone-800/50 flex items-center justify-between text-[10px] text-stone-400">
+              <span>IndexedDB + Cloud</span>
+              {dbSettings.storageMode === "hybrid" && dbSettings.enabled && (
+                <Check size={14} weight="bold" className="text-blue-600 dark:text-blue-400" />
+              )}
+            </div>
+          </button>
+
+          {/* Cloud Database Mode */}
+          <button
+            type="button"
+            onClick={() => {
+              toggleDatabase(true)
+              setStorageMode("cloud")
+            }}
+            className={cn(
+              "p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between",
+              dbSettings.storageMode === "cloud" && dbSettings.enabled
+                ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20 shadow-2xs"
+                : "border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/30 hover:border-stone-300 dark:hover:border-stone-700"
+            )}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
+                  <Database size={16} weight="bold" />
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">Cloud Database</span>
+                </div>
+                <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                  PostgreSQL
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-snug">
+                Primary persistence in PostgreSQL 17 on Supabase with real-time multi-device sharing and version history.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-stone-200/50 dark:border-stone-800/50 flex items-center justify-between text-[10px] text-stone-400">
+              <span>Supabase Cloud Pool</span>
+              {dbSettings.storageMode === "cloud" && dbSettings.enabled && (
+                <Check size={14} weight="bold" className="text-blue-600 dark:text-blue-400" />
+              )}
+            </div>
+          </button>
+
+          {/* Local Only Mode */}
+          <button
+            type="button"
+            onClick={() => {
+              setStorageMode("local")
+              updateDbSettings({ enabled: false })
+            }}
+            className={cn(
+              "p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-between",
+              (!dbSettings.enabled || dbSettings.storageMode === "local")
+                ? "border-blue-500 bg-blue-50/60 dark:bg-blue-950/40 ring-2 ring-blue-500/20 shadow-2xs"
+                : "border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/30 hover:border-stone-300 dark:hover:border-stone-700"
+            )}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+                  <HardDrives size={16} weight="bold" />
+                  <span className="text-xs font-bold text-stone-900 dark:text-stone-100">Local Only</span>
+                </div>
+                <span className="text-[9px] font-semibold uppercase px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  Offline
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-600 dark:text-stone-400 leading-snug">
+                Stores everything exclusively inside browser IndexedDB. Zero cloud network traffic for 100% privacy.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-stone-200/50 dark:border-stone-800/50 flex items-center justify-between text-[10px] text-stone-400">
+              <span>Browser Sandbox</span>
+              {(!dbSettings.enabled || dbSettings.storageMode === "local") && (
+                <Check size={14} weight="bold" className="text-blue-600 dark:text-blue-400" />
+              )}
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Live Database Status Card */}
+      <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">
+              Live Database Health & Telemetry
+            </span>
+            {testing ? (
+              <span className="flex items-center gap-1 text-[11px] text-stone-400">
+                <CircleNotch size={12} className="animate-spin text-blue-500" />
+                <span>Pinging...</span>
+              </span>
+            ) : statusData?.connected ? (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-semibold">
+                <CheckCircle size={12} weight="fill" />
+                <span>Connected ({statusData.latencyMs}ms)</span>
+              </span>
+            ) : statusData ? (
+              <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 text-[10px] font-semibold">
+                <WarningCircle size={12} weight="fill" />
+                <span>Disconnected</span>
+              </span>
+            ) : null}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleTestConnection}
+            disabled={testing}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium transition-colors cursor-pointer disabled:opacity-50"
+          >
+            {testing ? (
+              <CircleNotch size={13} className="animate-spin" />
+            ) : (
+              <ArrowsClockwise size={13} />
+            )}
+            <span>Test DB Ping</span>
+          </button>
+        </div>
+
+        {/* Database metadata grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+          <div className="p-2 rounded-lg bg-white/70 dark:bg-stone-900/70 border border-stone-200/50 dark:border-stone-800/50">
+            <span className="text-[10px] text-stone-400 block font-medium">Engine</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-200">
+              {statusData?.engine || "PostgreSQL 17"}
+            </span>
+          </div>
+
+          <div className="p-2 rounded-lg bg-white/70 dark:bg-stone-900/70 border border-stone-200/50 dark:border-stone-800/50">
+            <span className="text-[10px] text-stone-400 block font-medium">Region</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-200">
+              {statusData?.region || "ap-south-1 (Mumbai)"}
+            </span>
+          </div>
+
+          <div className="p-2 rounded-lg bg-white/70 dark:bg-stone-900/70 border border-stone-200/50 dark:border-stone-800/50">
+            <span className="text-[10px] text-stone-400 block font-medium">Public Tables</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-200">
+              {statusData?.tablesCount ?? 16} Tables
+            </span>
+          </div>
+
+          <div className="p-2 rounded-lg bg-white/70 dark:bg-stone-900/70 border border-stone-200/50 dark:border-stone-800/50">
+            <span className="text-[10px] text-stone-400 block font-medium">Database Docs</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-200">
+              {statusData?.documentsCount !== undefined ? `${statusData.documentsCount} docs` : "Accessible"}
+            </span>
+          </div>
+        </div>
+
+        {statusData?.host && (
+          <div className="text-[10px] text-stone-400 flex items-center justify-between pt-1">
+            <span className="font-mono truncate max-w-[280px]">Host: {statusData.host}</span>
+            {lastTestedAt && (
+              <span>Last checked {lastTestedAt.toLocaleTimeString()}</span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* 4. Sync All Local Documents to Database Action */}
+      <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 flex items-center justify-between">
+        <div>
+          <span className="text-xs font-semibold text-stone-900 dark:text-stone-100 block">
+            Sync All Local Documents to Cloud Database
+          </span>
+          <span className="text-[11px] text-stone-500">
+            Upload unmigrated local drawings into PostgreSQL tables for multi-device access
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleSyncToDatabase}
+          disabled={migrating || !dbSettings.enabled || dbSettings.storageMode === "local"}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
+        >
+          {migrating ? (
+            <CircleNotch size={13} className="animate-spin" />
+          ) : (
+            <CloudCheck size={14} weight="bold" />
+          )}
+          <span>{migrating ? "Syncing..." : "Sync to Database"}</span>
+        </button>
+      </div>
+
+      {migrationStatus && (
+        <div
+          className={cn(
+            "p-2.5 rounded-lg text-xs border flex items-center justify-between",
+            migrationStatus.failedCount > 0
+              ? "border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200"
+              : "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
+          )}
+        >
+          <span>{migrationStatus.message}</span>
+          <button
+            type="button"
+            onClick={() => setMigrationStatus(null)}
+            className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 cursor-pointer"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      )}
+
+      {/* 5. Auto-Sync Interval */}
+      <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+        <div>
+          <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+            Auto-Sync Debounce Interval
+          </span>
+          <span className="text-[11px] text-stone-500">
+            Delay after stopping canvas edits before synchronizing changes to database
+          </span>
+        </div>
+        <select
+          value={dbSettings.syncIntervalMs}
+          onChange={(e) => updateDbSettings({ syncIntervalMs: Number(e.target.value) })}
+          disabled={!dbSettings.enabled || dbSettings.storageMode === "local"}
+          className="px-2.5 py-1 text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 disabled:opacity-50"
+        >
+          <option value={1000}>1 second (Aggressive)</option>
+          <option value={5000}>5 seconds (Default)</option>
+          <option value={15000}>15 seconds</option>
+          <option value={30000}>30 seconds (Power Saver)</option>
+        </select>
+      </div>
+
+      {/* 6. Reset UI Preferences */}
+      <div className="flex items-center justify-between pt-1">
+        <div>
+          <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+            Reset Application Preferences
+          </span>
+          <span className="text-[11px] text-stone-500">
+            Restores UI and storage settings to defaults without modifying canvas drawings
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm("Reset all UI and storage preferences to defaults?")) {
+              resetPrefs()
+            }
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium text-xs transition-colors cursor-pointer"
+        >
+          <ArrowCounterClockwise size={13} />
+          <span>Reset UI Defaults</span>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function CloudSection() {
+  const prefs = useShellStore((s) => s.preferences)
+  const dbSettings = prefs.databaseSettings
+  const user = useAuthStore((s) => s.user)
+  const setActiveSection = useShellStore((s) => s.setSettingsSection)
+
+  return (
+    <div className="space-y-5">
+      {/* 1. Supabase Cloud Sync Header */}
+      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="size-9 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <CloudCheck size={20} weight="bold" />
+            </div>
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+                Supabase PostgreSQL Synchronization
+              </span>
+              <span className="text-[11px] text-stone-500">
+                {user ? `Connected as ${user.email}` : "Guest Mode — Documents saved locally in browser"}
+              </span>
+            </div>
+          </div>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded-full font-medium text-[11px]",
+              user
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                : "bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
+            )}
+          >
+            {user ? "Cloud Active" : "Local Mode"}
+          </span>
+        </div>
+
+        <p className="text-[11px] text-stone-500 leading-relaxed">
+          Zenithsui features a local-first offline architecture. Changes are persisted immediately to IndexedDB on your device, with background auto-sync to PostgreSQL when cloud database connectivity is enabled.
+        </p>
+      </div>
+
+      {/* 2. Quick Mode Control */}
+      <div className="p-3.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-white/40 dark:bg-stone-900/30 flex items-center justify-between">
+        <div>
+          <span className="text-xs font-semibold text-stone-900 dark:text-stone-100 block">
+            Current Storage Mode:{" "}
+            {dbSettings.storageMode === "hybrid"
+              ? "Hybrid (Local + Cloud)"
+              : dbSettings.storageMode === "cloud"
+                ? "Cloud Database"
+                : "Local Only"}
+          </span>
+          <span className="text-[11px] text-stone-500">
+            {dbSettings.enabled
+              ? "Database synchronization is active"
+              : "Operating in 100% offline local mode"}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setActiveSection("storage")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 text-xs font-medium transition-colors cursor-pointer"
+        >
+          <Database size={13} />
+          <span>Configure Database</span>
+        </button>
+      </div>
     </div>
   )
 }
@@ -2148,59 +2690,10 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
       )
 
     case "storage":
-      return (
-        <div className="space-y-4">
-          <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700/60">
-            <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-semibold text-stone-900 dark:text-stone-100">Local Storage & IndexedDB</h4>
-                <p className="text-[11px] text-stone-500 mt-0.5">Documents and student data persisted offline in your browser</p>
-              </div>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium text-[11px]">
-                Healthy
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between pt-2">
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Reset Application Preferences</span>
-              <span className="text-[11px] text-stone-500">Restores UI settings to defaults without modifying canvas drawings</span>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                if (window.confirm("Reset all UI and appearance preferences to defaults?")) {
-                  resetPrefs()
-                }
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 font-medium transition-colors"
-            >
-              <ArrowCounterClockwise size={13} />
-              <span>Reset UI Defaults</span>
-            </button>
-          </div>
-        </div>
-      )
+      return <StorageSection />
 
     case "cloud":
-      return (
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-semibold text-stone-900 dark:text-stone-100">Supabase Cloud Synchronization</span>
-              <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-medium text-[11px]">
-                {user ? "Connected" : "Offline / Local-Only"}
-              </span>
-            </div>
-            <p className="text-[11px] text-stone-500">
-              {user
-                ? `Connected as ${user.email}. Documents sync automatically across active sessions.`
-                : "Real-time cloud backup, device synchronization, and multi-device sharing."}
-            </p>
-          </div>
-        </div>
-      )
+      return <CloudSection />
 
     case "sharing":
       return (
