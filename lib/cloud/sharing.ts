@@ -77,22 +77,18 @@ export async function createShareLink(
     expiresAt = new Date(options.expiresAtDate).toISOString()
   }
 
-  const newLinkData: Partial<ShareLinkRecord> & {
-    document_id: string
-    token_hash: string
-    created_by: string
-  } = {
+  const newLinkData: any = {
     document_id: options.documentId,
+    token: tokenHash,
     token_hash: tokenHash,
+    access_level: options.permission || "view",
     name: options.name?.trim() || null,
-    permission: options.permission || "view",
     allow_export: options.allowExport ?? true,
     allow_duplicate: options.allowDuplicate ?? true,
     created_by: options.userId,
     expires_at: expiresAt,
     revoked_at: null,
     password_hash: passwordHash,
-    password_salt: passwordSalt,
     max_uses: options.maxUses || null,
     use_count: 0,
     is_active: true,
@@ -285,7 +281,7 @@ export async function resolveShareToken(
       use_count: (link.use_count || 0) + 1,
     })
     .eq("id", link.id)
-    .catch(() => {})
+    .catch(() => { })
 
   // Fetch document payload (sanitized)
   const { data: doc, error: docError } = await supabase

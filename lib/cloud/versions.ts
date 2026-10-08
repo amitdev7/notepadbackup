@@ -29,7 +29,7 @@ export async function createVersionSnapshot(
     .insert({
       document_id: documentId,
       version_number: nextVersionNumber,
-      snapshot,
+      snapshot: snapshot,
       label: label || `Version ${nextVersionNumber}`,
       created_by: user.id,
     })
@@ -57,6 +57,7 @@ export async function restoreVersionSnapshot(
   versionId: string
 ): Promise<CanvasDocumentJson> {
   const supabase = getSupabaseBrowserClient()
+  const { data: { user } } = await supabase.auth.getUser()
   const { data: version, error: versionErr } = await supabase
     .from("document_versions")
     .select("snapshot")
@@ -73,6 +74,7 @@ export async function restoreVersionSnapshot(
     .update({
       document_json: snapshot,
       updated_at: new Date().toISOString(),
+      updated_by: user?.id ?? null,
     })
     .eq("id", documentId)
 

@@ -36,7 +36,7 @@ export function notifyDocChanged(docId: string, action: "save" | "delete" | "syn
 export function onCrossTabDocChange(
   callback: (message: { docId: string; action: string; timestamp: number }) => void
 ) {
-  if (!syncChannel) return () => {}
+  if (!syncChannel) return () => { }
   const handler = (event: MessageEvent) => {
     callback(event.data)
   }

@@ -151,13 +151,13 @@ export function Inspector() {
   const subtitle = selected.length > 1 ? selectionSummary(selected) : undefined
 
   return (
-    <Panel className="absolute top-16 right-2 sm:right-4 z-30 max-h-[calc(100vh-5rem)] w-[calc(100vw-1rem)] max-w-[272px]">
+    <Panel className="absolute top-16 right-2 sm:right-4 z-30 max-h-[calc(100vh-5rem)] w-[calc(100vw-1rem)] max-w-[272px] animate-popover-enter">
       <div className="flex items-center justify-between">
         <PanelHeader title={heading} subtitle={subtitle} />
         <button
           type="button"
           onClick={selectNone}
-          className="mr-2 p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors sm:hidden"
+          className="tactile-btn mr-2 p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 sm:hidden cursor-pointer"
           title="Close inspector"
           aria-label="Close inspector"
         >

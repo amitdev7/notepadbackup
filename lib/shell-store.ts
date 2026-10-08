@@ -2,7 +2,7 @@
 
 // ---------------------------------------------------------------------------
 // Shell Store — Zustand store for UI navigation state and application preferences.
-// Completely decoupled from canvas document undo/redo history.
+// Decoupled from canvas document undo/redo history.
 // Local-first persistence via localStorage with SSR safety.
 // ---------------------------------------------------------------------------
 
@@ -32,6 +32,78 @@ export type PanelStyle = "default" | "minimal"
 export type StartPage = "canvas" | "dashboard"
 export type LibraryFilterType = "all" | "components" | "blocks" | "templates"
 
+export interface DockControlsVisibility {
+  // Drawing & Creation Tools
+  toolSelect: boolean
+  toolHand: boolean
+  toolShape: boolean
+  toolDraw: boolean
+  toolEraser: boolean
+  toolArrow: boolean
+  toolText: boolean
+  toolSticky: boolean
+  toolFrame: boolean
+  toolLaser: boolean
+  toolLibrary: boolean
+
+  // Quick Action Buttons
+  actionSearch: boolean
+  actionStats: boolean
+  actionPage: boolean
+  actionSettings: boolean
+
+  // Dock Modules
+  brandMenu: boolean
+  zoomControls: boolean
+
+  // Brand Menu Items
+  menuNewCanvas: boolean
+  menuOpenRecent: boolean
+  menuShare: boolean
+  menuPublishWifi: boolean
+  menuVersionHistory: boolean
+  menuUndo: boolean
+  menuRedo: boolean
+  menuSettings: boolean
+  menuResetView: boolean
+  menuClearCanvas: boolean
+  menuGithub: boolean
+}
+
+export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
+  toolSelect: true,
+  toolHand: true,
+  toolShape: true,
+  toolDraw: true,
+  toolEraser: true,
+  toolArrow: true,
+  toolText: true,
+  toolSticky: false,   // Hidden by default
+  toolFrame: false,    // Hidden by default
+  toolLaser: true,
+  toolLibrary: true,
+
+  actionSearch: false, // Hidden by default
+  actionStats: false,  // Hidden by default
+  actionPage: true,
+  actionSettings: true,
+
+  brandMenu: true,
+  zoomControls: true,
+
+  menuNewCanvas: true,
+  menuOpenRecent: true,
+  menuShare: true,
+  menuPublishWifi: true,
+  menuVersionHistory: true,
+  menuUndo: true,
+  menuRedo: true,
+  menuSettings: true,
+  menuResetView: true,
+  menuClearCanvas: true,
+  menuGithub: true,
+}
+
 export interface ShellPreferences {
   themeMode: ThemeMode
   uiDensity: UIDensity
@@ -47,6 +119,7 @@ export interface ShellPreferences {
   highContrast: boolean
   largeText: boolean
   screenReaderHints: boolean
+  dockControls: DockControlsVisibility
 }
 
 const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -64,6 +137,7 @@ const DEFAULT_PREFERENCES: ShellPreferences = {
   highContrast: false,
   largeText: false,
   screenReaderHints: false,
+  dockControls: DEFAULT_DOCK_CONTROLS,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -71,9 +145,17 @@ function loadInitialPreferences(): ShellPreferences {
   try {
     const raw = localStorage.getItem("zenithsui:shell_prefs")
     if (raw) {
-      return { ...DEFAULT_PREFERENCES, ...JSON.parse(raw) }
+      const parsed = JSON.parse(raw)
+      return {
+        ...DEFAULT_PREFERENCES,
+        ...parsed,
+        dockControls: {
+          ...DEFAULT_DOCK_CONTROLS,
+          ...(parsed.dockControls || {}),
+        },
+      }
     }
-  } catch {}
+  } catch { }
   return DEFAULT_PREFERENCES
 }
 
@@ -81,7 +163,7 @@ function savePreferences(prefs: ShellPreferences) {
   if (typeof window === "undefined") return
   try {
     localStorage.setItem("zenithsui:shell_prefs", JSON.stringify(prefs))
-  } catch {}
+  } catch { }
 }
 
 interface ShellState {
@@ -118,10 +200,22 @@ interface ShellState {
   setLibraryCategory: (c: string) => void
   setGlobalSearchOpen: (open: boolean) => void
   updatePreferences: (updates: Partial<ShellPreferences>) => void
+  updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
+  setAllDockControls: (visible: boolean) => void
+  resetDockControls: () => void
   resetPreferences: () => void
 }
 
 let mediaQueryListenerAttached = false
+
+export function syncMotionToDOM(mode: AnimationMode = "full") {
+  if (typeof window === "undefined" || typeof document === "undefined") return
+  if (mode === "reduced") {
+    document.documentElement.classList.add("reduce-motion")
+  } else {
+    document.documentElement.classList.remove("reduce-motion")
+  }
+}
 
 export function syncThemeToDOM(mode: ThemeMode = "system") {
   if (typeof window === "undefined" || typeof document === "undefined") return
@@ -138,7 +232,6 @@ export function syncThemeToDOM(mode: ThemeMode = "system") {
     document.documentElement.style.colorScheme = "light"
   }
 
-  // Attach system listener if mode is 'system' and not already attached
   if (mode === "system" && !mediaQueryListenerAttached) {
     mediaQueryListenerAttached = true
     try {
@@ -156,7 +249,7 @@ export function syncThemeToDOM(mode: ThemeMode = "system") {
         }
       }
       mql.addEventListener("change", handler)
-    } catch {}
+    } catch { }
   }
 }
 
@@ -198,6 +291,50 @@ export const useShellStore = create<ShellState>((set, get) => ({
       if (updates.themeMode !== undefined) {
         syncThemeToDOM(updates.themeMode)
       }
+      if (updates.animationMode !== undefined) {
+        syncMotionToDOM(updates.animationMode)
+      }
+      return { preferences: next }
+    })
+  },
+
+  updateDockControl: (key, visible) => {
+    set((state) => {
+      const nextDockControls = {
+        ...state.preferences.dockControls,
+        [key]: visible,
+      }
+      const next = {
+        ...state.preferences,
+        dockControls: nextDockControls,
+      }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setAllDockControls: (visible) => {
+    set((state) => {
+      const nextDockControls = { ...state.preferences.dockControls }
+      for (const k of Object.keys(nextDockControls) as (keyof DockControlsVisibility)[]) {
+        nextDockControls[k] = visible
+      }
+      const next = {
+        ...state.preferences,
+        dockControls: nextDockControls,
+      }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  resetDockControls: () => {
+    set((state) => {
+      const next = {
+        ...state.preferences,
+        dockControls: DEFAULT_DOCK_CONTROLS,
+      }
+      savePreferences(next)
       return { preferences: next }
     })
   },
@@ -206,5 +343,6 @@ export const useShellStore = create<ShellState>((set, get) => ({
     set({ preferences: DEFAULT_PREFERENCES })
     savePreferences(DEFAULT_PREFERENCES)
     syncThemeToDOM(DEFAULT_PREFERENCES.themeMode)
+    syncMotionToDOM(DEFAULT_PREFERENCES.animationMode)
   },
 }))

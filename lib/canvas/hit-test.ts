@@ -116,7 +116,14 @@ function polylineOf(n: SquigNode): [number, number][] | null {
 /** Shapes are only solid to the pointer when they're actually filled. */
 export function isSolid(n: SquigNode): boolean {
   if (n.type === "shape") return normalizeFill(n.fill) !== "none"
-  return n.type === "component" || n.type === "text" || n.type === "image" || n.type === "document"
+  return (
+    n.type === "component" ||
+    n.type === "text" ||
+    n.type === "image" ||
+    n.type === "document" ||
+    n.type === "sticky" ||
+    n.type === "embed"
+  )
 }
 
 // ---------------------------------------------------------------------------
@@ -126,15 +133,39 @@ export function hitsPoint(n: SquigNode, x: number, y: number, zoom: number): boo
   const tol = pickTolerance(zoom, n)
   const b = boxOf(n)
   if (!inBox(x, y, b, tol)) return false
-  if (isSolid(n)) return true
-
-  const line = polylineOf(n)
-  if (line) {
-    for (let i = 1; i < line.length; i++) {
-      if (distToSegment(x, y, line[i - 1][0], line[i - 1][1], line[i][0], line[i][1]) <= tol) return true
+  if (n.type === "shape" && n.shape === "diamond") {
+    const rx = n.w / 2
+    const ry = n.h / 2
+    if (rx <= 0 || ry <= 0) return true
+    const cx = n.x + rx
+    const cy = n.y + ry
+    const normDist = Math.abs(x - cx) / rx + Math.abs(y - cy) / ry
+    if (isSolid(n)) {
+      const tolNorm = tol / Math.min(rx, ry)
+      return normDist <= 1 + tolNorm
     }
-    // a two-point arrow that has collapsed to a dot still deserves a grab
-    return line.length === 1 && Math.hypot(x - line[0][0], y - line[0][1]) <= tol
+    const diamondPoints: [number, number][] = [
+      [cx, n.y],
+      [n.x + n.w, cy],
+      [cx, n.y + n.h],
+      [n.x, cy],
+      [cx, n.y],
+    ]
+    for (let i = 1; i < diamondPoints.length; i++) {
+      if (
+        distToSegment(
+          x,
+          y,
+          diamondPoints[i - 1][0],
+          diamondPoints[i - 1][1],
+          diamondPoints[i][0],
+          diamondPoints[i][1]
+        ) <= tol
+      ) {
+        return true
+      }
+    }
+    return false
   }
 
   if (n.type === "shape" && n.shape === "ellipse") {
@@ -146,13 +177,24 @@ export function hitsPoint(n: SquigNode, x: number, y: number, zoom: number): boo
     const nx = (x - cx) / rx
     const ny = (y - cy) / ry
     const r = Math.hypot(nx, ny)
-    // dead centre of a squashed ellipse: nearest ink is the short radius away
+    if (isSolid(n)) {
+      const tolNorm = tol / Math.min(rx, ry)
+      return r <= 1 + tolNorm
+    }
     if (r < 1e-6) return Math.min(rx, ry) <= tol
-    // Project onto the ring along the ray from the centre and measure in world
-    // units. Measuring in normalised units instead would stretch the collar by
-    // rx/ry, so a 400×40 ellipse would answer to clicks 80 units off its end.
     const d = Math.hypot((x - cx) * (1 - 1 / r), (y - cy) * (1 - 1 / r))
     return d <= tol
+  }
+
+  if (isSolid(n)) return true
+
+  const line = polylineOf(n)
+  if (line) {
+    for (let i = 1; i < line.length; i++) {
+      if (distToSegment(x, y, line[i - 1][0], line[i - 1][1], line[i][0], line[i][1]) <= tol) return true
+    }
+    // a two-point arrow that has collapsed to a dot still deserves a grab
+    return line.length === 1 && Math.hypot(x - line[0][0], y - line[0][1]) <= tol
   }
 
   // unfilled rect — the outline is the target, the middle is see-through
@@ -242,6 +284,14 @@ export function hitsInterior(n: SquigNode, x: number, y: number): boolean {
     const nx = (x - (n.x + rx)) / rx
     const ny = (y - (n.y + ry)) / ry
     return Math.hypot(nx, ny) <= 1
+  }
+  if (n.type === "shape" && n.shape === "diamond") {
+    const rx = n.w / 2
+    const ry = n.h / 2
+    if (rx <= 0 || ry <= 0) return false
+    const nx = Math.abs(x - (n.x + rx)) / rx
+    const ny = Math.abs(y - (n.y + ry)) / ry
+    return nx + ny <= 1
   }
   // rects and doodles answer by their whole box
   return true

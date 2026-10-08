@@ -97,7 +97,7 @@ export function FilesPopover() {
             : "text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
         )}
       >
-        <FolderSimple size={13} weight="fill" className="text-blue-500 shrink-0" aria-hidden="true" />
+        <FolderSimple size={13} weight="fill" className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
         <span>Files</span>
         <CaretDown
           size={10}
@@ -109,12 +109,12 @@ export function FilesPopover() {
           aria-hidden="true"
         />
         {/* Subtle active sync dot */}
-        <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" title="Auto-saved and synced over Wi-Fi" />
+        <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle" title="Auto-saved and synced over Wi-Fi" />
       </button>
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 sm:w-80 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xl shadow-stone-900/15 z-50 p-2 text-stone-900 dark:text-stone-100 text-xs animate-in fade-in zoom-in-95 duration-100">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 sm:w-80 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xl shadow-stone-900/15 z-50 p-2 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter">
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-1.5 px-2 border-b border-stone-100 dark:border-stone-800">
             <div className="flex items-center gap-1.5">
@@ -126,7 +126,7 @@ export function FilesPopover() {
             <button
               type="button"
               onClick={handleCreateNew}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs transition-colors cursor-pointer"
+              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
               <span>New Canvas</span>
@@ -149,9 +149,9 @@ export function FilesPopover() {
                     key={file.id}
                     onClick={() => handleOpenFile(file.id)}
                     className={cn(
-                      "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer transition-colors select-none",
+                      "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer select-none transition-all duration-150 hover:translate-x-0.5",
                       isCurrent
-                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200"
+                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs"
                         : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-800 dark:text-stone-200"
                     )}
                   >
@@ -182,7 +182,7 @@ export function FilesPopover() {
                         className={cn(
                           "p-1.5 rounded-lg transition-all shrink-0",
                           isDeleting
-                            ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400"
+                            ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
                             : "opacity-0 group-hover:opacity-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
                         )}
                       >
@@ -203,7 +203,7 @@ export function FilesPopover() {
                 importDoc()
                 setIsOpen(false)
               }}
-              className="flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
             >
               <FolderOpen size={12} />
               <span>Open disk file</span>
@@ -215,7 +215,7 @@ export function FilesPopover() {
                 exportDoc()
                 setIsOpen(false)
               }}
-              className="flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
             >
               <DownloadSimple size={12} />
               <span>Export copy</span>
@@ -225,7 +225,7 @@ export function FilesPopover() {
           {/* Wi-Fi & Auto-Save Status Footer */}
           <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <WifiHigh size={11} weight="bold" />
+              <WifiHigh size={11} weight="bold" className="animate-pulse-subtle" />
               <span>Same Wi-Fi Sync Active</span>
             </span>
             <span>Auto-saving</span>

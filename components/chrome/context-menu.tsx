@@ -194,8 +194,6 @@ export function CanvasContextMenu() {
   } else {
     entries = [
       { label: "Search everything", hint: kbd("mod+k"), icon: MagnifyingGlassIcon, run: () => st().setCommandOpen(true) },
-      { label: "Find in canvas…", hint: kbd("mod+f"), icon: MagnifyingGlassIcon, run: () => st().setSearchOpen(true) },
-      { label: "Canvas statistics…", hint: kbd("mod+/"), icon: StackIcon, run: () => st().setStatsOpen(true) },
       {
         label: "Import PDF as Canvas Pages…",
         icon: SquaresFourIcon,

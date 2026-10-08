@@ -33,7 +33,7 @@ interface WifiSessionStore {
     documentName: string,
     permission?: PeerRole,
     durationMinutes?: number
-  ) => Promise<LocalPublishSession>
+  ) => Promise<LocalPublishSession | null>
   stopPublishing: () => Promise<void>
   setPeerRole: (peerId: string, role: PeerRole) => void
   kickPeer: (peerId: string) => void
@@ -68,6 +68,11 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
     const gatewayFingerprint = gateway.gatewayId || "browser_host"
     const networkId = await computeNetworkId(gatewayFingerprint)
 
+    // Check if publication was cancelled while probing
+    if (get().state !== "starting") {
+      return null
+    }
+
     const sessionId = `pub_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`
     const pairingPin = generatePairingPin()
     const pairingToken = generatePairingToken()
@@ -101,6 +106,14 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
       get().stopPublishing()
     }, durationMinutes * 60 * 1000)
 
+    // Cleanup any prior active socket before connecting new one
+    if (activeSocket) {
+      try {
+        activeSocket.close()
+      } catch { }
+      activeSocket = null
+    }
+
     // Connect to local gateway if available
     if (gateway.online && gateway.wsEndpoint) {
       try {
@@ -110,9 +123,13 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
         ws.onmessage = (event) => {
           try {
             const msg = JSON.parse(event.data)
-            if (msg.type === "peer_joined") {
+            if (msg.type === "peer_joined" && msg.peer) {
+              const safePeer = {
+                ...msg.peer,
+                platform: msg.peer.platform || "browser",
+              }
               set((state) => ({
-                connectedPeers: [...state.connectedPeers.filter((p) => p.id !== msg.peer.id), msg.peer],
+                connectedPeers: [...state.connectedPeers.filter((p) => p.id !== safePeer.id), safePeer],
               }))
             } else if (msg.type === "peer_left") {
               set((state) => ({
@@ -126,6 +143,10 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
       } catch {
         // Fallback to in-browser
       }
+    }
+
+    if (get().state !== "starting") {
+      return null
     }
 
     set({

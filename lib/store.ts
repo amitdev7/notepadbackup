@@ -28,6 +28,11 @@ import {
   savePrefs,
   type FileMeta,
 } from "./files"
+import {
+  saveLocalDocument,
+  softDeleteLocalDocument,
+  getLocalDocument,
+} from "./storage/documents"
 
 // ---------------------------------------------------------------------------
 // Store — flat node map + z-order, selection, viewport, tool, history.
@@ -228,7 +233,7 @@ interface SquigState {
   loadDoc: (json: string) => boolean
 }
 
-const MAX_HISTORY = 100
+const MAX_HISTORY = 50
 const SAVE_DEBOUNCE_MS = 400
 const MIN_ZOOM = 0.1
 const MAX_ZOOM = 4
@@ -245,9 +250,11 @@ function snapshot(s: Pick<SquigState, "nodes" | "order" | "selection">): DocSnap
  * the entry ends up describing the finished operation — which is what redo
  * should restore.
  */
-function stampSelAfter(past: DocSnapshot[], selection: string[]): void {
+function stampSelAfter(past: DocSnapshot[], selection: string[]): DocSnapshot[] {
+  if (!past.length) return past
   const top = past[past.length - 1]
-  if (top) top.selAfter = [...selection]
+  if (!top) return past
+  return [...past.slice(0, -1), { ...top, selAfter: [...selection] }]
 }
 
 const FINITE_KEYS = ["x", "y", "w", "h"] as const
@@ -291,14 +298,18 @@ const freshSeed = () => Math.floor(Math.random() * 2 ** 31)
 /**
  * Copy nodes for duplicate / paste.
  *
- * Group ids are remapped consistently across the batch, so copying a group
- * gives you a second, independent group rather than two halves of the first.
+ * Group ids and Arrow bindings are remapped consistently across the batch,
+ * so copying a diagram gives you a second, independent connected diagram.
  */
 function cloneNodes(list: SquigNode[], dx: number, dy: number): SquigNode[] {
   const gmap = new Map<string, string>()
-  return list.map((n) => {
+  const idMap = new Map<string, string>()
+
+  const clones = list.map((n) => {
     const c = structuredClone(n)
-    c.id = nanoid(8)
+    const newId = nanoid(8)
+    idMap.set(n.id, newId)
+    c.id = newId
     c.x = n.x + dx
     c.y = n.y + dy
     c.seed = freshSeed()
@@ -311,6 +322,26 @@ function cloneNodes(list: SquigNode[], dx: number, dy: number): SquigNode[] {
     }
     return c
   })
+
+  // Remap arrow bindings if both arrow and target node are in cloned list
+  for (const c of clones) {
+    if (c.type === "arrow") {
+      if (c.startBinding?.elementId && idMap.has(c.startBinding.elementId)) {
+        c.startBinding = {
+          ...c.startBinding,
+          elementId: idMap.get(c.startBinding.elementId)!,
+        }
+      }
+      if (c.endBinding?.elementId && idMap.has(c.endBinding.elementId)) {
+        c.endBinding = {
+          ...c.endBinding,
+          elementId: idMap.get(c.endBinding.elementId)!,
+        }
+      }
+    }
+  }
+
+  return clones
 }
 
 /** Frame a set of nodes in the window, with a margin so nothing kisses an edge. */
@@ -399,6 +430,28 @@ function flushSave(get: () => SquigState, force = false) {
     look: lookOf(s),
   })
   useSquig.setState({ files })
+
+  // Synchronize durably to IndexedDB (zenithsui-db v1)
+  if (typeof window !== "undefined") {
+    saveLocalDocument({
+      id: s.docId,
+      name: s.fileName,
+      doc: {
+        fileName: s.fileName,
+        nodes: s.nodes,
+        order: s.order,
+      },
+      baseRevision: 1,
+      serverRevision: 1,
+      syncStatus: "saved-locally",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      deletedAt: null,
+    }).catch((err) => {
+      console.warn("[storage] IndexedDB save error:", err)
+    })
+  }
+
   dirty = false
 }
 
@@ -601,8 +654,8 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (opts.checkpoint !== false) get().checkpoint()
     set((s) => {
       const selection = opts.select !== false ? [id] : s.selection
-      stampSelAfter(s.past, selection)
-      return { nodes: { ...s.nodes, [id]: { ...node, id, seed } as SquigNode }, order: [...s.order, id], selection }
+      const past = stampSelAfter(s.past, selection)
+      return { nodes: { ...s.nodes, [id]: { ...node, id, seed } as SquigNode }, order: [...s.order, id], selection, past }
     })
     scheduleSave(get)
     return id
@@ -618,8 +671,8 @@ export const useSquig = create<SquigState>((set, get) => ({
         ids.push(n.id)
       }
       const selection = opts.select !== false ? ids : s.selection
-      stampSelAfter(s.past, selection)
-      return { nodes: map, order: [...s.order, ...ids], selection }
+      const past = stampSelAfter(s.past, selection)
+      return { nodes: map, order: [...s.order, ...ids], selection, past }
     })
     scheduleSave(get)
   },
@@ -629,8 +682,8 @@ export const useSquig = create<SquigState>((set, get) => ({
     set((s) => {
       const cur = s.nodes[id]
       if (!cur) return s
-      stampSelAfter(s.past, s.selection)
-      return { nodes: { ...s.nodes, [id]: { ...cur, ...patch } as SquigNode } }
+      const past = stampSelAfter(s.past, s.selection)
+      return { nodes: { ...s.nodes, [id]: { ...cur, ...patch } as SquigNode }, past }
     })
     scheduleSave(get)
   },
@@ -657,8 +710,8 @@ export const useSquig = create<SquigState>((set, get) => ({
           }
         }
       }
-      stampSelAfter(s.past, s.selection)
-      return { nodes: map }
+      const past = stampSelAfter(s.past, s.selection)
+      return { nodes: map, past }
     })
     scheduleSave(get)
   },
@@ -676,11 +729,12 @@ export const useSquig = create<SquigState>((set, get) => ({
           map[aId] = { ...map[aId], ...aPatch } as SquigNode
         }
       }
-      stampSelAfter(s.past, s.selection.filter((i) => !ids.includes(i)))
+      const past = stampSelAfter(s.past, s.selection.filter((i) => !ids.includes(i)))
       return {
         nodes: map,
         order: s.order.filter((i) => !ids.includes(i)),
         selection: s.selection.filter((i) => !ids.includes(i)),
+        past,
         // editing a node that just went away would wedge the canvas
         editingId: s.editingId && ids.includes(s.editingId) ? null : s.editingId,
       }
@@ -1048,22 +1102,22 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   cloneSelectionInPlace: () => {
     const { selection, nodes, order } = get()
-    const clones: SquigNode[] = []
-    // document order, so the copies stack the way the originals did
+    const selectedNodes: SquigNode[] = []
     for (const id of order) {
-      if (!selection.includes(id)) continue
-      const n = nodes[id]
-      if (!n) continue
-      clones.push({ ...structuredClone(n), id: nanoid(8), seed: Math.floor(Math.random() * 2 ** 31) })
+      if (selection.includes(id) && nodes[id]) {
+        selectedNodes.push(nodes[id])
+      }
     }
-    if (!clones.length) return []
+    if (!selectedNodes.length) return []
+    const clones = cloneNodes(selectedNodes, 0, 0)
     const ids = clones.map((c) => c.id)
     set((s) => {
-      stampSelAfter(s.past, ids)
+      const past = stampSelAfter(s.past, ids)
       return {
         nodes: { ...s.nodes, ...Object.fromEntries(clones.map((c) => [c.id, c])) },
         order: [...s.order, ...ids],
         selection: ids,
+        past,
       }
     })
     scheduleSave(get)
@@ -1184,6 +1238,36 @@ export const useSquig = create<SquigState>((set, get) => ({
     flushSave(get)
     const doc = readFile(id)
     if (!doc) {
+      if (typeof window !== "undefined") {
+        getLocalDocument(id)
+          .then((stored) => {
+            if (stored?.doc) {
+              const clean = sanitize(stored.doc.nodes, stored.doc.order)
+              set({
+                docId: stored.id,
+                fileName: stored.name,
+                nodes: clean.nodes,
+                order: clean.order,
+                selection: [],
+                viewport: { x: 0, y: 0, zoom: 1 },
+                renamingFile: false,
+                linkOpen: false,
+                panel: null,
+                past: [],
+                future: [],
+              })
+              if (clean.order.length) fitBox(set, clean.order.map((nid) => clean.nodes[nid]), 1)
+              dirty = false
+              flushSave(get)
+            } else {
+              set({ files: dropFile(id) })
+            }
+          })
+          .catch(() => {
+            set({ files: dropFile(id) })
+          })
+        return
+      }
       // the index knew about it but the document itself is gone
       set({ files: dropFile(id) })
       return
@@ -1216,6 +1300,11 @@ export const useSquig = create<SquigState>((set, get) => ({
   deleteFile: (id) => {
     const files = dropFile(id)
     set({ files })
+    if (typeof window !== "undefined") {
+      softDeleteLocalDocument(id).catch((err) => {
+        console.warn("[storage] IndexedDB softDelete error:", err)
+      })
+    }
     if (id !== get().docId) return
     // The file you had open just went away. Let go of it before landing
     // somewhere else, or the save on the way out would write it right back.

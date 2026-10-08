@@ -2,15 +2,39 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@font-face {
+  font-family: "Virgil";
+  src: url("/fonts/Virgil.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Cascadia";
+  src: url("/fonts/Cascadia.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Assistant";
+  src: url("/fonts/Assistant-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: "Cascadia", var(--font-geist-mono);
   --font-heading: var(--font-sans);
-  --font-sketch: var(--font-sketch), "Patrick Hand", "Comic Sans MS", cursive;
+  --font-sketch: "Virgil", var(--font-sketch), "Patrick Hand", "Comic Sans MS", cursive;
   --font-serif: var(--font-serif), "Source Serif 4", ui-serif, Georgia, serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -63,10 +87,14 @@
   /* Radius. Crisp rather than pill — the controls shouldn't be rounder than
      the boxes people draw with them. Each step is the radius of the thing that
      CONTAINS the step below it, so a segment nests inside a track cleanly. */
-  --radius-chrome-xs: 3px; /* a segment inside a track */
-  --radius-chrome-sm: 5px; /* fields, toggles, buttons, menu rows */
-  --radius-chrome-md: 7px; /* tracks, select popups */
-  --radius-chrome-lg: 10px; /* floating panels and menus */
+  --radius-chrome-xs: 3px;
+  /* a segment inside a track */
+  --radius-chrome-sm: 5px;
+  /* fields, toggles, buttons, menu rows */
+  --radius-chrome-md: 7px;
+  /* tracks, select popups */
+  --radius-chrome-lg: 10px;
+  /* floating panels and menus */
 
   /* Control height. `sm` is only for controls nested inside another control. */
   --spacing-ctl-sm: 26px;
@@ -82,10 +110,14 @@
      tall x-height — 11px here sits where 12px would in most faces. Judge the
      panel by eye rather than by the number, and if you retune one of these,
      retune it against the others rather than nudging a component. */
-  --text-micro: 10px; /* kbd chips, counts, the axis letter in a field */
-  --text-label: 11px; /* panel labels, values, panel copy */
-  --text-row: 13px; /* menu rows, palette rows, a panel's own title */
-  --text-title: 15px; /* dialog headings and the ⌘K hero input */
+  --text-micro: 10px;
+  /* kbd chips, counts, the axis letter in a field */
+  --text-label: 11px;
+  /* panel labels, values, panel copy */
+  --text-row: 13px;
+  /* menu rows, palette rows, a panel's own title */
+  --text-title: 15px;
+  /* dialog headings and the ⌘K hero input */
 
   /* Layout rhythm. The panel gutter, the gap between rows, and the seam every
      label stops at so controls line up down one edge. */
@@ -192,9 +224,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
@@ -205,19 +239,282 @@
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(140, 140, 150, 0.25);
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(140, 140, 150, 0.45);
 }
+
 .dark ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.16);
 }
+
 .dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+
+/* ===========================================================================
+   Zenithsui Animation & Motion Suite
+   Tactile, Spring-Physics, GPU-Accelerated Micro-interactions
+   =========================================================================== */
+
+@keyframes dock-slide-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.96);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes topbar-slide-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popover-spring-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+  }
+
+  70% {
+    transform: scale(1.01) translateY(-1px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modal-spring-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+
+  65% {
+    transform: scale(1.008) translateY(-2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes drawer-slide-up {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 36px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes toast-float-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.95);
+  }
+
+  70% {
+    transform: translate(-50%, -2px) scale(1.01);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@keyframes subtle-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 0.82;
+  }
+}
+
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  70% {
+    transform: scale(1.15);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes card-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes shimmer-sweep {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ── Animation Utility Classes ── */
+.animate-dock-enter {
+  animation: dock-slide-up 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-topbar-enter {
+  animation: topbar-slide-down 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-popover-enter {
+  animation: popover-spring-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  transform-origin: top right;
+}
+
+.animate-modal-enter {
+  animation: modal-spring-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-drawer-enter {
+  animation: drawer-slide-up 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-toast-enter {
+  animation: toast-float-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-badge-pop {
+  animation: badge-pop 220ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-card-fade {
+  animation: card-fade-up 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-pulse-subtle {
+  animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* ── Tactile Interactive Utilities ── */
+.tactile-press {
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tactile-press:active {
+  transform: scale(0.92);
+}
+
+.tactile-btn {
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1), background-color 160ms ease, box-shadow 160ms ease, color 160ms ease;
+}
+
+.tactile-btn:hover {
+  transform: translateY(-1px);
+}
+
+.tactile-btn:active {
+  transform: scale(0.94) translateY(0);
+}
+
+.tactile-tool {
+  transition: transform 140ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 140ms ease, color 140ms ease, box-shadow 140ms ease;
+}
+
+.tactile-tool:hover {
+  transform: scale(1.08);
+}
+
+.tactile-tool:active {
+  transform: scale(0.88);
+}
+
+.tactile-card {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1), border-color 220ms ease;
+}
+
+.tactile-card:hover {
+  transform: translateY(-3px);
+}
+
+.tactile-card:active {
+  transform: scale(0.98) translateY(-1px);
+}
+
+.tactile-pill {
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1), background-color 150ms ease, border-color 150ms ease;
+}
+
+.tactile-pill:hover {
+  transform: scale(1.04);
+}
+
+.tactile-pill:active {
+  transform: scale(0.94);
+}
+
+/* ── Accessibility & Reduced Motion Support ── */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }

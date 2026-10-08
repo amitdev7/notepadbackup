@@ -20,6 +20,7 @@ import {
   type ThemeMode,
   type UIDensity,
   type StartPage,
+  type DockControlsVisibility,
 } from "@/lib/shell-store"
 import { useSquig } from "@/lib/store"
 import { useAuthStore } from "@/lib/auth-store"
@@ -48,6 +49,29 @@ import {
   Lock,
   DeviceMobile,
   Laptop,
+  Cursor,
+  Hand,
+  Rectangle,
+  PencilLine,
+  Eraser,
+  ArrowRight,
+  TextT,
+  Note,
+  Crop,
+  Flashlight,
+  MagnifyingGlass,
+  ChartBar,
+  Gear,
+  Minus,
+  Plus,
+  FilePlus,
+  ClockCounterClockwise,
+  GitFork,
+  ArrowUUpLeft,
+  ArrowUUpRight,
+  ArrowsIn,
+  Trash,
+  GithubLogo,
 } from "@phosphor-icons/react"
 
 interface SectionItem {
@@ -60,7 +84,7 @@ interface SectionItem {
 const SECTIONS: SectionItem[] = [
   { id: "general", label: "General", description: "Language, timezone, start page and defaults", icon: Sliders },
   { id: "appearance", label: "Appearance", description: "Theme, UI accent, density and animations", icon: Palette },
-  { id: "canvas", label: "Canvas", description: "Presentation controls, toolbar and diagnostics", icon: PaintBrush },
+  { id: "canvas", label: "Canvas & Toolbar", description: "Presentation controls, toolbar and diagnostics", icon: PaintBrush },
   { id: "page", label: "Page", description: "Default paper, ink and grid settings for new pages", icon: File },
   { id: "keyboard", label: "Keyboard", description: "Shortcuts and navigation hotkeys", icon: Keyboard },
   { id: "storage", label: "Files & Storage", description: "Local database usage, export formats and cache", icon: Folder },
@@ -118,7 +142,7 @@ export function SettingsDialog() {
           "relative flex flex-col md:flex-row w-[820px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)]",
           "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
           "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-2xl shadow-stone-900/20 dark:shadow-black/70",
-          "overflow-hidden font-sans animate-in fade-in zoom-in-95 duration-150 ease-out select-none"
+          "overflow-hidden font-sans animate-modal-enter select-none"
         )}
       >
         {/* ── Left Sidebar: Category List ── */}
@@ -139,9 +163,9 @@ export function SettingsDialog() {
                   type="button"
                   onClick={() => setActiveSection(section.id)}
                   className={cn(
-                    "flex shrink-0 md:w-full items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all text-left",
+                    "tactile-press flex shrink-0 md:w-full items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                     isActive
-                      ? "bg-blue-600 text-white shadow-2xs font-semibold"
+                      ? "bg-blue-600 text-white shadow-2xs font-semibold scale-102"
                       : "text-stone-600 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-white"
                   )}
                 >
@@ -168,7 +192,7 @@ export function SettingsDialog() {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+              className="tactile-btn rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
               title="Close (Esc)"
             >
               <X size={16} />
@@ -176,7 +200,7 @@ export function SettingsDialog() {
           </header>
 
           {/* Section Body */}
-          <div className="flex-1 overflow-y-auto px-6 py-5 text-xs text-stone-800 dark:text-stone-200">
+          <div key={activeSection} className="flex-1 overflow-y-auto px-6 py-5 text-xs text-stone-800 dark:text-stone-200 animate-card-fade">
             <SectionBody section={activeSection} />
           </div>
         </section>
@@ -193,6 +217,10 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const prefs = useShellStore((s) => s.preferences)
   const updatePrefs = useShellStore((s) => s.updatePreferences)
   const resetPrefs = useShellStore((s) => s.resetPreferences)
+  const dockControls = useShellStore((s) => s.preferences.dockControls)
+  const updateDockControl = useShellStore((s) => s.updateDockControl)
+  const setAllDockControls = useShellStore((s) => s.setAllDockControls)
+  const resetDockControls = useShellStore((s) => s.resetDockControls)
 
   const showPage = useSquig((s) => s.showPage)
   const setShowPage = useSquig((s) => s.setShowPage)
@@ -358,49 +386,236 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
     case "canvas":
       return (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+        <div className="space-y-6">
+          {/* Header controls for dock */}
+          <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700/60 flex items-center justify-between">
             <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Floating Bottom Dock</span>
-              <span className="text-[11px] text-stone-500">Display global navigation and tool dock</span>
+              <h4 className="font-semibold text-stone-900 dark:text-stone-100 text-xs">Toolbar & Dock Controls</h4>
+              <p className="text-[11px] text-stone-500">
+                Customize every tool, button, and menu item visible in the bottom dock.
+              </p>
             </div>
-            <Switch
-              checked={prefs.showDock}
-              onCheckedChange={(checked) => updatePrefs({ showDock: checked })}
-            />
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setAllDockControls(true)}
+                className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-200/50 dark:hover:bg-stone-800 text-[11px] font-medium text-stone-700 dark:text-stone-300 transition-colors"
+              >
+                Enable All
+              </button>
+              <button
+                type="button"
+                onClick={resetDockControls}
+                className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-200/50 dark:hover:bg-stone-800 text-[11px] font-medium text-stone-700 dark:text-stone-300 transition-colors"
+              >
+                Reset Defaults
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Context Toolbar on Selection</span>
-              <span className="text-[11px] text-stone-500">Show floating editing actions near selected items</span>
+          {/* Group 1: General Canvas & Dock Options */}
+          <div className="space-y-3">
+            <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              General Canvas Options
+            </h5>
+            <div className="space-y-2.5 divide-y divide-stone-200/60 dark:divide-stone-800/60">
+              <div className="flex items-center justify-between pt-1">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Floating Bottom Dock</span>
+                  <span className="text-[11px] text-stone-500">Display global navigation and tool dock on screen</span>
+                </div>
+                <Switch
+                  checked={prefs.showDock}
+                  onCheckedChange={(checked) => updatePrefs({ showDock: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Context Toolbar on Selection</span>
+                  <span className="text-[11px] text-stone-500">Show floating editing actions near selected items</span>
+                </div>
+                <Switch
+                  checked={contextRow}
+                  onCheckedChange={setContextRow}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Page Boundary Sheet</span>
+                  <span className="text-[11px] text-stone-500">Visual canvas page guide overlay</span>
+                </div>
+                <Switch
+                  checked={showPage}
+                  onCheckedChange={setShowPage}
+                />
+              </div>
             </div>
-            <Switch
-              checked={contextRow}
-              onCheckedChange={setContextRow}
-            />
           </div>
 
-          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Zoom Controls in Dock</span>
-              <span className="text-[11px] text-stone-500">Show zoom percentages and stepper buttons</span>
+          {/* Group 2: Dock Creation & Drawing Tools */}
+          <div className="space-y-3">
+            <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              Drawing & Creation Tools (Image 2)
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { key: "toolSelect", label: "Select Tool", icon: Cursor, shortcut: "V" },
+                { key: "toolHand", label: "Hand (Pan) Tool", icon: Hand, shortcut: "H" },
+                { key: "toolShape", label: "Shape Tool", icon: Rectangle, shortcut: "R" },
+                { key: "toolDraw", label: "Pencil / Draw Tool", icon: PencilLine, shortcut: "P" },
+                { key: "toolEraser", label: "Eraser Tool", icon: Eraser, shortcut: "E" },
+                { key: "toolArrow", label: "Arrow Tool", icon: ArrowRight, shortcut: "A" },
+                { key: "toolText", label: "Text Tool", icon: TextT, shortcut: "T" },
+                { key: "toolSticky", label: "Sticky Notes", icon: Note, shortcut: "S", badge: "Hidden by default" },
+                { key: "toolFrame", label: "Frame", icon: Crop, shortcut: "F", badge: "Hidden by default" },
+                { key: "toolLaser", label: "Laser Pointer", icon: Flashlight, shortcut: "K" },
+                { key: "toolLibrary", label: "Component Library", icon: Sparkle, shortcut: "L" },
+              ].map((item) => {
+                const Icon = item.icon
+                const isChecked = dockControls[item.key as keyof DockControlsVisibility]
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between p-2 rounded-lg border border-stone-200/70 dark:border-stone-800/70 bg-white/40 dark:bg-stone-900/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="size-6 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300">
+                        <Icon size={14} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-medium text-stone-900 dark:text-stone-100">{item.label}</span>
+                          {item.shortcut && (
+                            <kbd className="px-1 py-0.2 text-[9px] font-mono rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+                              {item.shortcut}
+                            </kbd>
+                          )}
+                        </div>
+                        {item.badge && !isChecked && (
+                          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium block">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Switch
+                      checked={isChecked}
+                      onCheckedChange={(checked) =>
+                        updateDockControl(item.key as keyof DockControlsVisibility, checked)
+                      }
+                    />
+                  </div>
+                )
+              })}
             </div>
-            <Switch
-              checked={prefs.showZoomControls}
-              onCheckedChange={(checked) => updatePrefs({ showZoomControls: checked })}
-            />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Page Boundary Sheet</span>
-              <span className="text-[11px] text-stone-500">Visual canvas frame overlay</span>
+          {/* Group 3: Quick Action Buttons & Modules */}
+          <div className="space-y-3">
+            <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              Quick Action Buttons & Modules (Image 3)
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { key: "actionSearch", label: "Find in Canvas", icon: MagnifyingGlass, shortcut: "⌘F", badge: "Hidden by default" },
+                { key: "actionStats", label: "Canvas & Stats", icon: ChartBar, shortcut: "⌘/", badge: "Hidden by default" },
+                { key: "actionPage", label: "Page & Canvas Popover", icon: File },
+                { key: "actionSettings", label: "Settings Gear Button", icon: Gear },
+                { key: "brandMenu", label: "Zenithsui Brand Menu", icon: Sliders },
+                { key: "zoomControls", label: "Zoom In/Out & Stepper", icon: Minus },
+              ].map((item) => {
+                const Icon = item.icon
+                const isChecked = dockControls[item.key as keyof DockControlsVisibility]
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between p-2 rounded-lg border border-stone-200/70 dark:border-stone-800/70 bg-white/40 dark:bg-stone-900/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="size-6 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300">
+                        <Icon size={14} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-medium text-stone-900 dark:text-stone-100">{item.label}</span>
+                          {item.shortcut && (
+                            <kbd className="px-1 py-0.2 text-[9px] font-mono rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+                              {item.shortcut}
+                            </kbd>
+                          )}
+                        </div>
+                        {item.badge && !isChecked && (
+                          <span className="text-[10px] text-amber-600 dark:text-amber-400 font-medium block">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <Switch
+                      checked={isChecked}
+                      onCheckedChange={(checked) =>
+                        updateDockControl(item.key as keyof DockControlsVisibility, checked)
+                      }
+                    />
+                  </div>
+                )
+              })}
             </div>
-            <Switch
-              checked={showPage}
-              onCheckedChange={setShowPage}
-            />
+          </div>
+
+          {/* Group 4: Brand Menu Dropdown Items */}
+          <div className="space-y-3">
+            <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              Brand Menu Dropdown Items (Image 1)
+            </h5>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {[
+                { key: "menuNewCanvas", label: "New Canvas", icon: FilePlus, shortcut: "⌥N" },
+                { key: "menuOpenRecent", label: "Open Recent", icon: ClockCounterClockwise },
+                { key: "menuShare", label: "Share Canvas", icon: ShareNetwork },
+                { key: "menuPublishWifi", label: "Publish on Wi-Fi", icon: WifiHigh },
+                { key: "menuVersionHistory", label: "Version History", icon: GitFork },
+                { key: "menuUndo", label: "Undo", icon: ArrowUUpLeft, shortcut: "⌘Z" },
+                { key: "menuRedo", label: "Redo", icon: ArrowUUpRight, shortcut: "⌘⇧Z" },
+                { key: "menuSettings", label: "Settings Menu Item", icon: Gear, shortcut: "⌘," },
+                { key: "menuResetView", label: "Reset Canvas View", icon: ArrowsIn, shortcut: "⇧1" },
+                { key: "menuClearCanvas", label: "Clear Canvas", icon: Trash },
+                { key: "menuGithub", label: "GitHub Repository Link", icon: GithubLogo },
+              ].map((item) => {
+                const Icon = item.icon
+                const isChecked = dockControls[item.key as keyof DockControlsVisibility]
+                return (
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between p-2 rounded-lg border border-stone-200/70 dark:border-stone-800/70 bg-white/40 dark:bg-stone-900/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="size-6 rounded-md bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-300">
+                        <Icon size={14} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-medium text-stone-900 dark:text-stone-100">{item.label}</span>
+                          {item.shortcut && (
+                            <kbd className="px-1 py-0.2 text-[9px] font-mono rounded bg-stone-100 dark:bg-stone-800 text-stone-500">
+                              {item.shortcut}
+                            </kbd>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={isChecked}
+                      onCheckedChange={(checked) =>
+                        updateDockControl(item.key as keyof DockControlsVisibility, checked)
+                      }
+                    />
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       )

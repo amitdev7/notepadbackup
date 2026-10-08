@@ -143,12 +143,9 @@ function Palette() {
       { id: "eraser", label: "Eraser tool", hint: kbd("e"), section: "Tools", keywords: "delete remove erase clear", icon: TrashIcon, run: () => st().setTool("eraser") },
       { id: "laser", label: "Laser pointer", hint: kbd("k"), section: "Tools", keywords: "laser pointer present trail highlight", icon: SparkleIcon, run: () => st().setTool("laser") },
       { id: "text", label: "Text", hint: kbd("t"), section: "Tools", keywords: "type label", icon: TextTIcon, run: () => st().setTool("text") },
-      { id: "sticky", label: "Sticky Note", hint: kbd("s"), section: "Tools", keywords: "sticky postit memo note", icon: TextTIcon, run: () => st().setTool("sticky") },
       { id: "frame", label: "Frame", hint: kbd("f"), section: "Tools", keywords: "frame container artboard section", icon: SquareIcon, run: () => st().setTool("frame") },
       { id: "line", label: "Line", hint: kbd("l"), section: "Tools", keywords: "rule divider stroke", icon: LineSegmentIcon, run: () => { st().setArrowHead(false); st().setTool("arrow") } },
       { id: "arrow", label: "Arrow", hint: kbd("a"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
-      { id: "find-canvas", label: "Find in canvas…", hint: kbd("mod+f"), section: "Tools", keywords: "search query jump locate find text sticky", icon: MagnifyingGlassIcon, run: () => st().setSearchOpen(true) },
-      { id: "canvas-stats", label: "Canvas Statistics…", hint: kbd("mod+/"), section: "Tools", keywords: "stats elements count dimensions hud", icon: StackIcon, run: () => st().setStatsOpen(true) },
       { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
 
       { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
@@ -292,9 +289,9 @@ function Palette() {
     <>
       <div data-zenithsui-chrome
         className="fixed inset-0 z-50 flex flex-col justify-end" onPointerDown={close}>
-        <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px]" />
+        <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px] transition-opacity duration-200" />
         <div
-          className="animate-in slide-in-from-bottom-4 fade-in relative mx-auto flex max-h-[62vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-chrome-lg border border-b-0 border-border/80 bg-background shadow-popup duration-150"
+          className="animate-drawer-enter relative mx-auto flex max-h-[62vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-chrome-lg border border-b-0 border-border/80 bg-background shadow-popup"
           onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="relative shrink-0 border-b">
@@ -391,7 +388,7 @@ function PaletteRow({
       data-active={active}
       onMouseMove={onHover}
       onClick={onPick}
-      className={`flex h-ctl-lg w-full items-center gap-3 rounded-chrome-sm px-2.5 text-left text-row ${active ? "bg-accent text-accent-foreground" : "text-foreground"
+      className={`flex h-ctl-lg w-full items-center gap-3 rounded-chrome-sm px-2.5 text-left text-row transition-all duration-100 cursor-pointer ${active ? "bg-accent text-accent-foreground translate-x-0.5" : "text-foreground hover:bg-muted/50"
         }`}
     >
       {row.kind === "action" ? (

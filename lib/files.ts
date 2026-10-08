@@ -116,17 +116,12 @@ export function saveFile(doc: StoredDoc): FileMeta[] {
   for (const old of index.slice(MAX_FILES)) drop(fileKey(old.id))
   index = index.slice(0, MAX_FILES)
 
-  let stored = writeJSON(fileKey(doc.id), doc)
-  while (!stored) {
-    const oldest = [...index].reverse().find((f) => f.id !== doc.id)
-    if (!oldest) break
-    drop(fileKey(oldest.id))
-    index = index.filter((f) => f.id !== oldest.id)
-    stored = writeJSON(fileKey(doc.id), doc)
+  const stored = writeJSON(fileKey(doc.id), doc)
+  if (!stored) {
+    console.warn(
+      `[storage] LocalStorage quota reached for document ${doc.id}. Document is preserved in index; full payload stored in IndexedDB.`
+    )
   }
-
-  // a document we couldn't store has no business being listed
-  if (!stored) index = index.filter((f) => f.id !== doc.id)
   writeIndex(index)
   return index
 }

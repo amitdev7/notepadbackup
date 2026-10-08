@@ -18,9 +18,9 @@ export function ShortcutsSheet() {
       className="fixed inset-0 z-50 flex items-center justify-center p-6"
       onPointerDown={() => st().setShortcutsOpen(false)}
     >
-      <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px] transition-opacity duration-200" />
       <div
-        className="animate-in fade-in zoom-in-95 relative flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-chrome-lg border border-border/80 bg-background shadow-popup duration-150"
+        className="animate-modal-enter relative flex max-h-full w-full max-w-3xl flex-col overflow-hidden rounded-chrome-lg border border-border/80 bg-background shadow-popup"
         onPointerDown={(e) => e.stopPropagation()}
       >
         <div className="flex shrink-0 items-baseline gap-3 border-b border-border/70 px-5 py-4">
@@ -28,7 +28,7 @@ export function ShortcutsSheet() {
           <p className="text-label text-muted-foreground">mostly Figma&apos;s, so your hands already know it</p>
           <button
             type="button"
-            className="ml-auto h-ctl rounded-chrome-sm px-2.5 text-label text-muted-foreground hover:bg-accent"
+            className="tactile-btn ml-auto h-ctl rounded-chrome-sm px-2.5 text-label text-muted-foreground hover:bg-accent cursor-pointer"
             onClick={() => st().setShortcutsOpen(false)}
           >
             close

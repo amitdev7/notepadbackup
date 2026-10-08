@@ -268,10 +268,29 @@ export interface Box {
 
 export function unionBox(nodes: SquigNode[]): Box | null {
   if (!nodes.length) return null
-  return {
-    minX: Math.min(...nodes.map((n) => n.x)),
-    minY: Math.min(...nodes.map((n) => n.y)),
-    maxX: Math.max(...nodes.map((n) => n.x + n.w)),
-    maxY: Math.max(...nodes.map((n) => n.y + n.h)),
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+
+  for (const n of nodes) {
+    if (!Number.isFinite(n.x) || !Number.isFinite(n.y) || !Number.isFinite(n.w) || !Number.isFinite(n.h)) {
+      continue
+    }
+    const left = Math.min(n.x, n.x + n.w)
+    const right = Math.max(n.x, n.x + n.w)
+    const top = Math.min(n.y, n.y + n.h)
+    const bottom = Math.max(n.y, n.y + n.h)
+
+    if (left < minX) minX = left
+    if (top < minY) minY = top
+    if (right > maxX) maxX = right
+    if (bottom > maxY) maxY = bottom
   }
+
+  if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+    return null
+  }
+
+  return { minX, minY, maxX, maxY }
 }

@@ -31,7 +31,17 @@ export function ViewerClient({
 
   useEffect(() => {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
-  }, [])
+    if (doc?.document_json) {
+      const jsonStr = typeof doc.document_json === "string"
+        ? doc.document_json
+        : JSON.stringify(doc.document_json)
+      useSquig.getState().loadDoc(jsonStr)
+      if (doc.name) {
+        useSquig.getState().setFileName(doc.name)
+      }
+      useSquig.getState().setEffectiveRole(permission === "edit" ? "editor" : "viewer")
+    }
+  }, [doc, permission])
 
   const handlePasswordSuccess = async () => {
     // Re-fetch resolved document now that session cookie is set

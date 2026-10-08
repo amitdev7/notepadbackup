@@ -97,7 +97,7 @@ export function PagePopover() {
         "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
         "bg-white/95 dark:bg-[#1A1A1E]/95 backdrop-blur-xl shadow-xl shadow-stone-950/10 dark:shadow-black/60",
         "text-stone-800 dark:text-stone-100 font-sans",
-        "animate-in fade-in zoom-in-95 duration-150 ease-out select-none"
+        "animate-popover-enter select-none"
       )}
     >
       {/* ── Title Header ── */}
@@ -132,9 +132,9 @@ export function PagePopover() {
                     title={label}
                     aria-label={`Paper shade: ${label}`}
                     className={cn(
-                      "w-12 h-6.5 rounded-md transition-all border",
+                      "tactile-press w-12 h-6.5 rounded-md transition-all border cursor-pointer hover:scale-105",
                       isSelected
-                        ? "border-stone-800 dark:border-stone-200 shadow-2xs scale-102"
+                        ? "border-stone-800 dark:border-stone-200 shadow-2xs scale-105"
                         : "border-stone-300 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500"
                     )}
                     style={{ backgroundColor: bg }}
@@ -235,10 +235,10 @@ export function PagePopover() {
                     onClick={() => setFont(id as FontMode)}
                     aria-label={`Canvas font: ${id}`}
                     className={cn(
-                      "w-12 h-7 rounded-md text-xs transition-all flex items-center justify-center font-medium",
+                      "tactile-btn w-12 h-7 rounded-md text-xs flex items-center justify-center font-medium cursor-pointer",
                       fontClass,
                       isSelected
-                        ? "bg-stone-200/90 dark:bg-stone-700/90 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-white shadow-2xs font-semibold"
+                        ? "bg-stone-200/90 dark:bg-stone-700/90 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-white shadow-2xs font-semibold scale-102"
                         : "text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800"
                     )}
                   >
@@ -292,7 +292,7 @@ export function PagePopover() {
               zoomToFit()
               setIsOpen(false)
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 transition-colors"
+            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 cursor-pointer"
           >
             <CornersOut size={13} aria-hidden="true" />
             <span>Fit</span>
@@ -303,7 +303,7 @@ export function PagePopover() {
               selectAll()
               setIsOpen(false)
             }}
-            className="flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 transition-colors"
+            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 cursor-pointer"
           >
             <SelectionAll size={13} aria-hidden="true" />
             <span>Select all</span>

@@ -85,7 +85,18 @@ export function wordsOf(nodes: readonly SquigNode[]): string {
 
 // -- reading a stranger's nodes ---------------------------------------------
 
-const NODE_TYPES = new Set(["component", "shape", "draw", "text", "arrow", "image", "document"])
+const NODE_TYPES = new Set([
+  "component",
+  "shape",
+  "draw",
+  "text",
+  "arrow",
+  "image",
+  "document",
+  "sticky",
+  "frame",
+  "embed",
+])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
 
@@ -116,7 +127,7 @@ export function validNode(v: unknown): SquigNode | null {
       if (!str(n.kind) || !n.props || typeof n.props !== "object") return null
       break
     case "shape":
-      if (n.shape !== "rect" && n.shape !== "ellipse") return null
+      if (n.shape !== "rect" && n.shape !== "ellipse" && n.shape !== "diamond") return null
       break
     case "draw":
       if (!validPoints(n.points)) return null
@@ -126,6 +137,15 @@ export function validNode(v: unknown): SquigNode | null {
       break
     case "text":
       if (!str(n.text) || !num(n.fontSize)) return null
+      break
+    case "sticky":
+      if (!str(n.text)) return null
+      break
+    case "frame":
+      if (!str(n.name)) return null
+      break
+    case "embed":
+      if (!str(n.url)) return null
       break
     case "image":
       // the only scheme this app ever writes, and the only one it will read:

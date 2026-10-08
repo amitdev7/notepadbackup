@@ -177,10 +177,20 @@ export function unionBounds(nodes: readonly SquigNode[]): Bounds | null {
   let maxX = -Infinity
   let maxY = -Infinity
   for (const n of nodes) {
-    if (n.x < minX) minX = n.x
-    if (n.y < minY) minY = n.y
-    if (n.x + n.w > maxX) maxX = n.x + n.w
-    if (n.y + n.h > maxY) maxY = n.y + n.h
+    if (!Number.isFinite(n.x) || !Number.isFinite(n.y) || !Number.isFinite(n.w) || !Number.isFinite(n.h)) {
+      continue
+    }
+    const left = Math.min(n.x, n.x + n.w)
+    const right = Math.max(n.x, n.x + n.w)
+    const top = Math.min(n.y, n.y + n.h)
+    const bottom = Math.max(n.y, n.y + n.h)
+    if (left < minX) minX = left
+    if (top < minY) minY = top
+    if (right > maxX) maxX = right
+    if (bottom > maxY) maxY = bottom
+  }
+  if (!Number.isFinite(minX) || !Number.isFinite(minY) || !Number.isFinite(maxX) || !Number.isFinite(maxY)) {
+    return null
   }
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY }
 }

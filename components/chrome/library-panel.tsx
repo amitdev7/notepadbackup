@@ -88,7 +88,7 @@ function Preview({
         dragged.current = true
         try {
           el.setPointerCapture(pointerId)
-        } catch {}
+        } catch { }
         onDragOut()
       },
       { signal: ac.signal }
@@ -107,7 +107,7 @@ function Preview({
       }}
       title={`${def.name} — Click to place or drag to canvas`}
       className={cn(
-        "group flex flex-col items-center gap-2 rounded-xl border border-stone-200/90 dark:border-stone-800 p-2.5 transition-all outline-none cursor-pointer text-left w-full",
+        "group tactile-card flex flex-col items-center gap-2 rounded-xl border border-stone-200/90 dark:border-stone-800 p-2.5 outline-none cursor-pointer text-left w-full",
         "bg-white dark:bg-stone-900/80 hover:bg-stone-50 dark:hover:bg-stone-800/90 hover:border-blue-400/80 dark:hover:border-blue-500/80 hover:shadow-md",
         active && "border-blue-600 dark:border-blue-400 bg-blue-50/60 dark:bg-blue-950/40 ring-1 ring-blue-500 shadow-xs"
       )}
@@ -219,7 +219,7 @@ export function LibraryPanel() {
           : "w-auto sm:w-[540px] md:w-[640px]",
         "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
         "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-2xl shadow-2xl shadow-stone-950/20 dark:shadow-black/70",
-        "overflow-hidden font-sans transition-all duration-200 ease-out select-none"
+        "overflow-hidden font-sans animate-modal-enter select-none"
       )}
     >
       {/* Header */}
@@ -248,7 +248,7 @@ export function LibraryPanel() {
           <button
             type="button"
             onClick={() => setIsWide(!isWide)}
-            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="tactile-btn hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
             title={isWide ? "Compact layout" : "Spacious layout"}
             aria-label="Toggle library width"
           >
@@ -262,7 +262,7 @@ export function LibraryPanel() {
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
+            className="tactile-btn rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
             title="Close (Esc)"
             aria-label="Close library"
           >
@@ -315,9 +315,9 @@ export function LibraryPanel() {
                 type="button"
                 onClick={() => setActiveFilter(id)}
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg capitalize transition-all",
+                  "tactile-pill flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg capitalize cursor-pointer",
                   activeFilter === id
-                    ? "bg-white dark:bg-stone-700 text-stone-950 dark:text-white shadow-2xs font-semibold"
+                    ? "bg-white dark:bg-stone-700 text-stone-950 dark:text-white shadow-2xs font-semibold scale-102"
                     : "text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
                 )}
               >
@@ -345,9 +345,9 @@ export function LibraryPanel() {
               type="button"
               onClick={() => setSelectedCategory(cat)}
               className={cn(
-                "shrink-0 px-3 py-1 rounded-full text-[11px] font-medium border transition-all cursor-pointer",
+                "tactile-pill shrink-0 px-3 py-1 rounded-full text-[11px] font-medium border cursor-pointer",
                 selectedCategory === cat
-                  ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-transparent shadow-xs"
+                  ? "bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-transparent shadow-xs scale-104"
                   : "bg-white dark:bg-stone-800/80 border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:border-stone-300 dark:hover:border-stone-600 hover:text-stone-900 dark:hover:text-stone-200"
               )}
             >
@@ -416,8 +416,8 @@ export function LibraryPanel() {
             {placingDrag
               ? "Drag onto canvas and release to drop"
               : placing
-              ? "Click anywhere on canvas to place"
-              : `${total} items ready to place`}
+                ? "Click anywhere on canvas to place"
+                : `${total} items ready to place`}
           </span>
         </div>
         <div className="flex items-center gap-3 text-[11px] text-stone-400">

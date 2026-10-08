@@ -155,11 +155,10 @@ export default function DashboardPage() {
           <nav className="mt-6 space-y-1">
             <button
               onClick={() => setActiveTab("recent")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "recent"
+              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "recent"
                   ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
                   : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-              }`}
+                }`}
             >
               <Clock size={16} />
               Recent
@@ -167,11 +166,10 @@ export default function DashboardPage() {
 
             <button
               onClick={() => setActiveTab("projects")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "projects"
+              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "projects"
                   ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
                   : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-              }`}
+                }`}
             >
               <Folder size={16} />
               Projects
@@ -179,11 +177,10 @@ export default function DashboardPage() {
 
             <button
               onClick={() => setActiveTab("shared")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "shared"
+              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "shared"
                   ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
                   : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-              }`}
+                }`}
             >
               <ShareNetwork size={16} />
               Shared with me
@@ -191,11 +188,10 @@ export default function DashboardPage() {
 
             <button
               onClick={() => setActiveTab("trash")}
-              className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                activeTab === "trash"
+              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "trash"
                   ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
                   : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-              }`}
+                }`}
             >
               <Trash size={16} />
               Trash
@@ -223,10 +219,10 @@ export default function DashboardPage() {
             {activeTab === "recent"
               ? "Recent Drawings"
               : activeTab === "projects"
-              ? "Projects"
-              : activeTab === "shared"
-              ? "Shared with Me"
-              : "Trash"}
+                ? "Projects"
+                : activeTab === "shared"
+                  ? "Shared with Me"
+                  : "Trash"}
           </h1>
         </header>
 
@@ -245,15 +241,15 @@ export default function DashboardPage() {
                 {activeTab === "trash"
                   ? "Trash is empty"
                   : activeTab === "shared"
-                  ? "No shared documents"
-                  : "No drawings yet"}
+                    ? "No shared documents"
+                    : "No drawings yet"}
               </h3>
               <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 mb-4">
                 {activeTab === "trash"
                   ? "Documents you delete will show up here."
                   : activeTab === "shared"
-                  ? "Documents shared with your account will appear here."
-                  : "Start a new wireframe on the napkin canvas."}
+                    ? "Documents shared with your account will appear here."
+                    : "Start a new wireframe on the napkin canvas."}
               </p>
               {activeTab !== "trash" && (
                 <Button onClick={handleCreateNew} size="sm" className="text-xs">
@@ -272,11 +268,11 @@ export default function DashboardPage() {
                   <div
                     key={doc.id}
                     onClick={() => handleOpenDoc(doc)}
-                    className="group relative rounded-xl border border-stone-200 dark:border-stone-800/90 bg-white dark:bg-[#18191E] p-4 shadow-2xs hover:shadow-md hover:border-stone-300 dark:hover:border-stone-700 transition-all cursor-pointer flex flex-col justify-between h-44"
+                    className="group tactile-card animate-card-fade relative rounded-xl border border-stone-200 dark:border-stone-800/90 bg-white dark:bg-[#18191E] p-4 shadow-2xs hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer flex flex-col justify-between h-44"
                   >
                     <div>
                       {/* Document Preview Box / Thumbnail */}
-                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] border border-stone-200/70 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-700 transition-colors mb-3">
+                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] dark:bg-stone-900 border border-stone-200/70 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-800 dark:group-hover:text-stone-200 group-hover:scale-[1.02] transition-all duration-200 mb-3">
                         <span className="font-sketch text-sm">
                           {activeTab === "shared" && 'role' in doc ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
                         </span>
