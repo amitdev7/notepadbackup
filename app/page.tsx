@@ -25,6 +25,7 @@ import { PdfToCanvasDialog } from "@/components/canvas/pdf-to-canvas-dialog"
 import { CanvasSearch } from "@/components/canvas/canvas-search"
 import { CanvasStats } from "@/components/canvas/canvas-stats"
 import { LaserOverlay } from "@/components/canvas/laser-overlay"
+import { ToolPropertiesPanel } from "@/components/canvas/tool-properties-panel"
 import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
 import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
@@ -98,6 +99,7 @@ export default function Home() {
       <CanvasSearch />
       <CanvasStats />
       <LaserOverlay />
+      {!uiHidden && <ToolPropertiesPanel />}
     </main>
   )
 }

@@ -2,7 +2,7 @@
 
 import { create } from "zustand"
 import { nanoid } from "nanoid"
-import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind } from "./types"
+import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind, StrokeWeight, FillTone } from "./types"
 import { normalizeFill, screenToWorld, unionBox } from "./types"
 import { repeatStep, type DupTrail } from "./canvas/duplicate"
 import { getArrowPatchesForMovedNodes, cleanBindingsForDeletedNodes } from "./canvas/arrow-binding"
@@ -52,6 +52,38 @@ interface DocSnapshot {
 
 export type PanelKind = "components" | "blocks" | null
 
+export interface ActiveStyle {
+  strokeColor: string
+  backgroundColor: string
+  fill: "none" | "hachure" | "cross-hatch" | "solid"
+  strokeWidth: StrokeWeight
+  strokeStyle: "solid" | "dashed" | "dotted"
+  roughness: number
+  roundness: boolean
+  pressure: boolean
+  opacity: number
+  fontFamily: FontMode
+  fontSize: number
+  textAlign: TextAlign
+  arrowHead: boolean
+}
+
+export const DEFAULT_ACTIVE_STYLE: ActiveStyle = {
+  strokeColor: "#1e1e1e",
+  backgroundColor: "transparent",
+  fill: "none",
+  strokeWidth: "regular",
+  strokeStyle: "solid",
+  roughness: 1,
+  roundness: true,
+  pressure: true,
+  opacity: 100,
+  fontFamily: "hand",
+  fontSize: 20,
+  textAlign: "left",
+  arrowHead: true,
+}
+
 export interface ContextMenuState {
   x: number
   y: number
@@ -73,6 +105,8 @@ interface SquigState {
   viewport: Viewport
   tool: Tool
   shapeKind: ShapeKind
+  activeStyle: ActiveStyle
+  stylePanelOpen: boolean
   panel: PanelKind
   /** component kind waiting to be placed on next canvas click */
   placing: string | null
@@ -134,6 +168,8 @@ interface SquigState {
   setFileName: (n: string) => void
   setTool: (t: Tool) => void
   setShapeKind: (s: ShapeKind) => void
+  setActiveStyle: (style: Partial<ActiveStyle>) => void
+  setStylePanelOpen: (open: boolean) => void
   setPanel: (p: PanelKind) => void
   setPlacing: (kind: string | null, opts?: { drag?: boolean }) => void
   setEditing: (id: string | null) => void
@@ -494,6 +530,8 @@ export const useSquig = create<SquigState>((set, get) => ({
   viewport: { x: 0, y: 0, zoom: 1 },
   tool: "select",
   shapeKind: "rect",
+  activeStyle: DEFAULT_ACTIVE_STYLE,
+  stylePanelOpen: false,
   panel: null,
   placing: null,
   placingDrag: false,
@@ -531,8 +569,73 @@ export const useSquig = create<SquigState>((set, get) => ({
     set({ fileName: n })
     scheduleSave(get)
   },
-  setTool: (t) => set({ tool: t, placing: null, placingDrag: false, panel: null }),
+  setTool: (t) => {
+    const shouldOpenStyle = ["draw", "shape", "arrow", "line", "text", "sticky", "laser"].includes(t)
+    set({
+      tool: t,
+      placing: null,
+      placingDrag: false,
+      panel: null,
+      ...(shouldOpenStyle ? { stylePanelOpen: true } : {}),
+    })
+  },
   setShapeKind: (s) => set({ shapeKind: s }),
+  setActiveStyle: (patch) => {
+    set((state) => {
+      const next = { ...state.activeStyle, ...patch }
+      if (state.selection.length > 0) {
+        const updatedNodes = { ...state.nodes }
+        let changed = false
+        for (const id of state.selection) {
+          const n = updatedNodes[id]
+          if (!n) continue
+          const nodePatch: Partial<SquigNode> = {}
+          if (patch.strokeColor !== undefined) {
+            nodePatch.color = patch.strokeColor
+          }
+          if (patch.opacity !== undefined) {
+            nodePatch.opacity = patch.opacity
+          }
+          if (patch.strokeWidth !== undefined && ("stroke" in n || n.type === "draw" || n.type === "shape" || n.type === "arrow")) {
+            ; (nodePatch as any).stroke = patch.strokeWidth
+          }
+          if (patch.strokeStyle !== undefined && ("dashed" in n || n.type === "draw" || n.type === "shape" || n.type === "arrow")) {
+            ; (nodePatch as any).dashed = patch.strokeStyle === "dashed"
+          }
+          if (patch.roundness !== undefined && n.type === "shape") {
+            ; (nodePatch as any).roundness = patch.roundness
+          }
+          if (patch.fill !== undefined && n.type === "shape") {
+            const tone: FillTone =
+              patch.fill === "none"
+                ? "none"
+                : patch.fill === "solid"
+                  ? "paper"
+                  : patch.fill === "hachure"
+                    ? "light"
+                    : "strong"
+              ; (nodePatch as any).fill = tone
+          }
+          if (patch.fontSize !== undefined && n.type === "text") {
+            ; (nodePatch as any).fontSize = patch.fontSize
+          }
+          if (patch.textAlign !== undefined && n.type === "text") {
+            ; (nodePatch as any).align = patch.textAlign
+          }
+          if (Object.keys(nodePatch).length > 0) {
+            updatedNodes[id] = { ...n, ...nodePatch } as SquigNode
+            changed = true
+          }
+        }
+        return {
+          activeStyle: next,
+          ...(changed ? { nodes: updatedNodes } : {}),
+        }
+      }
+      return { activeStyle: next }
+    })
+  },
+  setStylePanelOpen: (open) => set({ stylePanelOpen: open }),
   setPanel: (p) => set((st) => ({ panel: st.panel === p ? null : p, placing: null, placingDrag: false })),
   setPlacing: (kind, opts) => set({ placing: kind, placingDrag: kind !== null && opts?.drag === true }),
   setEditing: (id) => set({ editingId: id }),
@@ -576,6 +679,33 @@ export const useSquig = create<SquigState>((set, get) => ({
       // bail when nothing actually changed, so a marquee crossing nothing new
       // doesn't re-render the canvas on every pointermove
       if (next.length === s.selection.length && next.every((id, i) => s.selection[i] === id)) return s
+      if (next.length > 0) {
+        const first = s.nodes[next[0]]
+        if (first) {
+          const patch: Partial<ActiveStyle> = {}
+          if ("color" in first && first.color) patch.strokeColor = first.color
+          if (first.opacity !== undefined) patch.opacity = first.opacity
+          if ("stroke" in first && first.stroke) patch.strokeWidth = first.stroke
+          if ("dashed" in first) patch.strokeStyle = first.dashed ? "dashed" : "solid"
+          if (first.type === "shape") {
+            patch.roundness = !!first.roundness
+            patch.fill =
+              first.fill === "none"
+                ? "none"
+                : first.fill === "paper"
+                  ? "solid"
+                  : first.fill === "light"
+                    ? "hachure"
+                    : "cross-hatch"
+          }
+          if (first.type === "text") {
+            patch.fontSize = first.fontSize
+            if (first.align) patch.textAlign = first.align
+          }
+          return { selection: next, stylePanelOpen: true, activeStyle: { ...s.activeStyle, ...patch } }
+        }
+        return { selection: next, stylePanelOpen: true }
+      }
       return { selection: next }
     })
   },
@@ -1361,7 +1491,7 @@ export const useSquig = create<SquigState>((set, get) => ({
         const clean = sanitize(convertedNodes, convertedOrder)
         set({
           docId: nanoid(8),
-          fileName: "imported excalidraw",
+          fileName: "imported sketch",
           nodes: clean.nodes,
           order: clean.order,
           selection: [],

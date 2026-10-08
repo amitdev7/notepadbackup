@@ -246,7 +246,7 @@ export function LibraryPanel() {
         </div>
 
         <div className="flex items-center gap-1">
-          {/* Import Excalidraw Library (.excalidrawlib) */}
+          {/* Import Vector Library (.sketchlib / .json) */}
           <button
             type="button"
             onClick={() => {
@@ -254,7 +254,7 @@ export function LibraryPanel() {
               setPanel(null)
             }}
             className="tactile-btn flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
-            title="Import Excalidraw Library (.excalidrawlib)"
+            title="Import Sketch Library (.sketchlib / .json)"
           >
             <UploadSimple size={14} />
             <span className="text-[11px] hidden sm:inline">Import Library…</span>

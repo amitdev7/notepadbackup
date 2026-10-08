@@ -174,10 +174,10 @@ export function BottomDock() {
               </DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={() => importDoc()}>
-              <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Excalidraw…
+              <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Universal Sketch…
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => exportExcalidrawDoc()}>
-              <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as .excalidraw
+              <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as Universal Sketch (.sketch)
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>

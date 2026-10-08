@@ -205,8 +205,8 @@ function Palette() {
       { id: "new", label: "New file", section: "File", keywords: "blank clear reset", icon: FileIcon, run: () => st().newFile() },
       { id: "save", label: "Save", hint: kbd("mod+s"), section: "File", keywords: "keep store local", icon: FloppyDiskIcon, run: () => st().saveNow() },
       { id: "export", label: "Export .zenithsui", hint: kbd("mod+shift+s"), section: "File", keywords: "save download json copy backup", icon: DownloadSimpleIcon, run: exportDoc },
-      { id: "export-excalidraw", label: "Export as .excalidraw", section: "File", keywords: "save download excalidraw backup", icon: DownloadSimpleIcon, run: exportExcalidrawDoc },
-      { id: "import", label: "Import drawing (.zenithsui or .excalidraw)", section: "File", keywords: "open load json disk excalidraw", icon: UploadSimpleIcon, run: importDoc },
+      { id: "export-sketch", label: "Export as Universal Sketch (.sketch)", section: "File", keywords: "save download sketch backup vector json", icon: DownloadSimpleIcon, run: exportExcalidrawDoc },
+      { id: "import", label: "Import drawing (.zenithsui or universal sketch)", section: "File", keywords: "open load json disk sketch vector", icon: UploadSimpleIcon, run: importDoc },
       {
         id: "import-pdf-pages",
         label: "Import PDF as Canvas Pages…",

@@ -388,7 +388,7 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
             ? [Math.min(...list.map((n) => n.x)), Math.min(...list.map((n) => n.y))]
             : at
           s.pasteNodes(list, corner)
-          s.setNotice(`Pasted ${list.length} element(s) from Excalidraw`)
+          s.setNotice(`Pasted ${list.length} element(s) from Universal Sketch`)
           return true
         }
       }

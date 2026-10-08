@@ -229,10 +229,10 @@ export function FilesPopover() {
                 setIsOpen(false)
               }}
               className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-1.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/40"
-              title="Export as Excalidraw (.excalidraw) file"
+              title="Export as Universal Sketch (.sketch) file"
             >
               <DownloadSimple size={12} />
-              <span>Export .excalidraw</span>
+              <span>Export .sketch</span>
             </button>
           </div>
 

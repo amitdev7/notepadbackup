@@ -23,21 +23,23 @@ export function exportExcalidrawDoc() {
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = `${s.fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"}.excalidraw`
+  a.download = `${s.fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"}.sketch.json`
   a.click()
   URL.revokeObjectURL(url)
 }
 
+export const exportSketchDoc = exportExcalidrawDoc
+
 export function importDoc() {
   const input = document.createElement("input")
   input.type = "file"
-  input.accept = ".json,.zenithsui,.excalidraw,.excalidrawlib,application/json"
+  input.accept = ".json,.zenithsui,.sketch,.sketchlib,.excalidraw,.excalidrawlib,application/json"
   input.addEventListener("change", async () => {
     const file = input.files?.[0]
     if (!file) return
     const text = await file.text()
 
-    // Check if it's an excalidraw library file
+    // Check if it's a vector sketch library file
     try {
       const parsedJson = JSON.parse(text)
       if (isExcalidrawLibrary(parsedJson)) {
@@ -55,7 +57,7 @@ export function importDoc() {
     }
 
     const ok = useSquig.getState().loadDoc(text)
-    if (!ok) window.alert("That file could not be read as a Zenithsui or Excalidraw document.")
+    if (!ok) window.alert("That file could not be read as a valid Zenithsui or Sketch document.")
   })
   input.click()
 }

@@ -19,7 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
-import type { SquigNode, TextNode, DocumentNode } from "@/lib/types"
+import type { SquigNode, TextNode, DocumentNode, FillTone } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
@@ -579,18 +579,40 @@ export function Canvas() {
         if (!g.id) {
           if (!g.exceeded) return
           if (g.what === "shape") {
+            const fillTone: FillTone =
+              s.activeStyle.fill === "none"
+                ? "none"
+                : s.activeStyle.fill === "solid"
+                  ? "paper"
+                  : s.activeStyle.fill === "hachure"
+                    ? "light"
+                    : "strong"
             g.id = s.addNode(
-              { type: "shape", shape: s.shapeKind, fill: "none", x, y, w: Math.max(w, 8), h: Math.max(h, 8) } as Omit<
-                SquigNode,
-                "id" | "seed"
-              >,
+              {
+                type: "shape",
+                shape: s.shapeKind,
+                fill: fillTone,
+                stroke: s.activeStyle.strokeWidth,
+                dashed: s.activeStyle.strokeStyle === "dashed",
+                roundness: s.activeStyle.roundness,
+                color: s.activeStyle.strokeColor,
+                opacity: s.activeStyle.opacity,
+                x,
+                y,
+                w: Math.max(w, 8),
+                h: Math.max(h, 8),
+              } as Omit<SquigNode, "id" | "seed">,
               { select: false }
             )
           } else {
             g.id = s.addNode(
               {
                 type: "arrow",
-                head: true,
+                head: s.arrowHead,
+                stroke: s.activeStyle.strokeWidth,
+                dashed: s.activeStyle.strokeStyle === "dashed",
+                color: s.activeStyle.strokeColor,
+                opacity: s.activeStyle.opacity,
                 x,
                 y,
                 w: Math.max(w, 8),
@@ -725,7 +747,7 @@ export function Canvas() {
         const w = Math.max(Math.max(...xs) - x, 2)
         const h = Math.max(Math.max(...ys) - y, 2)
         const drawPrefs = useShellStore.getState().preferences.drawSettings
-        const customColor = drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined
+        const customColor = s.activeStyle.strokeColor || (drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined)
         s.addNode(
           {
             type: "draw",
@@ -734,9 +756,10 @@ export function Canvas() {
             w,
             h,
             points: g.points.map((p) => [p[0] - x, p[1] - y] as [number, number]),
-            stroke: drawPrefs?.strokeWeight ?? "regular",
-            dashed: drawPrefs?.dashed ?? false,
+            stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
+            dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
             color: customColor,
+            opacity: s.activeStyle.opacity,
           } as Omit<SquigNode, "id" | "seed">,
           { select: false, checkpoint: false }
         )
@@ -757,16 +780,41 @@ export function Canvas() {
       let id = g.id
       if (!id) {
         const [w, h] = [140, 90]
+        const fillTone: FillTone =
+          s.activeStyle.fill === "none"
+            ? "none"
+            : s.activeStyle.fill === "solid"
+              ? "paper"
+              : s.activeStyle.fill === "hachure"
+                ? "light"
+                : "strong"
         id =
           g.what === "shape"
             ? s.addNode(
-              { type: "shape", shape: s.shapeKind, fill: "none", x: g.wx, y: g.wy, w, h } as Omit<SquigNode, "id" | "seed">,
+              {
+                type: "shape",
+                shape: s.shapeKind,
+                fill: fillTone,
+                stroke: s.activeStyle.strokeWidth,
+                dashed: s.activeStyle.strokeStyle === "dashed",
+                roundness: s.activeStyle.roundness,
+                color: s.activeStyle.strokeColor,
+                opacity: s.activeStyle.opacity,
+                x: g.wx,
+                y: g.wy,
+                w,
+                h,
+              } as Omit<SquigNode, "id" | "seed">,
               { select: false }
             )
             : s.addNode(
               {
                 type: "arrow",
-                head: true,
+                head: s.arrowHead,
+                stroke: s.activeStyle.strokeWidth,
+                dashed: s.activeStyle.strokeStyle === "dashed",
+                color: s.activeStyle.strokeColor,
+                opacity: s.activeStyle.opacity,
                 x: g.wx,
                 y: g.wy,
                 w,
@@ -1152,17 +1200,18 @@ export function Canvas() {
       if (tool === "text") {
         e.preventDefault()
         const textPrefs = useShellStore.getState().preferences.textSettings
-        const fontSize = textPrefs?.fontSize || 18
-        const customColor = textPrefs?.colorMode === "custom" ? textPrefs.customColor : undefined
+        const fontSize = s.activeStyle.fontSize || textPrefs?.fontSize || 18
+        const customColor = s.activeStyle.strokeColor || (textPrefs?.colorMode === "custom" ? textPrefs.customColor : undefined)
         const h = textBlockHeight(1, fontSize)
         const id = s.addNode({
           type: "text",
           text: "",
           fontSize,
-          align: textPrefs?.align || "left",
+          align: s.activeStyle.textAlign || textPrefs?.align || "left",
           bold: textPrefs?.bold,
           italic: textPrefs?.italic,
           color: customColor,
+          opacity: s.activeStyle.opacity,
           x: wx,
           // the click lands in the middle of the line it just started
           y: wy - h / 2,
@@ -1801,7 +1850,11 @@ export function Canvas() {
               return null
             }
             return (
-              <g key={id} transform={`translate(${n.x} ${n.y})`}>
+              <g
+                key={id}
+                transform={`translate(${n.x} ${n.y})`}
+                opacity={n.opacity !== undefined ? n.opacity / 100 : undefined}
+              >
                 <NodeSketch node={n} hiddenText={id === editingId ? editing?.hidden : undefined} />
               </g>
             )

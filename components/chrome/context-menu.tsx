@@ -191,7 +191,7 @@ export function CanvasContextMenu() {
         icon: LockSimpleIcon,
         run: () => st().toggleLockSelected(),
       },
-      { label: "Export as .excalidraw", icon: DownloadSimple, run: exportExcalidrawDoc },
+      { label: "Export as Universal Sketch (.sketch)", icon: DownloadSimple, run: exportExcalidrawDoc },
       { separator: true },
       { label: "Delete", hint: kbd("del"), icon: TrashIcon, danger: true, run: () => st().removeNodes(targets) },
     ]
@@ -219,7 +219,7 @@ export function CanvasContextMenu() {
         run: () => st().setStatsOpen(true),
       },
       {
-        label: "Export as .excalidraw",
+        label: "Export as Universal Sketch (.sketch)",
         icon: DownloadSimple,
         run: exportExcalidrawDoc,
       },
