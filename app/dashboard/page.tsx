@@ -156,8 +156,8 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("recent")}
               className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "recent"
-                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
+                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
                 }`}
             >
               <Clock size={16} />
@@ -167,8 +167,8 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("projects")}
               className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "projects"
-                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
+                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
                 }`}
             >
               <Folder size={16} />
@@ -178,8 +178,8 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("shared")}
               className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "shared"
-                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
+                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
                 }`}
             >
               <ShareNetwork size={16} />
@@ -189,8 +189,8 @@ export default function DashboardPage() {
             <button
               onClick={() => setActiveTab("trash")}
               className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "trash"
-                  ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                  : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
+                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
+                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
                 }`}
             >
               <Trash size={16} />
