@@ -25,8 +25,16 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  ? process.env.NEXT_PUBLIC_SITE_URL
+  : process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "https://zenithsui.sh";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenithsui.sh"),
+  metadataBase: new URL(siteUrl),
   applicationName: "zenithsui",
   title,
   description,
@@ -86,7 +94,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var p=localStorage.getItem('zenithsui:shell_prefs');var m='system';if(p){var parsed=JSON.parse(p);if(parsed&&parsed.themeMode)m=parsed.themeMode;}var dark=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(dark){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark');document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
+            __html: `(function(){try{var p=localStorage.getItem('zenithsui:shell_prefs');var m='system';if(p){var parsed=JSON.parse(p);if(parsed&&parsed.themeMode)m=parsed.themeMode;}var dark=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(m==='sepia'){document.documentElement.classList.add('theme-sepia');document.documentElement.classList.remove('dark','theme-midnight');document.documentElement.style.colorScheme='light';}else if(m==='midnight'){document.documentElement.classList.add('dark','theme-midnight');document.documentElement.classList.remove('theme-sepia');document.documentElement.style.colorScheme='dark';}else if(dark){document.documentElement.classList.add('dark');document.documentElement.classList.remove('theme-sepia','theme-midnight');document.documentElement.style.colorScheme='dark';}else{document.documentElement.classList.remove('dark','theme-sepia','theme-midnight');document.documentElement.style.colorScheme='light';}}catch(e){}})();`,
           }}
         />
       </head>
