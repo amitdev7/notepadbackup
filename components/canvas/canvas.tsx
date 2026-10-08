@@ -44,6 +44,9 @@ import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
 import { PerfHud } from "./perf-hud"
+import { ChartDialog } from "@/components/dialogs/chart-dialog"
+import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
+import { StatsDialog } from "@/components/dialogs/stats-dialog"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -1966,6 +1969,11 @@ export function Canvas() {
         zoom={v.zoom}
         isDragging={!!gestureKind}
       />
+
+      {/* Chart, Mermaid, and Canvas Stats Dialogs */}
+      <ChartDialog />
+      <MermaidDialog />
+      <StatsDialog />
     </div>
   )
 }

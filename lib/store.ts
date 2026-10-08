@@ -33,6 +33,7 @@ import {
   softDeleteLocalDocument,
   getLocalDocument,
 } from "./storage/documents"
+import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./excalidraw/index"
 
 // ---------------------------------------------------------------------------
 // Store — flat node map + z-order, selection, viewport, tool, history.
@@ -124,6 +125,8 @@ interface SquigState {
   pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
   searchOpen: boolean
   statsOpen: boolean
+  chartDialogOpen: boolean
+  mermaidDialogOpen: boolean
 
   past: DocSnapshot[]
   future: DocSnapshot[]
@@ -154,6 +157,8 @@ interface SquigState {
   setHistoryOpen: (on: boolean) => void
   setSearchOpen: (open: boolean) => void
   setStatsOpen: (open: boolean) => void
+  setChartDialogOpen: (open: boolean) => void
+  setMermaidDialogOpen: (open: boolean) => void
   toggleLockSelected: () => void
   unlockAll: () => void
   isSelectionLocked: () => boolean
@@ -230,6 +235,7 @@ interface SquigState {
   /** write to the drawer right now instead of waiting out the debounce */
   saveNow: () => void
   serialize: () => string
+  serializeExcalidraw: () => string
   loadDoc: (json: string) => boolean
 }
 
@@ -516,6 +522,8 @@ export const useSquig = create<SquigState>((set, get) => ({
   pdfToCanvasDialog: null,
   searchOpen: false,
   statsOpen: false,
+  chartDialogOpen: false,
+  mermaidDialogOpen: false,
   past: [],
   future: [],
 
@@ -587,6 +595,8 @@ export const useSquig = create<SquigState>((set, get) => ({
   setHistoryOpen: (on) => set({ historyOpen: on, commandOpen: false, contextMenu: null }),
   setSearchOpen: (open) => set({ searchOpen: open, contextMenu: null }),
   setStatsOpen: (open) => set({ statsOpen: open, contextMenu: null }),
+  setChartDialogOpen: (open) => set({ chartDialogOpen: open, contextMenu: null }),
+  setMermaidDialogOpen: (open) => set({ mermaidDialogOpen: open, contextMenu: null }),
   toggleLockSelected: () => {
     const { selection, nodes } = get()
     if (!selection.length) return
@@ -1333,10 +1343,41 @@ export const useSquig = create<SquigState>((set, get) => ({
     return JSON.stringify({ app: "zenithsui", version: 1, fileName, look: lookOf(s), nodes, order }, null, 2)
   },
 
+  serializeExcalidraw: () => {
+    const s = get()
+    const excalidrawDoc = squigNodesToExcalidraw(s.nodes, s.order, s.fileName)
+    return JSON.stringify(excalidrawDoc, null, 2)
+  },
+
   loadDoc: (json) => {
     try {
       const doc = JSON.parse(json)
-      if (!doc || typeof doc !== "object" || !doc.nodes || !Array.isArray(doc.order)) return false
+      if (!doc || typeof doc !== "object") return false
+
+      // Support Excalidraw v2 format (.excalidraw)
+      if (isExcalidrawDocument(doc)) {
+        flushSave(get)
+        const { nodes: convertedNodes, order: convertedOrder } = excalidrawToSquigNodes(doc)
+        const clean = sanitize(convertedNodes, convertedOrder)
+        set({
+          docId: nanoid(8),
+          fileName: "imported excalidraw",
+          nodes: clean.nodes,
+          order: clean.order,
+          selection: [],
+          renamingFile: false,
+          linkOpen: false,
+          past: [],
+          future: [],
+        })
+        if (clean.order.length) fitBox(set, clean.order.map((id) => clean.nodes[id]), 1)
+        else set({ viewport: { x: 0, y: 0, zoom: 1 } })
+        scheduleSave(get)
+        return true
+      }
+
+      // Support native Zenithsui format
+      if (!doc.nodes || !Array.isArray(doc.order)) return false
       // an opened file joins the drawer as its own document, so importing
       // never writes over whatever was on the canvas
       flushSave(get)

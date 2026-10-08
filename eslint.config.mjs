@@ -25,6 +25,14 @@ const eslintConfig = defineConfig([
     "public/**",
     "sources/**",
     "mouse/**",
+    "files/**",
+    "packages/**",
+    "excalidraw-app/**",
+    "examples/**",
+    "dev-docs/**",
+    "firebase-project/**",
+    "setupTests.ts",
+    "vitest.config.mts",
   ]),
 ]);
 

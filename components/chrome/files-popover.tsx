@@ -15,7 +15,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { relativeTime, type FileMeta } from "@/lib/files"
-import { exportDoc, importDoc } from "@/lib/file-io"
+import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
 import {
   FolderSimple,
   Plus,
@@ -216,9 +216,23 @@ export function FilesPopover() {
                 setIsOpen(false)
               }}
               className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
+              title="Export as native .zenithsui document"
             >
               <DownloadSimple size={12} />
               <span>Export copy</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                exportExcalidrawDoc()
+                setIsOpen(false)
+              }}
+              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-1.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/40"
+              title="Export as Excalidraw (.excalidraw) file"
+            >
+              <DownloadSimple size={12} />
+              <span>Export .excalidraw</span>
             </button>
           </div>
 

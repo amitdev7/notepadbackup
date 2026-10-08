@@ -1,9 +1,10 @@
 // ---------------------------------------------------------------------------
-// Import / export a .zenithsui.json. Both entry points (file menu and ⌘K) share
-// these, so there's no hidden <input> to keep a ref to.
+// Import / export documents.
+// Supports both native .zenithsui.json and .excalidraw formats.
 // ---------------------------------------------------------------------------
 
 import { useSquig } from "./store"
+import { parseExcalidrawLibrary, isExcalidrawLibrary } from "./excalidraw/index"
 
 export function exportDoc() {
   const s = useSquig.getState()
@@ -16,15 +17,45 @@ export function exportDoc() {
   URL.revokeObjectURL(url)
 }
 
+export function exportExcalidrawDoc() {
+  const s = useSquig.getState()
+  const blob = new Blob([s.serializeExcalidraw()], { type: "application/json" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `${s.fileName.replace(/[^\w -]+/g, "").trim() || "zenithsui"}.excalidraw`
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
 export function importDoc() {
   const input = document.createElement("input")
   input.type = "file"
-  input.accept = ".json,.zenithsui,application/json"
+  input.accept = ".json,.zenithsui,.excalidraw,.excalidrawlib,application/json"
   input.addEventListener("change", async () => {
     const file = input.files?.[0]
     if (!file) return
-    const ok = useSquig.getState().loadDoc(await file.text())
-    if (!ok) window.alert("that file didn't look like a zenithsui doc")
+    const text = await file.text()
+
+    // Check if it's an excalidraw library file
+    try {
+      const parsedJson = JSON.parse(text)
+      if (isExcalidrawLibrary(parsedJson)) {
+        const assets = parseExcalidrawLibrary(text)
+        if (assets.length > 0) {
+          const allNodes = assets.flatMap((a) => a.nodes)
+          useSquig.getState().addNodes(allNodes)
+          useSquig.getState().setSelection(allNodes.map((n) => n.id))
+          useSquig.getState().setNotice(`Imported ${assets.length} library item(s)`)
+          return
+        }
+      }
+    } catch {
+      // Not JSON or parse error, fall through to loadDoc
+    }
+
+    const ok = useSquig.getState().loadDoc(text)
+    if (!ok) window.alert("That file could not be read as a Zenithsui or Excalidraw document.")
   })
   input.click()
 }

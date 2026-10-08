@@ -20,6 +20,17 @@ import { measureTextWidth } from "./canvas/text-metrics"
 import { fitTextBox } from "./canvas/text-reflow"
 import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode } from "./types"
 import { saveDocumentAsset } from "./storage/document-assets"
+import {
+  isExcalidrawDocument,
+  isExcalidrawClipboard,
+  excalidrawToSquigNodes,
+  isMaybeMermaidDefinition,
+  parseMermaidToZenithsui,
+  isMaybeSpreadsheet,
+  tryParseSpreadsheet,
+  renderBarChart,
+  parseExcalidrawLibrary,
+} from "./excalidraw/index"
 
 // -- copying out ------------------------------------------------------------
 
@@ -365,6 +376,54 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
     return true
   }
 
+  // Check if text is Excalidraw clipboard JSON
+  if (c.text) {
+    try {
+      const parsed = JSON.parse(c.text)
+      if (isExcalidrawDocument(parsed) || isExcalidrawClipboard(parsed)) {
+        const { nodes: excalNodes, order } = excalidrawToSquigNodes(parsed)
+        const list = order.map((id) => excalNodes[id]).filter(Boolean)
+        if (list.length > 0) {
+          const corner: [number, number] | undefined = inPlace
+            ? [Math.min(...list.map((n) => n.x)), Math.min(...list.map((n) => n.y))]
+            : at
+          s.pasteNodes(list, corner)
+          s.setNotice(`Pasted ${list.length} element(s) from Excalidraw`)
+          return true
+        }
+      }
+    } catch {
+      // not JSON, continue
+    }
+
+    // Check if text is a Mermaid diagram
+    if (isMaybeMermaidDefinition(c.text)) {
+      const [px, py] = at ?? viewportCentre()
+      const res = parseMermaidToZenithsui(c.text, px - 200, py - 150)
+      if (res.nodes.length > 0) {
+        s.addNodes(res.nodes)
+        s.setSelection(res.nodes.map((n) => n.id))
+        s.setNotice(`Converted Mermaid diagram (${res.nodes.length} nodes)`)
+        return true
+      }
+    }
+
+    // Check if text is spreadsheet tabular data (TSV / CSV)
+    if (isMaybeSpreadsheet(c.text)) {
+      const parsedChart = tryParseSpreadsheet(c.text)
+      if (parsedChart.ok) {
+        const [px, py] = at ?? viewportCentre()
+        const chartNodes = renderBarChart(parsedChart.data, px - 200, py)
+        if (chartNodes.length > 0) {
+          s.addNodes(chartNodes)
+          s.setSelection(chartNodes.map((n) => n.id))
+          s.setNotice("Generated Bar Chart from pasted spreadsheet data")
+          return true
+        }
+      }
+    }
+  }
+
   const hasFiles = (c.images && c.images.length > 0) || (c.documents && c.documents.length > 0)
   if (hasFiles) {
     const made: (ImageNode | DocumentNode)[] = []
@@ -457,15 +516,52 @@ function filesIn(dt: DataTransfer): { images: Blob[]; documents: File[] } {
 
 /** Drop desktop files directly onto canvas at world coordinates. */
 export async function dropFiles(files: File[], at: [number, number]): Promise<boolean> {
+  const s = useSquig.getState()
   const images: Blob[] = []
   const documents: File[] = []
+
   for (const file of files) {
-    if (file.type.startsWith("image/")) {
+    const lower = file.name.toLowerCase()
+    if (lower.endsWith(".excalidraw") || lower.endsWith(".zenithsui.json")) {
+      try {
+        const text = await file.text()
+        const parsed = JSON.parse(text)
+        if (isExcalidrawDocument(parsed)) {
+          const { nodes, order } = excalidrawToSquigNodes(parsed)
+          const list = order.map((id) => nodes[id]).filter(Boolean)
+          if (list.length > 0) {
+            s.pasteNodes(list, at)
+            s.setNotice(`Imported ${list.length} element(s) from ${file.name}`)
+            return true
+          }
+        } else if (parsed && parsed.nodes && Array.isArray(parsed.order)) {
+          s.loadDoc(text)
+          return true
+        }
+      } catch (err) {
+        console.warn("[clipboard] Error reading drawing file:", err)
+      }
+    } else if (lower.endsWith(".excalidrawlib")) {
+      try {
+        const text = await file.text()
+        const items = parseExcalidrawLibrary(text)
+        if (items.length > 0) {
+          const allNodes = items.flatMap((i) => i.nodes)
+          s.addNodes(allNodes)
+          s.setSelection(allNodes.map((n) => n.id))
+          s.setNotice(`Imported ${items.length} library item(s) from ${file.name}`)
+          return true
+        }
+      } catch (err) {
+        console.warn("[clipboard] Error reading library file:", err)
+      }
+    } else if (file.type.startsWith("image/")) {
       images.push(file)
     } else {
       documents.push(file)
     }
   }
+
   return place({ images, documents }, at)
 }
 

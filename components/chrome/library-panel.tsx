@@ -30,7 +30,9 @@ import {
   ArrowsOut,
   ArrowsIn,
   GridFour,
+  UploadSimple,
 } from "@phosphor-icons/react"
+import { importDoc } from "@/lib/file-io"
 
 const BOX_W = 160
 const BOX_H = 96
@@ -244,6 +246,20 @@ export function LibraryPanel() {
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Import Excalidraw Library (.excalidrawlib) */}
+          <button
+            type="button"
+            onClick={() => {
+              importDoc()
+              setPanel(null)
+            }}
+            className="tactile-btn flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
+            title="Import Excalidraw Library (.excalidrawlib)"
+          >
+            <UploadSimple size={14} />
+            <span className="text-[11px] hidden sm:inline">Import Library…</span>
+          </button>
+
           {/* Toggle Wide / Standard Area */}
           <button
             type="button"

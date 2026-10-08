@@ -1,7 +1,7 @@
 // Resolution hooks so `node --experimental-strip-types` can load this app's
 // modules directly: they use the "@/..." tsconfig alias and extensionless
 // relative imports, neither of which Node resolves on its own.
-import { existsSync } from "node:fs"
+import { existsSync, statSync } from "node:fs"
 import { dirname, resolve as resolvePath } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 
@@ -9,7 +9,12 @@ const root = resolvePath(dirname(fileURLToPath(import.meta.url)), "..")
 const EXTS = [".ts", ".tsx", ".mjs", ".js", "/index.ts", "/index.tsx"]
 
 function withExtension(absPath) {
-  if (existsSync(absPath) && !absPath.endsWith("/")) return absPath
+  try {
+    if (existsSync(absPath)) {
+      const stat = statSync(absPath)
+      if (!stat.isDirectory()) return absPath
+    }
+  } catch { }
   for (const ext of EXTS) {
     if (existsSync(absPath + ext)) return absPath + ext
   }

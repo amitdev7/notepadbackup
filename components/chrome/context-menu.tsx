@@ -48,11 +48,14 @@ import {
   TextTIcon,
   TrashIcon,
   DownloadSimple,
+  ChartBar as ChartBarIcon,
+  Sparkle as SparkleIcon,
   Eye,
   LockSimple as LockSimpleIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 import { downloadDocument } from "@/lib/storage/document-assets"
+import { exportExcalidrawDoc } from "@/lib/file-io"
 import type { DocumentNode } from "@/lib/types"
 
 interface Item {
@@ -188,6 +191,7 @@ export function CanvasContextMenu() {
         icon: LockSimpleIcon,
         run: () => st().toggleLockSelected(),
       },
+      { label: "Export as .excalidraw", icon: DownloadSimple, run: exportExcalidrawDoc },
       { separator: true },
       { label: "Delete", hint: kbd("del"), icon: TrashIcon, danger: true, run: () => st().removeNodes(targets) },
     ]
@@ -198,6 +202,26 @@ export function CanvasContextMenu() {
         label: "Import PDF as Canvas Pages…",
         icon: SquaresFourIcon,
         run: () => st().setPdfToCanvasDialog({ open: true }),
+      },
+      {
+        label: "Insert Chart (Spreadsheet)…",
+        icon: ChartBarIcon,
+        run: () => st().setChartDialogOpen(true),
+      },
+      {
+        label: "Insert Mermaid Diagram…",
+        icon: SparkleIcon,
+        run: () => st().setMermaidDialogOpen(true),
+      },
+      {
+        label: "Canvas Statistics…",
+        icon: ChartBarIcon,
+        run: () => st().setStatsOpen(true),
+      },
+      {
+        label: "Export as .excalidraw",
+        icon: DownloadSimple,
+        run: exportExcalidrawDoc,
       },
       { separator: true },
       { label: "Components", hint: kbd("c"), icon: SquaresFourIcon, run: () => st().setPanel("components") },

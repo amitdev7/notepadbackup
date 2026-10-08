@@ -10,7 +10,7 @@ import { useSquig } from "@/lib/store"
 import { ALL_DEFS, matches, type ComponentDef } from "@/lib/library/registry"
 import { SketchPrims } from "@/components/canvas/sketch"
 import { copySelection, cutSelection, pasteFromSystem } from "@/lib/clipboard"
-import { exportDoc, importDoc } from "@/lib/file-io"
+import { exportDoc, exportExcalidrawDoc, importDoc } from "@/lib/file-io"
 import { copyAsPngWithNotice } from "@/lib/export-image"
 import { relativeTime } from "@/lib/files"
 import { kbd } from "@/lib/shortcuts"
@@ -146,6 +146,8 @@ function Palette() {
       { id: "frame", label: "Frame", hint: kbd("f"), section: "Tools", keywords: "frame container artboard section", icon: SquareIcon, run: () => st().setTool("frame") },
       { id: "line", label: "Line", hint: kbd("l"), section: "Tools", keywords: "rule divider stroke", icon: LineSegmentIcon, run: () => { st().setArrowHead(false); st().setTool("arrow") } },
       { id: "arrow", label: "Arrow", hint: kbd("a"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
+      { id: "insert-chart", label: "Insert Chart (Bar, Line, Radar)…", section: "Tools", keywords: "chart bar line radar graph data spreadsheet table", icon: SparkleIcon, run: () => st().setChartDialogOpen(true) },
+      { id: "insert-mermaid", label: "Insert Mermaid Diagram…", section: "Tools", keywords: "mermaid diagram flowchart sequence process map", icon: SparkleIcon, run: () => st().setMermaidDialogOpen(true) },
       { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
 
       { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
@@ -198,11 +200,13 @@ function Palette() {
       { id: "zoom-reset", label: "Reset view", hint: kbd("mod+0"), section: "View", keywords: "origin home", icon: CornersOutIcon, run: () => st().setViewport({ x: 0, y: 0, zoom: 1 }) },
       { id: "hide-ui", label: "Hide the interface", hint: kbd("mod+\\"), section: "View", keywords: "clean present chrome", icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
       { id: "keys", label: "Keyboard shortcuts", hint: kbd("shift+/"), section: "View", keywords: "hotkeys help cheat sheet", icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },
+      { id: "canvas-stats", label: "Canvas & Element Stats…", hint: kbd("shift+alt+s"), section: "View", keywords: "metrics count vertices dimensions info inspector", icon: BoundingBoxIcon, run: () => st().setStatsOpen(!st().statsOpen) },
 
       { id: "new", label: "New file", section: "File", keywords: "blank clear reset", icon: FileIcon, run: () => st().newFile() },
       { id: "save", label: "Save", hint: kbd("mod+s"), section: "File", keywords: "keep store local", icon: FloppyDiskIcon, run: () => st().saveNow() },
       { id: "export", label: "Export .zenithsui", hint: kbd("mod+shift+s"), section: "File", keywords: "save download json copy backup", icon: DownloadSimpleIcon, run: exportDoc },
-      { id: "import", label: "Import .zenithsui", section: "File", keywords: "open load json disk", icon: UploadSimpleIcon, run: importDoc },
+      { id: "export-excalidraw", label: "Export as .excalidraw", section: "File", keywords: "save download excalidraw backup", icon: DownloadSimpleIcon, run: exportExcalidrawDoc },
+      { id: "import", label: "Import drawing (.zenithsui or .excalidraw)", section: "File", keywords: "open load json disk excalidraw", icon: UploadSimpleIcon, run: importDoc },
       {
         id: "import-pdf-pages",
         label: "Import PDF as Canvas Pages…",

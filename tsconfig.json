@@ -39,6 +39,20 @@
   "exclude": [
     "node_modules",
     "scripts",
-    "sources"
+    "sources",
+    "files",
+    "files/**/*",
+    "packages",
+    "packages/**/*",
+    "excalidraw-app",
+    "excalidraw-app/**/*",
+    "examples",
+    "examples/**/*",
+    "dev-docs",
+    "dev-docs/**/*",
+    "firebase-project",
+    "firebase-project/**/*",
+    "setupTests.ts",
+    "vitest.config.mts"
   ]
 }

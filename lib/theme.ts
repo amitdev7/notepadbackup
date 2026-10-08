@@ -195,7 +195,7 @@ export const DEFAULT_THEME: ThemeName = "internet-blue"
  * starts admitting it might ship, and picking between them is a real question
  * early on, which is why it's a choice of three rather than a switch.
  */
-export type FontMode = "hand" | "sans" | "serif"
+export type FontMode = "hand" | "sans" | "serif" | "code" | "assistant"
 export const DEFAULT_FONT: FontMode = "hand"
 
 /** What each mode puts in --sq-font. */
@@ -203,6 +203,8 @@ export const FONT_FAMILY: Record<FontMode, string> = {
   hand: "var(--font-sketch)",
   sans: "var(--font-sans)",
   serif: "var(--font-serif)",
+  code: "var(--font-mono, 'Cascadia Code', monospace)",
+  assistant: "'Assistant', var(--font-sans)",
 }
 
 // ---------------------------------------------------------------------------

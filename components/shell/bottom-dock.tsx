@@ -39,7 +39,10 @@ import {
   Flashlight,
   MagnifyingGlass,
   ChartBar,
+  TreeStructure,
+  DownloadSimple,
 } from "@phosphor-icons/react"
+import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,6 +98,9 @@ export function BottomDock() {
   const setHistoryOpen = useSquig((s) => s.setHistoryOpen)
   const setSearchOpen = useSquig((s) => s.setSearchOpen)
   const setStatsOpen = useSquig((s) => s.setStatsOpen)
+  const statsOpen = useSquig((s) => s.statsOpen)
+  const setChartDialogOpen = useSquig((s) => s.setChartDialogOpen)
+  const setMermaidDialogOpen = useSquig((s) => s.setMermaidDialogOpen)
 
   const togglePagePopover = useShellStore((s) => s.togglePagePopover)
   const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
@@ -167,6 +173,22 @@ export function BottomDock() {
                 <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open / Recent…
               </DropdownMenuItem>
             )}
+            <DropdownMenuItem onClick={() => importDoc()}>
+              <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Excalidraw…
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => exportExcalidrawDoc()}>
+              <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as .excalidraw
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
+              <ChartBar size={14} className="mr-2" aria-hidden="true" /> Insert Chart…
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setMermaidDialogOpen(true)}>
+              <TreeStructure size={14} className="mr-2" aria-hidden="true" /> Insert Mermaid Diagram…
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setStatsOpen(!statsOpen)}>
+              <ChartBar size={14} className="mr-2" aria-hidden="true" /> Canvas Stats
+            </DropdownMenuItem>
             {(dockControls.menuNewCanvas || dockControls.menuOpenRecent) &&
               (dockControls.menuShare || dockControls.menuPublishWifi) && <DropdownMenuSeparator />}
 
