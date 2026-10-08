@@ -203,8 +203,8 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
         // long words break where the canvas breaks them — mid-word, only when
         // the word alone is wider than the box; see wrapText
         overflowWrap: fixed ? "break-word" : undefined,
-        color: target.color,
-        caretColor: "var(--sq-ink)",
+        color: (node as TextNode).color || target.color || "var(--sq-ink)",
+        caretColor: (node as TextNode).color || "var(--sq-ink)",
         // the one tell that this run is live: a wash the width of the words,
         // rather than a field the words have been moved into
         background: "color-mix(in srgb, var(--sq-select) 12%, transparent)",

@@ -40,11 +40,12 @@ const PEN_SCALE: Record<StrokeWeight, number> = { light: 0.65, regular: 1, heavy
 const FRAME_GAP = 2.5
 
 /** Merge a node's outline settings into the options for one of its marks. */
-function outline(node: Outlined, baseWidth: number, o?: PrimOpts): PrimOpts {
+function outline(node: Outlined & { color?: string }, baseWidth: number, o?: PrimOpts): PrimOpts {
   return {
     ...o,
     strokeWidth: baseWidth * PEN_SCALE[node.stroke ?? "regular"],
     dashed: node.dashed,
+    customStroke: node.color ?? o?.customStroke,
   }
 }
 
@@ -150,6 +151,7 @@ export function basePrims(node: SquigNode): Prim[] {
         italic: node.italic,
         // a link is a link because it's underlined — no blue in a wireframe
         underline: node.underline || !!node.link,
+        customColor: node.color,
       }))
     }
     case "sticky": {

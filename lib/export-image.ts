@@ -88,14 +88,14 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
     const mirror = mirrorBox(node.w, node.h, node.flipX, node.flipY)
     out.push(
       `<image href="${esc(node.src)}" x="0" y="0" width="${node.w}" height="${node.h}"` +
-        ` preserveAspectRatio="none"${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
+      ` preserveAspectRatio="none"${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
     )
   }
 
   for (const p of paths) {
     out.push(
       `<path d="${esc(p.d)}" stroke="${resolve(p.stroke)}" stroke-width="${p.strokeWidth}" fill="${resolve(p.fill)}"` +
-        `${p.dash ? ` stroke-dasharray="${p.dash}"` : ""} stroke-linecap="round" stroke-linejoin="round"/>`
+      `${p.dash ? ` stroke-dasharray="${p.dash}"` : ""} stroke-linecap="round" stroke-linejoin="round"/>`
     )
   }
 
@@ -118,9 +118,9 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
     const mirror = mirrorGlyphs(t)
     out.push(
       `<text x="${t.x}" y="${t.y}" font-size="${t.size}" font-family="${esc(font)}" font-weight="${t.bold ? 700 : 400}"` +
-        `${t.italic ? ` font-style="italic"` : ""}${t.underline ? ` text-decoration="underline"` : ""}` +
-        ` fill="${resolve(INK[t.color ?? "ink"])}" text-anchor="${anchor}"` +
-        `${mirror ? ` transform="${esc(mirror)}"` : ""} xml:space="preserve">${esc(t.text)}</text>`
+      `${t.italic ? ` font-style="italic"` : ""}${t.underline ? ` text-decoration="underline"` : ""}` +
+      ` fill="${resolve(INK[t.color ?? "ink"])}" text-anchor="${anchor}"` +
+      `${mirror ? ` transform="${esc(mirror)}"` : ""} xml:space="preserve">${esc(t.text)}</text>`
     )
   }
 
@@ -311,7 +311,7 @@ export function copySelectionAsPng(): Promise<CopyOutcome> {
   const blob = renderPng(nodes)
   // the failure is handled below, but only after the clipboard has had its go —
   // claim it now so a rejection can't be reported as unhandled in between
-  blob.catch(() => {})
+  blob.catch(() => { })
   const fallback = (): Promise<CopyOutcome> =>
     blob
       .then((b) => {

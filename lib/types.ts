@@ -69,6 +69,8 @@ export interface BaseNode {
   locked?: boolean
   /** Opacity percentage (0-100) */
   opacity?: number
+  /** Optional custom stroke or text color overriding default theme ink */
+  color?: string
 }
 
 export interface ComponentNode extends BaseNode {

@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import type { SquigNode, TextNode, DocumentNode } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
@@ -656,6 +657,8 @@ export function Canvas() {
         const y = Math.min(...ys)
         const w = Math.max(Math.max(...xs) - x, 2)
         const h = Math.max(Math.max(...ys) - y, 2)
+        const drawPrefs = useShellStore.getState().preferences.drawSettings
+        const customColor = drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined
         s.addNode(
           {
             type: "draw",
@@ -664,9 +667,15 @@ export function Canvas() {
             w,
             h,
             points: g.points.map((p) => [p[0] - x, p[1] - y] as [number, number]),
+            stroke: drawPrefs?.strokeWeight ?? "regular",
+            dashed: drawPrefs?.dashed ?? false,
+            color: customColor,
           } as Omit<SquigNode, "id" | "seed">,
           { select: false, checkpoint: false }
         )
+        if (drawPrefs?.autoSelectAfterDraw) {
+          s.setTool("select")
+        }
       } else {
         // a tap, not a stroke — drop the checkpoint taken on pointer down so
         // it doesn't leave an undo step that undoes nothing
@@ -1063,16 +1072,19 @@ export function Canvas() {
         return
       }
       if (tool === "text") {
-        // the editor mounts and focuses inside this handler, so the compat
-        // mousedown that follows would hand focus straight back to the canvas —
-        // blurring the editor into a commit that deletes the still-empty node
         e.preventDefault()
-        const fontSize = 18
+        const textPrefs = useShellStore.getState().preferences.textSettings
+        const fontSize = textPrefs?.fontSize || 18
+        const customColor = textPrefs?.colorMode === "custom" ? textPrefs.customColor : undefined
         const h = textBlockHeight(1, fontSize)
         const id = s.addNode({
           type: "text",
           text: "",
           fontSize,
+          align: textPrefs?.align || "left",
+          bold: textPrefs?.bold,
+          italic: textPrefs?.italic,
+          color: customColor,
           x: wx,
           // the click lands in the middle of the line it just started
           y: wy - h / 2,
@@ -1160,12 +1172,18 @@ export function Canvas() {
         // double-click costs nothing
         if (s.tool !== "select" || s.placing) return
         const [wx, wy] = toWorld(e)
-        const fontSize = 18
+        const textPrefs = useShellStore.getState().preferences.textSettings
+        const fontSize = textPrefs?.fontSize || 18
+        const customColor = textPrefs?.colorMode === "custom" ? textPrefs.customColor : undefined
         const h = textBlockHeight(1, fontSize)
         const id = s.addNode({
           type: "text",
           text: "",
           fontSize,
+          align: textPrefs?.align || "left",
+          bold: textPrefs?.bold,
+          italic: textPrefs?.italic,
+          color: customColor,
           x: wx,
           // the click lands in the middle of the line it just started
           y: wy - h / 2,

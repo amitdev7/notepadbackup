@@ -103,13 +103,44 @@ export const UI_ACCENTS: readonly UIAccentOption[] = [
   { id: "blue", label: "Blue", primary: "#2563EB", hover: "#1D4ED8", active: "#1E40AF" },
   { id: "indigo", label: "Indigo", primary: "#4F46E5", hover: "#4338CA", active: "#3730A3" },
   { id: "purple", label: "Purple", primary: "#9333EA", hover: "#7E22CE", active: "#6B21A8" },
+  { id: "violet", label: "Violet", primary: "#7C3AED", hover: "#6D28D9", active: "#5B21B6" },
+  { id: "cyan", label: "Cyan", primary: "#0D9488", hover: "#0F766E", active: "#115E59" },
   { id: "emerald", label: "Emerald", primary: "#059669", hover: "#047857", active: "#065F46" },
+  { id: "lime", label: "Lime", primary: "#65A30D", hover: "#4D7C0F", active: "#3F6212" },
   { id: "amber", label: "Amber", primary: "#D97706", hover: "#B45309", active: "#92400E" },
+  { id: "orange", label: "Orange", primary: "#EA580C", hover: "#C2410C", active: "#9A3412" },
   { id: "rose", label: "Rose", primary: "#E11D48", hover: "#BE123C", active: "#9F1239" },
+  { id: "pink", label: "Pink", primary: "#DB2777", hover: "#BE185D", active: "#9D174D" },
   { id: "neutral", label: "Neutral", primary: "#18181B", hover: "#27272A", active: "#09090B" },
 ]
 
 export const ACCENT = UI_ACCENTS[0] // Default Blue
+
+export interface ColorSwatchOption {
+  id: string
+  label: string
+  hex: string
+}
+
+export const COLOR_SWATCHES: readonly ColorSwatchOption[] = [
+  { id: "red", label: "Laser Red", hex: "#EF4444" },
+  { id: "rose", label: "Rose", hex: "#F43F5E" },
+  { id: "pink", label: "Hot Pink", hex: "#EC4899" },
+  { id: "purple", label: "Purple", hex: "#A855F7" },
+  { id: "violet", label: "Electric Violet", hex: "#7C3AED" },
+  { id: "indigo", label: "Royal Indigo", hex: "#6366F1" },
+  { id: "blue", label: "Zenith Blue", hex: "#3B82F6" },
+  { id: "cyan", label: "Cyan Aqua", hex: "#06B6D4" },
+  { id: "teal", label: "Teal Emerald", hex: "#14B8A6" },
+  { id: "emerald", label: "Neon Green", hex: "#10B981" },
+  { id: "lime", label: "Lime Neon", hex: "#84CC16" },
+  { id: "yellow", label: "Electric Yellow", hex: "#EAB308" },
+  { id: "amber", label: "Sunset Amber", hex: "#F59E0B" },
+  { id: "orange", label: "Coral Orange", hex: "#F97316" },
+  { id: "graphite", label: "Graphite", hex: "#3F3F46" },
+  { id: "black", label: "Pure Black", hex: "#18181B" },
+  { id: "white", label: "Pure White", hex: "#FFFFFF" },
+]
 
 /** Canvas Document Pen Colors (Customizable via Page -> Ink -> Pen Color) */
 export interface PenColorOption {

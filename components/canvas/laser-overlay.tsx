@@ -7,6 +7,7 @@
 
 import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore, DEFAULT_LASER_SETTINGS } from "@/lib/shell-store"
 
 interface Point {
   x: number
@@ -14,10 +15,22 @@ interface Point {
   t: number
 }
 
-const TRAIL_LIFETIME_MS = 850
+function hexToRgb(hex: string): [number, number, number] {
+  let c = (hex || "#EF4444").replace("#", "").trim()
+  if (c.length === 3) c = c.split("").map((x) => x + x).join("")
+  const num = parseInt(c, 16)
+  if (Number.isNaN(num)) return [239, 68, 68]
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255]
+}
 
 export function LaserOverlay() {
   const tool = useSquig((s) => s.tool)
+  const laserSettings = useShellStore((s) => s.preferences.laserSettings ?? DEFAULT_LASER_SETTINGS)
+  const laserRef = useRef(laserSettings)
+  useEffect(() => {
+    laserRef.current = laserSettings
+  }, [laserSettings])
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const pointsRef = useRef<Point[]>([])
   const isDownRef = useRef(false)
@@ -54,9 +67,21 @@ export function LaserOverlay() {
 
       const now = performance.now()
       const dpr = window.devicePixelRatio || 1
+      const settings = laserRef.current || DEFAULT_LASER_SETTINGS
+      const trailLifetime = settings.durationMs || 850
+      const baseWidth = settings.width || 6
+      const [r, g, b] = hexToRgb(settings.color || "#EF4444")
+      const glowFactor =
+        settings.glowIntensity === "none"
+          ? 0
+          : settings.glowIntensity === "subtle"
+            ? 5
+            : settings.glowIntensity === "neon"
+              ? 20
+              : 10
 
       // Prune expired points
-      pointsRef.current = pointsRef.current.filter((p) => now - p.t < TRAIL_LIFETIME_MS)
+      pointsRef.current = pointsRef.current.filter((p) => now - p.t < trailLifetime)
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -71,17 +96,21 @@ export function LaserOverlay() {
           const p0 = pts[i - 1]
           const p1 = pts[i]
           const age = now - p1.t
-          const progress = Math.min(1, Math.max(0, age / TRAIL_LIFETIME_MS))
+          const progress = Math.min(1, Math.max(0, age / trailLifetime))
           const alpha = 1 - progress
 
           // Core laser ink glow
           ctx.beginPath()
           ctx.moveTo(p0.x, p0.y)
           ctx.lineTo(p1.x, p1.y)
-          ctx.strokeStyle = `rgba(239, 68, 68, ${alpha * 0.95})`
-          ctx.lineWidth = Math.max(2, 6 * (1 - progress * 0.7))
-          ctx.shadowColor = "rgba(239, 68, 68, 0.8)"
-          ctx.shadowBlur = 8 * (1 - progress)
+          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.95})`
+          ctx.lineWidth = Math.max(1.5, baseWidth * (1 - progress * 0.7))
+          if (glowFactor > 0) {
+            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.85)`
+            ctx.shadowBlur = glowFactor * (1 - progress)
+          } else {
+            ctx.shadowBlur = 0
+          }
           ctx.stroke()
 
           // Inner bright core
@@ -89,9 +118,32 @@ export function LaserOverlay() {
           ctx.moveTo(p0.x, p0.y)
           ctx.lineTo(p1.x, p1.y)
           ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.85})`
-          ctx.lineWidth = Math.max(1, 2 * (1 - progress))
+          ctx.lineWidth = Math.max(1, (baseWidth / 3) * (1 - progress))
           ctx.shadowBlur = 0
           ctx.stroke()
+        }
+
+        // Tip reticle dot
+        if (settings.pulseDot && pts.length > 0) {
+          const last = pts[pts.length - 1]
+          const age = now - last.t
+          if (age < 250) {
+            const tipRadius = Math.max(3, baseWidth * 0.8)
+            ctx.beginPath()
+            ctx.arc(last.x, last.y, tipRadius, 0, Math.PI * 2)
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
+            if (glowFactor > 0) {
+              ctx.shadowColor = `rgb(${r}, ${g}, ${b})`
+              ctx.shadowBlur = glowFactor * 1.5
+            }
+            ctx.fill()
+
+            ctx.beginPath()
+            ctx.arc(last.x, last.y, Math.max(1.5, tipRadius * 0.4), 0, Math.PI * 2)
+            ctx.fillStyle = "#ffffff"
+            ctx.shadowBlur = 0
+            ctx.fill()
+          }
         }
 
         ctx.restore()

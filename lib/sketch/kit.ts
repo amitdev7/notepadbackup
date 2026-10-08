@@ -73,41 +73,41 @@ export type Prim =
   | ({ t: "line"; x1: number; y1: number; x2: number; y2: number } & { o?: PrimOpts })
   | ({ t: "poly"; pts: [number, number][]; close?: boolean } & { o?: PrimOpts })
   | {
-      t: "text"
-      x: number
-      y: number // baseline
-      text: string
-      size: number
-      align?: "left" | "center" | "right"
-      color?: InkColor
-      bold?: boolean
-      italic?: boolean
-      underline?: boolean
-      maxW?: number
-      /**
-       * Print the glyphs mirrored, about the anchor — what a flipped text
-       * layer asks for. Set by mirrorPrims, never by a def: a wireframe label
-       * always stays readable (see mirrorPrims).
-       */
-      mirrorX?: boolean
-      mirrorY?: boolean
-    }
+    t: "text"
+    x: number
+    y: number // baseline
+    text: string
+    size: number
+    align?: "left" | "center" | "right"
+    color?: InkColor
+    bold?: boolean
+    italic?: boolean
+    underline?: boolean
+    maxW?: number
+    /**
+     * Print the glyphs mirrored, about the anchor — what a flipped text
+     * layer asks for. Set by mirrorPrims, never by a def: a wireframe label
+     * always stays readable (see mirrorPrims).
+     */
+    mirrorX?: boolean
+    mirrorY?: boolean
+  }
   /**
    * Raw SVG path data in a square viewBox, drawn crisp (not roughened) —
    * icons read better sharp, and it keeps big templates fast.
    * (x, y) is the top-left of the size×size box the icon is scaled into.
    */
   | ({
-      t: "path"
-      d: string[]
-      x: number
-      y: number
-      size: number
-      vb: number
-      mode: "fill" | "stroke"
-      /** icon name, so break-apart can rebuild this as a real Icon component */
-      name?: string
-    } & { o?: PrimOpts })
+    t: "path"
+    d: string[]
+    x: number
+    y: number
+    size: number
+    vb: number
+    mode: "fill" | "stroke"
+    /** icon name, so break-apart can rebuild this as a real Icon component */
+    name?: string
+  } & { o?: PrimOpts })
 
 // -- constructors -----------------------------------------------------------
 

@@ -71,11 +71,12 @@ const PEN: Record<InkColor, number> = {
 
 function primOptions(p: Prim, seed: number): Options {
   const o = "o" in p ? p.o : undefined
+  const stroke = o?.customStroke ?? INK.ink
   const opts: Options = {
     seed,
     roughness: o?.roughness ?? HAND.roughness,
     bowing: HAND.bowing,
-    stroke: INK.ink,
+    stroke,
     // an explicit strokeWidth is already a considered weight — leave it alone
     strokeWidth: o?.strokeWidth ?? (HAND.strokeWidth * PEN[o?.stroke ?? "ink"]),
     fill: undefined,
@@ -85,7 +86,7 @@ function primOptions(p: Prim, seed: number): Options {
   }
   if (o?.fill && o.fill !== "none") {
     opts.fillStyle = "solid"
-    opts.fill = fillPaint(o)
+    opts.fill = o.customFill ?? fillPaint(o)
   }
   return opts
 }
@@ -132,10 +133,10 @@ interface CrispBit {
   strokeWidth: number
 }
 
-function drawableToPaths(drawable: ReturnType<RoughGenerator["rectangle"]>, dash?: string): PathBit[] {
+function drawableToPaths(drawable: ReturnType<RoughGenerator["rectangle"]>, dash?: string, customStroke?: string): PathBit[] {
   return gen.toPaths(drawable).map((pi) => ({
     d: pi.d,
-    stroke: pi.stroke,
+    stroke: customStroke ?? pi.stroke,
     strokeWidth: pi.strokeWidth,
     fill: pi.fill ?? "none",
     // only dash real strokes — dashing a fill path looks like static
@@ -154,6 +155,7 @@ export function primsToPaths(
   prims.forEach((p, i) => {
     const s = ((seed + i * 7919) % 2 ** 31) || 1
     const dash = "o" in p && p.o?.dashed ? "6 4" : undefined
+    const customStroke = "o" in p ? p.o?.customStroke : undefined
     try {
       // block shadow first, so the surface prints over it
       if ("o" in p && p.o?.shadow && (p.t === "rect" || p.t === "ellipse")) {
@@ -175,18 +177,18 @@ export function primsToPaths(
       switch (p.t) {
         case "rect": {
           const r = p.r ?? p.o?.r ?? HAND.radius
-          paths.push(...drawableToPaths(gen.path(roundRectPath(p.x, p.y, p.w, p.h, r), primOptions(p, s)), dash))
+          paths.push(...drawableToPaths(gen.path(roundRectPath(p.x, p.y, p.w, p.h, r), primOptions(p, s)), dash, customStroke))
           break
         }
         case "ellipse":
-          paths.push(...drawableToPaths(gen.ellipse(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, primOptions(p, s)), dash))
+          paths.push(...drawableToPaths(gen.ellipse(p.x + p.w / 2, p.y + p.h / 2, p.w, p.h, primOptions(p, s)), dash, customStroke))
           break
         case "line":
-          paths.push(...drawableToPaths(gen.line(p.x1, p.y1, p.x2, p.y2, primOptions(p, s)), dash))
+          paths.push(...drawableToPaths(gen.line(p.x1, p.y1, p.x2, p.y2, primOptions(p, s)), dash, customStroke))
           break
         case "poly":
-          if (p.close) paths.push(...drawableToPaths(gen.polygon(p.pts, primOptions(p, s)), dash))
-          else paths.push(...drawableToPaths(gen.linearPath(p.pts, primOptions(p, s)), dash))
+          if (p.close) paths.push(...drawableToPaths(gen.polygon(p.pts, primOptions(p, s)), dash, customStroke))
+          else paths.push(...drawableToPaths(gen.linearPath(p.pts, primOptions(p, s)), dash, customStroke))
           break
         case "path": {
           // Phosphor glyphs are filled outlines, so pen pressure has nothing to
@@ -280,7 +282,7 @@ export const SketchPrims = memo(function SketchPrims({
             fontWeight={t.bold ? 700 : 400}
             fontStyle={t.italic ? "italic" : undefined}
             textDecoration={t.underline ? "underline" : undefined}
-            fill={INK[t.color ?? "ink"]}
+            fill={t.customColor ?? INK[t.color ?? "ink"]}
             textAnchor={t.align === "center" ? "middle" : t.align === "right" ? "end" : "start"}
             transform={mirrorGlyphs(t)}
           >
@@ -311,19 +313,20 @@ export const NodeSketch = memo(function NodeSketch({
     const flip = `${node.flipX ? 1 : 0}${node.flipY ? 1 : 0}`
     // outline settings change the generated geometry, so they belong in the key
     const pen = "stroke" in node ? `${node.stroke ?? ""}:${node.dashed ? 1 : 0}` : ""
+    const customColor = node.color ?? ""
     switch (node.type) {
       case "component":
         return `c:${node.kind}:${node.w}:${node.h}:${flip}:${JSON.stringify(node.props)}`
       case "shape":
-        return `s:${node.shape}:${node.w}:${node.h}:${flip}:${node.fill}:${pen}:${node.roundness ? 1 : 0}`
+        return `s:${node.shape}:${node.w}:${node.h}:${flip}:${node.fill}:${pen}:${node.roundness ? 1 : 0}:${customColor}`
       case "draw":
-        return `d:${node.points.length}:${node.w}:${node.h}:${flip}:${node.points[0]?.join()}:${node.points.at(-1)?.join()}:${pen}`
+        return `d:${node.points.length}:${node.w}:${node.h}:${flip}:${node.points[0]?.join()}:${node.points.at(-1)?.join()}:${pen}:${customColor}`
       case "arrow":
-        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.points.flat().join()}:${pen}:${node.label ?? ""}`
+        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.points.flat().join()}:${pen}:${node.label ?? ""}:${customColor}`
       case "text":
         // w and align place the anchor, so a resize or a realignment is a
         // different set of marks even when the words haven't changed
-        return `t:${node.text}:${node.fontSize}:${node.w}:${node.fixedW ? 1 : 0}:${node.align ?? ""}:${flip}:${node.bold ? 1 : 0}${node.italic ? 1 : 0}${node.underline || node.link ? 1 : 0}`
+        return `t:${node.text}:${node.fontSize}:${node.w}:${node.fixedW ? 1 : 0}:${node.align ?? ""}:${flip}:${node.bold ? 1 : 0}${node.italic ? 1 : 0}${node.underline || node.link ? 1 : 0}:${customColor}`
       case "image":
         // the src doesn't shape a single mark — only the frame's box does
         return `i:${node.w}:${node.h}:${flip}`
