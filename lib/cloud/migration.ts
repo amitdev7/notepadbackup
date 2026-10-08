@@ -43,12 +43,23 @@ export async function migrateLocalDocumentsToCloud(
   let successCount = 0
   let failedCount = 0
 
+  let targetWorkspaceId = workspaceId
+  if (!targetWorkspaceId) {
+    const { data: ws } = await supabase
+      .from("workspaces")
+      .select("id")
+      .eq("owner_id", user.id)
+      .limit(1)
+      .maybeSingle()
+    targetWorkspaceId = ws?.id
+  }
+
   for (const id of docIds) {
     try {
       const localDoc = await getLocalDocument(id)
       if (!localDoc) continue
 
-      const payload = {
+      const payload: any = {
         name: localDoc.name,
         document_json: {
           nodes: localDoc.doc.nodes,
@@ -59,6 +70,9 @@ export async function migrateLocalDocumentsToCloud(
         revision: 1,
         created_by: user.id,
         updated_by: user.id,
+      }
+      if (targetWorkspaceId) {
+        payload.workspace_id = targetWorkspaceId
       }
 
       const { data, error } = await supabase

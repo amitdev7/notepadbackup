@@ -215,6 +215,8 @@ export function Canvas() {
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
   const setViewerDoc = useSquig((s) => s.setViewerDoc)
+  const effectiveRole = useSquig((s) => s.effectiveRole)
+  const isViewer = effectiveRole === "viewer"
 
   const perfSettings = useShellStore((s) => s.preferences.performanceSettings)
   const [canvasSize, setCanvasSize] = useState({ w: 1920, h: 1080 })
@@ -1031,6 +1033,7 @@ export function Canvas() {
 
   const startResize = useCallback(
     (handle: Handle, e: React.PointerEvent) => {
+      if (isViewer) return
       e.stopPropagation()
       e.preventDefault()
       const s = st()
@@ -1122,6 +1125,17 @@ export function Canvas() {
         return
       }
       if (e.button !== 0) return
+
+      if (isViewer) {
+        const hitId = pick(e)
+        if (hitId) {
+          s.setSelection([hitId])
+        } else {
+          s.setSelection([])
+          beginGesture({ kind: "pan", ...common, ox: s.viewport.x, oy: s.viewport.y }, e)
+        }
+        return
+      }
 
       // placing a component from the library
       if (s.placing) {
@@ -1293,6 +1307,15 @@ export function Canvas() {
       }
       const s = st()
       const hitId = pick(e)
+      if (isViewer) {
+        if (hitId) {
+          const n = s.nodes[hitId]
+          if (n?.type === "document") {
+            s.setViewerDoc(n as DocumentNode)
+          }
+        }
+        return
+      }
       if (!hitId) {
         // double-clicking bare canvas starts typing there, the way tldraw
         // does — a dismissed empty draft deletes itself, so a stray
@@ -1485,6 +1508,16 @@ export function Canvas() {
     const onKey = (e: KeyboardEvent) => {
       if (!canvasOwnsKeyboard(e.target)) return
       const s = st()
+      if (s.effectiveRole === "viewer") {
+        if (e.key === "Escape") {
+          if (s.shortcutsOpen) s.setShortcutsOpen(false)
+          else if (s.commandOpen) s.setCommandOpen(false)
+          else if (s.statsOpen) s.setStatsOpen(false)
+          else if (s.searchOpen) s.setSearchOpen(false)
+          else s.setSelection([])
+        }
+        return
+      }
       // AltGr reports as ctrl+alt on several layouts — don't eat those keys
       const mod = (e.metaKey || e.ctrlKey) && !e.altKey
       // match the letter the user actually sees on the key: `e.code` is a
@@ -1968,6 +2001,7 @@ export function Canvas() {
         onStartResize={startResize}
         editing={!!editingId}
         gestureKind={gestureKind}
+        readOnly={isViewer}
       />
 
       {/* smart guides */}
@@ -2083,12 +2117,14 @@ function SelectionOverlay({
   onStartResize,
   editing,
   gestureKind,
+  readOnly,
 }: {
   selectedNodes: SquigNode[]
   viewport: { x: number; y: number; zoom: number }
   onStartResize: (h: Handle, e: React.PointerEvent) => void
   editing: boolean
   gestureKind: Gesture["kind"] | null
+  readOnly?: boolean
 }) {
   const b = unionBounds(selectedNodes)
   // the text editor draws its own dashed box; two boxes on one node is noise
@@ -2107,7 +2143,7 @@ function SelectionOverlay({
   // handles stay up through a resize: they track the box the way tldraw's do,
   // and unmounting them between the two presses of a double-click would hand
   // the second press to the canvas underneath
-  const showHandles = (!gestureKind || gestureKind === "resize") && w > 12 && h > 12
+  const showHandles = !readOnly && (!gestureKind || gestureKind === "resize") && w > 12 && h > 12
   const showWide = w >= HANDLE_ROOM
   const showTall = h >= HANDLE_ROOM
 

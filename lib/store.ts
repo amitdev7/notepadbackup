@@ -438,6 +438,7 @@ function wearLook(set: (partial: Partial<SquigState>) => void, look: Look) {
 
 /** Every edit calls this; the drawer only gets written once the hand rests. */
 function scheduleSave(get: () => SquigState) {
+  if (get().effectiveRole === "viewer") return
   dirty = true
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => flushSave(get), SAVE_DEBOUNCE_MS)
@@ -457,6 +458,7 @@ function flushSave(get: () => SquigState, force = false) {
     saveTimer = null
   }
   const s = get()
+  if (s.effectiveRole === "viewer") return
   // the look goes to prefs too, but only as the default a new file will start
   // from — the copy that matters travels inside the document below
   savePrefs({ look: lookOf(s), contextRow: s.contextRow, activeId: s.docId })
@@ -1506,15 +1508,25 @@ export const useSquig = create<SquigState>((set, get) => ({
         return true
       }
 
+      // Support wrapped document envelope (e.g. Supabase record with document_json)
+      let payload = doc
+      if (doc.document_json) {
+        try {
+          payload = typeof doc.document_json === "string" ? JSON.parse(doc.document_json) : doc.document_json
+        } catch {
+          payload = doc
+        }
+      }
+
       // Support native Zenithsui format
-      if (!doc.nodes || !Array.isArray(doc.order)) return false
+      if (!payload.nodes || !Array.isArray(payload.order)) return false
       // an opened file joins the drawer as its own document, so importing
       // never writes over whatever was on the canvas
       flushSave(get)
-      const clean = sanitize(doc.nodes, doc.order)
+      const clean = sanitize(payload.nodes, payload.order)
       set({
         docId: nanoid(8),
-        fileName: typeof doc.fileName === "string" ? doc.fileName : "imported scribbles",
+        fileName: typeof doc.name === "string" ? doc.name : (typeof payload.fileName === "string" ? payload.fileName : "imported scribbles"),
         nodes: clean.nodes,
         order: clean.order,
         selection: [],
@@ -1524,7 +1536,7 @@ export const useSquig = create<SquigState>((set, get) => ({
         future: [],
       })
       // an import brings its author's ink and paper with it, when it has any
-      if (doc.look) wearLook(set, knownLook(doc.look, lookOf(get())))
+      if (payload.look) wearLook(set, knownLook(payload.look, lookOf(get())))
       // an imported file was drawn wherever its author left it — go there,
       // or the canvas looks empty when it isn't
       if (clean.order.length) fitBox(set, clean.order.map((id) => clean.nodes[id]), 1)

@@ -59,6 +59,7 @@ export interface CanvasDocumentJson {
 
 export interface DocumentRecord {
   id: string
+  workspace_id?: string | null
   project_id: string | null
   name: string
   document_json: CanvasDocumentJson
@@ -128,6 +129,7 @@ export interface ShareLinkRecord {
   token_hash: string
   name: string | null
   permission: SharePermission
+  access_level?: SharePermission
   allow_export: boolean
   allow_duplicate: boolean
   created_by: string

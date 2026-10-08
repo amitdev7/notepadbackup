@@ -31,6 +31,9 @@ export function ViewerClient({
 
   useEffect(() => {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
+    const targetRole = permission === "edit" ? "editor" : "viewer"
+    useSquig.getState().setEffectiveRole(targetRole)
+
     if (doc?.document_json) {
       const jsonStr = typeof doc.document_json === "string"
         ? doc.document_json
@@ -39,7 +42,10 @@ export function ViewerClient({
       if (doc.name) {
         useSquig.getState().setFileName(doc.name)
       }
-      useSquig.getState().setEffectiveRole(permission === "edit" ? "editor" : "viewer")
+    }
+
+    return () => {
+      useSquig.getState().setEffectiveRole("owner")
     }
   }, [doc, permission])
 
@@ -79,6 +85,42 @@ export function ViewerClient({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Quick Zoom Controls */}
+          <div className="flex items-center border border-[#e4e0d4] dark:border-stone-800 rounded-lg overflow-hidden bg-white/60 dark:bg-stone-900/60 p-0.5">
+            <button
+              type="button"
+              onClick={() => useSquig.getState().zoomBy(0.85)}
+              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              title="Zoom Out"
+            >
+              <MagnifyingGlassMinus size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => useSquig.getState().zoomTo100()}
+              className="px-1.5 py-0.5 text-[11px] font-mono text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              title="Zoom to 100%"
+            >
+              100%
+            </button>
+            <button
+              type="button"
+              onClick={() => useSquig.getState().zoomBy(1.15)}
+              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              title="Zoom In"
+            >
+              <MagnifyingGlassPlus size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={() => useSquig.getState().zoomToFit()}
+              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              title="Fit to Content"
+            >
+              <FrameCorners size={14} />
+            </button>
+          </div>
+
           {allowExport && (
             <Button
               size="sm"

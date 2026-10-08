@@ -4,12 +4,23 @@ import { revalidatePath } from "next/cache"
 import { getSupabaseServerClient } from "@/lib/supabase/server"
 import type { CanvasDocumentJson } from "@/lib/db/types"
 
-export async function createDocumentAction(name: string, projectId?: string) {
+export async function createDocumentAction(name: string, projectId?: string, workspaceId?: string) {
   const supabase = await getSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
     throw new Error("Authentication required")
+  }
+
+  let targetWorkspaceId = workspaceId
+  if (!targetWorkspaceId) {
+    const { data: ws } = await supabase
+      .from("workspaces")
+      .select("id")
+      .eq("owner_id", user.id)
+      .limit(1)
+      .maybeSingle()
+    targetWorkspaceId = ws?.id
   }
 
   const defaultDoc: CanvasDocumentJson = {
@@ -18,17 +29,22 @@ export async function createDocumentAction(name: string, projectId?: string) {
     look: { grid: false, theme: "paper" },
   }
 
+  const payload: any = {
+    name: name || "Untitled Drawing",
+    project_id: projectId || null,
+    document_json: defaultDoc,
+    schema_version: 1,
+    revision: 1,
+    created_by: user.id,
+    updated_by: user.id,
+  }
+  if (targetWorkspaceId) {
+    payload.workspace_id = targetWorkspaceId
+  }
+
   const { data, error } = await supabase
     .from("documents")
-    .insert({
-      name: name || "Untitled Drawing",
-      project_id: projectId || null,
-      document_json: defaultDoc,
-      schema_version: 1,
-      revision: 1,
-      created_by: user.id,
-      updated_by: user.id,
-    })
+    .insert(payload)
     .select()
     .single()
 
@@ -97,17 +113,22 @@ export async function duplicateDocumentAction(id: string) {
 
   if (fetchErr || !original) throw new Error("Original document not found")
 
+  const payload: any = {
+    name: `${original.name} (Copy)`,
+    project_id: original.project_id,
+    document_json: original.document_json,
+    schema_version: original.schema_version,
+    revision: 1,
+    created_by: user.id,
+    updated_by: user.id,
+  }
+  if (original.workspace_id) {
+    payload.workspace_id = original.workspace_id
+  }
+
   const { data: copy, error: createErr } = await supabase
     .from("documents")
-    .insert({
-      name: `${original.name} (Copy)`,
-      project_id: original.project_id,
-      document_json: original.document_json,
-      schema_version: original.schema_version,
-      revision: 1,
-      created_by: user.id,
-      updated_by: user.id,
-    })
+    .insert(payload)
     .select()
     .single()
 
