@@ -51,6 +51,7 @@ export interface PrimOpts {
    * fill; don't reach for a paler line, because there isn't one.
    */
   stroke?: InkColor
+  customStroke?: string
   strokeWidth?: number
   /**
    * "shade" is the tinted fill — a flat step off the paper, never a pattern.
@@ -59,6 +60,7 @@ export interface PrimOpts {
    */
   fill?: "none" | "shade" | "solid"
   fillColor?: InkColor
+  customFill?: string
   roughness?: number
   dashed?: boolean
   /** corner radius — rects only; `rect(x, y, w, h, { r: 6 })` */
@@ -80,6 +82,7 @@ export type Prim =
     size: number
     align?: "left" | "center" | "right"
     color?: InkColor
+    customColor?: string
     bold?: boolean
     italic?: boolean
     underline?: boolean

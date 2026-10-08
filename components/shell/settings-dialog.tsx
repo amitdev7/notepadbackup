@@ -1124,27 +1124,28 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
               </span>
               <div className="flex flex-wrap items-center gap-1.5">
                 {COLOR_SWATCHES.map((swatch) => {
-                  const isSelected = draw.customColor.toUpperCase() === swatch.toUpperCase()
+                  const isSelected = draw.customColor.toUpperCase() === swatch.hex.toUpperCase()
                   return (
                     <button
-                      key={swatch}
+                      key={swatch.id}
                       type="button"
                       onClick={() => {
-                        updateDrawSettings({ colorMode: "custom", customColor: swatch })
+                        updateDrawSettings({ colorMode: "custom", customColor: swatch.hex })
                       }}
+                      title={swatch.label}
                       className={cn(
                         "size-6 rounded-md flex items-center justify-center transition-all cursor-pointer shadow-2xs border border-stone-200/50 dark:border-stone-700/50",
                         isSelected
                           ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-[#1C1C1F] scale-110"
                           : "hover:scale-105"
                       )}
-                      style={{ backgroundColor: swatch }}
+                      style={{ backgroundColor: swatch.hex }}
                     >
                       {isSelected && (
                         <Check
                           size={12}
                           weight="bold"
-                          className={swatch === "#FFFFFF" ? "text-stone-900" : "text-white"}
+                          className={swatch.hex === "#FFFFFF" ? "text-stone-900" : "text-white"}
                         />
                       )}
                     </button>
@@ -1340,27 +1341,28 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
               </span>
               <div className="flex flex-wrap items-center gap-1.5">
                 {COLOR_SWATCHES.map((swatch) => {
-                  const isSelected = textCfg.customColor.toUpperCase() === swatch.toUpperCase()
+                  const isSelected = textCfg.customColor.toUpperCase() === swatch.hex.toUpperCase()
                   return (
                     <button
-                      key={swatch}
+                      key={swatch.id}
                       type="button"
                       onClick={() => {
-                        updateTextSettings({ colorMode: "custom", customColor: swatch })
+                        updateTextSettings({ colorMode: "custom", customColor: swatch.hex })
                       }}
+                      title={swatch.label}
                       className={cn(
                         "size-6 rounded-md flex items-center justify-center transition-all cursor-pointer shadow-2xs border border-stone-200/50 dark:border-stone-700/50",
                         isSelected
                           ? "ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-[#1C1C1F] scale-110"
                           : "hover:scale-105"
                       )}
-                      style={{ backgroundColor: swatch }}
+                      style={{ backgroundColor: swatch.hex }}
                     >
                       {isSelected && (
                         <Check
                           size={12}
                           weight="bold"
-                          className={swatch === "#FFFFFF" ? "text-stone-900" : "text-white"}
+                          className={swatch.hex === "#FFFFFF" ? "text-stone-900" : "text-white"}
                         />
                       )}
                     </button>
