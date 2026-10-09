@@ -149,7 +149,7 @@ export function ToolPropertiesPanel() {
         "fixed left-3 sm:left-4 top-16 sm:top-18 z-30 flex flex-col w-[218px] max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar",
         "rounded-2xl border border-stone-200/90 dark:border-stone-800",
         "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-2xl shadow-xl shadow-stone-950/10 dark:shadow-black/60",
-        "p-3.5 space-y-3.5 select-none text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans"
+        "p-3.5 space-y-3.5 select-none text-stone-900 dark:text-stone-100 text-xs animate-panel-left gpu-accelerated font-sans"
       )}
     >
       {/* Header with Title & Collapse */}

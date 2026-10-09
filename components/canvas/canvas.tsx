@@ -22,6 +22,7 @@ import { useShellStore } from "@/lib/shell-store"
 import type { SquigNode, TextNode, DocumentNode, FillTone } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
+import { smoothPoints, pointsToSmoothSvgPath } from "@/lib/canvas/stroke-smoothing"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
 import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
@@ -326,22 +327,59 @@ export function Canvas() {
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
+
+    let wheelRaf: number | null = null
+    let accumDeltaX = 0
+    let accumDeltaY = 0
+    let targetZoomCenter: { sx: number; sy: number } | null = null
+    let accumZoomFactor = 1
+
+    const flushWheel = () => {
+      wheelRaf = null
+      const v = st().viewport
+
+      if (targetZoomCenter && accumZoomFactor !== 1) {
+        const { sx, sy } = targetZoomCenter
+        const newZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * accumZoomFactor))
+        const scale = newZoom / v.zoom
+        const newX = sx - (sx - (v.x - accumDeltaX)) * scale
+        const newY = sy - (sy - (v.y - accumDeltaY)) * scale
+        st().setViewport({ zoom: newZoom, x: newX, y: newY })
+      } else if (accumDeltaX !== 0 || accumDeltaY !== 0) {
+        st().setViewport({ ...v, x: v.x - accumDeltaX, y: v.y - accumDeltaY })
+      }
+
+      accumDeltaX = 0
+      accumDeltaY = 0
+      accumZoomFactor = 1
+      targetZoomCenter = null
+    }
+
     const onWheel = (e: WheelEvent) => {
       e.preventDefault()
-      const v = st().viewport
+
       if (e.ctrlKey || e.metaKey) {
         const r = el.getBoundingClientRect()
-        const [sx, sy] = [e.clientX - r.left, e.clientY - r.top]
-        const factor = Math.exp(-e.deltaY * 0.01)
-        const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * factor))
-        const scale = zoom / v.zoom
-        st().setViewport({ zoom, x: sx - (sx - v.x) * scale, y: sy - (sy - v.y) * scale })
+        targetZoomCenter = { sx: e.clientX - r.left, sy: e.clientY - r.top }
+        // Dampen large wheel notches (mouse wheels) while keeping pinch-zoom responsive
+        const delta = Math.max(-60, Math.min(60, e.deltaY))
+        const factor = Math.exp(-delta * 0.006)
+        accumZoomFactor *= factor
       } else {
-        st().setViewport({ ...v, x: v.x - e.deltaX, y: v.y - e.deltaY })
+        accumDeltaX += e.deltaX
+        accumDeltaY += e.deltaY
+      }
+
+      if (wheelRaf === null) {
+        wheelRaf = requestAnimationFrame(flushWheel)
       }
     }
+
     el.addEventListener("wheel", onWheel, { passive: false })
-    return () => el.removeEventListener("wheel", onWheel)
+    return () => {
+      el.removeEventListener("wheel", onWheel)
+      if (wheelRaf !== null) cancelAnimationFrame(wheelRaf)
+    }
   }, [st])
 
   // -- snapping -------------------------------------------------------------
@@ -742,13 +780,14 @@ export function Canvas() {
 
     if (g.kind === "draw") {
       if (g.points.length > 2) {
-        const xs = g.points.map((p) => p[0])
-        const ys = g.points.map((p) => p[1])
+        const drawPrefs = useShellStore.getState().preferences.drawSettings
+        const smoothedPoints = smoothPoints(g.points, drawPrefs?.smoothing ?? "medium")
+        const xs = smoothedPoints.map((p) => p[0])
+        const ys = smoothedPoints.map((p) => p[1])
         const x = Math.min(...xs)
         const y = Math.min(...ys)
         const w = Math.max(Math.max(...xs) - x, 2)
         const h = Math.max(Math.max(...ys) - y, 2)
-        const drawPrefs = useShellStore.getState().preferences.drawSettings
         const customColor = s.activeStyle.strokeColor || (drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined)
         s.addNode(
           {
@@ -757,7 +796,7 @@ export function Canvas() {
             y,
             w,
             h,
-            points: g.points.map((p) => [p[0] - x, p[1] - y] as [number, number]),
+            points: smoothedPoints.map((p) => [p[0] - x, p[1] - y] as [number, number]),
             stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
             dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
             color: customColor,
@@ -946,6 +985,29 @@ export function Canvas() {
         finishGesture()
         return
       }
+      if (g.kind === "draw") {
+        const events = (typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : null) || [e]
+        const v = st().viewport
+        for (let i = 0; i < events.length; i++) {
+          const ev = events[i]
+          const [lx, ly] = toLocal({ clientX: ev.clientX, clientY: ev.clientY })
+          const [wx, wy] = screenToWorld(v, lx, ly)
+          const last = g.points[g.points.length - 1]
+          if (!last || Math.hypot(wx - last[0], wy - last[1]) >= 0.5) {
+            g.points.push([wx, wy])
+          }
+        }
+        if (gestureRafRef.current === null) {
+          gestureRafRef.current = requestAnimationFrame(() => {
+            gestureRafRef.current = null
+            if (gestureRef.current?.kind === "draw") {
+              setLivePoints([...gestureRef.current.points])
+            }
+          })
+        }
+        return
+      }
+
       if (gestureRafRef.current === null) {
         gestureRafRef.current = requestAnimationFrame(() => {
           gestureRafRef.current = null
@@ -955,7 +1017,7 @@ export function Canvas() {
         })
       }
     },
-    [updateGesture, maybeAutoPan, finishGesture]
+    [updateGesture, maybeAutoPan, finishGesture, toLocal, st]
   )
 
   const beginGesture = useCallback(
@@ -1078,7 +1140,7 @@ export function Canvas() {
         e
       )
     },
-    [isViewer, st, beginGesture, toWorld, resetTextWidth]
+    [st, beginGesture, toWorld, resetTextWidth, isViewer]
   )
 
   const onPointerDown = useCallback(
@@ -1295,7 +1357,7 @@ export function Canvas() {
       const softHitId = pickSoftAt(s.nodes, s.order, wx, wy)
       beginGesture({ kind: "marquee", ...common, wx, wy, base: s.selection, softHitId }, e)
     },
-    [isViewer, pick, st, tool, isSpacebarHeld, toWorld, beginGesture, dropComponent]
+    [st, tool, isSpacebarHeld, toWorld, beginGesture, dropComponent, isViewer, pick]
   )
 
   const onDoubleClick = useCallback(
@@ -1358,7 +1420,7 @@ export function Canvas() {
       }
       if (hasEditableText(n)) s.setEditing(hitId)
     },
-    [isViewer, st, pick, toWorld]
+    [st, pick, toWorld, isViewer]
   )
 
   const onContextMenu = useCallback(
@@ -1893,8 +1955,8 @@ export function Canvas() {
             )
           })}
           {livePoints && livePoints.length > 1 && (
-            <polyline
-              points={livePoints.map((p) => p.join(",")).join(" ")}
+            <path
+              d={pointsToSmoothSvgPath(livePoints)}
               fill="none"
               stroke="var(--sq-ink)"
               strokeWidth={2 / v.zoom < 2 ? 2 : 2 / v.zoom}

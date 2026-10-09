@@ -188,6 +188,7 @@ export function primsToPaths(
           break
         case "poly":
           if (p.close) paths.push(...drawableToPaths(gen.polygon(p.pts, primOptions(p, s)), dash, customStroke))
+          else if (p.curve && p.pts.length > 2) paths.push(...drawableToPaths(gen.curve(p.pts, primOptions(p, s)), dash, customStroke))
           else paths.push(...drawableToPaths(gen.linearPath(p.pts, primOptions(p, s)), dash, customStroke))
           break
         case "path": {

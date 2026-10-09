@@ -75,7 +75,7 @@ export type Prim =
   | ({ t: "rect"; x: number; y: number; w: number; h: number; r?: number } & { o?: PrimOpts })
   | ({ t: "ellipse"; x: number; y: number; w: number; h: number } & { o?: PrimOpts })
   | ({ t: "line"; x1: number; y1: number; x2: number; y2: number } & { o?: PrimOpts })
-  | ({ t: "poly"; pts: [number, number][]; close?: boolean } & { o?: PrimOpts })
+  | ({ t: "poly"; pts: [number, number][]; close?: boolean; curve?: boolean } & { o?: PrimOpts })
   | {
     t: "text"
     x: number

@@ -75,8 +75,8 @@ export function basePrims(node: SquigNode): Prim[] {
       return [{ t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: node.roundness ? 16 : 6, o }]
     }
     case "draw":
-      // freehand is already the user's own line — barely roughen it
-      return [{ t: "poly", pts: node.points, o: outline(node, 1.9, { roughness: 0.2 }) }]
+      // freehand is already the user's own line — barely roughen it with smooth curve fitting
+      return [{ t: "poly", pts: node.points, curve: true, o: outline(node, 1.9, { roughness: 0.2 }) }]
     case "arrow": {
       const [[x1, y1], [x2, y2]] = node.points
       const o = outline(node, 1.6)

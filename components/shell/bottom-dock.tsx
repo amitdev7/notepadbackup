@@ -147,7 +147,7 @@ export function BottomDock() {
         "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
         "bg-white/90 dark:bg-[#1C1C1F]/90 backdrop-blur-xl",
         "shadow-lg shadow-stone-900/8 dark:shadow-black/40",
-        "animate-dock-enter"
+        "animate-dock-enter gpu-accelerated"
       )}
     >
       {/* ── Brand / Workspace Menu (Image 1) ── */}

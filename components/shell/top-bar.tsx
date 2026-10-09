@@ -53,7 +53,7 @@ export function TopBar() {
   return (
     <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Document Title + Files Popover */}
-      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/70 dark:border-stone-800/70 shadow-xs shadow-stone-900/5 min-w-0 transition-all duration-200">
+      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/70 dark:border-stone-800/70 shadow-xs shadow-stone-900/5 min-w-0 transition-all duration-200 gpu-accelerated">
         {isEditingTitle ? (
           <input
             ref={inputRef}

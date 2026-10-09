@@ -137,7 +137,7 @@ export function ContextRow({
   const live = (make: (n: SquigNode) => Partial<SquigNode> | null) => patch(make, false)
 
   return (
-    <Panel ref={measure} className="absolute z-20 flex-row items-center gap-3 px-2.5 py-2 animate-popover-enter shadow-lg" style={style}>
+    <Panel ref={measure} className="absolute z-20 flex-row items-center gap-3 px-2.5 py-2 animate-popover-enter shadow-lg gpu-accelerated" style={style}>
       {multi && <AlignRow count={selectedNodes.length} />}
       {multi && (quick.length > 0 || showFill || showHead || showText) && <span className="h-4 w-px bg-border" />}
 
