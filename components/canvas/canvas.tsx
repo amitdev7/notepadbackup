@@ -1078,7 +1078,7 @@ export function Canvas() {
         e
       )
     },
-    [st, beginGesture, toWorld, resetTextWidth]
+    [isViewer, st, beginGesture, toWorld, resetTextWidth]
   )
 
   const onPointerDown = useCallback(
@@ -1295,7 +1295,7 @@ export function Canvas() {
       const softHitId = pickSoftAt(s.nodes, s.order, wx, wy)
       beginGesture({ kind: "marquee", ...common, wx, wy, base: s.selection, softHitId }, e)
     },
-    [st, tool, isSpacebarHeld, toWorld, beginGesture, dropComponent]
+    [isViewer, pick, st, tool, isSpacebarHeld, toWorld, beginGesture, dropComponent]
   )
 
   const onDoubleClick = useCallback(
@@ -1358,7 +1358,7 @@ export function Canvas() {
       }
       if (hasEditableText(n)) s.setEditing(hitId)
     },
-    [st, pick, toWorld]
+    [isViewer, st, pick, toWorld]
   )
 
   const onContextMenu = useCallback(

@@ -91,6 +91,20 @@ export function ToolPropertiesPanel() {
   const hasDraw = isDrawTool || selectedNodes.some((n) => n.type === "draw")
   const hasArrow = isArrowTool || selectedNodes.some((n) => n.type === "arrow")
   const hasText = isTextTool || selectedNodes.some((n) => n.type === "text")
+  const hasSticky = isStickyTool || selectedNodes.some((n) => n.type === "sticky")
+
+  // For pure freedraw pencil mode (matching universal sketch spec & screenshot):
+  const isPureDraw =
+    (isDrawTool && !isSelectionActive) ||
+    (isSelectionActive && selectedNodes.length > 0 && selectedNodes.every((n) => n.type === "draw"))
+
+  const showBackground = (hasShape || hasSticky) && !isPureDraw && !isLaserTool && !hasText && !hasArrow
+  const showFill = hasShape && !isPureDraw && !isLaserTool && !hasText && !hasArrow
+  const showStrokeWidth = !hasText && !hasSticky
+  const showPressure = !isPureDraw && isDrawTool
+  const showEdges = hasShape && !isPureDraw && !isLaserTool && !hasText && !hasArrow
+  const showStrokeStyle = (hasShape || hasArrow) && !isPureDraw && !isLaserTool && !hasText
+  const showTextOptions = hasText || hasSticky
 
   const headerTitle = isSelectionActive
     ? selectedNodes.length === 1
@@ -172,7 +186,7 @@ export function ToolPropertiesPanel() {
                 onClick={() => setActiveStyle({ strokeColor: c })}
                 style={{ backgroundColor: c }}
                 className={cn(
-                  "size-6 rounded-lg border border-black/10 dark:border-white/10 transition-transform cursor-pointer shrink-0",
+                  "size-7 rounded-xl border border-black/10 dark:border-white/10 transition-transform cursor-pointer shrink-0",
                   isSelected
                     ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-[#1C1C1F] scale-105"
                     : "hover:scale-105"
@@ -193,7 +207,7 @@ export function ToolPropertiesPanel() {
             <button
               type="button"
               onClick={() => strokeColorInputRef.current?.click()}
-              className="size-6 rounded-lg border border-stone-300 dark:border-stone-700 bg-gradient-to-tr from-rose-400 via-amber-300 to-blue-500 hover:scale-105 transition-transform cursor-pointer shrink-0"
+              className="size-7 rounded-xl border border-stone-300 dark:border-stone-700 bg-gradient-to-tr from-rose-400 via-amber-300 to-blue-500 hover:scale-105 transition-transform cursor-pointer shrink-0"
               title="Custom stroke color"
             />
           </div>
@@ -201,7 +215,7 @@ export function ToolPropertiesPanel() {
       </div>
 
       {/* ── 2. Background (Fill Color) ─────────────────────────────────────── */}
-      {!hasText && !hasArrow && !isLaserTool && (
+      {showBackground && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5 flex items-center justify-between">
             <span>Background</span>
@@ -234,7 +248,7 @@ export function ToolPropertiesPanel() {
                       : { backgroundColor: c }
                   }
                   className={cn(
-                    "size-6 rounded-lg border border-black/10 dark:border-white/10 transition-transform cursor-pointer shrink-0",
+                    "size-7 rounded-xl border border-black/10 dark:border-white/10 transition-transform cursor-pointer shrink-0",
                     isSelected
                       ? "ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-[#1C1C1F] scale-105"
                       : "hover:scale-105"
@@ -255,7 +269,7 @@ export function ToolPropertiesPanel() {
               <button
                 type="button"
                 onClick={() => bgColorInputRef.current?.click()}
-                className="size-6 rounded-lg border border-stone-300 dark:border-stone-700 bg-gradient-to-tr from-emerald-300 via-teal-300 to-indigo-400 hover:scale-105 transition-transform cursor-pointer shrink-0"
+                className="size-7 rounded-xl border border-stone-300 dark:border-stone-700 bg-gradient-to-tr from-emerald-300 via-teal-300 to-indigo-400 hover:scale-105 transition-transform cursor-pointer shrink-0"
                 title="Custom background color"
               />
             </div>
@@ -264,7 +278,7 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 3. Fill Style ──────────────────────────────────────────────────── */}
-      {(hasShape || isDrawTool) && !isLaserTool && (
+      {showFill && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
             Fill
@@ -328,16 +342,16 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 4. Stroke Width ────────────────────────────────────────────────── */}
-      {!hasText && (
+      {showStrokeWidth && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
             Stroke width
           </div>
           <div className="flex items-center gap-2">
             {[
-              { id: "light" as StrokeWeight, label: "Thin", height: 1.5 },
-              { id: "regular" as StrokeWeight, label: "Medium", height: 3 },
-              { id: "heavy" as StrokeWeight, label: "Thick", height: 5 },
+              { id: "light" as StrokeWeight, label: "Thin", height: 2 },
+              { id: "regular" as StrokeWeight, label: "Medium", height: 3.5 },
+              { id: "heavy" as StrokeWeight, label: "Thick", height: 5.5 },
             ].map(({ id, label, height }) => {
               const isSelected = activeStyle.strokeWidth === id
               return (
@@ -348,14 +362,17 @@ export function ToolPropertiesPanel() {
                   className={cn(
                     "flex-1 h-9 rounded-xl flex items-center justify-center transition-all cursor-pointer",
                     isSelected
-                      ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100 ring-1 ring-blue-500/50 shadow-2xs"
-                      : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
+                      ? "bg-blue-600/20 border-2 border-blue-500 text-white dark:bg-[#16274a] dark:border-blue-500 shadow-2xs font-semibold"
+                      : "bg-stone-100/90 dark:bg-[#27272A] border border-transparent text-stone-400 dark:text-stone-300 hover:bg-stone-200/90 dark:hover:bg-[#323236]"
                   )}
                   title={label}
                   aria-label={label}
                 >
                   <span
-                    className="block w-4 rounded-full bg-current"
+                    className={cn(
+                      "block w-5 rounded-full transition-colors",
+                      isSelected ? "bg-white" : "bg-stone-400 dark:bg-stone-300"
+                    )}
                     style={{ height }}
                   />
                 </button>
@@ -366,7 +383,7 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 5. Pressure / Sloppiness ───────────────────────────────────────── */}
-      {isDrawTool && (
+      {showPressure && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
             Pressure
@@ -424,7 +441,7 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 6. Edges / Roundness (for Shapes) ──────────────────────────────── */}
-      {hasShape && (
+      {showEdges && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
             Edges
@@ -474,7 +491,7 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 7. Stroke Style (Solid vs Dashed) ──────────────────────────────── */}
-      {(hasShape || hasArrow) && (
+      {showStrokeStyle && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
             Stroke style
@@ -524,7 +541,7 @@ export function ToolPropertiesPanel() {
       )}
 
       {/* ── 8. Text Options (Font, Size, Align) ────────────────────────────── */}
-      {hasText && (
+      {showTextOptions && (
         <>
           <div>
             <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -641,7 +658,7 @@ export function ToolPropertiesPanel() {
           />
           <div className="flex items-center justify-between text-[10px] text-stone-400 font-mono">
             <span>0</span>
-            <span>{activeStyle.opacity}</span>
+            <span>100</span>
           </div>
         </div>
       </div>
