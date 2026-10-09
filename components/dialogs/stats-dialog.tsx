@@ -2,7 +2,7 @@
 
 import { useMemo } from "react"
 import { useSquig } from "@/lib/store"
-import { computeCanvasStats } from "@/lib/excalidraw/stats"
+import { computeCanvasStats } from "@/lib/canvas-core/stats"
 import { ChartPieSlice, X, Selection, Shapes, VectorThree } from "@phosphor-icons/react"
 
 export function StatsDialog() {

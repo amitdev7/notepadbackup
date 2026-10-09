@@ -4,7 +4,7 @@
 // ---------------------------------------------------------------------------
 
 import { useSquig } from "./store"
-import { parseExcalidrawLibrary, isExcalidrawLibrary } from "./excalidraw/index"
+import { parseExcalidrawLibrary, isExcalidrawLibrary } from "./canvas-core/index"
 
 export function exportDoc() {
   const s = useSquig.getState()

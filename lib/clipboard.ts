@@ -30,7 +30,7 @@ import {
   tryParseSpreadsheet,
   renderBarChart,
   parseExcalidrawLibrary,
-} from "./excalidraw/index"
+} from "./canvas-core/index"
 
 // -- copying out ------------------------------------------------------------
 

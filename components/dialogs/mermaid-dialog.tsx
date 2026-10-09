@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useSquig } from "@/lib/store"
-import { parseMermaidToZenithsui } from "@/lib/excalidraw/mermaid"
+import { parseMermaidToZenithsui } from "@/lib/canvas-core/mermaid"
 import { TreeStructure, X, Sparkle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 

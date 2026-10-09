@@ -8,7 +8,7 @@ import {
   renderLineChart,
   renderRadarChart,
   type ChartType,
-} from "@/lib/excalidraw/charts"
+} from "@/lib/canvas-core/charts"
 import { ChartBar, ChartLine, Compass, X, Sparkle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 

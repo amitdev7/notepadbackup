@@ -1,10 +1,10 @@
-*
+﻿*
 !.env.development
 !.env.production
 !.eslintrc.json
 !.npmrc
 !.prettierrc
-!excalidraw-app/
+!zenithsui-app/
 !package.json
 !public/
 !packages/

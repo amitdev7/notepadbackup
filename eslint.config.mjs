@@ -27,7 +27,7 @@ const eslintConfig = defineConfig([
     "mouse/**",
     "files/**",
     "packages/**",
-    "excalidraw-app/**",
+    "zenithsui-app/**",
     "examples/**",
     "dev-docs/**",
     "firebase-project/**",

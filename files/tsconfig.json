@@ -1,4 +1,4 @@
-{
+﻿{
   "compilerOptions": {
     "rootDir": "./",
     "target": "ESNext",
@@ -35,6 +35,6 @@
       "@excalidraw/utils/*": ["./packages/utils/src/*"]
     }
   },
-  "include": ["packages", "excalidraw-app"],
+  "include": ["packages", "zenithsui-app"],
   "exclude": ["examples", "dist", "types", "tests"]
 }

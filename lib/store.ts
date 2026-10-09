@@ -35,7 +35,7 @@ import {
 } from "./storage/documents"
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
-import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./excalidraw/index"
+import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./canvas-core/index"
 
 // ---------------------------------------------------------------------------
 // Store — flat node map + z-order, selection, viewport, tool, history.
