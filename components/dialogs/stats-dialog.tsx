@@ -19,28 +19,15 @@ export function StatsDialog() {
   if (!open) return null
 
   return (
-    <div className="macos-window fixed top-16 right-4 z-40 w-80 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-xl animate-popover-enter">
-      {/* Header with macOS Traffic Lights */}
+    <div className="fixed top-16 right-4 z-40 w-80 overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-xl animate-popover-enter">
+      {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-stone-200/60 dark:border-stone-800/60">
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 group">
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-              className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
-            />
-            <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
-            <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
-          </div>
-          <div className="flex items-center gap-1.5 ml-1">
-            <ChartPieSlice size={15} weight="bold" className="text-blue-600 dark:text-blue-400" />
-            <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">Canvas Stats</span>
-          </div>
+        <div className="flex items-center gap-2">
+          <ChartPieSlice size={16} weight="bold" className="text-blue-600 dark:text-blue-400" />
+          <span className="text-xs font-semibold text-stone-900 dark:text-stone-100">Canvas & Element Stats</span>
         </div>
         <button
           onClick={() => setOpen(false)}
-          aria-label="Close"
           className="p-1 rounded-md text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
         >
           <X size={14} />

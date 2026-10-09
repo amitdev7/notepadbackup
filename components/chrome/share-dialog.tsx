@@ -345,22 +345,20 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
           <button
             type="button"
             onClick={() => setActiveTab("collaborate")}
-            className={`pb-1 transition-colors ${
-              activeTab === "collaborate"
-                ? "border-b-2 border-primary text-foreground font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`pb-1 transition-colors ${activeTab === "collaborate"
+              ? "border-b-2 border-primary text-foreground font-semibold"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             Collaborators &amp; Links
           </button>
           <button
             type="button"
             onClick={() => setActiveTab("publish")}
-            className={`pb-1 transition-colors ${
-              activeTab === "publish"
-                ? "border-b-2 border-primary text-foreground font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+            className={`pb-1 transition-colors ${activeTab === "publish"
+              ? "border-b-2 border-primary text-foreground font-semibold"
+              : "text-muted-foreground hover:text-foreground"
+              }`}
           >
             Publish to Web
           </button>
@@ -561,9 +559,8 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
                     {links.map((link) => (
                       <div
                         key={link.id}
-                        className={`flex items-center justify-between rounded-md border p-2.5 text-xs ${
-                          link.is_active ? "border-border bg-card" : "border-border/30 bg-muted/10 opacity-60"
-                        }`}
+                        className={`flex items-center justify-between rounded-md border p-2.5 text-xs ${link.is_active ? "border-border bg-card" : "border-border/30 bg-muted/10 opacity-60"
+                          }`}
                       >
                         <div className="space-y-0.5">
                           <div className="flex items-center gap-2">
