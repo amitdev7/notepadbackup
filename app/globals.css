@@ -548,3 +548,46 @@
   transition-duration: 0.01ms !important;
   scroll-behavior: auto !important;
 }
+
+/* ── Zenithsui Custom Range Slider ── */
+.sq-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sq-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1971c2;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease;
+}
+
+.sq-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.12);
+}
+
+.sq-range-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #1971c2;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.1s ease;
+}
+
+.sq-range-slider::-moz-range-thumb:hover {
+  transform: scale(1.12);
+}
