@@ -7,6 +7,7 @@
 // Search, Page, Settings, and Zoom controls.
 // ---------------------------------------------------------------------------
 
+import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
@@ -76,6 +77,107 @@ const ALL_TOOLS: ToolDef[] = [
   { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary" },
 ]
 
+// ── macOS Dock Item with Continuous Cosine Magnification & Indicator ─────────
+
+interface DockItemButtonProps {
+  id: string
+  label: string
+  shortcut?: string
+  active?: boolean
+  onClick?: () => void
+  onPointerDown?: (e: React.PointerEvent) => void
+  mouseX: number | null
+  bouncing?: boolean
+  children: React.ReactNode
+  className?: string
+  showIndicator?: boolean
+  "data-dock-page-btn"?: boolean
+}
+
+function DockItemButton({
+  label,
+  shortcut,
+  active = false,
+  onClick,
+  onPointerDown,
+  mouseX,
+  bouncing = false,
+  children,
+  className,
+  showIndicator = false,
+  "data-dock-page-btn": dataDockPageBtn,
+}: DockItemButtonProps) {
+  const btnRef = useRef<HTMLButtonElement>(null)
+  const [isHovered, setIsHovered] = useState(false)
+
+  useEffect(() => {
+    const el = btnRef.current
+    if (!el) return
+    if (bouncing) {
+      el.style.transform = ""
+      return
+    }
+    if (mouseX === null) {
+      el.style.transform = "translateY(0px) scale(1)"
+      return
+    }
+    const rect = el.getBoundingClientRect()
+    const center = rect.left + rect.width / 2
+    const dist = Math.abs(mouseX - center)
+    const maxDist = 72
+    if (dist < maxDist) {
+      const factor = Math.cos((dist / maxDist) * (Math.PI / 2))
+      const scale = 1 + 0.3 * factor
+      const translateY = -((scale - 1) * 12)
+      el.style.transform = `translateY(${translateY}px) scale(${scale})`
+    } else {
+      el.style.transform = "translateY(0px) scale(1)"
+    }
+  }, [mouseX, bouncing])
+
+  return (
+    <div className="relative flex flex-col items-center">
+      {/* macOS floating tooltip pill */}
+      {isHovered && (
+        <div className="macos-tooltip absolute -top-8.5 left-1/2 -translate-x-1/2 pointer-events-none z-50 whitespace-nowrap px-2.5 py-0.5 rounded-md text-[11px] font-medium tracking-tight animate-in fade-in-0 zoom-in-95 duration-100">
+          {label}{shortcut ? ` (${shortcut})` : ""}
+        </div>
+      )}
+
+      <button
+        ref={btnRef}
+        type="button"
+        onClick={onClick}
+        onPointerDown={onPointerDown}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        aria-label={label}
+        aria-pressed={active}
+        data-dock-page-btn={dataDockPageBtn ? "" : undefined}
+        style={{
+          transformOrigin: "bottom center",
+        }}
+        className={cn(
+          "relative flex items-center justify-center size-7.5 sm:size-8 rounded-xl cursor-pointer select-none",
+          "transition-transform duration-100 ease-[cubic-bezier(0.2,0.9,0.3,1)]",
+          bouncing && "animate-macos-bounce",
+          active
+            ? "bg-blue-600 text-white shadow-xs shadow-blue-600/30"
+            : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10",
+          className
+        )}
+      >
+        {children}
+      </button>
+
+      {/* macOS running indicator dot */}
+      {showIndicator && active && (
+        <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-1 rounded-full bg-blue-600 dark:bg-blue-400 shadow-xs pointer-events-none" />
+      )}
+    </div>
+  )
+}
+
 // ── BottomDock ────────────────────────────────────────────────────────────────
 
 export function BottomDock() {
@@ -106,6 +208,16 @@ export function BottomDock() {
   const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const settingsOpen = useShellStore((s) => s.settingsOpen)
+
+  const [mouseX, setMouseX] = useState<number | null>(null)
+  const [bouncingId, setBouncingId] = useState<string | null>(null)
+
+  const triggerBounce = (id: string) => {
+    setBouncingId(id)
+    setTimeout(() => {
+      setBouncingId((curr) => (curr === id ? null : curr))
+    }, 900)
+  }
 
   const handleToolClick = (t: ToolDef) => {
     if (t.id === "library") {
@@ -141,13 +253,15 @@ export function BottomDock() {
   return (
     <nav
       aria-label="Main dock"
+      onMouseMove={(e) => setMouseX(e.clientX)}
+      onMouseLeave={() => setMouseX(null)}
       className={cn(
-        "fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
-        "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)] overflow-x-auto no-scrollbar",
+        "macos-dock fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
+        "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)] overflow-visible",
         "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
         "bg-white/90 dark:bg-[#1C1C1F]/90 backdrop-blur-xl",
         "shadow-lg shadow-stone-900/8 dark:shadow-black/40",
-        "animate-dock-enter gpu-accelerated"
+        "animate-dock-enter gpu-accelerated select-none"
       )}
     >
       {/* ── Brand / Workspace Menu (Image 1) ── */}
@@ -263,29 +377,29 @@ export function BottomDock() {
         <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
       )}
 
-      {/* ── Tool Picker (Image 4) ── */}
+      {/* ── Tool Picker with Magnification & Indicator Dots ── */}
       {visibleTools.length > 0 && (
         <div className="flex items-center gap-0.5 shrink-0">
           {visibleTools.map((t) => {
             const Icon = t.icon
             const active = isToolActive(t)
             return (
-              <button
+              <DockItemButton
                 key={t.id}
-                type="button"
-                onClick={() => handleToolClick(t)}
-                title={`${t.label}${t.shortcut ? ` (${t.shortcut})` : ""}`}
-                aria-label={t.label}
-                aria-pressed={active}
-                className={cn(
-                  "relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer tactile-tool",
-                  active
-                    ? "bg-blue-600 text-white shadow-xs shadow-blue-600/30 scale-105"
-                    : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-                )}
+                id={t.id}
+                label={t.label}
+                shortcut={t.shortcut}
+                active={active}
+                mouseX={mouseX}
+                bouncing={bouncingId === t.id}
+                showIndicator
+                onClick={() => {
+                  triggerBounce(t.id)
+                  handleToolClick(t)
+                }}
               >
                 <Icon size={16} weight={active ? "bold" : "regular"} aria-hidden="true" />
-              </button>
+              </DockItemButton>
             )
           })}
         </div>
@@ -296,72 +410,78 @@ export function BottomDock() {
         <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
       )}
 
-      {/* ── Quick Actions: Search / Stats / Page / Settings (Image 4 right) ── */}
+      {/* ── Quick Actions: Search / Stats / Page / Settings ── */}
       {hasQuickActions && (
         <div className="flex items-center gap-0.5 shrink-0">
           {/* Find in canvas (⌘F) */}
           {dockControls.actionSearch && (
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              title="Find in canvas (⌘F)"
-              aria-label="Find in canvas (⌘F)"
-              className="tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+            <DockItemButton
+              id="search"
+              label="Find in canvas"
+              shortcut="⌘F"
+              mouseX={mouseX}
+              bouncing={bouncingId === "search"}
+              onClick={() => {
+                triggerBounce("search")
+                setSearchOpen(true)
+              }}
             >
               <MagnifyingGlass size={16} aria-hidden="true" />
-            </button>
+            </DockItemButton>
           )}
 
           {/* Canvas Stats (⌘/) */}
           {dockControls.actionStats && (
-            <button
-              type="button"
-              onClick={() => setStatsOpen(true)}
-              title="Canvas Statistics (⌘/)"
-              aria-label="Canvas Statistics (⌘/)"
-              className="tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+            <DockItemButton
+              id="stats"
+              label="Canvas Statistics"
+              shortcut="⌘/"
+              mouseX={mouseX}
+              bouncing={bouncingId === "stats"}
+              onClick={() => {
+                triggerBounce("stats")
+                setStatsOpen(true)
+              }}
             >
               <ChartBar size={16} aria-hidden="true" />
-            </button>
+            </DockItemButton>
           )}
 
           {/* Page Popover Toggle */}
           {dockControls.actionPage && (
-            <button
-              type="button"
+            <DockItemButton
+              id="page"
+              label="Page & Canvas"
               data-dock-page-btn
-              onClick={togglePagePopover}
-              title="Page & Canvas"
-              aria-label="Page settings"
-              aria-expanded={pagePopoverOpen}
-              className={cn(
-                "tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl",
-                pagePopoverOpen
-                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 scale-105"
-                  : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-              )}
+              active={pagePopoverOpen}
+              mouseX={mouseX}
+              bouncing={bouncingId === "page"}
+              showIndicator
+              onClick={() => {
+                triggerBounce("page")
+                togglePagePopover()
+              }}
             >
               <File size={16} aria-hidden="true" />
-            </button>
+            </DockItemButton>
           )}
 
           {/* Settings Toggle */}
           {dockControls.actionSettings && (
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(!settingsOpen)}
-              title="Settings"
-              aria-label="Settings"
-              aria-expanded={settingsOpen}
-              className={cn(
-                "tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl",
-                settingsOpen
-                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 scale-105"
-                  : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-              )}
+            <DockItemButton
+              id="settings"
+              label="Settings"
+              active={settingsOpen}
+              mouseX={mouseX}
+              bouncing={bouncingId === "settings"}
+              showIndicator
+              onClick={() => {
+                triggerBounce("settings")
+                setSettingsOpen(!settingsOpen)
+              }}
             >
               <Gear size={16} aria-hidden="true" />
-            </button>
+            </DockItemButton>
           )}
         </div>
       )}
@@ -371,15 +491,15 @@ export function BottomDock() {
         <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
       )}
 
-      {/* ── Zoom Controls (Image 3) ── */}
+      {/* ── macOS Segmented Zoom Pill ── */}
       {dockControls.zoomControls && (
-        <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+        <div className="hidden sm:flex items-center gap-0.5 px-1 py-0.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10 shrink-0">
           <button
             type="button"
             onClick={() => zoomBy(1 / 1.2)}
             title="Zoom Out"
             aria-label="Zoom out"
-            className="tactile-btn flex items-center justify-center size-7 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="flex items-center justify-center size-6.5 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Minus size={13} aria-hidden="true" />
           </button>
@@ -389,7 +509,7 @@ export function BottomDock() {
             onClick={zoomTo100}
             title="Reset to 100%"
             aria-label={`Current zoom ${zoomPercent}%, click to reset to 100%`}
-            className="tactile-pill min-w-[42px] text-center px-1.5 py-0.5 rounded-lg text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="min-w-[42px] text-center px-1.5 py-0.5 rounded-md text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
             {zoomPercent}%
           </button>
@@ -399,7 +519,7 @@ export function BottomDock() {
             onClick={() => zoomBy(1.2)}
             title="Zoom In"
             aria-label="Zoom in"
-            className="tactile-btn flex items-center justify-center size-7 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="flex items-center justify-center size-6.5 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
           >
             <Plus size={13} aria-hidden="true" />
           </button>

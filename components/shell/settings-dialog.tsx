@@ -168,7 +168,7 @@ export function SettingsDialog() {
         role="dialog"
         aria-label="Settings"
         className={cn(
-          "relative flex flex-col md:flex-row w-[820px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)]",
+          "macos-window relative flex flex-col md:flex-row w-[820px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)]",
           "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
           "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-2xl shadow-stone-900/20 dark:shadow-black/70",
           "overflow-hidden font-sans animate-modal-enter select-none"
@@ -176,8 +176,18 @@ export function SettingsDialog() {
       >
         {/* ── Left Sidebar: Category List ── */}
         <aside className="w-full md:w-[220px] shrink-0 border-b md:border-b-0 md:border-r border-stone-200/70 dark:border-stone-800/70 bg-stone-50/70 dark:bg-stone-900/50 py-3 px-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar">
-          <div className="hidden md:flex items-center justify-between px-2.5 mb-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+          <div className="hidden md:flex items-center gap-2.5 px-2.5 mb-3 pt-0.5">
+            <div className="flex items-center gap-1.5 group">
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                aria-label="Close"
+                className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
+              />
+              <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+              <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+            </div>
+            <span className="ml-1 text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
               Settings
             </span>
           </div>

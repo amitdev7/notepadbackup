@@ -285,14 +285,26 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
         if (e.key === "Escape") onClose()
       }}
     >
-      <div className="w-full max-w-xl max-h-[92vh] flex flex-col rounded-xl border border-border bg-card p-4 sm:p-6 shadow-2xl text-card-foreground overflow-hidden">
-        {/* Header */}
+      <div className="macos-window w-full max-w-xl max-h-[92vh] flex flex-col rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-4 sm:p-6 shadow-2xl text-card-foreground overflow-hidden animate-modal-enter">
+        {/* Header with macOS Traffic Lights */}
         <div className="flex items-center justify-between pb-3 border-b border-border">
-          <div className="flex items-center gap-2">
-            <ShareNetwork size={18} className="text-muted-foreground" />
-            <h2 id="share-dialog-title" className="font-sans text-sm font-semibold tracking-tight truncate">
-              Share &ldquo;{fileName}&rdquo;
-            </h2>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 group">
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
+              />
+              <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+              <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+            </div>
+            <div className="flex items-center gap-2">
+              <ShareNetwork size={16} className="text-muted-foreground" />
+              <h2 id="share-dialog-title" className="font-sans text-xs sm:text-sm font-semibold tracking-tight truncate">
+                Share &ldquo;{fileName}&rdquo;
+              </h2>
+            </div>
           </div>
           <button
             type="button"
@@ -300,7 +312,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
             className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             aria-label="Close dialog"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 

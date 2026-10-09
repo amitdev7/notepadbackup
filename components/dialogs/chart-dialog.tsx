@@ -80,24 +80,42 @@ export function ChartDialog() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-popover-enter">
-      <div className="relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white dark:bg-[#1C1C1F] shadow-2xl flex flex-col max-h-[90vh]">
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-stone-200/60 dark:border-stone-800/60">
-          <div className="flex items-center gap-2.5">
-            <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
-              <ChartBar size={18} weight="bold" />
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-150"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) setOpen(false)
+      }}
+    >
+      <div className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter">
+        {/* Header with macOS Traffic Lights */}
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200/60 dark:border-stone-800/60">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 group">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="Close"
+                className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
+              />
+              <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+              <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
             </div>
-            <div>
-              <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
-              <p className="text-xs text-stone-500 dark:text-stone-400">Convert spreadsheet or table data into canvas elements</p>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center size-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                <ChartBar size={16} weight="bold" />
+              </div>
+              <div>
+                <h2 className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
+                <p className="text-[11px] text-stone-500 dark:text-stone-400">Convert spreadsheet or table data into canvas elements</p>
+              </div>
             </div>
           </div>
           <button
             onClick={() => setOpen(false)}
+            aria-label="Close"
             className="p-1 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors"
           >
-            <X size={16} />
+            <X size={15} />
           </button>
         </div>
 
