@@ -29,7 +29,6 @@ const eslintConfig = defineConfig([
     "packages/**",
     "zenithsui-app/**",
     "examples/**",
-    "dev-docs/**",
     "firebase-project/**",
     "setupTests.ts",
     "vitest.config.mts",

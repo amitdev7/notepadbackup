@@ -19,7 +19,7 @@ import {
   parseExcalidrawLibrary,
   LaserTrailEngine,
   computeCanvasStats,
-} from "../lib/excalidraw/index.ts"
+} from "../lib/canvas-core/index.ts"
 import type { ShapeNode, ArrowNode, TextNode, SquigNode } from "../lib/types.ts"
 
 console.log("=== Running Zenithsui Excalidraw Full Integration Test Suite ===")

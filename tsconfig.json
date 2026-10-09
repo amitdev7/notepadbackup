@@ -48,8 +48,6 @@
     "zenithsui-app/**/*",
     "examples",
     "examples/**/*",
-    "dev-docs",
-    "dev-docs/**/*",
     "firebase-project",
     "firebase-project/**/*",
     "setupTests.ts",
