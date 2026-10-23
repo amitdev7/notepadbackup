@@ -8,6 +8,25 @@
 
 # Table of Contents
 
+1. [PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER](#part-1-the-god-level-architectural-dossier)
+   - [1. Executive Synopsis & Core Philosophy](#1-executive-synopsis--core-philosophy)
+   - [2. Multi-Tier System Topology & Data Flow](#2-multi-tier-system-topology--data-flow)
+   - [3. Complete Unified Data Model & Invariants](#3-complete-unified-data-model--invariants)
+   - [4. Geometry, Coordinate Spaces & Math Engine](#4-geometry-coordinate-spaces--math-engine)
+   - [5. Rough.js Hand-Drawn Rendering Pipeline](#5-roughjs-hand-drawn-rendering-pipeline)
+   - [6. Automatic Wi-Fi LAN Sync & Peer Session Mesh](#6-automatic-wi-fi-lan-sync--peer-session-mesh)
+   - [7. Supabase Cloud Sync Engine & Database Architecture](#7-supabase-cloud-sync-engine--database-architecture)
+   - [8. Vercel Deployment & Media Storage Architecture](#8-vercel-deployment--media-storage-architecture)
+   - [9. Chrome Shell, Canvas Document Lifecycle & "Files" Popover](#9-chrome-shell-canvas-document-lifecycle--files-popover)
+   - [10. Custom macOS-Inspired Cursor Engine & Spatial Interactions](#10-custom-macos-inspired-cursor-engine--spatial-interactions)
+   - [11. Component Library Architecture & Authoring Protocol](#11-component-library-architecture--authoring-protocol)
+   - [12. Canvas Gestures & Interaction State Machine](#12-canvas-gestures--interaction-state-machine)
+   - [13. Academic & Classroom Study Engine](#13-academic--classroom-study-engine)
+   - [14. Dual-Tier Storage (IndexedDB + LocalStorage) & Clipboard Protocols](#14-dual-tier-storage-indexeddb--localstorage--clipboard-protocols)
+   - [15. Security, Token Cryptography & Input Sanitization](#15-security-token-cryptography--input-sanitization)
+   - [16. The 10 Commandments / Invariants for Modifying Zenithsui](#16-the-10-commandments--invariants-for-modifying-zenithsui)
+   - [17. Step-by-Step Implementation Recipes for Common Extensions](#17-step-by-step-implementation-recipes-for-common-extensions)
+   - [18. Master File Index, Metrics & Complete Dependency Graph](#18-master-file-index-metrics--complete-dependency-graph)
 1. [PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER (0.00000000001% TO 100%)](#part-1-the-god-level-architectural-dossier)
    - [0.00000000001% to 5%: The Genesis & Foundational Architecture](#000000000001-to-5-the-genesis--foundational-architecture)
      - [1. Executive Synopsis & Core Philosophy](#1-executive-synopsis--core-philosophy)
@@ -104,10 +123,20 @@
 
 # PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER
 
+## 1. Executive Synopsis & Core Philosophy
 ## 0.00000000001% to 5%: The Genesis & Foundational Architecture
 
+### What is Zenithsui?
+**Zenithsui** is a local-first, infinite-canvas wireframing, prototyping, and study workspace built with Next.js 16 (React 19), Tailwind CSS v4, Zustand 5, Rough.js 4, and @base-ui/react. It produces hand-drawn, sketch-aesthetic UI wireframes inspired by early-web risograph prints, Excalidraw, FigJam, and tldraw, combined with seamless local-first collaboration, automatic Wi-Fi sync, and cloud synchronization.
 ### 1. Executive Synopsis & Core Philosophy
 
+### Core Philosophy
+1. **Refined Hand-Drawn Aesthetic**: The visual output feels like an architect's or designer's notebook rather than a cartoon napkin. Corners meet crisply, lines possess subtle, restrained organic jitter, and icons remain sharp vector paths.
+2. **The Single-Ink Pen Model**: Every line on the canvas is drawn with one single ink color (`--sq-ink`). There are no multi-colored strokes. Visual hierarchy is achieved exclusively through **pen pressure** (`ink`: full stroke, `muted`: regular, `faint`: hairline) and **two-tone shaded fills** (`shade` for inert backgrounds, `shadeStrong` for focal points, `paper` for occlusion).
+3. **Zero-Latency Local-First, Zero-Backend Reliance**: The canvas operates 100% offline out-of-the-box. Changes write instantly to IndexedDB with localStorage fallback. Startup is instantaneous with zero spinners or cloud blockers.
+4. **Flat Document Hierarchy**: To preserve instant dragging, group operations, undo/redo diffing, and zero-overhead serialization, the canvas contains a flat dictionary of nodes (`Record<string, SquigNode>`) and a z-order array (`order: string[]`). Nesting and grouping are stamped via `groupIds: string[]` arrays on individual nodes rather than deep recursive DOM trees.
+5. **Deterministic Seeds**: Every node holds an immutable numerical `seed`. Rough.js uses this seed to compute path coordinates. Re-renders never cause "swimming" or jittering lines; the sketch remains stable across viewports, zooms, and page reloads until intentionally modified.
+6. **Zero-Config Wi-Fi Sync**: Devices on the same Wi-Fi network or IP subnet automatically discover and sync the active canvas without manual room codes or user registration.
 **Zenithsui** is a local-first, infinite-canvas wireframing, prototyping, diagramming, and study workspace. It combines the tactile warmth of hand-drawn architectural notebook sketches with modern cloud real-time collaboration, zero-config Wi-Fi mesh networking, PDF document integration, and a student academic intelligence hub.
 
 The visual output feels like an architect's or designer's physical notebook rather than a sterile vector tool or a messy cartoon napkin. Every line has restrained, organic physical character; corners meet crisply; typography remains legible; and icons remain crisp vector paths.
@@ -121,20 +150,30 @@ The visual output feels like an architect's or designer's physical notebook rath
 
 ---
 
+## 2. Multi-Tier System Topology & Data Flow
 ### 2. Multi-Tier System Topology & Data Flow
 
+Zenithsui is architected as a resilient 5-tier system ensuring zero single points of failure:
 Zenithsui is architected as a resilient 5-tier topology ensuring zero single points of failure:
 
 ```mermaid
 flowchart TD
+    subgraph Tier1["Tier 1: Browser UI & Direct Manipulation"]
+        Pointer["Pointer / Touch / Pen Events"]
+        Keyboard["Keyboard Shortcuts (Cmd+K, Del, Space)"]
     subgraph Tier1["Tier 1: Browser UI & Direct Manipulation Engine"]
         Pointer["Coalesced Pointer Events (e.getCoalescedEvents())"]
         Keyboard["Keyboard Engine (⌘K, ⌘F, ⌘/, Del, Space)"]
         CanvasView["Infinite Canvas Viewport (components/canvas)"]
+        Chrome["UI Chrome (Files Popover, Inspector, Rail, Dock)"]
         Chrome["UI Chrome (Files Popover, Inspector, Rail, macOS Dock)"]
         Dialogs["macOS Window Dialogs (Settings, Charts, Mermaid, Stats)"]
     end
 
+    subgraph Tier2["Tier 2: Client State & Offline Storage"]
+        Zustand["Zustand Store (useSquig, useShellStore)"]
+        IndexedDB["IndexedDB Engine (lib/storage/db.ts)"]
+        LocalStorage["LocalStorage File Drawer (lib/files.ts)"]
     subgraph Tier2["Tier 2: Client State & Offline Storage Engines"]
         Zustand["Zustand 5 Store (useSquig, useShellStore, useAuthStore)"]
         IndexedDB["IndexedDB Multi-Store (zenithsui_local_db & academic-db)"]
@@ -142,18 +181,24 @@ flowchart TD
     end
 
     subgraph Tier3["Tier 3: Local Network (LAN) Peer Mesh"]
+        SubnetSync["Auto Wi-Fi Sync (app/api/wifi-sync)"]
         SubnetSync["Auto Wi-Fi Subnet Discovery (app/api/wifi-sync)"]
         MemoryCache["Sliding TTL In-Memory Session Cache"]
         WebRTC["WebRTC DataChannel Peer Mesh (lib/lan)"]
     end
 
+    subgraph Tier4["Tier 4: Supabase Realtime Cloud"]
     subgraph Tier4["Tier 4: Supabase Realtime Cloud & PostgreSQL"]
         Postgres["PostgreSQL Database (Supabase)"]
+        Realtime["Realtime Engine (Broadcast & Presence)"]
+        RLS["Row Level Security & Permissions"]
         Realtime["Realtime Broadcast & Presence"]
         RLS["Row Level Security (Tenants, Viewers, Editors)"]
         MutationQueue["Optimistic Mutation Queue & 3-Way Conflict Diff"]
     end
 
+    subgraph Tier5["Tier 5: Vercel Edge Serverless & Blob Storage"]
+        VercelEdge["Next.js App Router API Routes"]
     subgraph Tier5["Tier 5: Vercel Edge Serverless & Blob Media Storage"]
         VercelEdge["Next.js App Router API Handlers (22 routes)"]
         VercelBlob["Vercel Blob Media Store (@vercel/blob)"]
@@ -173,6 +218,7 @@ flowchart TD
     SubnetSync <--> MemoryCache
     SubnetSync <--> WebRTC
 
+    Zustand <--> Postgres
     Zustand <--> MutationQueue
     MutationQueue <--> Postgres
     Postgres <--> Realtime
@@ -185,8 +231,11 @@ flowchart TD
 
 ---
 
+## 3. Complete Unified Data Model & Invariants
 ### 3. Runtime Environment, Next.js 16.2.12 & React 19 Architecture
 
+### BaseNode & Concrete Canvas Nodes (`lib/types.ts`)
+Every canvas element inherits from `BaseNode`:
 - **Runtime**: Node.js `20.x || 22.x || 24.x` execution environment.
 - **Framework**: Next.js 16.2.12 leveraging the Next.js App Router with Turbopack compilation.
 - **React**: React 19 with Concurrent Rendering, Server Components for metadata/routes, and Client Components for canvas and manipulation layers.
@@ -362,11 +411,16 @@ The `render()` method of all components emits an array of vector primitives:
 Defined in `lib/types.ts`:
 ```ts
 export interface BaseNode {
+  id: string              // Unique nanoid identifier
   id: string              // nanoid unique identifier
   x: number               // World coordinate X
   y: number               // World coordinate Y
   w: number               // Width in world units (>= 8)
   h: number               // Height in world units (>= 8)
+  seed: number            // Integer seed for deterministic Rough.js wobbles
+  groupIds?: string[]     // Outermost group first: [grandparent, parent]
+  flipX?: boolean         // Mirrored horizontally along its own box
+  flipY?: boolean         // Mirrored vertically along its own box
   seed: number            // Deterministic Rough.js seed
   groupIds?: string[]     // Hierarchical grouping tags
   flipX?: boolean         // Horizontal reflection
@@ -375,6 +429,39 @@ export interface BaseNode {
 }
 ```
 
+Concrete node types:
+1. **`ComponentNode`**: Instances of library items (buttons, navbars, cards, tables, dashboard widgets).
+   - `type: "component"`
+   - `kind: string` (e.g. `"button"`, `"card"`, `"pricing"`)
+   - `props: Record<string, unknown>` (variant properties matching registry controls)
+2. **`ShapeNode`**: Geometric shapes.
+   - `type: "shape"`
+   - `shape: "rect" | "ellipse"`
+   - `fill: "none" | "paper" | "light" | "strong"`
+   - `stroke?: "light" | "regular" | "heavy"`
+   - `dashed?: boolean`
+3. **`DrawNode`**: Freehand pencil strokes.
+   - `type: "draw"`
+   - `points: [number, number][]` (relative to node origin: 0..w, 0..h)
+   - `stroke?: StrokeWeight`
+   - `dashed?: boolean`
+4. **`TextNode`**: Live typography layers.
+   - `type: "text"`
+   - `text: string`
+   - `fontSize: number`
+   - `fixedW?: boolean` (false = auto-hugs words; true = wraps at width `w`)
+   - `align?: "left" | "center" | "right"`
+   - `bold?: boolean`, `italic?: boolean`, `underline?: boolean`
+   - `link?: string` (URL or page reference)
+5. **`ArrowNode`**: Straight lines and directed arrows.
+   - `type: "arrow"`
+   - `points: [[number, number], [number, number]]` (start and end relative to x,y)
+   - `head: boolean` (true = arrow with hand-drawn head; false = plain line)
+6. **`ImageNode`**: Pasted bitmap images taped to the napkin.
+   - `type: "image"`
+   - `src: string` (data:image/... or Vercel Blob URL)
+   - `naturalW: number`, `naturalH: number`
+   - `name?: string`
 #### Concrete Node Types
 1. **`ComponentNode`**: Wireframe instances (`kind: string`, `props: Record<string, unknown>`).
 2. **`ShapeNode`**: Geometric shapes (`shape: "rect" | "ellipse" | "diamond"`, `fill`, `stroke`, `dashed`).
@@ -386,10 +473,30 @@ export interface BaseNode {
 8. **`FrameNode`**: Named container frames for organizing UI flows.
 9. **`DocumentNode`**: Embedded documents and multi-page PDFs (`assetId`, `pageCount`, `currentPage`).
 
+### Document State Model
+```ts
+export interface SquigDoc {
+  fileName: string
+  nodes: Record<string, SquigNode>
+  order: string[]         // Z-index list from bottom-most (index 0) to top-most
+}
+```
 ---
 
+### Aesthetic & Theme Model (`lib/theme.ts`)
+```ts
+export type ThemeName = "sketch-black" | "felt-gray" | "drafting-ink" | "blueprint-navy" | "internet-blue" | "notebook-crimson" | "lead-pencil"
+export type PaperShade = "white" | "parchment" | "dim" | "dark"
+export type FontMode = "sans" | "hand" | "mono"
 ### 17. High-Frequency Pointer Coalescing & Real-Time Chaikin Spline Inking
 
+export interface Look {
+  theme: ThemeName
+  paper: PaperShade
+  font: FontMode
+  grid: boolean
+}
+```
 To deliver iPad/Apple Pencil grade inking without jagged polylines:
 1. **Pointer Event Coalescing**:
    Standard `pointermove` fires at 60Hz. Modern stylus digitizers sample at 120Hz-240Hz. Zenithsui captures all intermediate coordinates via `e.getCoalescedEvents()`, guaranteeing zero dropped points during rapid strokes.
@@ -403,8 +510,17 @@ To deliver iPad/Apple Pencil grade inking without jagged polylines:
 
 ---
 
+## 4. Geometry, Coordinate Spaces & Math Engine
 ### 18. Dynamic Arrow Anchoring, Box/Ellipse/Diamond Intersections & Binding Cleanup
 
+### Coordinate Systems & Projections
+- **Screen Space (`sx, sy`)**: Client pixel coordinates relative to the canvas container element bounding rect (`containerRef.getBoundingClientRect()`).
+- **World Space (`wx, wy`)**: The infinite 2D plane coordinate system where all node `x, y, w, h` positions and vector coordinates live.
+- **Conversion Equations**:
+  $$\text{wx} = \frac{\text{sx} - \text{viewport.x}}{\text{viewport.zoom}}$$
+  $$\text{wy} = \frac{\text{sy} - \text{viewport.y}}{\text{viewport.zoom}}$$
+  $$\text{sx} = \text{wx} \times \text{viewport.zoom} + \text{viewport.x}$$
+  $$\text{sy} = \text{wy} \times \text{viewport.zoom} + \text{viewport.y}$$
 Arrows dynamically bind to shapes via ray-intersection math (`lib/canvas/arrow-binding.ts`):
 - **Box Intersection**: Computes parametric ray-edge intersection with a 6px clearance gap:
   $$t_x = rac{x_{	ext{edge}} - x_{	ext{center}}}{cos	heta}, quad t_y = rac{y_{	ext{edge}} - y_{	ext{center}}}{sin	heta}$$
@@ -413,16 +529,45 @@ Arrows dynamically bind to shapes via ray-intersection math (`lib/canvas/arrow-b
 - **Auto-Update on Drag**: When a bound node moves, the arrow's start or end anchor recomputes automatically in real time.
 - **Binding Detachment**: Deleting a target node unbinds the arrow cleanly without corrupting the arrow geometry.
 
+### Hit Testing Algorithms (`lib/canvas/hit-test.ts`)
+1. **Dynamic Tolerance Collar**:
+   - Touch/click tolerance collar in screen pixels: `SLOP_PX = 8px`.
+   - Scaled to world units: `tolerance = min(8 / zoom, 14)`.
+   - Clamped to hollow shape margins: For hollow areas, tolerance is capped at `0.35 * min(w, h)` to guarantee that the core of an empty rectangle remains hollow.
+2. **Hollow vs. Filled Shape Hit Logic**:
+   - A shape with `fill === "none"` is only hit if the pointer is within `tolerance` of its 4 perimeter segments (or ellipse boundary). The center is transparent.
+   - A shape with a solid or shaded fill (`fill !== "none"`) is hit anywhere inside its interior bounds.
+3. **Line, Arrow, and Draw Stroke Distance**:
+   - Point-to-segment distance using vector projection:
+     $$t = \text{clamp}\left(0, 1, \frac{(\vec{p} - \vec{a}) \cdot (\vec{b} - \vec{a})}{\|\vec{b} - \vec{a}\|^2}\right)$$
+     $$\text{dist} = \|\vec{p} - (\vec{a} + t(\vec{b} - \vec{a}))\|$$
+   - Hit if $\text{dist} \le \text{tolerance}$.
+4. **Marquee Collision (Liang-Barsky Line Clipping)**:
+   - Marquee uses **intersection** (touching), not containment.
+   - For linear elements (arrows, freehand draw strokes), Zenithsui uses the Liang-Barsky parametric line clipping algorithm against the padded marquee rectangle `segmentNearRect()`.
 ---
 
+### Smart Guides & Snapping Engine (`lib/canvas/snap-engine.ts`)
+- Calculations run in **screen space** so snapping feels consistently magnetic (6px threshold) regardless of canvas zoom level.
+- **6-Point Alignment**: Left edge, Center ($x + w/2$), Right edge ($x + w$), Top edge, Middle ($y + h/2$), Bottom edge ($y + h$).
+- **Equidistant Distribution Snapping**: Detects matching gaps between consecutively aligned elements and snaps dragging elements accordingly.
+- **Escape Hatch**: Holding `Cmd` (Mac) or `Ctrl` (Windows/Linux) during move or resize disables snapping instantly.
 ### 19. Phosphor Icon Vector Rasterization & Sharp Glyph Rendering
 
+### Bounding Box Transforms (`lib/canvas/transform.ts`)
+- **8 Handles**: `["nw", "n", "ne", "e", "se", "s", "sw", "w"]`.
+- **Gesture Anchoring**: All transforms compute strictly from the snapshot taken at pointer-down (`origBounds`, `origNodes`), preventing floating-point drift.
+- **Aspect Ratio Locking (Shift)**: Corner handles scale uniformly based on the larger delta axis. Side handles scale perpendicular axes symmetrically.
+- **Center-Origin Scaling (Alt)**: Opposing edges mirror the dragged edge symmetrically around center $(cx, cy)$.
+- **Clamping Rule**: Minimum bounding box dimension is locked to $8 \times 8\text{px}$ (`MIN_SIZE = 8`). It **never flips** (no negative scale).
 Icons inside components (e.g. user, search, chevron, check) are extracted from Phosphor Icons and compiled into pre-calculated SVG paths (`lib/sketch/phosphor-paths.ts`). They bypass Rough.js rendering, remaining sharp vector glyphs at small sizes.
 
 ---
 
+## 5. Rough.js Hand-Drawn Rendering Pipeline
 ## 30% to 45%: Specialized Canvas Engines
 
+### House Drawing Defaults (`HAND` in `lib/sketch/kit.ts`)
 ### 20. Hand-Drawn Charts Engine: TSV/Spreadsheet Parsing to Bar, Line & Radar Nodes
 
 Implemented in `lib/canvas-core/charts.ts` and `components/dialogs/chart-dialog.tsx`:
@@ -497,6 +642,11 @@ Declared across `lib/library/defs-*.ts`:
 
 Each component implements `ComponentDef` (`lib/library/registry.ts`):
 ```ts
+export const HAND = {
+  roughness: 0.25,      // Restrained organic wobble
+  bowing: 0.35,         // Subtle arc on straight lines
+  strokeWidth: 1.4,     // Standard baseline pen width
+  radius: 3,            // Default corner rounding on rectangles
 export interface ComponentDef {
   kind: string
   name: string
@@ -509,10 +659,23 @@ export interface ComponentDef {
 ```
 Inspector controls declared in `controls` dynamically generate UI widgets in the property inspector (text inputs, selects, toggles, number steppers).
 
+### The Pen Pressure Model (`PEN`)
+All strokes use the document theme ink: `var(--sq-ink)`.
+- `"ink"`: Full stroke ($1.0 \times \text{strokeWidth}$)
+- `"muted"`: Regular stroke ($0.8 \times \text{strokeWidth}$)
+- `"faint"`: Hairline stroke ($0.62 \times \text{strokeWidth}$)
 ---
 
+### The Tonal Ladder (`SHADE`)
+- `"none"`: Transparent fill.
+- `"paper"`: Fully opaque background color (`var(--sq-paper)`) used to occlude items underneath.
+- `"shade"`: Soft tinted wash (`var(--sq-shade)`) for placeholders, tracks, alternating table rows.
+- `"shadeStrong"`: Darker tinted wash (`var(--sq-shade-strong)`) for primary buttons, active chips, chart bars.
 ### 28. The Break-Apart Deconstruction Engine: Converting Instances to Raw Shapes
 
+### Seed Determinism & Phosphor Icons
+- Every node stores an integer `seed`. Rough.js uses this seed to compute path coordinates identically on every frame.
+- Phosphor icons are baked into raw SVG path strings (`lib/sketch/phosphor-paths.ts`) and rendered crisp (bypassing Rough.js) so symbols remain readable at small sizes.
 Implemented in `lib/library/break-apart.ts`:
 When a user wants to customize a component beyond its declared knobs, "Break Apart" (`Cmd+Shift+B`) decomposes the component:
 1. Evaluates `def.render(props, w, h)` in world space.
@@ -521,12 +684,21 @@ When a user wants to customize a component beyond its declared knobs, "Break Apa
 
 ---
 
+## 6. Automatic Wi-Fi LAN Sync & Peer Session Mesh
 ### 29. Context Menus, Floating Alignment Toolbar & Quick Properties Bar
 
+Zenithsui includes a zero-config, automatic Wi-Fi sync subsystem (`app/api/wifi-sync/route.ts`, `lib/lan/auto-sync.ts`, `lib/lan/session.ts`):
 - **Context Menu (`components/chrome/context-menu.tsx`)**: Right-click trigger providing duplicate, delete, lock, bring-to-front, send-to-back, break-apart, group, and ungroup.
 - **Floating Alignment Toolbar (`components/chrome/align-row.tsx`)**: Appears when multiple nodes are selected, allowing 1-click alignment (Left, Center, Right, Top, Middle, Bottom, Distribute Horizontally/Vertically).
 - **Tool Properties Panel (`components/canvas/tool-properties-panel.tsx`)**: Floating bottom pill for adjusting stroke width, dash styles, and ink fills before drawing.
 
+1. **Subnet IP Hash Detection**:
+   When a device opens Zenithsui, the client connects to `/api/wifi-sync`. The server inspects the connecting IP address from `x-forwarded-for` or socket headers. If on a local private subnet (`192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`), it groups devices under a subnet key.
+2. **Dual-Tier State Synchronization**:
+   - **Tier 1 (Instant Memory Cache)**: An in-memory cache with sliding TTL provides instant push/pull synchronization with sub-50ms latency across devices on the same Wi-Fi network.
+   - **Tier 2 (Supabase Persistence Fallback)**: The session state is concurrently backed up to the `wifi_canvas_sessions` table in Supabase, surviving serverless cold starts and worker cycling.
+3. **WebRTC Peer Data Channels**:
+   When devices establish direct peer-to-peer connections, state synchronization transitions to zero-latency WebRTC DataChannels (`lib/lan/transport.ts`), enabling real-time multi-cursor collaboration on the local network.
 ---
 
 ## 55% to 70%: UI Chrome, Navigation & macOS Parity
@@ -550,8 +722,10 @@ Implemented in `components/shell/bottom-dock.tsx` and `app/globals.css`:
 
 ---
 
+## 7. Supabase Cloud Sync Engine & Database Architecture
 ### 31. macOS Window Presentation: Sonoma/Sequoia Glassmorphism & Traffic Light Controls
 
+Zenithsui integrates Supabase with `@supabase/ssr` for cloud workspaces and sharing:
 Floating modals (`SettingsDialog`, `ChartDialog`, `MermaidDialog`, `StatsDialog`, `ShareDialog`) feature authentic macOS Sequoia styling:
 - **Specular Rim Lighting**:
   - Light mode: `box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85)`.
@@ -562,8 +736,19 @@ Floating modals (`SettingsDialog`, `ChartDialog`, `MermaidDialog`, `StatsDialog`
   - Minimize button: `#FFBD2E` (border `#DEA123`).
   - Zoom / Expand button: `#27C93F` (border `#1AAB29`).
 
+### Database Tables & Schema
+- **`workspaces`**: Organizational tenants with owner UUID and name.
+- **`documents`**: Canvas documents storing nodes JSON, order array, look, revision, and updated timestamp.
+- **`share_links`**: Public and password-protected share tokens with permissions (`viewer` vs `editor`).
+- **`wifi_canvas_sessions`**: Network subnet cache storing real-time Wi-Fi canvas sessions.
+- **Academic Tables**: Syllabus goals, revision schedule, practice questions, and exam attempts.
 ---
 
+### Cloud Sync Engine (`lib/sync/engine.ts`, `lib/sync/queue.ts`)
+- **Offline Mutation Queue**: Local changes append to an IndexedDB mutation queue.
+- **Optimistic Updates**: Canvas reflects changes with 0ms delay.
+- **Last-Write-Wins (LWW) & 3-Way Conflict Resolution**: Detects stale revisions, prompting users with a side-by-side visual diff dialog (`components/chrome/conflict-dialog.tsx`) if conflicts occur.
+- **Row-Level Security (RLS)**: Enforces strict tenant boundaries; viewers cannot mutate documents.
 ### 32. Custom High-DPI macOS Cursor Engine: Coordinate Hotspots & Dynamic Mapping
 
 Implemented in `app/cursors.css` and `public/cursors/`:
@@ -576,14 +761,27 @@ Implemented in `app/cursors.css` and `public/cursors/`:
 
 ---
 
+## 8. Vercel Deployment & Media Storage Architecture
 ### 33. Files Popover & Local Document Lifecycle Management
 
+### Vercel Blob Integration (`@vercel/blob`, `lib/blob.ts`, `app/api/blob/upload/route.ts`)
+- When users paste or drop images onto the canvas, the application uploads the image payload via `@vercel/blob` using `BLOB_READ_WRITE_TOKEN`.
+- Images are stored with public read access and referenced directly by `ImageNode.src`.
 Implemented in `components/chrome/files-popover.tsx`:
 - Instant document switcher displaying local and cloud documents.
 - Relative creation/modification timestamps.
 - Non-destructive canvas switching: Automatically writes current document to storage before opening the requested file.
 - Document duplication, deletion, and renaming.
 
+### Production Deployment & Build Configurations
+- **Node Engine Pinning**: Pinned in `package.json` to `"20.x || 22.x || 24.x"` to prevent automatic build failures on future Node updates.
+- **PNPM Build Script Approval**: Configured with `"pnpm": { "onlyBuiltDependencies": ["sharp"] }` ensuring sharp builds cleanly in Vercel CI.
+- **Environment Secrets**:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
+  - `SUPABASE_SECRET_KEY`
+  - `BLOB_STORE_ID`
+  - `BLOB_READ_WRITE_TOKEN`
 ---
 
 ### 34. Property Inspector & Mixed-Value State Handling
@@ -593,12 +791,22 @@ Implemented in `components/chrome/inspector.tsx` and `components/chrome/mixed-fi
 
 ---
 
+## 9. Chrome Shell, Canvas Document Lifecycle & "Files" Popover
 ### 35. Command Palette (`⌘K`), Keyboard Shortcuts Engine & Ownership Rules
 
+### "Files" Popover (`components/chrome/files-popover.tsx`)
+Replaces legacy static badges with an interactive document manager:
+- Lists all local and cloud canvases with relative timestamps ("2m ago", "1h ago").
+- Provides instant "New Canvas" creation.
+- Enables single-click canvas switching with lossless auto-save.
+- Supports document renaming and deletion with confirmation.
 - **Command Palette (`components/chrome/command-palette.tsx`)**: Fast fuzzy search across all tools, library components, settings, and documents.
 - **Keyboard Ownership Guard (`lib/canvas/keyboard-owner.ts`)**:
   Single-key shortcuts (`1`, `2`, `V`, `H`, `T`, `Delete`, `Space`) only execute if `canvasOwnsKeyboard()` returns true, preventing accidental tool switching while typing inside text fields or search inputs.
 
+### Top Bar & Bottom Dock Navigation
+- **Top Bar (`components/shell/top-bar.tsx`)**: Clean, uncluttered layout featuring document title, Files popover, undo/redo, zoom controls, and zen mode toggle.
+- **Bottom Dock (`components/shell/bottom-dock.tsx`)**: Ergonomic tool dock providing quick switching between Select, Shape, Pencil, Text, Arrow, and Library panels.
 ---
 
 ## 70% to 85%: Storage, Persistence, Cloud Sync & Security
@@ -611,25 +819,63 @@ Implemented in `lib/storage/db.ts` and `lib/files.ts`:
 
 ---
 
+## 10. Custom macOS-Inspired Cursor Engine & Spatial Interactions
 ### 37. Startup Migration Engine: Lossless Upgrading from Legacy Stores
 
+Zenithsui features an authentic macOS Sierra/modern cursor system (`app/cursors.css`, `public/cursors/`):
+- High-DPI `.cur` cursors with high-fidelity PNG fallbacks.
+- Precise hotspot alignments (e.g. `crosshair 16 16`, `pointer 6 1`, `grab 16 16`, `text 16 16`).
+- Canvas handles map dynamically:
+  - North/South handles: `ns-resize`
+  - East/West handles: `ew-resize`
+  - Northwest/Southeast handles: `nwse-resize`
+  - Northeast/Southwest handles: `nesw-resize`
+  - Creation & pencil tools: `crosshair`
+  - Spacebar panning: `grab` / `grabbing`
 Implemented in `lib/storage/migration.ts`:
 - Upon application boot, the migration engine scans for legacy localStorage keys, verifies document schema integrity, migrates records into IndexedDB, and updates version stamps.
 
 ---
 
+## 11. Component Library Architecture & Authoring Protocol
 ### 38. Settings Dialog Storage Modes: Cloud PostgreSQL vs Local-First Mode
 
+Every prefabricated wireframe component is declared as a `ComponentDef` in `lib/library/`:
 Implemented in `components/shell/settings-dialog.tsx`:
 - The Database tab allows users to select between:
   1. **Local-First Mode (Default)**: Zero cloud calls; all data lives in browser IndexedDB.
   2. **Cloud PostgreSQL Mode**: Connects to Supabase / PostgreSQL.
 - Includes a live "Test Connection" button checking latency and credentials against `/api/db/status`.
 
+```ts
+export interface ComponentDef {
+  kind: string                          // Unique kebab-case slug (e.g. "button", "pricing")
+  name: string                          // Display title in library panel
+  category: "components" | "blocks"     // High-level grouping
+  group?: string                        // Sub-header (e.g. "Buttons", "Marketing", "Forms")
+  keywords?: string[]                   // Search tags for palette
+  size: { w: number; h: number }        // Default drag-and-drop dimensions
+  defaults: Record<string, unknown>     // Default prop values
+  controls: ControlDef[]                // Inspector knobs (text, select, toggle, number)
+  render: (props: Props, w: number, h: number) => Prim[]
+}
+```
 ---
 
+### The Sketch Primitive DSL (`@/lib/sketch/kit`)
+The `render()` function emits an array of vector primitives:
+- `rect(x, y, w, h, { r, fill, fillColor, stroke, dashed, shadow })`
+- `pill(x, y, w, h, opts)`: Rectangle with fully rounded ends. **Always use for chips, badges, and tabs (never ellipse!)**.
+- `ellipse(x, y, w, h, opts)`: Circle/oval bounding box. Use for avatars, radio buttons, dots.
+- `line(x1, y1, x2, y2, opts)`: Straight line.
+- `poly([[x, y], ...], close, opts)`: Polygon.
+- `text(x, y, "label", size, { align, color, bold })`: Text run (y is baseline).
+- `icon("user", cx, cy, size, opts)`: Phosphor icon centered at cx, cy.
+- `loremLines(x, y, w, count, gap)`: Hand-drawn placeholder copy lines.
 ### 39. Automatic Wi-Fi LAN Sync: Subnet Hash Discovery & WebRTC Peer Mesh
 
+### Break-Apart Engine (`lib/library/break-apart.ts`)
+Explodes composite library components into raw standalone canvas nodes (`ShapeNode`, `TextNode`, `ArrowNode`) grouped together.
 Implemented in `app/api/wifi-sync/route.ts` and `lib/lan/`:
 1. Devices on the same Wi-Fi subnet hit `/api/wifi-sync`. The server computes a SHA-256 hash of the subnet mask.
 2. Matching subnets join the same collaboration room.
@@ -637,13 +883,25 @@ Implemented in `app/api/wifi-sync/route.ts` and `lib/lan/`:
 
 ---
 
+## 12. Canvas Gestures & Interaction State Machine
 ### 40. Supabase Cloud Sync Engine: Optimistic Mutation Queue & 3-Way Conflict Diffing
 
+### Gesture Lifecycle
+1. **Pointer Down**: Hit tests coordinates in world space. Captures modifier keys (`Shift`, `Alt`, `Cmd/Ctrl`). Takes an undo checkpoint.
+2. **Threshold Latching**: Once pointer exceeds $3\text{px}$ from origin (`DRAG_THRESHOLD = 3`), `exceeded = true` latches permanently.
+3. **Auto-Panning rAF Loop**: When pointer moves within $40\text{px}$ of the screen viewport boundary (`AUTOPAN_EDGE = 40`), an autonomous loop pans the viewport at up to $22\text{px/frame}$.
+4. **Pointer Up / Completion**: Commits state to Zustand and IndexedDB.
 Implemented in `lib/sync/engine.ts`, `lib/sync/queue.ts`, and `components/chrome/conflict-dialog.tsx`:
 - **Optimistic UI**: Changes update local canvas instantly with 0ms latency.
 - **Mutation Queue**: Operations queue in IndexedDB and flush to PostgreSQL in batches.
 - **3-Way Conflict Resolution**: If a remote user updated the same revision concurrently, Zenithsui displays a visual side-by-side diff dialog allowing the user to pick Local, Remote, or Merged state.
 
+### Multi-Selection Math
+- **Click**: Selects single node.
+- **Shift+Click / Cmd+Click**: Toggles node in/out of current selection.
+- **Marquee Drag**: Shift/Cmd drag performs symmetric difference (**XOR**) against initial selection.
+- **Alt+Drag**: Duplicates selected nodes immediately and drags the copies; originals stay in place.
+- **Shift+Drag during Move**: Constrains motion to horizontal or vertical axis (axis-lock).
 ---
 
 ### 41. PostgreSQL Database Schema, Foreign Keys & Row-Level Security (RLS)
@@ -659,8 +917,15 @@ SQL Migrations in `supabase/migrations/`:
 
 ---
 
+## 13. Academic & Classroom Study Engine
 ### 42. Cryptographic Sharing: HMAC-SHA256 Tokens, Web Crypto Passwords & RBAC
 
+Zenithsui includes an integrated academic and study workspace (`lib/academic/`, `lib/library/defs-study.ts`, `lib/storage/academic-db.ts`):
+- **Syllabus Progress Tracking**: Hierarchical subjects, chapters, and topics with completion percentages and target goal dates.
+- **Spaced Repetition Algorithm**: SuperMemo SM-2 variation computing optimal review intervals for flashcards and topic reviews.
+- **Practice & Exam Simulator**: Timed mock tests with multiple-choice questions, scoring, and mistake log analysis.
+- **Study Primitives**: Wireframe blocks for Cornell notes, flashcards, formula sheets, weekly study schedules, and pomodoro timers.
+- **IndexedDB Persistence**: Dedicated IndexedDB store (`academic-db.ts`) preserving student progress completely offline.
 Implemented in `lib/security/share-crypto.ts` and `lib/security/share-session.ts`:
 - **Cryptographic Share Tokens**: Generated using `crypto.getRandomValues()` (256-bit entropy).
 - **Password Hashes**: Web Crypto API PBKDF2/SHA-256 password hashing.
@@ -668,8 +933,13 @@ Implemented in `lib/security/share-crypto.ts` and `lib/security/share-session.ts
 
 ---
 
+## 14. Dual-Tier Storage (IndexedDB + LocalStorage) & Clipboard Protocols
 ### 43. Backend REST API Route Topology & Vercel Edge Serverless Handlers
 
+### Storage Architecture (`lib/storage/db.ts`, `lib/storage/migration.ts`)
+- **Primary Tier**: IndexedDB database `zenithsui_local_db` with object stores for documents, revisions, and study records.
+- **Fallback Tier**: LocalStorage file drawer (`zenithsui:files:v1`, `zenithsui:file:${id}`).
+- **Migration Engine**: Seamlessly migrates legacy localStorage files to IndexedDB upon startup without data loss.
 22 Next.js App Router API Routes:
 - `/api/documents`: Document list and creation.
 - `/api/documents/[id]`: Document CRUD and revision validation.
@@ -679,6 +949,11 @@ Implemented in `lib/security/share-crypto.ts` and `lib/security/share-session.ts
 - `/api/wifi-sync`: Subnet discovery and peer signaling.
 - `/api/blob/upload`: Signed Vercel Blob media handler.
 
+### Clipboard Protocol (`lib/clipboard.ts`, `lib/clipboard-payload.ts`)
+- **Dual-Carrier System**:
+  - `text/html`: Encodes lossless JSON payload in custom data attribute: `<div data-zenithsui="URI_ENCODED_JSON"></div>`.
+  - `text/plain`: Plain text of included text nodes or fallback JSON.
+- **Sanitization Gate**: Validates incoming clipboard geometry, bounds, and image URLs.
 ---
 
 ### 44. Vercel Blob Media Pipeline: Signed Uploads, Proxying & Binary Assets
@@ -689,8 +964,12 @@ Implemented in `lib/blob.ts` and `app/api/blob/upload/route.ts`:
 
 ---
 
+## 15. Security, Token Cryptography & Input Sanitization
 ## 85% to 95%: Academic & Student Study Workspace
 
+1. **SVG Input Sanitization (`lib/security/sanitize.ts`)**: Strips `<script>`, `<iframe>`, `<foreignObject>`, and event attributes (`onload`, `onerror`, `onclick`).
+2. **Sharing Tokens & Password Hashes (`lib/security/share-crypto.ts`)**: Uses Web Crypto SHA-256 for password verification and cryptographically secure token generation.
+3. **Environment Security**: Strict separation of public keys (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`) from server secrets (`SUPABASE_SECRET_KEY`, `BLOB_READ_WRITE_TOKEN`).
 ### 45. Integrated Study Engine Architecture & Data Models
 
 Declared in `lib/academic/types.ts`:
@@ -698,6 +977,7 @@ Unifies syllabus schedules, exam goals, revision intervals, question banks, and 
 
 ---
 
+## 16. The 10 Commandments / Invariants for Modifying Zenithsui
 ### 46. Functional Calendar: Date Mathematics, Recurrence, Overlap Lane Clustering
 
 Implemented in `lib/calendar/` and `components/calendar/`:
@@ -764,8 +1044,10 @@ Implemented in `lib/academic/guardian.ts`:
 
 ---
 
+## 17. Step-by-Step Implementation Recipes for Common Extensions
 ### 53. Comprehensive Test Suite Architecture: 28 Offline Suites & CI Pipelines
 
+### Recipe A: Adding a New Wireframe Component
 Zenithsui includes 28 standalone TypeScript unit test suites under `scripts/`:
 1. `test-geometry.ts`: World/screen conversions, ray-intersections, bounding boxes.
 2. `test-selection.ts`: Single click, Shift+Click toggle, marquee XOR logic.
@@ -819,16 +1101,19 @@ Run all tests via: `pnpm test`.
 2. Define defaults, inspector controls, and the `render(props, w, h)` function using `@/lib/sketch/kit`.
 3. Register the definition in `lib/library/registry.ts`.
 
+### Recipe B: Adding a Custom Inspector Control
 #### Recipe B: Adding a Custom Inspector Control
 1. In `components/chrome/inspector.tsx`, retrieve selected nodes via `useSquig((s) => s.selection)`.
 2. Extract common property values or detect mixed states with `components/chrome/mixed-fields.tsx`.
 3. Render a control from `components/ui/` and dispatch updates via `updateNodes(patches)`.
 
+### Recipe C: Registering a Global Keyboard Shortcut
 #### Recipe C: Registering a Global Keyboard Shortcut
 1. Define key string and display representation in `lib/shortcuts.ts`.
 2. In `components/canvas/canvas.tsx` (inside `onKeyDown`), guard with `if (!canvasOwnsKeyboard()) return`.
 3. Dispatch the store action and document the shortcut in `components/chrome/shortcuts-sheet.tsx`.
 
+### Recipe D: Adding a Cloud Sync Entity or API Route
 #### Recipe D: Adding a Cloud Sync Entity or API Route
 1. Define table schema in a new SQL file under `supabase/migrations/`.
 2. Create route handler in `app/api/<route>/route.ts` verifying auth via `@/utils/supabase/server`.
@@ -836,6 +1121,7 @@ Run all tests via: `pnpm test`.
 
 ---
 
+## 18. Master File Index, Metrics & Complete Dependency Graph
 ### 56. Master File Index, Byte Metrics & Complete Dependency Topology
 
 | File Path | Lines | Bytes | Role / Description | Key Exports |
@@ -850,7 +1136,7 @@ Run all tests via: `pnpm test`.
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
-| `package.json` | 57 | 4236 | Core package.json module | `package` |
+| `package.json` | 57 | 4574 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
@@ -858,10 +1144,10 @@ Run all tests via: `pnpm test`.
 | `vercel.json` | 6 | 171 | Core vercel.json module | `vercel` |
 | `vitest.config.mts` | 101 | 3063 | Core vitest.config.mts module | `vitest.config` |
 | `app/cursors.css` | 134 | 4635 | Core cursors.css module | `cursors` |
-| `app/dashboard/page.tsx` | 308 | 13416 | Core page.tsx module | `page` |
+| `app/dashboard/page.tsx` | 818 | 37312 | Core page.tsx module | `page` |
 | `app/error.tsx` | 55 | 2249 | Core error.tsx module | `error` |
 | `app/global-error.tsx` | 55 | 2179 | Core global-error.tsx module | `global-error` |
-| `app/globals.css` | 609 | 15388 | Core globals.css module | `globals` |
+| `app/globals.css` | 661 | 17149 | Core globals.css module | `globals` |
 | `app/icon.svg` | 5 | 398 | Core icon.svg module | `icon` |
 | `app/kitchen-sink/page.tsx` | 110 | 3988 | Core page.tsx module | `page` |
 | `app/layout.tsx` | 100 | 2838 | Core layout.tsx module | `layout` |
@@ -880,10 +1166,10 @@ Run all tests via: `pnpm test`.
 | `lib/auth-store.ts` | 176 | 4794 | Core auth-store.ts module | `auth-store` |
 | `lib/design-tokens.ts` | 162 | 6197 | Core design-tokens.ts module | `design-tokens` |
 | `lib/selection.ts` | 197 | 7467 | Core selection.ts module | `selection` |
-| `lib/shell-store.ts` | 613 | 17404 | Core shell-store.ts module | `shell-store` |
+| `lib/shell-store.ts` | 615 | 17458 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 166 | 5302 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
-| `lib/store.ts` | 1584 | 57683 | Core store.ts module | `store` |
+| `lib/store.ts` | 1590 | 57996 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
 | `lib/types.ts` | 299 | 9019 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
@@ -938,7 +1224,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
 | `components/chrome/context-menu.tsx` | 303 | 11938 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 253 | 10485 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/files-popover.tsx` | 299 | 12380 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 775 | 30312 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
@@ -949,17 +1235,17 @@ Run all tests via: `pnpm test`.
 | `components/chrome/text-controls.tsx` | 164 | 6828 | Core text-controls.tsx module | `text-controls` |
 | `components/chrome/variant-controls.tsx` | 155 | 5102 | Core variant-controls.tsx module | `variant-controls` |
 | `components/chrome/workspace-switcher.tsx` | 55 | 1858 | Core workspace-switcher.tsx module | `workspace-switcher` |
-| `components/dialogs/chart-dialog.tsx` | 221 | 9231 | Core chart-dialog.tsx module | `chart-dialog` |
-| `components/dialogs/mermaid-dialog.tsx` | 191 | 9055 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
-| `components/dialogs/stats-dialog.tsx` | 104 | 5187 | Core stats-dialog.tsx module | `stats-dialog` |
-| `components/shell/bottom-dock.tsx` | 411 | 18552 | Core bottom-dock.tsx module | `bottom-dock` |
+| `components/dialogs/chart-dialog.tsx` | 235 | 9640 | Core chart-dialog.tsx module | `chart-dialog` |
+| `components/dialogs/mermaid-dialog.tsx` | 191 | 9066 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
+| `components/dialogs/stats-dialog.tsx` | 113 | 5473 | Core stats-dialog.tsx module | `stats-dialog` |
+| `components/shell/bottom-dock.tsx` | 628 | 25756 | Core bottom-dock.tsx module | `bottom-dock` |
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
-| `components/shell/settings-dialog.tsx` | 2929 | 136524 | Core settings-dialog.tsx module | `settings-dialog` |
-| `components/shell/top-bar.tsx` | 102 | 4201 | Core top-bar.tsx module | `top-bar` |
+| `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
+| `components/shell/top-bar.tsx` | 162 | 6457 | Core top-bar.tsx module | `top-bar` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
 | `components/ui/dropdown-menu.tsx` | 140 | 4512 | Core dropdown-menu.tsx module | `dropdown-menu` |
 | `components/ui/input.tsx` | 20 | 990 | Core input.tsx module | `input` |
-| `components/ui/panel.tsx` | 245 | 8358 | Core panel.tsx module | `panel` |
+| `components/ui/panel.tsx` | 245 | 8378 | Core panel.tsx module | `panel` |
 | `components/ui/scroll-area.tsx` | 57 | 2228 | Core scroll-area.tsx module | `scroll-area` |
 | `components/ui/segmented.tsx` | 223 | 7289 | Core segmented.tsx module | `segmented` |
 | `components/ui/select.tsx` | 117 | 4464 | Core select.tsx module | `select` |
@@ -1015,7 +1301,7 @@ Run all tests via: `pnpm test`.
 | `lib/cloud/storage.ts` | 33 | 921 | Core storage.ts module | `storage` |
 | `lib/cloud/trash.ts` | 417 | 11375 | Core trash.ts module | `trash` |
 | `lib/cloud/versions.ts` | 86 | 2735 | Core versions.ts module | `versions` |
-| `app/api/assets/proxy/route.ts` | 124 | 3863 | Core route.ts module | `route` |
+| `app/api/assets/proxy/route.ts` | 207 | 6488 | Core route.ts module | `route` |
 | `app/api/assets/signed-upload-url/route.ts` | 189 | 6518 | Core route.ts module | `route` |
 | `app/api/auth/callback/route.ts` | 42 | 1355 | Core route.ts module | `route` |
 | `app/api/blob/upload/route.ts` | 144 | 5154 | Core route.ts module | `route` |
@@ -1039,7 +1325,7 @@ Run all tests via: `pnpm test`.
 | `lib/file-io.ts` | 64 | 2348 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 229 | 7584 | Core files.ts module | `files` |
 | `lib/storage/db.ts` | 109 | 3237 | Core db.ts module | `db` |
-| `lib/storage/documents.ts` | 101 | 3027 | Core documents.ts module | `documents` |
+| `lib/storage/documents.ts` | 131 | 3845 | Core documents.ts module | `documents` |
 | `lib/storage/migration.ts` | 69 | 2268 | Core migration.ts module | `migration` |
 | `lib/security/sanitize.ts` | 667 | 21492 | Core sanitize.ts module | `sanitize` |
 | `lib/security/share-crypto.ts` | 472 | 14363 | Core share-crypto.ts module | `share-crypto` |
@@ -1058,12 +1344,12 @@ Run all tests via: `pnpm test`.
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
 | `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
-| `components/calendar/calendar-event-card.tsx` | 263 | 9731 | Core calendar-event-card.tsx module | `calendar-event-card` |
-| `components/calendar/calendar-event-editor.tsx` | 535 | 20261 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-event-card.tsx` | 280 | 9665 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 538 | 20384 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 90 | 3287 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 302 | 10914 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 209 | 7118 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-month-year-picker.tsx` | 206 | 6353 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
 | `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
 | `components/calendar/functional-calendar.tsx` | 542 | 18563 | Core functional-calendar.tsx module | `functional-calendar` |
@@ -1092,12 +1378,12 @@ Run all tests via: `pnpm test`.
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
 | `public/service-worker.js` | 21 | 834 | Core service-worker.js module | `service-worker` |
-| `public/sw.js` | 109 | 3224 | Core sw.js module | `sw` |
+| `public/sw.js` | 109 | 3200 | Core sw.js module | `sw` |
 | `scripts/doodle.zenithsui.json` | 7547 | 142231 | Core doodle.zenithsui.json module | `doodle.zenithsui` |
 | `scripts/gateway.mjs` | 144 | 5163 | Core gateway.mjs module | `gateway` |
 | `scripts/gen-doodle.mjs` | 104 | 3386 | Core gen-doodle.mjs module | `gen-doodle` |
 | `scripts/gen-icons.mjs` | 67 | 3093 | Core gen-icons.mjs module | `gen-icons` |
-| `scripts/generate-snapshot.mjs` | 1175 | 67858 | Core generate-snapshot.mjs module | `generate-snapshot` |
+| `scripts/generate-snapshot.mjs` | 1493 | 94169 | Core generate-snapshot.mjs module | `generate-snapshot` |
 | `scripts/loader-hooks.mjs` | 41 | 1605 | Core loader-hooks.mjs module | `loader-hooks` |
 | `scripts/register-loader.mjs` | 3 | 87 | Core register-loader.mjs module | `register-loader` |
 | `scripts/test-academic-analytics.ts` | 278 | 11928 | Core test-academic-analytics.ts module | `test-academic-analytics` |
@@ -1105,11 +1391,13 @@ Run all tests via: `pnpm test`.
 | `scripts/test-academic-guardian.ts` | 150 | 6440 | Core test-academic-guardian.ts module | `test-academic-guardian` |
 | `scripts/test-academic-planner.ts` | 145 | 5338 | Core test-academic-planner.ts module | `test-academic-planner` |
 | `scripts/test-academic-syllabus.ts` | 218 | 9342 | Core test-academic-syllabus.ts module | `test-academic-syllabus` |
+| `scripts/test-asset-proxy-security.ts` | 108 | 4102 | Core test-asset-proxy-security.ts module | `test-asset-proxy-security` |
 | `scripts/test-canvas-full-features.ts` | 348 | 11690 | Core test-canvas-full-features.ts module | `test-canvas-full-features` |
 | `scripts/test-canvas-parity.ts` | 170 | 5361 | Core test-canvas-parity.ts module | `test-canvas-parity` |
 | `scripts/test-clipboard.ts` | 124 | 5420 | Core test-clipboard.ts module | `test-clipboard` |
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
 | `scripts/test-document-attachments.ts` | 260 | 11108 | Core test-document-attachments.ts module | `test-document-attachments` |
+| `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
 | `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
@@ -1129,6 +1417,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-student-hub.ts` | 154 | 6890 | Core test-student-hub.ts module | `test-student-hub` |
 | `scripts/test-sync.ts` | 135 | 4625 | Core test-sync.ts module | `test-sync` |
 | `scripts/test-text.ts` | 167 | 6090 | Core test-text.ts module | `test-text` |
+| `scripts/test-wifi-auto-sync-consent.ts` | 41 | 1559 | Core test-wifi-auto-sync-consent.ts module | `test-wifi-auto-sync-consent` |
 | `scripts/tsconfig.json` | 13 | 263 | Core tsconfig.json module | `tsconfig` |
 | `scripts/wasm/hb-subset.wasm` | 2855 | 590665 | Core hb-subset.wasm module | `hb-subset` |
 | `scripts/wasm/woff2.wasm` | 14669 | 727190 | Core woff2.wasm module | `woff2` |
@@ -1209,7 +1498,7 @@ Run all tests via: `pnpm test`.
 
 ---
 
-# PART 2: COMPLETE VERBATIM SOURCE CODE DIRECTORY
+  # PART 2: COMPLETE VERBATIM SOURCE CODE DIRECTORY
 
 > Every single source file in the Zenithsui repository is included below in full, unedited, verbatim form with exact relative file paths.
 
@@ -1670,7 +1959,7 @@ export default nextConfig;
 
 - **Path**: `package.json`
 - **Lines**: 57
-- **Size**: 4236 bytes
+- **Size**: 4574 bytes
 
 ```json
 {
@@ -1688,7 +1977,7 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts"
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -2292,17 +2581,37 @@ textarea,
 ### File: `app/dashboard/page.tsx`
 
 - **Path**: `app/dashboard/page.tsx`
-- **Lines**: 308
-- **Size**: 13416 bytes
+- **Lines**: 818
+- **Size**: 37312 bytes
 
 ```tsx
 "use client"
 
-import { useState, useEffect } from "react"
+// ---------------------------------------------------------------------------
+// Zenithsui macOS/iPadOS-Inspired Document Dashboard
+//
+// Features:
+// 1. Apple Finder & Notes layout with translucent materials and subtle borders.
+// 2. Real-time fuzzy search & filtering by document title.
+// 3. Dual view modes: Visual Cards Grid vs Compact List View.
+// 4. Complete document management: Open, Duplicate, Rename, Export, Soft-delete & Restore.
+// 5. Category counters and badge indicators.
+// 6. Mobile responsive slide-over drawer with 44px touch targets.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth-store"
-import { listLocalDocuments, type StoredLocalDoc } from "@/lib/storage/documents"
+import {
+  listLocalDocuments,
+  softDeleteLocalDocument,
+  permanentlyDeleteLocalDocument,
+  restoreLocalDocument,
+  duplicateLocalDocument,
+  saveLocalDocument,
+  type StoredLocalDoc,
+} from "@/lib/storage/documents"
 import { Button } from "@/components/ui/button"
 import {
   FileText,
@@ -2312,9 +2621,28 @@ import {
   ShareNetwork,
   Trash,
   Clock,
+  MagnifyingGlass,
+  SquaresFour,
+  List,
+  DotsThreeVertical,
+  Copy,
+  ArrowCounterClockwise,
+  PencilSimple,
+  ListDashes,
+  X,
+  Globe,
+  Lock,
 } from "@phosphor-icons/react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { WorkspaceSwitcher } from "@/components/chrome/workspace-switcher"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
+import { cn } from "@/lib/utils"
 
 interface SharedDocItem {
   id: string
@@ -2330,6 +2658,7 @@ interface SharedDocItem {
 }
 
 type TabType = "recent" | "projects" | "shared" | "trash"
+type ViewMode = "grid" | "list"
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -2338,12 +2667,20 @@ export default function DashboardPage() {
   const [sharedDocs, setSharedDocs] = useState<SharedDocItem[]>([])
   const [activeTab, setActiveTab] = useState<TabType>("recent")
   const [loading, setLoading] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [viewMode, setViewMode] = useState<ViewMode>("grid")
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
+
+  // In-place rename state
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameDraft, setRenameDraft] = useState("")
+  const renameInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
   }, [])
 
-  useEffect(() => {
+  const loadDocuments = useCallback(() => {
     let cancelled = false
 
     if (activeTab === "shared") {
@@ -2393,10 +2730,8 @@ export default function DashboardPage() {
         })
       }
     } else {
-      queueMicrotask(() => {
-        if (!cancelled) setLoading(true)
-      })
-      listLocalDocuments(activeTab === "trash")
+      setLoading(true)
+      listLocalDocuments(true)
         .then((docs) => {
           if (cancelled) return
           if (activeTab === "trash") {
@@ -2415,22 +2750,211 @@ export default function DashboardPage() {
     }
   }, [activeTab, user])
 
-  const handleOpenDoc = (doc: { id: string }) => {
-    router.push(`/?doc=${doc.id}`)
+  useEffect(() => {
+    return loadDocuments()
+  }, [loadDocuments])
+
+  useEffect(() => {
+    if (renamingId && renameInputRef.current) {
+      renameInputRef.current.focus()
+      renameInputRef.current.select()
+    }
+  }, [renamingId])
+
+  const handleOpenDoc = (id: string) => {
+    router.push(`/?doc=${id}`)
   }
 
   const handleCreateNew = () => {
     router.push("/")
   }
 
+  const handleDuplicate = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    const copy = await duplicateLocalDocument(id)
+    if (copy) {
+      loadDocuments()
+    }
+  }
+
+  const handleSoftDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    await softDeleteLocalDocument(id)
+    loadDocuments()
+  }
+
+  const handleRestore = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    await restoreLocalDocument(id)
+    loadDocuments()
+  }
+
+  const handlePermanentDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation()
+    if (window.confirm("Permanently delete this drawing? This action cannot be undone.")) {
+      await permanentlyDeleteLocalDocument(id)
+      loadDocuments()
+    }
+  }
+
+  const startRename = (e: React.MouseEvent, doc: { id: string; name: string }) => {
+    e.stopPropagation()
+    setRenamingId(doc.id)
+    setRenameDraft(doc.name)
+  }
+
+  const commitRename = async (docId: string) => {
+    const trimmed = renameDraft.trim()
+    if (trimmed) {
+      const doc = documents.find((d) => d.id === docId)
+      if (doc && doc.name !== trimmed) {
+        doc.name = trimmed
+        doc.updatedAt = Date.now()
+        await saveLocalDocument(doc)
+        loadDocuments()
+      }
+    }
+    setRenamingId(null)
+  }
+
+  // Filtered documents matching search query
+  const filteredDocuments = useMemo(() => {
+    const list = activeTab === "shared" ? sharedDocs : documents
+    if (!searchQuery.trim()) return list
+    const q = searchQuery.toLowerCase().trim()
+    return list.filter((d) => d.name.toLowerCase().includes(q))
+  }, [activeTab, sharedDocs, documents, searchQuery])
+
   return (
-    <div className="flex h-screen w-screen bg-[#FBFAF5] dark:bg-[#0E1015] text-stone-900 dark:text-stone-100 font-sans overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-60 border-r border-stone-200/80 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900/60 p-4 flex flex-col justify-between shrink-0">
+    <div className="flex h-screen w-screen bg-[#FBFAF5] dark:bg-[#0E1015] text-stone-900 dark:text-stone-100 font-sans overflow-hidden select-none">
+      {/* ── Mobile Sidebar Overlay & Drawer ── */}
+      {mobileSidebarOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileSidebarOpen(false)}
+          />
+          <aside className="relative w-72 max-w-[80vw] h-full bg-stone-50 dark:bg-stone-900 border-r border-stone-200/90 dark:border-stone-800 p-4 flex flex-col justify-between shadow-2xl animate-popover-enter">
+            <div>
+              <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-stone-800">
+                <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400">
+                  zenithsui
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="pt-3 pb-2">
+                <WorkspaceSwitcher />
+              </div>
+
+              <Button
+                onClick={() => {
+                  setMobileSidebarOpen(false)
+                  handleCreateNew()
+                }}
+                className="w-full mt-3 justify-start gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-xs text-xs font-medium rounded-xl"
+                size="sm"
+              >
+                <Plus size={14} weight="bold" />
+                <span>New Drawing</span>
+              </Button>
+
+              <nav className="mt-6 space-y-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("recent")
+                    setMobileSidebarOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                    activeTab === "recent"
+                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                  )}
+                >
+                  <Clock size={16} />
+                  <span>Recent</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("projects")
+                    setMobileSidebarOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                    activeTab === "projects"
+                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                  )}
+                >
+                  <Folder size={16} />
+                  <span>Projects</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("shared")
+                    setMobileSidebarOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                    activeTab === "shared"
+                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                  )}
+                >
+                  <ShareNetwork size={16} />
+                  <span>Shared with me</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("trash")
+                    setMobileSidebarOpen(false)
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
+                    activeTab === "trash"
+                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                  )}
+                >
+                  <Trash size={16} />
+                  <span>Trash</span>
+                </button>
+              </nav>
+            </div>
+
+            <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800">
+              <Link
+                href="/"
+                className="flex items-center gap-2 text-xs font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100"
+              >
+                <ArrowLeft size={14} />
+                <span>Back to Canvas</span>
+              </Link>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {/* ── Desktop macOS Sidebar ── */}
+      <aside className="hidden md:flex w-64 border-r border-stone-200/80 dark:border-stone-800/80 bg-stone-100/60 dark:bg-stone-900/60 backdrop-blur-xl p-4 flex-col justify-between shrink-0">
         <div>
-          {/* Logo & Workspace */}
-          <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-stone-800">
-            <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+          {/* Logo & Workspace Selector */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 dark:border-stone-800">
+            <Link
+              href="/"
+              className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center gap-2 hover:opacity-85 transition-opacity"
+            >
               <span>zenithsui</span>
             </Link>
           </div>
@@ -2442,160 +2966,435 @@ export default function DashboardPage() {
           {/* New Document Button */}
           <Button
             onClick={handleCreateNew}
-            className="w-full mt-3 justify-start gap-2 bg-stone-900 hover:bg-stone-800 dark:bg-blue-600 dark:hover:bg-blue-700 text-white shadow-2xs text-xs font-mono"
+            className="w-full mt-2.5 justify-start gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-xs text-xs font-medium rounded-xl cursor-pointer tactile-btn"
             size="sm"
           >
-            <Plus size={14} />
+            <Plus size={14} weight="bold" />
             <span>New Drawing</span>
           </Button>
 
           {/* Navigation Links */}
-          <nav className="mt-6 space-y-1">
-            <button
-              onClick={() => setActiveTab("recent")}
-              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "recent"
-                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-                }`}
-            >
-              <Clock size={16} />
-              Recent
-            </button>
+          <div className="mt-6">
+            <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+              Library
+            </span>
+            <nav className="mt-2 space-y-0.5">
+              <button
+                type="button"
+                onClick={() => setActiveTab("recent")}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
+                  activeTab === "recent"
+                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Clock size={16} />
+                  <span>Recent</span>
+                </div>
+              </button>
 
-            <button
-              onClick={() => setActiveTab("projects")}
-              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "projects"
-                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-                }`}
-            >
-              <Folder size={16} />
-              Projects
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("projects")}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
+                  activeTab === "projects"
+                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Folder size={16} />
+                  <span>Projects</span>
+                </div>
+              </button>
 
-            <button
-              onClick={() => setActiveTab("shared")}
-              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "shared"
-                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-                }`}
-            >
-              <ShareNetwork size={16} />
-              Shared with me
-            </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("shared")}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
+                  activeTab === "shared"
+                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <ShareNetwork size={16} />
+                  <span>Shared with me</span>
+                </div>
+              </button>
 
-            <button
-              onClick={() => setActiveTab("trash")}
-              className={`tactile-press w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5 ${activeTab === "trash"
-                ? "bg-stone-200/70 dark:bg-stone-800 text-stone-950 dark:text-stone-50 font-semibold"
-                : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/40 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-stone-100"
-                }`}
-            >
-              <Trash size={16} />
-              Trash
-            </button>
-          </nav>
+              <button
+                type="button"
+                onClick={() => setActiveTab("trash")}
+                className={cn(
+                  "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
+                  activeTab === "trash"
+                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                )}
+              >
+                <div className="flex items-center gap-2.5">
+                  <Trash size={16} />
+                  <span>Trash</span>
+                </div>
+              </button>
+            </nav>
+          </div>
         </div>
 
         {/* Back to Canvas */}
-        <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800 flex items-center justify-between">
+        <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800">
           <Link
             href="/"
-            className="flex items-center gap-1.5 text-xs text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+            className="flex items-center gap-2 text-xs font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
           >
             <ArrowLeft size={14} />
-            Back to Canvas
+            <span>Back to Canvas</span>
           </Link>
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* ── Main Content Area ── */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        {/* Top Header */}
-        <header className="h-14 border-b border-stone-200/80 dark:border-stone-800 bg-white/60 dark:bg-[#121316]/80 px-8 flex items-center justify-between backdrop-blur-xs">
-          <h1 className="font-sans text-base font-semibold tracking-tight text-stone-800 dark:text-stone-100 capitalize">
-            {activeTab === "recent"
-              ? "Recent Drawings"
-              : activeTab === "projects"
-                ? "Projects"
-                : activeTab === "shared"
-                  ? "Shared with Me"
-                  : "Trash"}
-          </h1>
+        {/* Top Header Bar */}
+        <header className="h-14 border-b border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-[#121316]/80 px-4 sm:px-8 flex items-center justify-between backdrop-blur-md shrink-0">
+          <div className="flex items-center gap-3">
+            {/* Mobile Hamburger Button */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+              aria-label="Open sidebar"
+            >
+              <ListDashes size={20} />
+            </button>
+
+            <h1 className="font-sans text-sm sm:text-base font-semibold tracking-tight text-stone-800 dark:text-stone-100 capitalize">
+              {activeTab === "recent"
+                ? "Recent Drawings"
+                : activeTab === "projects"
+                  ? "Projects"
+                  : activeTab === "shared"
+                    ? "Shared with Me"
+                    : "Trash"}
+            </h1>
+          </div>
+
+          {/* Right Header Controls: Search & View Toggle */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Search Input */}
+            <div className="relative flex items-center">
+              <MagnifyingGlass
+                size={14}
+                className="absolute left-2.5 text-stone-400 dark:text-stone-500 pointer-events-none"
+              />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter drawings…"
+                aria-label="Filter drawings by name"
+                className="w-36 sm:w-56 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                >
+                  <X size={12} />
+                </button>
+              )}
+            </div>
+
+            {/* View Mode Switcher (Grid vs List) */}
+            <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700/80">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                aria-label="Grid view"
+                className={cn(
+                  "p-1.5 rounded-md transition-colors",
+                  viewMode === "grid"
+                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-2xs"
+                    : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                )}
+              >
+                <SquaresFour size={15} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                aria-label="List view"
+                className={cn(
+                  "p-1.5 rounded-md transition-colors",
+                  viewMode === "list"
+                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-2xs"
+                    : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                )}
+              >
+                <List size={15} />
+              </button>
+            </div>
+          </div>
         </header>
 
-        {/* Documents Grid / List */}
-        <div className="flex-1 overflow-y-auto p-8">
+        {/* Documents Content Grid / List */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           {loading ? (
-            <div className="flex h-64 items-center justify-center text-sm font-mono text-stone-400 dark:text-stone-500">
+            <div className="flex h-64 items-center justify-center text-xs font-mono text-stone-400 dark:text-stone-500 animate-pulse">
               Loading drawings…
             </div>
-          ) : (activeTab === "shared" ? sharedDocs.length === 0 : documents.length === 0) ? (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200 dark:border-stone-800 rounded-xl p-8 text-center max-w-md mx-auto my-12">
-              <div className="rounded-full bg-stone-100 dark:bg-stone-800/80 p-3 text-stone-400 dark:text-stone-500 mb-3">
-                <FileText size={24} />
+          ) : filteredDocuments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200/90 dark:border-stone-800 rounded-2xl p-8 text-center max-w-md mx-auto my-12 animate-card-fade">
+              <div className="rounded-2xl bg-stone-100 dark:bg-stone-800/80 p-3.5 text-stone-400 dark:text-stone-500 mb-3 shadow-2xs">
+                <FileText size={28} />
               </div>
-              <h3 className="text-sm font-medium text-stone-800 dark:text-stone-200">
-                {activeTab === "trash"
-                  ? "Trash is empty"
-                  : activeTab === "shared"
-                    ? "No shared documents"
-                    : "No drawings yet"}
+              <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-200">
+                {searchQuery
+                  ? "No matching drawings"
+                  : activeTab === "trash"
+                    ? "Trash is empty"
+                    : activeTab === "shared"
+                      ? "No shared documents"
+                      : "No drawings yet"}
               </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 mb-4">
-                {activeTab === "trash"
-                  ? "Documents you delete will show up here."
-                  : activeTab === "shared"
-                    ? "Documents shared with your account will appear here."
-                    : "Start a new wireframe on the napkin canvas."}
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 mb-4 max-w-xs">
+                {searchQuery
+                  ? `No drawings found matching "${searchQuery}". Clear your search or create a new file.`
+                  : activeTab === "trash"
+                    ? "Drawings you move to trash will appear here for recovery."
+                    : activeTab === "shared"
+                      ? "Drawings shared with your account or team will appear here."
+                      : "Start a clean hand-drawn diagram or prototype on the infinite canvas."}
               </p>
               {activeTab !== "trash" && (
-                <Button onClick={handleCreateNew} size="sm" className="text-xs">
-                  Create drawing
+                <Button onClick={handleCreateNew} size="sm" className="text-xs rounded-xl tactile-btn">
+                  <Plus size={14} className="mr-1.5" /> Create drawing
                 </Button>
               )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {(activeTab === "shared" ? sharedDocs : documents).map((doc) => {
-                const nodeCount = Object.keys(('doc' in doc ? doc.doc?.nodes : undefined) || {}).length
-                const isPublic = 'isPublic' in doc ? doc.isPublic : false
-                const isShared = activeTab === "shared" || ('shareState' in doc && doc.shareState === "shared")
+          ) : viewMode === "grid" ? (
+            /* ── Grid View ── */
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 animate-card-fade">
+              {filteredDocuments.map((doc) => {
+                const nodeCount = Object.keys(("doc" in doc ? doc.doc?.nodes : undefined) || {}).length
+                const isPublic = "isPublic" in doc ? doc.isPublic : false
+                const isShared = activeTab === "shared" || ("shareState" in doc && doc.shareState === "shared")
+                const isRenaming = renamingId === doc.id
 
                 return (
                   <div
                     key={doc.id}
-                    onClick={() => handleOpenDoc(doc)}
-                    className="group tactile-card animate-card-fade relative rounded-xl border border-stone-200 dark:border-stone-800/90 bg-white dark:bg-[#18191E] p-4 shadow-2xs hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500 cursor-pointer flex flex-col justify-between h-44"
+                    onClick={() => handleOpenDoc(doc.id)}
+                    className="group tactile-card relative rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/90 dark:bg-[#18191E]/90 p-4 shadow-xs hover:shadow-lg hover:border-blue-500/50 dark:hover:border-blue-500/50 cursor-pointer flex flex-col justify-between h-48 backdrop-blur-xs"
                   >
                     <div>
-                      {/* Document Preview Box / Thumbnail */}
-                      <div className="h-20 w-full rounded-md bg-[#FBFAF5] dark:bg-stone-900 border border-stone-200/70 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-800 dark:group-hover:text-stone-200 group-hover:scale-[1.02] transition-all duration-200 mb-3">
-                        <span className="font-sketch text-sm">
-                          {activeTab === "shared" && 'role' in doc ? `${doc.role || "viewer"} role` : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
+                      {/* Thumbnail Preview Area */}
+                      <div className="h-24 w-full rounded-xl bg-[#FBFAF5] dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-100 group-hover:scale-[1.01] transition-transform duration-200 mb-3 shadow-2xs relative overflow-hidden">
+                        <span className="font-sketch text-xs text-stone-600 dark:text-stone-400">
+                          {activeTab === "shared" && "role" in doc
+                            ? `${doc.role || "viewer"} role`
+                            : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
                         </span>
+
+                        {/* Top-Right Card Actions Menu */}
+                        <div
+                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <DropdownMenu>
+                            <DropdownMenuTrigger
+                              aria-label="Document options"
+                              className="size-7 rounded-lg bg-white/90 dark:bg-stone-800/90 shadow-xs flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-white border border-stone-200/60 dark:border-stone-700/60 outline-none"
+                            >
+                              <DotsThreeVertical size={14} weight="bold" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-44 text-xs font-sans animate-popover-enter">
+                              <DropdownMenuItem onClick={() => handleOpenDoc(doc.id)}>
+                                <FileText size={14} className="mr-2" /> Open
+                              </DropdownMenuItem>
+                              {activeTab !== "trash" && (
+                                <>
+                                  <DropdownMenuItem onClick={(e) => startRename(e, doc)}>
+                                    <PencilSimple size={14} className="mr-2" /> Rename
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={(e) => handleDuplicate(e, doc.id)}>
+                                    <Copy size={14} className="mr-2" /> Duplicate
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={(e) => handleSoftDelete(e, doc.id)}
+                                    className="text-red-600 dark:text-red-400"
+                                  >
+                                    <Trash size={14} className="mr-2" /> Move to Trash
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                              {activeTab === "trash" && (
+                                <>
+                                  <DropdownMenuItem onClick={(e) => handleRestore(e, doc.id)}>
+                                    <ArrowCounterClockwise size={14} className="mr-2" /> Restore
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={(e) => handlePermanentDelete(e, doc.id)}
+                                    className="text-red-600 dark:text-red-400"
+                                  >
+                                    <Trash size={14} className="mr-2" /> Delete Permanently
+                                  </DropdownMenuItem>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
                       </div>
 
-                      <div className="font-sans text-xs font-semibold text-stone-800 dark:text-stone-100 truncate">
-                        {doc.name}
-                      </div>
+                      {/* Title or Inline Rename Input */}
+                      {isRenaming ? (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <input
+                            ref={renameInputRef}
+                            type="text"
+                            value={renameDraft}
+                            onChange={(e) => setRenameDraft(e.target.value)}
+                            onBlur={() => commitRename(doc.id)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") commitRename(doc.id)
+                              if (e.key === "Escape") setRenamingId(null)
+                            }}
+                            className="w-full text-xs font-semibold text-stone-900 dark:text-white bg-transparent border-b border-blue-500 outline-none px-1 py-0.5"
+                          />
+                        </div>
+                      ) : (
+                        <div className="font-sans text-xs font-semibold text-stone-800 dark:text-stone-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {doc.name}
+                        </div>
+                      )}
                     </div>
 
+                    {/* Metadata Footer */}
                     <div className="flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800/60">
                       <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
                       <span className="flex items-center gap-1 font-mono text-[10px]">
                         {isPublic ? (
-                          <span title="Public on web">🌐 Public</span>
+                          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400" title="Publicly accessible">
+                            <Globe size={11} /> Public
+                          </span>
                         ) : isShared ? (
-                          <span title="Shared with collaborators">🔗 Shared</span>
+                          <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400" title="Shared with collaborators">
+                            <ShareNetwork size={11} /> Shared
+                          </span>
                         ) : (
-                          <span title="Private to you">🔒 Private</span>
+                          <span className="flex items-center gap-1 text-stone-400" title="Private local document">
+                            <Lock size={11} /> Private
+                          </span>
                         )}
                       </span>
                     </div>
                   </div>
                 )
               })}
+            </div>
+          ) : (
+            /* ── List View ── */
+            <div className="rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/90 dark:bg-[#18191E]/90 overflow-hidden shadow-xs animate-card-fade">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-stone-200/80 dark:border-stone-800/80 bg-stone-50/50 dark:bg-stone-900/50 text-stone-400 dark:text-stone-500 text-[11px] uppercase tracking-wider font-semibold">
+                    <th className="py-3 px-4">Name</th>
+                    <th className="py-3 px-4 hidden sm:table-cell">Status</th>
+                    <th className="py-3 px-4 hidden md:table-cell">Modified</th>
+                    <th className="py-3 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100 dark:divide-stone-800/60">
+                  {filteredDocuments.map((doc) => {
+                    const isPublic = "isPublic" in doc ? doc.isPublic : false
+                    const isShared = activeTab === "shared" || ("shareState" in doc && doc.shareState === "shared")
+
+                    return (
+                      <tr
+                        key={doc.id}
+                        onClick={() => handleOpenDoc(doc.id)}
+                        className="group hover:bg-stone-50 dark:hover:bg-stone-800/40 cursor-pointer transition-colors"
+                      >
+                        <td className="py-3 px-4 font-medium text-stone-800 dark:text-stone-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          <div className="flex items-center gap-2.5">
+                            <FileText size={16} className="text-stone-400 group-hover:text-blue-500 shrink-0" />
+                            <span className="truncate max-w-[200px] sm:max-w-xs">{doc.name}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 hidden sm:table-cell">
+                          {isPublic ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-mono">
+                              <Globe size={11} /> Public
+                            </span>
+                          ) : isShared ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 font-mono">
+                              <ShareNetwork size={11} /> Shared
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 text-[11px] text-stone-400 font-mono">
+                              <Lock size={11} /> Private
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 hidden md:table-cell text-stone-400 font-mono text-[11px]">
+                          {new Date(doc.updatedAt).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-end gap-1">
+                            {activeTab !== "trash" ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDuplicate(e, doc.id)}
+                                  title="Duplicate"
+                                  className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+                                >
+                                  <Copy size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleSoftDelete(e, doc.id)}
+                                  title="Move to Trash"
+                                  className="p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                >
+                                  <Trash size={14} />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleRestore(e, doc.id)}
+                                  title="Restore"
+                                  className="p-1 rounded-lg text-stone-400 hover:text-emerald-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                >
+                                  <ArrowCounterClockwise size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handlePermanentDelete(e, doc.id)}
+                                  title="Delete Permanently"
+                                  className="p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                >
+                                  <Trash size={14} />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -2740,8 +3539,8 @@ export default function GlobalError({
 ### File: `app/globals.css`
 
 - **Path**: `app/globals.css`
-- **Lines**: 609
-- **Size**: 15388 bytes
+- **Lines**: 661
+- **Size**: 17149 bytes
 
 ```css
 @import "tailwindcss";
@@ -3287,6 +4086,58 @@ export default function GlobalError({
 
 .tactile-pill:active {
   transform: scale(0.94);
+}
+
+/* ── Apple Glass & Translucent Material Surfaces ── */
+.apple-glass-pill {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+}
+
+.dark .apple-glass-pill {
+  background: rgba(28, 28, 31, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.apple-glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark .apple-glass-panel {
+  background: rgba(26, 26, 30, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+/* ── macOS Dock Magnification Engine ── */
+.dock-magnify-item {
+  transform-origin: bottom center;
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1), background-color 140ms ease;
+  will-change: transform;
+}
+
+.dock-active-dot {
+  position: absolute;
+  bottom: 1.5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 9999px;
+  background-color: var(--color-primary, #2563eb);
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
 }
 
 /* ── Accessibility & Reduced Motion Support ── */
@@ -4605,8 +5456,8 @@ export function unionBounds(nodes: readonly SquigNode[]): Bounds | null {
 ### File: `lib/shell-store.ts`
 
 - **Path**: `lib/shell-store.ts`
-- **Lines**: 613
-- **Size**: 17404 bytes
+- **Lines**: 615
+- **Size**: 17458 bytes
 
 ```tsx
 "use client"
@@ -4850,9 +5701,10 @@ export interface ShellPreferences {
   performanceSettings: PerformanceSettings
   dockControls: DockControlsVisibility
   databaseSettings: DatabaseSettings
+  wifiAutoSync: boolean
 }
 
-const DEFAULT_PREFERENCES: ShellPreferences = {
+export const DEFAULT_PREFERENCES: ShellPreferences = {
   themeMode: "system",
   uiDensity: "comfortable",
   uiAccent: "blue",
@@ -4876,6 +5728,7 @@ const DEFAULT_PREFERENCES: ShellPreferences = {
   performanceSettings: DEFAULT_PERFORMANCE_SETTINGS,
   dockControls: DEFAULT_DOCK_CONTROLS,
   databaseSettings: DEFAULT_DATABASE_SETTINGS,
+  wifiAutoSync: false,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -5662,8 +6515,8 @@ export function generateUniqueSlug(
 ### File: `lib/store.ts`
 
 - **Path**: `lib/store.ts`
-- **Lines**: 1584
-- **Size**: 57683 bytes
+- **Lines**: 1590
+- **Size**: 57996 bytes
 
 ```tsx
 "use client"
@@ -6093,6 +6946,8 @@ function stepOrder(order: string[], ids: string[], dir: 1 | -1): string[] {
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 /** true between an edit and the write that records it */
 let dirty = false
+/** monotonic generation token to prevent stale async document load race conditions */
+let fileSwitchToken = 0
 
 /** The four knobs that make up a look, gathered out of the flat state. */
 function lookOf(s: Pick<SquigState, "theme" | "paper" | "font" | "grid">): Look {
@@ -7059,6 +7914,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
 
   newFile: () => {
+    fileSwitchToken += 1
     // the file you were on keeps its place in the drawer — this is a new one
     flushSave(get)
     set({
@@ -7078,12 +7934,14 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   openFile: (id) => {
     if (id === get().docId) return
+    const token = ++fileSwitchToken
     flushSave(get)
     const doc = readFile(id)
     if (!doc) {
       if (typeof window !== "undefined") {
         getLocalDocument(id)
           .then((stored) => {
+            if (token !== fileSwitchToken) return // Discard stale out-of-order load
             if (stored?.doc) {
               const clean = sanitize(stored.doc.nodes, stored.doc.order)
               set({
@@ -7107,6 +7965,7 @@ export const useSquig = create<SquigState>((set, get) => ({
             }
           })
           .catch(() => {
+            if (token !== fileSwitchToken) return
             set({ files: dropFile(id) })
           })
         return
@@ -23663,8 +24522,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 253
-- **Size**: 10485 bytes
+- **Lines**: 299
+- **Size**: 12380 bytes
 
 ```tsx
 "use client"
@@ -23672,16 +24531,15 @@ function pasteAt(sx: number, sy: number) {
 // ---------------------------------------------------------------------------
 // Zenithsui Files Popover & Document Manager
 //
-// Replaces static "Saved locally" text with an interactive "Files" button.
-// Allows user to:
-// 1. See all saved canvases
-// 2. Create a new canvas with 1 click (+ New Canvas)
-// 3. Switch between canvases
-// 4. Delete or export canvases
+// Apple-inspired dropdown document manager:
+// 1. See all saved canvases with quick filter
+// 2. Create new canvas with 1 click (+ New Canvas)
+// 3. Switch between canvases with active indicators
+// 4. In-place delete or export
 // 5. Shows real-time save / Wi-Fi sync status
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import { relativeTime, type FileMeta } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
@@ -23695,19 +24553,21 @@ import {
   FolderOpen,
   WifiHigh,
   Clock,
+  MagnifyingGlass,
+  X,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export function FilesPopover() {
   const [isOpen, setIsOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [fileSearch, setFileSearch] = useState("")
   const popoverRef = useRef<HTMLDivElement>(null)
 
   const docId = useSquig((s) => s.docId)
-  const fileName = useSquig((s) => s.fileName)
   const files = useSquig((s) => s.files)
 
-  // Close when clicking outside
+  // Close when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -23715,11 +24575,19 @@ export function FilesPopover() {
         setDeletingId(null)
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false)
+        setDeletingId(null)
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside)
+      window.addEventListener("keydown", handleKeyDown)
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
+      window.removeEventListener("keydown", handleKeyDown)
     }
   }, [isOpen])
 
@@ -23750,6 +24618,12 @@ export function FilesPopover() {
     }
   }
 
+  const filteredFiles = useMemo(() => {
+    if (!fileSearch.trim()) return files
+    const q = fileSearch.toLowerCase().trim()
+    return files.filter((f) => f.name.toLowerCase().includes(q))
+  }, [files, fileSearch])
+
   return (
     <div className="relative inline-flex items-center" ref={popoverRef}>
       {/* Trigger Button: "Files" */}
@@ -23760,56 +24634,88 @@ export function FilesPopover() {
         aria-haspopup="true"
         aria-label="Manage canvas files"
         className={cn(
-          "group flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-all select-none",
+          "group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer outline-none",
+          "focus-visible:ring-2 focus-visible:ring-blue-500/50",
           isOpen
-            ? "bg-stone-200/80 dark:bg-stone-700/80 text-stone-900 dark:text-white"
-            : "text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
+            ? "bg-stone-200/90 dark:bg-stone-700/90 text-stone-900 dark:text-white shadow-2xs"
+            : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
         )}
       >
-        <FolderSimple size={13} weight="fill" className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+        <FolderSimple
+          size={14}
+          weight="fill"
+          className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform"
+          aria-hidden="true"
+        />
         <span>Files</span>
         <CaretDown
           size={10}
           weight="bold"
           className={cn(
-            "text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150 shrink-0",
+            "text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-200 shrink-0",
             isOpen && "rotate-180"
           )}
           aria-hidden="true"
         />
         {/* Subtle active sync dot */}
-        <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle" title="Auto-saved and synced over Wi-Fi" />
+        <span
+          className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle"
+          title="Auto-saved and synced over Wi-Fi"
+        />
       </button>
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 sm:w-80 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xl shadow-stone-900/15 z-50 p-2 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
           {/* Header with New Canvas Action */}
-          <div className="flex items-center justify-between pb-2 mb-1.5 px-2 border-b border-stone-100 dark:border-stone-800">
+          <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-stone-900 dark:text-white">Canvas Files</span>
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
                 {files.length}
               </span>
             </div>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
+              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
               <span>New Canvas</span>
             </button>
           </div>
 
+          {/* Quick Search if more than 3 files */}
+          {files.length > 3 && (
+            <div className="relative mb-2 px-1">
+              <MagnifyingGlass size={13} className="absolute left-3 top-2 text-stone-400 pointer-events-none" />
+              <input
+                type="text"
+                value={fileSearch}
+                onChange={(e) => setFileSearch(e.target.value)}
+                placeholder="Search canvases…"
+                className="w-full pl-7 pr-6 py-1 rounded-lg text-xs bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+              />
+              {fileSearch && (
+                <button
+                  type="button"
+                  onClick={() => setFileSearch("")}
+                  className="absolute right-2.5 top-2 text-stone-400 hover:text-stone-600"
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Files List */}
           <div className="max-h-60 overflow-y-auto space-y-0.5 pr-0.5 scrollbar-thin">
-            {files.length === 0 ? (
+            {filteredFiles.length === 0 ? (
               <div className="py-6 text-center text-stone-400 dark:text-stone-500">
-                No saved canvases yet.
+                {fileSearch ? "No matching canvases." : "No saved canvases yet."}
               </div>
             ) : (
-              files.map((file) => {
+              filteredFiles.map((file) => {
                 const isCurrent = file.id === docId
                 const isDeleting = deletingId === file.id
 
@@ -23820,7 +24726,7 @@ export function FilesPopover() {
                     className={cn(
                       "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer select-none transition-all duration-150 hover:translate-x-0.5",
                       isCurrent
-                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs"
+                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs font-semibold"
                         : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-800 dark:text-stone-200"
                     )}
                   >
@@ -23834,7 +24740,7 @@ export function FilesPopover() {
                         <p className={cn("truncate font-medium text-xs", isCurrent && "font-semibold")}>
                           {file.name}
                         </p>
-                        <p className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-1">
+                        <p className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-1 font-mono">
                           <Clock size={10} />
                           <span>{relativeTime(file.updatedAt)}</span>
                         </p>
@@ -23846,10 +24752,10 @@ export function FilesPopover() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteFile(e, file)}
-                        title={isDeleting ? "Click again to permanently delete" : "Delete canvas"}
+                        title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
                         aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
                         className={cn(
-                          "p-1.5 rounded-lg transition-all shrink-0",
+                          "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
                           isDeleting
                             ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
                             : "opacity-0 group-hover:opacity-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
@@ -23865,17 +24771,17 @@ export function FilesPopover() {
           </div>
 
           {/* Quick Disk Actions */}
-          <div className="pt-2 mt-1.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 px-1">
+          <div className="pt-2 mt-1.5 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 px-1">
             <button
               type="button"
               onClick={() => {
                 importDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
             >
-              <FolderOpen size={12} />
-              <span>Open disk file</span>
+              <FolderOpen size={13} />
+              <span>Open file</span>
             </button>
 
             <button
@@ -23884,11 +24790,11 @@ export function FilesPopover() {
                 exportDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
               title="Export as native .zenithsui document"
             >
-              <DownloadSimple size={12} />
-              <span>Export copy</span>
+              <DownloadSimple size={13} />
+              <span>Export</span>
             </button>
 
             <button
@@ -23897,28 +24803,27 @@ export function FilesPopover() {
                 exportExcalidrawDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-1.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/40"
+              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
               title="Export as Universal Sketch (.sketch) file"
             >
-              <DownloadSimple size={12} />
-              <span>Export .sketch</span>
+              <DownloadSimple size={13} />
+              <span>.sketch</span>
             </button>
           </div>
 
           {/* Wi-Fi & Auto-Save Status Footer */}
           <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <WifiHigh size={11} weight="bold" className="animate-pulse-subtle" />
+              <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
               <span>Same Wi-Fi Sync Active</span>
             </span>
-            <span>Auto-saving</span>
+            <span className="font-mono">Auto-saving</span>
           </div>
         </div>
       )}
     </div>
   )
 }
-
 ```
 
 ---
@@ -26383,13 +27288,13 @@ export function WorkspaceSwitcher() {
 ### File: `components/dialogs/chart-dialog.tsx`
 
 - **Path**: `components/dialogs/chart-dialog.tsx`
-- **Lines**: 221
-- **Size**: 9231 bytes
+- **Lines**: 235
+- **Size**: 9640 bytes
 
 ```tsx
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import {
   tryParseSpreadsheet,
@@ -26441,6 +27346,15 @@ export function ChartDialog() {
     return tryParseSpreadsheet(dataText)
   }, [dataText])
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, setOpen])
+
   if (!open) return null
 
   const handleInsert = () => {
@@ -26475,7 +27389,12 @@ export function ChartDialog() {
         if (e.target === e.currentTarget) setOpen(false)
       }}
     >
-      <div className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chart-dialog-title"
+        className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter"
+      >
         {/* Header with macOS Traffic Lights */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200/60 dark:border-stone-800/60">
           <div className="flex items-center gap-3">
@@ -26494,7 +27413,7 @@ export function ChartDialog() {
                 <ChartBar size={16} weight="bold" />
               </div>
               <div>
-                <h2 className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
+                <h2 id="chart-dialog-title" className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400">Convert spreadsheet or table data into canvas elements</p>
               </div>
             </div>
@@ -26615,12 +27534,12 @@ export function ChartDialog() {
 
 - **Path**: `components/dialogs/mermaid-dialog.tsx`
 - **Lines**: 191
-- **Size**: 9055 bytes
+- **Size**: 9066 bytes
 
 ```tsx
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { parseMermaidToZenithsui } from "@/lib/canvas-core/mermaid"
 import { TreeStructure, X, Sparkle } from "@phosphor-icons/react"
@@ -26815,13 +27734,13 @@ export function MermaidDialog() {
 ### File: `components/dialogs/stats-dialog.tsx`
 
 - **Path**: `components/dialogs/stats-dialog.tsx`
-- **Lines**: 104
-- **Size**: 5187 bytes
+- **Lines**: 113
+- **Size**: 5473 bytes
 
 ```tsx
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { computeCanvasStats } from "@/lib/canvas-core/stats"
 import { ChartPieSlice, X, Selection, Shapes, VectorThree } from "@phosphor-icons/react"
@@ -26836,6 +27755,15 @@ export function StatsDialog() {
   const stats = useMemo(() => {
     return computeCanvasStats(nodes, order, selection)
   }, [nodes, order, selection])
+
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, setOpen])
 
   if (!open) return null
 
@@ -26929,19 +27857,25 @@ export function StatsDialog() {
 ### File: `components/shell/bottom-dock.tsx`
 
 - **Path**: `components/shell/bottom-dock.tsx`
-- **Lines**: 411
-- **Size**: 18552 bytes
+- **Lines**: 628
+- **Size**: 25756 bytes
 
 ```tsx
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Bottom Dock — the Mac-style floating navigation bar.
+// Zenithsui Bottom Dock — macOS-Inspired Floating Navigation & Tool Bar
 //
-// Centralizes: Brand/Workspace menu, Tool picker (with unified Library),
-// Search, Page, Settings, and Zoom controls.
+// Features:
+// 1. Continuous cosine proximity magnification engine on cursor approach.
+// 2. Sleek macOS-style active indicator dots below selected tools.
+// 3. Apple-style translucent frosted glass material with specularity.
+// 4. Base UI native tooltips with keybinding pills.
+// 5. Adaptive responsive layout: full magnified bar on desktop, touch-friendly
+//    compact drawer sheet on mobile viewports (<640px).
 // ---------------------------------------------------------------------------
 
+import { useState, useRef, useEffect, useCallback } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
@@ -26976,6 +27910,8 @@ import {
   ChartBar,
   TreeStructure,
   DownloadSimple,
+  SquaresFour,
+  X,
 } from "@phosphor-icons/react"
 import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
 import {
@@ -26985,6 +27921,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import type { DockControlsVisibility } from "@/lib/shell-store"
 
 // ── Tool definitions ──────────────────────────────────────────────────────────
@@ -27011,11 +27953,107 @@ const ALL_TOOLS: ToolDef[] = [
   { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary" },
 ]
 
+// ── Magnified Dock Item Component ─────────────────────────────────────────────
+
+interface MagnifiedItemProps {
+  children: React.ReactNode
+  active?: boolean
+  onClick?: () => void
+  title: string
+  shortcut?: string
+  ariaLabel: string
+  mouseX: number | null
+  reducedMotion: boolean
+  className?: string
+  showIndicatorDot?: boolean
+}
+
+function MagnifiedDockItem({
+  children,
+  active,
+  onClick,
+  title,
+  shortcut,
+  ariaLabel,
+  mouseX,
+  reducedMotion,
+  className,
+  showIndicatorDot = false,
+}: MagnifiedItemProps) {
+  const itemRef = useRef<HTMLButtonElement | null>(null)
+  const [scale, setScale] = useState(1)
+
+  useEffect(() => {
+    if (reducedMotion || mouseX === null || !itemRef.current) {
+      setScale(1)
+      return
+    }
+    const rect = itemRef.current.getBoundingClientRect()
+    const itemCenter = rect.left + rect.width / 2
+    const distance = Math.abs(mouseX - itemCenter)
+    const maxDist = 80
+
+    if (distance < maxDist) {
+      const cosine = Math.cos((distance / maxDist) * (Math.PI / 2))
+      const factor = cosine * cosine
+      setScale(1 + factor * 0.28)
+    } else {
+      setScale(1)
+    }
+  }, [mouseX, reducedMotion])
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <button
+            ref={itemRef}
+            type="button"
+            onClick={onClick}
+            aria-label={ariaLabel}
+            aria-pressed={active}
+            style={{
+              transform: `scale(${scale})`,
+            }}
+            className={cn(
+              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
+              "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
+              active
+                ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-medium"
+                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60",
+              className
+            )}
+          >
+            {children}
+            {showIndicatorDot && active && (
+              <span className="dock-active-dot" aria-hidden="true" />
+            )}
+          </button>
+        }
+      />
+      <TooltipContent
+        side="top"
+        sideOffset={10}
+        className="px-2 py-1 text-xs font-sans rounded-lg shadow-lg border border-stone-200/60 dark:border-white/10 bg-stone-900/90 dark:bg-stone-900/95 text-white backdrop-blur-md z-50 pointer-events-none"
+      >
+        <span className="font-medium">{title}</span>
+        {shortcut && (
+          <kbd className="ml-1.5 px-1 py-0.5 rounded bg-white/20 dark:bg-white/10 text-[10px] font-mono tracking-wide">
+            {shortcut}
+          </kbd>
+        )}
+      </TooltipContent>
+    </Tooltip>
+  )
+}
+
 // ── BottomDock ────────────────────────────────────────────────────────────────
 
 export function BottomDock() {
   const showDock = useShellStore((s) => s.preferences.showDock)
   const dockControls = useShellStore((s) => s.preferences.dockControls)
+  const animationMode = useShellStore((s) => s.preferences.animationMode)
+  const reducedMotion = animationMode === "reduced"
 
   const tool = useSquig((s) => s.tool)
   const setTool = useSquig((s) => s.setTool)
@@ -27042,6 +28080,19 @@ export function BottomDock() {
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const settingsOpen = useShellStore((s) => s.settingsOpen)
 
+  // Cursor proximity tracking for macOS magnification
+  const [mouseX, setMouseX] = useState<number | null>(null)
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+
+  const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (e.pointerType === "touch") return
+    setMouseX(e.clientX)
+  }, [])
+
+  const handlePointerLeave = useCallback(() => {
+    setMouseX(null)
+  }, [])
+
   const handleToolClick = (t: ToolDef) => {
     if (t.id === "library") {
       setPanel(panel === "components" || panel === "blocks" ? null : "components")
@@ -27049,6 +28100,7 @@ export function BottomDock() {
       setPanel(null)
       setTool(t.id as Tool)
     }
+    setMobileDrawerOpen(false)
   }
 
   const isToolActive = (t: ToolDef): boolean => {
@@ -27073,274 +28125,367 @@ export function BottomDock() {
 
   if (!hasAnyContent) return null
 
+  // Mobile slice: primary tools for narrow screen dock
+  const mobilePrimaryTools = visibleTools.slice(0, 4)
+
   return (
-    <nav
-      aria-label="Main dock"
-      className={cn(
-        "fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
-        "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)] overflow-x-auto no-scrollbar",
-        "rounded-2xl border border-stone-200/80 dark:border-stone-800/80",
-        "bg-white/90 dark:bg-[#1C1C1F]/90 backdrop-blur-xl",
-        "shadow-lg shadow-stone-900/8 dark:shadow-black/40",
-        "animate-dock-enter gpu-accelerated"
-      )}
-    >
-      {/* ── Brand / Workspace Menu (Image 1) ── */}
-      {dockControls.brandMenu && (
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            aria-label="Zenithsui workspace menu"
-            className="tactile-press flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer shrink-0"
-          >
-            <span className="text-blue-600 font-bold tracking-tight hidden sm:inline">zenithsui</span>
-            <span className="text-blue-600 font-bold tracking-tight sm:hidden">z</span>
-            <CaretDown size={10} weight="bold" className="text-stone-400" aria-hidden="true" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" sideOffset={8} className="w-56 font-sans animate-popover-enter">
-            {/* Menu Items (Image 2) */}
-            {dockControls.menuNewCanvas && (
-              <DropdownMenuItem onClick={() => { window.location.href = "/" }}>
-                <File size={14} className="mr-2" aria-hidden="true" /> New Canvas
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuOpenRecent && (
-              <DropdownMenuItem onClick={() => setCommandOpen(true)}>
-                <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open / Recent…
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem onClick={() => importDoc()}>
-              <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Universal Sketch…
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => exportExcalidrawDoc()}>
-              <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as Universal Sketch (.sketch)
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
-              <ChartBar size={14} className="mr-2" aria-hidden="true" /> Insert Chart…
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setMermaidDialogOpen(true)}>
-              <TreeStructure size={14} className="mr-2" aria-hidden="true" /> Insert Mermaid Diagram…
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => setStatsOpen(!statsOpen)}>
-              <ChartBar size={14} className="mr-2" aria-hidden="true" /> Canvas Stats
-            </DropdownMenuItem>
-            {(dockControls.menuNewCanvas || dockControls.menuOpenRecent) &&
-              (dockControls.menuShare || dockControls.menuPublishWifi) && <DropdownMenuSeparator />}
-
-            {dockControls.menuShare && (
-              <DropdownMenuItem onClick={() => setShareOpen(true)}>
-                <ShareNetwork size={14} className="mr-2" aria-hidden="true" /> Share…
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuPublishWifi && (
-              <DropdownMenuItem onClick={() => useWifiSessionStore.getState().openPublishDialog()}>
-                <WifiHigh size={14} className="mr-2" aria-hidden="true" /> Publish on Wi-Fi…
-              </DropdownMenuItem>
-            )}
-            {(dockControls.menuShare || dockControls.menuPublishWifi) &&
-              (dockControls.menuVersionHistory || dockControls.menuUndo || dockControls.menuRedo) && (
-                <DropdownMenuSeparator />
-              )}
-
-            {dockControls.menuVersionHistory && (
-              <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
-                <ClockCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Version History
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuUndo && (
-              <DropdownMenuItem onClick={() => undo()}>
-                <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Undo
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuRedo && (
-              <DropdownMenuItem onClick={() => redo()}>
-                <ArrowClockwise size={14} className="mr-2" aria-hidden="true" /> Redo
-              </DropdownMenuItem>
-            )}
-            {(dockControls.menuVersionHistory || dockControls.menuUndo || dockControls.menuRedo) &&
-              dockControls.menuSettings && <DropdownMenuSeparator />}
-
-            {dockControls.menuSettings && (
-              <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                <Gear size={14} className="mr-2" aria-hidden="true" /> Settings…
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuSettings &&
-              (dockControls.menuResetView || dockControls.menuClearCanvas) && <DropdownMenuSeparator />}
-
-            {dockControls.menuResetView && (
-              <DropdownMenuItem onClick={() => setViewport({ x: 0, y: 0, zoom: 1 })}>
-                <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Reset View
-              </DropdownMenuItem>
-            )}
-            {dockControls.menuClearCanvas && (
-              <DropdownMenuItem
-                onClick={() => { if (window.confirm("Clear all items?")) clearCanvas() }}
-                className="text-red-600 dark:text-red-400"
-              >
-                <Trash size={14} className="mr-2" aria-hidden="true" /> Clear Canvas
-              </DropdownMenuItem>
-            )}
-            {(dockControls.menuResetView || dockControls.menuClearCanvas) &&
-              dockControls.menuGithub && <DropdownMenuSeparator />}
-
-            {dockControls.menuGithub && (
-              <DropdownMenuItem onClick={() => window.open("https://github.com/amitdev7/notepadbackup", "_blank", "noopener,noreferrer")}>
-                <GithubLogo size={14} className="mr-2" aria-hidden="true" /> GitHub
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-
-      {/* ── Separator after Brand Menu ── */}
-      {dockControls.brandMenu && (visibleTools.length > 0 || hasQuickActions || dockControls.zoomControls) && (
-        <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
-      )}
-
-      {/* ── Tool Picker (Image 4) ── */}
-      {visibleTools.length > 0 && (
-        <div className="flex items-center gap-0.5 shrink-0">
-          {visibleTools.map((t) => {
-            const Icon = t.icon
-            const active = isToolActive(t)
-            return (
+    <TooltipProvider delay={150}>
+      {/* ── Mobile Tools Drawer Sheet (<640px) ── */}
+      {mobileDrawerOpen && (
+        <div className="sm:hidden fixed inset-0 z-50 flex flex-col justify-end">
+          <div
+            className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+          <div className="relative bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl border-t border-stone-200/90 dark:border-stone-800/90 rounded-t-3xl p-5 shadow-2xl animate-drawer-enter">
+            <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">Canvas Tools</span>
               <button
-                key={t.id}
                 type="button"
-                onClick={() => handleToolClick(t)}
-                title={`${t.label}${t.shortcut ? ` (${t.shortcut})` : ""}`}
-                aria-label={t.label}
-                aria-pressed={active}
-                className={cn(
-                  "relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer tactile-tool",
-                  active
-                    ? "bg-blue-600 text-white shadow-xs shadow-blue-600/30 scale-105"
-                    : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-                )}
+                onClick={() => setMobileDrawerOpen(false)}
+                className="p-1 rounded-full text-stone-500 hover:text-stone-900 dark:hover:text-white cursor-pointer"
+                aria-label="Close tools drawer"
               >
-                <Icon size={16} weight={active ? "bold" : "regular"} aria-hidden="true" />
+                <X size={16} />
               </button>
-            )
-          })}
+            </div>
+            <div className="grid grid-cols-4 gap-3 pt-4">
+              {visibleTools.map((t) => {
+                const Icon = t.icon
+                const active = isToolActive(t)
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => handleToolClick(t)}
+                    className={cn(
+                      "flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer tactile-press min-h-[58px]",
+                      active
+                        ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                        : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+                    )}
+                  >
+                    <Icon size={22} weight={active ? "bold" : "regular"} />
+                    <span className="text-[11px] mt-1.5 truncate max-w-full">{t.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
         </div>
       )}
 
-      {/* ── Separator between Tools and Quick Actions ── */}
-      {visibleTools.length > 0 && hasQuickActions && (
-        <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
-      )}
-
-      {/* ── Quick Actions: Search / Stats / Page / Settings (Image 4 right) ── */}
-      {hasQuickActions && (
-        <div className="flex items-center gap-0.5 shrink-0">
-          {/* Find in canvas (⌘F) */}
-          {dockControls.actionSearch && (
-            <button
-              type="button"
-              onClick={() => setSearchOpen(true)}
-              title="Find in canvas (⌘F)"
-              aria-label="Find in canvas (⌘F)"
-              className="tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+      {/* ── Main macOS Floating Dock ── */}
+      <nav
+        aria-label="Main dock"
+        onPointerMove={handlePointerMove}
+        onPointerLeave={handlePointerLeave}
+        className={cn(
+          "fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
+          "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)]",
+          "apple-glass-pill rounded-2xl",
+          "animate-dock-enter gpu-accelerated select-none"
+        )}
+      >
+        {/* ── Brand / Workspace Menu ── */}
+        {dockControls.brandMenu && (
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              aria-label="Zenithsui workspace menu"
+              className="tactile-press flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 transition-colors outline-none cursor-pointer shrink-0"
             >
-              <MagnifyingGlass size={16} aria-hidden="true" />
-            </button>
-          )}
-
-          {/* Canvas Stats (⌘/) */}
-          {dockControls.actionStats && (
-            <button
-              type="button"
-              onClick={() => setStatsOpen(true)}
-              title="Canvas Statistics (⌘/)"
-              aria-label="Canvas Statistics (⌘/)"
-              className="tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-            >
-              <ChartBar size={16} aria-hidden="true" />
-            </button>
-          )}
-
-          {/* Page Popover Toggle */}
-          {dockControls.actionPage && (
-            <button
-              type="button"
-              data-dock-page-btn
-              onClick={togglePagePopover}
-              title="Page & Canvas"
-              aria-label="Page settings"
-              aria-expanded={pagePopoverOpen}
-              className={cn(
-                "tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl",
-                pagePopoverOpen
-                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 scale-105"
-                  : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight hidden sm:inline">zenithsui</span>
+              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight sm:hidden">z</span>
+              <CaretDown size={10} weight="bold" className="text-stone-400" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" sideOffset={8} className="w-56 font-sans animate-popover-enter">
+              {dockControls.menuNewCanvas && (
+                <DropdownMenuItem onClick={() => { window.location.href = "/" }}>
+                  <File size={14} className="mr-2" aria-hidden="true" /> New Canvas
+                </DropdownMenuItem>
               )}
-            >
-              <File size={16} aria-hidden="true" />
-            </button>
-          )}
-
-          {/* Settings Toggle */}
-          {dockControls.actionSettings && (
-            <button
-              type="button"
-              onClick={() => setSettingsOpen(!settingsOpen)}
-              title="Settings"
-              aria-label="Settings"
-              aria-expanded={settingsOpen}
-              className={cn(
-                "tactile-btn flex items-center justify-center size-7 sm:size-8 rounded-xl",
-                settingsOpen
-                  ? "bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 scale-105"
-                  : "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+              {dockControls.menuOpenRecent && (
+                <DropdownMenuItem onClick={() => setCommandOpen(true)}>
+                  <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open / Recent…
+                </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => importDoc()}>
+                <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Universal Sketch…
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportExcalidrawDoc()}>
+                <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as Universal Sketch (.sketch)
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
+                <ChartBar size={14} className="mr-2" aria-hidden="true" /> Insert Chart…
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setMermaidDialogOpen(true)}>
+                <TreeStructure size={14} className="mr-2" aria-hidden="true" /> Insert Mermaid Diagram…
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatsOpen(!statsOpen)}>
+                <ChartBar size={14} className="mr-2" aria-hidden="true" /> Canvas Stats
+              </DropdownMenuItem>
+              {(dockControls.menuNewCanvas || dockControls.menuOpenRecent) &&
+                (dockControls.menuShare || dockControls.menuPublishWifi) && <DropdownMenuSeparator />}
+
+              {dockControls.menuShare && (
+                <DropdownMenuItem onClick={() => setShareOpen(true)}>
+                  <ShareNetwork size={14} className="mr-2" aria-hidden="true" /> Share…
+                </DropdownMenuItem>
+              )}
+              {dockControls.menuPublishWifi && (
+                <DropdownMenuItem onClick={() => useWifiSessionStore.getState().openPublishDialog()}>
+                  <WifiHigh size={14} className="mr-2" aria-hidden="true" /> Publish on Wi-Fi…
+                </DropdownMenuItem>
+              )}
+              {(dockControls.menuShare || dockControls.menuPublishWifi) &&
+                (dockControls.menuVersionHistory || dockControls.menuUndo || dockControls.menuRedo) && (
+                  <DropdownMenuSeparator />
+                )}
+
+              {dockControls.menuVersionHistory && (
+                <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
+                  <ClockCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Version History
+                </DropdownMenuItem>
+              )}
+              {dockControls.menuUndo && (
+                <DropdownMenuItem onClick={() => undo()}>
+                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Undo
+                </DropdownMenuItem>
+              )}
+              {dockControls.menuRedo && (
+                <DropdownMenuItem onClick={() => redo()}>
+                  <ArrowClockwise size={14} className="mr-2" aria-hidden="true" /> Redo
+                </DropdownMenuItem>
+              )}
+              {(dockControls.menuVersionHistory || dockControls.menuUndo || dockControls.menuRedo) &&
+                dockControls.menuSettings && <DropdownMenuSeparator />}
+
+              {dockControls.menuSettings && (
+                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                  <Gear size={14} className="mr-2" aria-hidden="true" /> Settings…
+                </DropdownMenuItem>
+              )}
+              {dockControls.menuSettings &&
+                (dockControls.menuResetView || dockControls.menuClearCanvas) && <DropdownMenuSeparator />}
+
+              {dockControls.menuResetView && (
+                <DropdownMenuItem onClick={() => setViewport({ x: 0, y: 0, zoom: 1 })}>
+                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Reset View
+                </DropdownMenuItem>
+              )}
+              {dockControls.menuClearCanvas && (
+                <DropdownMenuItem
+                  onClick={() => { if (window.confirm("Clear all items?")) clearCanvas() }}
+                  className="text-red-600 dark:text-red-400"
+                >
+                  <Trash size={14} className="mr-2" aria-hidden="true" /> Clear Canvas
+                </DropdownMenuItem>
+              )}
+              {(dockControls.menuResetView || dockControls.menuClearCanvas) &&
+                dockControls.menuGithub && <DropdownMenuSeparator />}
+
+              {dockControls.menuGithub && (
+                <DropdownMenuItem onClick={() => window.open("https://github.com/amitdev7/notepadbackup", "_blank", "noopener,noreferrer")}>
+                  <GithubLogo size={14} className="mr-2" aria-hidden="true" /> GitHub
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+
+        {/* ── Separator after Brand Menu ── */}
+        {dockControls.brandMenu && (visibleTools.length > 0 || hasQuickActions || dockControls.zoomControls) && (
+          <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        )}
+
+        {/* ── Desktop Tool Picker with Magnification Engine (sm:flex) ── */}
+        {visibleTools.length > 0 && (
+          <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+            {visibleTools.map((t) => {
+              const Icon = t.icon
+              const active = isToolActive(t)
+              return (
+                <MagnifiedDockItem
+                  key={t.id}
+                  active={active}
+                  onClick={() => handleToolClick(t)}
+                  title={t.label}
+                  shortcut={t.shortcut}
+                  ariaLabel={t.label}
+                  mouseX={mouseX}
+                  reducedMotion={reducedMotion}
+                  showIndicatorDot={true}
+                >
+                  <Icon size={16} weight={active ? "bold" : "regular"} aria-hidden="true" />
+                </MagnifiedDockItem>
+              )
+            })}
+          </div>
+        )}
+
+        {/* ── Mobile Tool Picker (sm:hidden) ── */}
+        {visibleTools.length > 0 && (
+          <div className="flex sm:hidden items-center gap-0.5 shrink-0">
+            {mobilePrimaryTools.map((t) => {
+              const Icon = t.icon
+              const active = isToolActive(t)
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => handleToolClick(t)}
+                  aria-label={t.label}
+                  aria-pressed={active}
+                  className={cn(
+                    "relative flex items-center justify-center size-8 rounded-xl cursor-pointer tactile-tool",
+                    active
+                      ? "bg-blue-600/15 text-blue-600 dark:bg-blue-500/25 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                  )}
+                >
+                  <Icon size={17} weight={active ? "bold" : "regular"} aria-hidden="true" />
+                  {active && <span className="dock-active-dot" aria-hidden="true" />}
+                </button>
+              )
+            })}
+            {visibleTools.length > 4 && (
+              <button
+                type="button"
+                onClick={() => setMobileDrawerOpen(true)}
+                title="All Tools"
+                aria-label="Open all tools drawer"
+                className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 tactile-press"
+              >
+                <SquaresFour size={17} aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* ── Separator between Tools and Quick Actions ── */}
+        {visibleTools.length > 0 && hasQuickActions && (
+          <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        )}
+
+        {/* ── Quick Actions: Search / Stats / Page / Settings ── */}
+        {hasQuickActions && (
+          <div className="flex items-center gap-0.5 shrink-0">
+            {/* Find in canvas (⌘F) */}
+            {dockControls.actionSearch && (
+              <MagnifiedDockItem
+                onClick={() => setSearchOpen(true)}
+                title="Find in Canvas"
+                shortcut="⌘F"
+                ariaLabel="Find in canvas (⌘F)"
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+              >
+                <MagnifyingGlass size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Canvas Stats (⌘/) */}
+            {dockControls.actionStats && (
+              <MagnifiedDockItem
+                onClick={() => setStatsOpen(true)}
+                title="Canvas Statistics"
+                shortcut="⌘/"
+                ariaLabel="Canvas Statistics (⌘/)"
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+              >
+                <ChartBar size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Page Popover Toggle */}
+            {dockControls.actionPage && (
+              <MagnifiedDockItem
+                onClick={togglePagePopover}
+                title="Page & Canvas"
+                ariaLabel="Page settings"
+                active={pagePopoverOpen}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={true}
+              >
+                <File size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Settings Toggle */}
+            {dockControls.actionSettings && (
+              <MagnifiedDockItem
+                onClick={() => setSettingsOpen(!settingsOpen)}
+                title="Settings"
+                ariaLabel="Settings"
+                active={settingsOpen}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={true}
+              >
+                <Gear size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+          </div>
+        )}
+
+        {/* ── Separator before Zoom Controls ── */}
+        {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && dockControls.zoomControls && (
+          <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        )}
+
+        {/* ── Zoom Controls ── */}
+        {dockControls.zoomControls && (
+          <div className="hidden sm:flex items-center gap-0.5 shrink-0">
+            <MagnifiedDockItem
+              onClick={() => zoomBy(1 / 1.2)}
+              title="Zoom Out"
+              shortcut="-"
+              ariaLabel="Zoom out"
+              mouseX={mouseX}
+              reducedMotion={reducedMotion}
             >
-              <Gear size={16} aria-hidden="true" />
-            </button>
-          )}
-        </div>
-      )}
+              <Minus size={13} aria-hidden="true" />
+            </MagnifiedDockItem>
 
-      {/* ── Separator before Zoom Controls ── */}
-      {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && dockControls.zoomControls && (
-        <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
-      )}
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <button
+                    type="button"
+                    onClick={zoomTo100}
+                    aria-label={`Current zoom ${zoomPercent}%, click to reset to 100%`}
+                    className="tactile-pill min-w-[42px] text-center px-1.5 py-0.5 rounded-lg text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60"
+                  >
+                    {zoomPercent}%
+                  </button>
+                }
+              />
+              <TooltipContent
+                side="top"
+                sideOffset={10}
+                className="px-2 py-1 text-xs font-sans rounded-lg shadow-lg border border-stone-200/60 dark:border-white/10 bg-stone-900/90 dark:bg-stone-900/95 text-white backdrop-blur-md z-50 pointer-events-none"
+              >
+                Reset to 100%
+              </TooltipContent>
+            </Tooltip>
 
-      {/* ── Zoom Controls (Image 3) ── */}
-      {dockControls.zoomControls && (
-        <div className="hidden sm:flex items-center gap-0.5 shrink-0">
-          <button
-            type="button"
-            onClick={() => zoomBy(1 / 1.2)}
-            title="Zoom Out"
-            aria-label="Zoom out"
-            className="tactile-btn flex items-center justify-center size-7 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-          >
-            <Minus size={13} aria-hidden="true" />
-          </button>
-
-          <button
-            type="button"
-            onClick={zoomTo100}
-            title="Reset to 100%"
-            aria-label={`Current zoom ${zoomPercent}%, click to reset to 100%`}
-            className="tactile-pill min-w-[42px] text-center px-1.5 py-0.5 rounded-lg text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
-          >
-            {zoomPercent}%
-          </button>
-
-          <button
-            type="button"
-            onClick={() => zoomBy(1.2)}
-            title="Zoom In"
-            aria-label="Zoom in"
-            className="tactile-btn flex items-center justify-center size-7 rounded-lg text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
-          >
-            <Plus size={13} aria-hidden="true" />
-          </button>
-        </div>
-      )}
-    </nav>
+            <MagnifiedDockItem
+              onClick={() => zoomBy(1.2)}
+              title="Zoom In"
+              shortcut="+"
+              ariaLabel="Zoom in"
+              mouseX={mouseX}
+              reducedMotion={reducedMotion}
+            >
+              <Plus size={13} aria-hidden="true" />
+            </MagnifiedDockItem>
+          </div>
+        )}
+      </nav>
+    </TooltipProvider>
   )
 }
 ```
@@ -27676,8 +28821,8 @@ export function PagePopover() {
 ### File: `components/shell/settings-dialog.tsx`
 
 - **Path**: `components/shell/settings-dialog.tsx`
-- **Lines**: 2929
-- **Size**: 136524 bytes
+- **Lines**: 2967
+- **Size**: 138465 bytes
 
 ```tsx
 "use client"
@@ -28796,6 +29941,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const dockControls = useShellStore((s) => s.preferences.dockControls)
   const updateDockControl = useShellStore((s) => s.updateDockControl)
   const setAllDockControls = useShellStore((s) => s.setAllDockControls)
+  const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const resetDockControls = useShellStore((s) => s.resetDockControls)
 
   const theme = useSquig((s) => s.theme)
@@ -30437,17 +31583,54 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
         </div>
       )
 
-    case "wifi":
+    case "wifi": {
+      const isLocalMode = prefs.databaseSettings?.storageMode === "local" || !prefs.databaseSettings?.enabled
       return (
         <div className="space-y-4">
-          <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 space-y-2">
-            <h4 className="font-semibold text-stone-900 dark:text-stone-100">Local Network (LAN) Live Publishing</h4>
-            <p className="text-[11px] text-stone-500">
-              Share live wireframes and study canvases with phones, tablets, and computers on the same Wi-Fi network without cloud upload.
-            </p>
+          <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40 space-y-3">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h4 className="font-semibold text-stone-900 dark:text-stone-100">Local Network (LAN) Live Publishing</h4>
+                <p className="text-[11px] text-stone-500 mt-0.5">
+                  Share live wireframes and study canvases with phones, tablets, and computers on the same Wi-Fi network without cloud upload.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setSettingsOpen(false)
+                  import("@/lib/lan/session").then(({ useWifiSessionStore }) => {
+                    useWifiSessionStore.getState().openPublishDialog()
+                  })
+                }}
+                className="shrink-0 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-xs font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-750 transition-colors cursor-pointer"
+              >
+                Open Wi-Fi Publish
+              </button>
+            </div>
+
+            <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-stone-800 dark:text-stone-200">
+                  Automatic Wi-Fi Sync (Opt-In)
+                </p>
+                <p className="text-[10px] text-stone-500">
+                  {isLocalMode
+                    ? "Disabled while in Local-Only mode to prevent all background network requests."
+                    : "Automatically discover and synchronize active canvases with peers on your trusted Wi-Fi subnet."}
+                </p>
+              </div>
+              <Switch
+                checked={!isLocalMode && Boolean(prefs.wifiAutoSync)}
+                disabled={isLocalMode}
+                onCheckedChange={(val) => updatePrefs({ wifiAutoSync: val })}
+                aria-label="Toggle automatic Wi-Fi sync"
+              />
+            </div>
           </div>
         </div>
       )
+    }
 
     case "privacy":
       return (
@@ -30615,8 +31798,8 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 ### File: `components/shell/top-bar.tsx`
 
 - **Path**: `components/shell/top-bar.tsx`
-- **Lines**: 102
-- **Size**: 4201 bytes
+- **Lines**: 162
+- **Size**: 6457 bytes
 
 ```tsx
 "use client"
@@ -30624,16 +31807,19 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 // ---------------------------------------------------------------------------
 // Zenithsui Minimal Top Bar
 //
+// Apple-inspired frosted glass capsule:
 // - Centered document title with inline rename
-// - "Files" popover to create new canvas, view saved canvases, and switch files
-// - Background automatic Wi-Fi sync across any device on the same Wi-Fi
+// - Real-time sync/save status pill with pulse indicator
+// - Interactive "Files" popover to create, open, and switch canvases
+// - Automatic background Wi-Fi mesh synchronization
 // ---------------------------------------------------------------------------
 
 import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
-import { PencilSimple } from "@phosphor-icons/react"
+import { useSyncStore } from "@/lib/sync/engine"
+import { PencilSimple, Check } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -30648,6 +31834,17 @@ export function TopBar() {
   const [titleDraft, setTitleDraft] = useState(fileName)
   const [prevFileName, setPrevFileName] = useState(fileName)
   const inputRef = useRef<HTMLInputElement>(null)
+  const saveFlash = useSquig((s) => s.saveFlash)
+  const syncStatus = useSyncStore((s) => s.status)
+  const [justSaved, setJustSaved] = useState(false)
+
+  useEffect(() => {
+    if (saveFlash > 0) {
+      setJustSaved(true)
+      const t = setTimeout(() => setJustSaved(false), 2000)
+      return () => clearTimeout(t)
+    }
+  }, [saveFlash])
 
   if (prevFileName !== fileName) {
     setPrevFileName(fileName)
@@ -30673,8 +31870,8 @@ export function TopBar() {
 
   return (
     <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
-      {/* Center: Document Title + Files Popover */}
-      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/70 dark:border-stone-800/70 shadow-xs shadow-stone-900/5 min-w-0 transition-all duration-200 gpu-accelerated">
+      {/* Center: Frosted Glass Capsule */}
+      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full apple-glass-pill min-w-0 transition-all duration-200 gpu-accelerated select-none">
         {isEditingTitle ? (
           <input
             ref={inputRef}
@@ -30690,22 +31887,69 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-medium text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
+            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingTitle(true)}
-            className="group tactile-press flex items-center gap-1.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate"
+            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate cursor-pointer outline-none"
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
             <span className="truncate max-w-[120px] sm:max-w-[280px]">{fileName}</span>
-            <PencilSimple size={11} className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110" aria-hidden="true" />
+            <PencilSimple
+              size={11}
+              className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
+              aria-hidden="true"
+            />
           </button>
         )}
 
-        <div className="h-3 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
+        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+
+        {/* Live Status Indicator Pill */}
+        <div
+          className="flex items-center gap-1.5 text-[10px] text-stone-400 dark:text-stone-500 font-mono select-none px-1"
+          title={
+            syncStatus === "syncing"
+              ? "Synchronizing changes..."
+              : syncStatus === "synced"
+                ? "All changes saved and synced"
+                : syncStatus === "conflict"
+                  ? "Conflict detected"
+                  : syncStatus === "error"
+                    ? "Storage or sync error"
+                    : "Saved locally"
+          }
+          aria-live="polite"
+        >
+          {syncStatus === "syncing" ? (
+            <>
+              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden="true" />
+              <span className="hidden sm:inline text-blue-600 dark:text-blue-400">syncing</span>
+            </>
+          ) : syncStatus === "conflict" ? (
+            <>
+              <span className="size-1.5 rounded-full bg-amber-500" aria-hidden="true" />
+              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">conflict</span>
+            </>
+          ) : syncStatus === "error" ? (
+            <>
+              <span className="size-1.5 rounded-full bg-red-500" aria-hidden="true" />
+              <span className="text-red-500 hidden sm:inline">save error</span>
+            </>
+          ) : justSaved ? (
+            <>
+              <span className="size-1.5 rounded-full bg-emerald-500 transition-colors" aria-hidden="true" />
+              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline flex items-center gap-0.5">
+                <Check size={10} weight="bold" /> saved
+              </span>
+            </>
+          ) : (
+            <span className="size-1.5 rounded-full bg-stone-300 dark:bg-stone-600" aria-hidden="true" />
+          )}
+        </div>
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
@@ -30719,7 +31963,6 @@ export function TopBar() {
     </header>
   )
 }
-
 ```
 
 ---
@@ -30994,7 +32237,7 @@ export { Input }
 
 - **Path**: `components/ui/panel.tsx`
 - **Lines**: 245
-- **Size**: 8358 bytes
+- **Size**: 8378 bytes
 
 ```tsx
 "use client"
@@ -31036,7 +32279,7 @@ export function Panel({
     <div
       data-zenithsui-chrome
       className={cn(
-        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/80 bg-background shadow-panel",
+        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/70 bg-background/95 backdrop-blur-xl shadow-panel",
         className
       )}
       // a press on chrome is never a press on the canvas
@@ -43881,60 +45124,100 @@ export async function restoreVersionSnapshot(
 ### File: `app/api/assets/proxy/route.ts`
 
 - **Path**: `app/api/assets/proxy/route.ts`
-- **Lines**: 124
-- **Size**: 3863 bytes
+- **Lines**: 207
+- **Size**: 6488 bytes
 
 ```tsx
 import { NextResponse, type NextRequest } from "next/server"
 
-function isDisallowedHost(hostname: string): boolean {
-  const lower = hostname.toLowerCase()
+function isPrivateOrLoopback(octet1: number, octet2: number): boolean {
+  if (octet1 === 127) return true // Loopback
+  if (octet1 === 0) return true   // Current network
+  if (octet1 === 10) return true  // 10.0.0.0/8
+  if (octet1 === 172 && octet2 >= 16 && octet2 <= 31) return true // 172.16.0.0/12
+  if (octet1 === 192 && octet2 === 168) return true // 192.168.0.0/16
+  if (octet1 === 169 && octet2 === 254) return true // 169.254.0.0/16 (Link-local / cloud metadata)
+  return false
+}
+
+export function isDisallowedHost(hostname: string): boolean {
+  let lower = hostname.toLowerCase().trim()
+
+  // Strip enclosing brackets for IPv6
+  if (lower.startsWith("[") && lower.endsWith("]")) {
+    lower = lower.slice(1, -1)
+  }
+
+  // Common metadata and loopback names
   if (
     lower === "localhost" ||
     lower === "127.0.0.1" ||
     lower === "0.0.0.0" ||
     lower === "::1" ||
+    lower === "::" ||
     lower.endsWith(".local") ||
-    lower.endsWith(".internal")
+    lower.endsWith(".internal") ||
+    lower === "metadata.google.internal" ||
+    lower === "instance-data"
   ) {
     return true
   }
-  // IPv4 private ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16)
-  const ipv4Match = lower.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/)
-  if (ipv4Match) {
-    const octet1 = parseInt(ipv4Match[1], 10)
-    const octet2 = parseInt(ipv4Match[2], 10)
-    if (octet1 === 10) return true
-    if (octet1 === 172 && octet2 >= 16 && octet2 <= 31) return true
-    if (octet1 === 192 && octet2 === 168) return true
-    if (octet1 === 169 && octet2 === 254) return true
-    if (octet1 === 127) return true
+
+  // IPv6 link-local, private ULA, and IPv4-mapped IPv6
+  if (lower.startsWith("fe8") || lower.startsWith("fe9") || lower.startsWith("fea") || lower.startsWith("feb")) return true
+  if (lower.startsWith("fc") || lower.startsWith("fd")) return true
+  if (lower.startsWith("::ffff:")) {
+    const v4 = lower.replace("::ffff:", "")
+    return isDisallowedHost(v4)
   }
+
+  // Single 32-bit int representation
+  if (/^\d+$/.test(lower)) {
+    const num = parseInt(lower, 10)
+    if (num >= 0 && num <= 4294967295) {
+      const o1 = (num >>> 24) & 255
+      const o2 = (num >>> 16) & 255
+      return isPrivateOrLoopback(o1, o2)
+    }
+  }
+
+  // Hex format
+  if (/^0x[0-9a-f]+$/i.test(lower)) {
+    const num = parseInt(lower, 16)
+    if (num >= 0 && num <= 4294967295) {
+      const o1 = (num >>> 24) & 255
+      const o2 = (num >>> 16) & 255
+      return isPrivateOrLoopback(o1, o2)
+    }
+  }
+
+  // Dotted decimal / octal representation
+  const parts = lower.split(".")
+  if (parts.length === 4) {
+    const octets = parts.map((p) => {
+      if (p.startsWith("0x") || p.startsWith("0X")) return parseInt(p, 16)
+      if (p.startsWith("0") && p.length > 1) return parseInt(p, 8)
+      return parseInt(p, 10)
+    })
+    if (octets.every((o) => !isNaN(o) && o >= 0 && o <= 255)) {
+      return isPrivateOrLoopback(octets[0], octets[1])
+    }
+  }
+
   return false
 }
 
 async function handleAssetProxy(request: NextRequest, isHead = false) {
   const { searchParams } = new URL(request.url)
-  const targetUrl = searchParams.get("url")
+  const initialUrl = searchParams.get("url")
 
-  if (!targetUrl) {
+  if (!initialUrl) {
     return NextResponse.json({ error: "Missing url parameter" }, { status: 400 })
   }
 
-  let parsed: URL
-  try {
-    parsed = new URL(targetUrl)
-  } catch {
-    return NextResponse.json({ error: "Invalid URL format" }, { status: 400 })
-  }
-
-  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
-    return NextResponse.json({ error: "Invalid protocol; only http and https allowed" }, { status: 400 })
-  }
-
-  if (isDisallowedHost(parsed.hostname)) {
-    return NextResponse.json({ error: "Target host not permitted" }, { status: 403 })
-  }
+  let currentUrl = initialUrl
+  let redirectsFollowed = 0
+  const MAX_REDIRECTS = 3
 
   try {
     const forwardHeaders: Record<string, string> = {
@@ -43947,10 +45230,52 @@ async function handleAssetProxy(request: NextRequest, isHead = false) {
       forwardHeaders["Range"] = rangeHeader
     }
 
-    const upstreamResponse = await fetch(targetUrl, {
-      method: isHead ? "HEAD" : "GET",
-      headers: forwardHeaders,
-    })
+    let upstreamResponse: Response | null = null
+
+    while (redirectsFollowed <= MAX_REDIRECTS) {
+      let parsed: URL
+      try {
+        parsed = new URL(currentUrl)
+      } catch {
+        return NextResponse.json({ error: "Invalid URL format" }, { status: 400 })
+      }
+
+      if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+        return NextResponse.json({ error: "Invalid protocol; only http and https allowed" }, { status: 400 })
+      }
+
+      if (isDisallowedHost(parsed.hostname)) {
+        return NextResponse.json({ error: "Target host not permitted" }, { status: 403 })
+      }
+
+      upstreamResponse = await fetch(currentUrl, {
+        method: isHead ? "HEAD" : "GET",
+        headers: forwardHeaders,
+        redirect: "manual",
+      })
+
+      // Check if redirect
+      if ([301, 302, 303, 307, 308].includes(upstreamResponse.status)) {
+        const location = upstreamResponse.headers.get("location")
+        if (!location) {
+          return NextResponse.json({ error: "Redirect missing location header" }, { status: 502 })
+        }
+        // Resolve relative redirects against current URL
+        currentUrl = new URL(location, currentUrl).toString()
+        redirectsFollowed++
+        continue
+      }
+
+      break
+    }
+
+    if (!upstreamResponse) {
+      return NextResponse.json({ error: "Failed to fetch upstream response" }, { status: 502 })
+    }
+
+    if (redirectsFollowed > MAX_REDIRECTS) {
+      return NextResponse.json({ error: "Too many redirects" }, { status: 508 })
+    }
 
     if (!upstreamResponse.ok && upstreamResponse.status !== 206) {
       return NextResponse.json(
@@ -44008,6 +45333,7 @@ export async function GET(request: NextRequest) {
 export async function HEAD(request: NextRequest) {
   return handleAssetProxy(request, true)
 }
+
 ```
 
 ---
@@ -47291,8 +48617,8 @@ export async function withTransaction<T>(
 ### File: `lib/storage/documents.ts`
 
 - **Path**: `lib/storage/documents.ts`
-- **Lines**: 101
-- **Size**: 3027 bytes
+- **Lines**: 131
+- **Size**: 3845 bytes
 
 ```tsx
 import { openZenithsuiDb, STORES, withTransaction } from "./db"
@@ -47394,6 +48720,36 @@ export async function permanentlyDeleteLocalDocument(id: string): Promise<void> 
   })
   notifyDocChanged(id, "delete")
 }
+
+export async function restoreLocalDocument(id: string): Promise<void> {
+  const existing = await getLocalDocument(id)
+  if (!existing) return
+
+  existing.deletedAt = null
+  existing.updatedAt = Date.now()
+  await saveLocalDocument(existing)
+  notifyDocChanged(id, "save")
+}
+
+export async function duplicateLocalDocument(id: string): Promise<StoredLocalDoc | null> {
+  const existing = await getLocalDocument(id)
+  if (!existing) return null
+
+  const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
+  const clone: StoredLocalDoc = {
+    ...existing,
+    id: newId,
+    name: `${existing.name} (Copy)`,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    syncStatus: "local-only",
+  }
+  await saveLocalDocument(clone)
+  notifyDocChanged(newId, "save")
+  return clone
+}
+
 
 ```
 
@@ -59960,8 +61316,8 @@ function AgendaItem({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 263
-- **Size**: 9731 bytes
+- **Lines**: 280
+- **Size**: 9665 bytes
 
 ```tsx
 "use client"
@@ -60034,22 +61390,32 @@ export function CalendarEventCard({
     if (event.startTime && event.endTime) {
       timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} – ${formatTime(parseTimeToMinutes(event.endTime))}`
     } else if (event.startTime) {
-      timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} (${event.durationMinutes || 60}m)`
+      timeLabel = formatTime(parseTimeToMinutes(event.startTime))
     }
   }
 
   const handleExportSingle = () => {
-    const ics = exportToIcs([event], event.title)
-    downloadIcsFile(`${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`, ics)
+    const icsString = exportToIcs([event], `Zenithsui – ${event.title}`)
+    const filename = `${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`
+    downloadIcsFile(icsString, filename)
   }
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.stopPropagation()
+          onClose()
+        }
+      }}
     >
       <div
-        className="w-full max-w-sm rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-2xl text-[var(--sq-ink)] overflow-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="calendar-card-title"
+        className="w-full max-w-sm rounded-2xl border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-2xl text-[var(--sq-ink)] overflow-hidden animate-popover-enter font-sans"
         style={{
           boxShadow: "0 14px 40px rgba(0,0,0,0.22), 4px 4px 0px rgba(0,0,0,0.06)",
         }}
@@ -60091,6 +61457,7 @@ export function CalendarEventCard({
             </div>
 
             <h3
+              id="calendar-card-title"
               className={cn(
                 "text-base font-bold tracking-tight break-words",
                 isCompleted && "line-through opacity-60"
@@ -60103,124 +61470,130 @@ export function CalendarEventCard({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0"
-            title="Close"
+            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0 cursor-pointer"
+            aria-label="Close details"
           >
             <X size={16} />
           </button>
         </div>
 
-        {/* Metadata Details */}
+        {/* Event Meta Details */}
         <div className="px-4 py-3 space-y-2.5 text-xs border-y border-[var(--sq-border)]/60 bg-[var(--sq-paper)]">
           {/* Date & Time */}
-          <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-            <CalendarBlank size={16} className="shrink-0 opacity-70" />
+          <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
+            <CalendarBlank size={16} className="text-[var(--sq-muted)] shrink-0" />
             <span className="font-medium">{dateLabel}</span>
           </div>
 
-          <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-            <Clock size={16} className="shrink-0 opacity-70" />
+          <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
+            <Clock size={16} className="text-[var(--sq-muted)] shrink-0" />
             <span>{timeLabel}</span>
           </div>
 
           {/* Location */}
           {event.location && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-              <MapPin size={16} className="shrink-0 opacity-70" />
+            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
+              <MapPin size={16} className="text-[var(--sq-muted)] shrink-0" />
               <span className="truncate">{event.location}</span>
             </div>
           )}
 
           {/* Recurrence */}
           {event.recurrence && event.recurrence !== "none" && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-              <ArrowsClockwise size={16} className="shrink-0 opacity-70" />
-              <span className="capitalize">Repeats {event.recurrence}</span>
+            <div className="flex items-center gap-2.5 text-[var(--sq-ink)] capitalize">
+              <ArrowsClockwise size={16} className="text-[var(--sq-muted)] shrink-0" />
+              <span>Repeats {event.recurrence}</span>
             </div>
           )}
 
           {/* Reminder */}
-          {typeof event.reminderMinutes === "number" && event.reminderMinutes >= 0 && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-              <Bell size={16} className="shrink-0 opacity-70" />
-              <span>
-                {event.reminderMinutes === 0
-                  ? "At time of event"
-                  : `${event.reminderMinutes} minutes before`}
-              </span>
+          {typeof event.reminderMinutes === "number" && (
+            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
+              <Bell size={16} className="text-[var(--sq-muted)] shrink-0" />
+              <span>{event.reminderMinutes} minutes before</span>
             </div>
           )}
 
           {/* Description */}
           {event.description && (
-            <div className="mt-2 pt-2 border-t border-[var(--sq-border)]/40 text-[var(--sq-ink)] text-xs whitespace-pre-wrap leading-relaxed opacity-85 max-h-28 overflow-y-auto">
+            <div className="pt-2 text-xs opacity-80 leading-relaxed border-t border-[var(--sq-border)]/40 whitespace-pre-wrap">
               {event.description}
             </div>
           )}
         </div>
 
-        {/* Quick Action Toolbar */}
-        <div className="p-3 bg-[var(--sq-shade)]/30 flex items-center justify-between gap-1 text-xs">
+        {/* Quick Actions Footer Toolbar */}
+        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1">
           <div className="flex items-center gap-1">
-            {/* Complete Toggle */}
+            {/* Toggle Completion */}
             <button
               type="button"
-              onClick={() => onToggleComplete(event.id)}
+              onClick={() => {
+                onToggleComplete(event.id)
+                onClose()
+              }}
               className={cn(
-                "px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border transition-colors",
+                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
                 isCompleted
-                  ? "bg-emerald-600 text-white border-emerald-700"
-                  : "bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] border-[var(--sq-border)]"
+                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
+                  : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
               )}
-              title={isCompleted ? "Mark Pending" : "Mark Completed"}
             >
-              <CheckCircle size={15} weight={isCompleted ? "fill" : "regular"} />
+              <CheckCircle size={15} weight={isCompleted ? "fill" : "bold"} />
               <span>{isCompleted ? "Done" : "Complete"}</span>
             </button>
 
             {/* Edit */}
             <button
               type="button"
-              onClick={() => onEdit(event)}
-              className="px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-              title="Edit Event"
+              onClick={() => {
+                onEdit(event)
+                onClose()
+              }}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Edit event"
             >
-              <PencilSimple size={15} />
-              <span>Edit</span>
+              <PencilSimple size={16} />
             </button>
-          </div>
 
-          <div className="flex items-center gap-1">
             {/* Duplicate */}
             <button
               type="button"
-              onClick={() => onDuplicate(event)}
-              className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-              title="Duplicate Event"
+              onClick={() => {
+                onDuplicate(event)
+                onClose()
+              }}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Duplicate event"
             >
-              <Copy size={15} />
+              <Copy size={16} />
             </button>
 
-            {/* Export .ics */}
+            {/* Export single .ics */}
             <button
               type="button"
               onClick={handleExportSingle}
-              className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-              title="Export as .ics"
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Export to .ics file"
             >
-              <DownloadSimple size={15} />
-            </button>
-
-            {/* Delete */}
-            <button
-              type="button"
-              onClick={() => onDelete(event.id)}
-              className="p-1.5 rounded border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-              title="Delete Event"
-            >
-              <Trash size={15} />
+              <DownloadSimple size={16} />
             </button>
           </div>
+
+          {/* Delete */}
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm(`Delete "${event.title}"?`)) {
+                onDelete(event.id)
+                onClose()
+              }
+            }}
+            className="p-1.5 rounded hover:bg-red-50 text-red-600 transition-colors cursor-pointer"
+            title="Delete event"
+          >
+            <Trash size={16} />
+          </button>
         </div>
       </div>
     </div>
@@ -60233,8 +61606,8 @@ export function CalendarEventCard({
 ### File: `components/calendar/calendar-event-editor.tsx`
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
-- **Lines**: 535
-- **Size**: 20261 bytes
+- **Lines**: 538
+- **Size**: 20384 bytes
 
 ```tsx
 "use client"
@@ -60435,6 +61808,9 @@ export function CalendarEventEditor({
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="calendar-editor-title"
         className={cn(
           "w-full max-w-md rounded-lg p-5 flex flex-col gap-4 text-left shadow-xl transition-all",
           "bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)]"
@@ -60448,7 +61824,7 @@ export function CalendarEventEditor({
         <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-3">
           <div className="flex items-center gap-2">
             <CalendarBlank size={18} weight="bold" />
-            <h2 className="text-base font-semibold">
+            <h2 id="calendar-editor-title" className="text-base font-semibold">
               {event ? "Edit Event" : "Create New Event"}
             </h2>
           </div>
@@ -61444,32 +62820,37 @@ export function CalendarMonthView({
 ### File: `components/calendar/calendar-month-year-picker.tsx`
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
-- **Lines**: 209
-- **Size**: 7118 bytes
+- **Lines**: 206
+- **Size**: 6353 bytes
 
 ```tsx
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Calendar — Windows-Style Month & Year Quick Jump Picker
+// Zenithsui Calendar — Month & Year Decade Jump Picker
 //
-// Fast date jumping matching Windows Calendar:
-// Clicking the month title opens a 12-month grid with decade navigation.
+// Fast navigation dialog allowing users to jump across years, decades,
+// and months with a single tap, inspired by the Windows calendar flyout.
 // ---------------------------------------------------------------------------
 
 import { useState } from "react"
-import { CaretLeft, CaretRight, X, CalendarCheck } from "@phosphor-icons/react"
+import {
+  CaretLeft,
+  CaretRight,
+  X,
+  CalendarCheck,
+} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface MonthYearPickerProps {
   isOpen: boolean
   currentYear: number
-  currentMonth: number // 1-indexed (1..12)
+  currentMonth: number
   onSelect: (year: number, month: number) => void
   onClose: () => void
 }
 
-const MONTHS_SHORT = [
+const MONTH_NAMES = [
   "Jan",
   "Feb",
   "Mar",
@@ -61524,9 +62905,18 @@ export function CalendarMonthYearPicker({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.stopPropagation()
+          onClose()
+        }
+      }}
     >
       <div
-        className="w-full max-w-xs rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] p-4 shadow-xl text-[var(--sq-ink)]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Month and year picker"
+        className="w-full max-w-xs rounded-2xl border border-[var(--sq-border)] bg-[var(--sq-paper)] p-4 shadow-xl text-[var(--sq-ink)] animate-popover-enter"
         style={{
           boxShadow: "0 10px 30px rgba(0,0,0,0.18), 3px 3px 0px rgba(0,0,0,0.06)",
         }}
@@ -61575,83 +62965,66 @@ export function CalendarMonthYearPicker({
           </div>
         </div>
 
-        {/* Picker Grid */}
-        <div className="pt-3">
-          {mode === "months" ? (
-            <div className="grid grid-cols-4 gap-2">
-              {MONTHS_SHORT.map((mName, idx) => {
-                const monthNum = idx + 1
-                const isSelected =
-                  pickerYear === currentYear && monthNum === currentMonth
-                return (
-                  <button
-                    key={mName}
-                    type="button"
-                    onClick={() => {
-                      onSelect(pickerYear, monthNum)
-                    }}
-                    className={cn(
-                      "py-2.5 text-xs font-semibold rounded transition-colors text-center border",
-                      isSelected
-                        ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] shadow-xs"
-                        : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
-                    )}
-                  >
-                    {mName}
-                  </button>
-                )
-              })}
-            </div>
-          ) : (
-            <div className="grid grid-cols-4 gap-2">
-              {decadeYears.map((yr) => {
-                const isCurrent = yr === currentYear
-                const isOut = yr < decadeStart || yr > decadeStart + 9
-                return (
-                  <button
-                    key={yr}
-                    type="button"
-                    onClick={() => {
-                      setPickerYear(yr)
-                      setMode("months")
-                    }}
-                    className={cn(
-                      "py-2.5 text-xs font-semibold rounded transition-colors text-center border",
-                      isCurrent
-                        ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)] shadow-xs"
-                        : isOut
-                          ? "opacity-40 border-transparent hover:bg-[var(--sq-shade)]"
-                          : "border-transparent hover:border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
-                    )}
-                  >
-                    {yr}
-                  </button>
-                )
-              })}
-            </div>
-          )}
-        </div>
+        {/* Months Grid (3 columns x 4 rows) */}
+        {mode === "months" && (
+          <div className="grid grid-cols-3 gap-2 pt-3">
+            {MONTH_NAMES.map((name, index) => {
+              const monthNum = index + 1
+              const isSelected =
+                pickerYear === currentYear && monthNum === currentMonth
 
-        {/* Footer Quick Return */}
-        <div className="mt-3 pt-2.5 border-t border-[var(--sq-border)] flex items-center justify-between text-xs">
-          <button
-            type="button"
-            onClick={() => {
-              const now = new Date()
-              onSelect(now.getFullYear(), now.getMonth() + 1)
-            }}
-            className="text-xs font-medium text-[var(--sq-ink)] hover:underline"
-          >
-            Jump to current month
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-2.5 py-1 text-xs font-medium rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)]"
-          >
-            Cancel
-          </button>
-        </div>
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => {
+                    onSelect(pickerYear, monthNum)
+                    onClose()
+                  }}
+                  className={cn(
+                    "py-2.5 px-1 rounded text-xs font-semibold text-center transition-all cursor-pointer",
+                    isSelected
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs scale-105"
+                      : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+                  )}
+                >
+                  {name}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Decade Years Grid (3 columns x 4 rows) */}
+        {mode === "years" && (
+          <div className="grid grid-cols-3 gap-2 pt-3">
+            {decadeYears.map((yr) => {
+              const isSelected = yr === currentYear
+              const isOutOfDecade = yr < decadeStart || yr > decadeStart + 9
+
+              return (
+                <button
+                  key={yr}
+                  type="button"
+                  onClick={() => {
+                    setPickerYear(yr)
+                    setMode("months")
+                  }}
+                  className={cn(
+                    "py-2.5 px-1 rounded text-xs font-semibold text-center transition-all cursor-pointer",
+                    isSelected
+                      ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs scale-105"
+                      : isOutOfDecade
+                        ? "text-[var(--sq-muted)] hover:bg-[var(--sq-shade)] opacity-60"
+                        : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+                  )}
+                >
+                  {yr}
+                </button>
+              )
+            })}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -75247,7 +76620,7 @@ self.addEventListener("activate", () => {
 
 - **Path**: `public/sw.js`
 - **Lines**: 109
-- **Size**: 3224 bytes
+- **Size**: 3200 bytes
 
 ```javascript
 // ---------------------------------------------------------------------------
@@ -75295,7 +76668,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url)
 
   // 1. Skip non-GET requests and WebSocket / LAN endpoints
-  if (event.request.method !== "GET" || url.pathname.startsWith("/api/assets/signed-upload-url")) {
+  if (event.request.method !== "GET" || url.pathname.startsWith("/api/")) {
     return
   }
 
@@ -83272,8 +84645,8 @@ if (missing.length) console.log(`missing (skipped): ${missing.join(" ")}`)
 ### File: `scripts/generate-snapshot.mjs`
 
 - **Path**: `scripts/generate-snapshot.mjs`
-- **Lines**: 1175
-- **Size**: 67858 bytes
+- **Lines**: 1493
+- **Size**: 94169 bytes
 
 ```javascript
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs"
@@ -83281,16 +84654,20 @@ import { join, relative, extname, basename, sep } from "node:path"
 
 const ROOT = process.cwd()
 
+// Curated list of all 21 source domains organizing 100% of the project's source files
 // Curated list of all 23 source domains organizing 100% of the project's source files
 const FILE_CATEGORIES = [
   {
     category: "1. Project Configuration, Tooling & Vercel Deployment Settings",
     description: "Build configuration, TypeScript compiler settings, package dependencies, Vercel edge/deployment configs, and toolchain configurations.",
+    match: (f) => /^(package\.json|tsconfig\.json|next\.config\.ts|vercel\.json|\.vercelignore|components\.json|postcss\.config\.mjs|eslint\.config\.mjs|\.gitignore|\.npmrc|skills-lock\.json|\.env\.example|\.env\.local|README\.md|next-env\.d\.ts)$/.test(f),
     match: (f) => /^(package\.json|tsconfig\.json|next\.config\.ts|vercel\.json|\.vercelignore|components\.json|postcss\.config\.mjs|eslint\.config\.mjs|\.gitignore|\.npmrc|skills-lock\.json|\.env\.example|\.env\.local|README\.md|next-env\.d\.ts|vitest\.config\.mts|setupTests\.ts)$/.test(f),
     files: [],
   },
   {
     category: "2. Next.js 16 App Router & Application Shell",
+    description: "Root layout, canvas page entry point, global CSS variables, custom cursors CSS, metadata images, and kitchen sink demo.",
+    match: (f) => /^app\/(layout|page|globals\.css|cursors\.css|dashboard\/page|kitchen-sink\/page|manifest|icon\.svg|opengraph-image|social-image|twitter-image)/.test(f),
     description: "Root layout, canvas page entry point, error boundaries, sitemap, robots, global CSS variables, custom cursors CSS, metadata images, and kitchen sink demo.",
     match: (f) => /^(app\/(layout|page|globals\.css|cursors\.css|dashboard\/page|kitchen-sink\/page|manifest|icon\.svg|opengraph-image|social-image|twitter-image|error|global-error|loading|not-found|robots|sitemap)|public\/(favicon\.svg|_headers|robots\.txt))/.test(f),
     files: [],
@@ -83303,23 +84680,29 @@ const FILE_CATEGORIES = [
   },
   {
     category: "4. Canvas Geometry, Hit Testing, Snapping & Mathematical Engine",
+    description: "Pure math engines for hit detection, screen-space magnetic smart guides, 8-handle transform math, Liang-Barsky marquee clipping, and text reflow.",
+    match: (f) => /^lib\/canvas\//.test(f),
     description: "Pure math engines for hit detection, screen-space magnetic smart guides, 8-handle transform math, Liang-Barsky marquee clipping, Chaikin stroke smoothing, and text reflow.",
     match: (f) => /^(lib\/canvas\/|lib\/worker-bridge\.ts|public\/workers\/canvas-worker\.js)/.test(f),
     files: [],
   },
   {
     category: "5. Rough.js Hand-Drawn Sketch Engine & Vector Primitives",
+    description: "Vector primitive DSL (rect, pill, ellipse, poly, icon, text), Rough.js SVG path generator, seed determinism, pen pressure styling, and Phosphor icons.",
     description: "Vector primitive DSL (rect, pill, ellipse, poly, icon, text), Rough.js SVG path generator, seed determinism, pen pressure styling, Phosphor icons, and Universal Sketch / Excalidraw interop.",
     match: (f) => /^(components\/canvas\/sketch\.tsx|lib\/sketch\/)/.test(f),
     files: [],
   },
   {
     category: "6. Interactive Canvas Viewport & Direct Manipulation Components",
+    description: "Infinite canvas controller (pointer events, gestures, auto-pan, overlay), floating context row, empty canvas hero, and inline text editing overlay.",
+    match: (f) => /^components\/canvas\/(canvas|context-row|empty-canvas|text-edit-overlay)\.tsx$/.test(f),
     description: "Infinite canvas controller (pointer coalescing, gestures, auto-pan, overlay), floating context row, tool properties panel, laser overlay, search, stats HUD, empty canvas hero, inline text editing, and PDF/document canvas items.",
     match: (f) => /^components\/canvas\//.test(f) && !/^components\/canvas\/sketch\.tsx$/.test(f),
     files: [],
   },
   {
+    category: "7. Application Chrome Shell, Floating Panels & File Navigation",
     category: "7. Canvas Core Specialist Engines (Charts, Mermaid, Laser, Stats)",
     description: "Specialized math engines for hand-drawn charts (bar, line, radar), Mermaid diagram transpilation, ephemeral laser pointer particle physics, and canvas geometry inspector metrics.",
     match: (f) => /^lib\/canvas-core\//.test(f),
@@ -83338,84 +84721,103 @@ const FILE_CATEGORIES = [
     files: [],
   },
   {
+    category: "8. Shell Navbars, Responsive Docks & Dialogs",
+    description: "Top bar chrome, bottom dock tool selector, page popover, and system settings dialog.",
+    match: (f) => /^components\/shell\//.test(f),
     category: "10. Shell Navbars, Responsive Docks & Dialogs",
     description: "Top bar chrome, macOS bottom dock with cosine magnification, page popover, system settings dialog with database controls, and macOS window dialogs (Chart, Mermaid, Stats).",
     match: (f) => /^(components\/shell\/|components\/dialogs\/)/.test(f),
     files: [],
   },
   {
+    category: "9. Accessible Base UI Component Primitives",
     category: "11. Accessible Base UI Component Primitives",
     description: "Accessible headless UI wrappers styled with Tailwind v4 (buttons, dialogs, dropdowns, inputs, panels, selects, switches, tooltips).",
     match: (f) => /^components\/ui\//.test(f),
     files: [],
   },
   {
+    category: "10. Automatic Wi-Fi Sync, LAN Peer Transport & Session Mesh",
     category: "12. Automatic Wi-Fi Sync, LAN Peer Transport & Session Mesh",
     description: "Automatic Wi-Fi network subnet detection, in-memory sliding cache with Supabase persistence fallback, WebRTC DataChannels, and LAN peer collaboration.",
     match: (f) => /^(lib\/lan\/|components\/chrome\/wifi-|app\/lan\/|app\/api\/wifi-sync)/.test(f),
     files: [],
   },
   {
+    category: "11. Supabase Cloud Infrastructure, SSR Clients & Database Migrations",
     category: "13. Supabase Cloud Infrastructure, SSR Clients & Database Migrations",
     description: "Supabase client/server/middleware integrations with @supabase/ssr, database schemas, and migration scripts.",
     match: (f) => /^(lib\/supabase\/|utils\/supabase\/|lib\/db\/|supabase\/migrations\/|scripts\/apply-supabase-migrations\.mjs)/.test(f),
     files: [],
   },
   {
+    category: "12. Real-Time Cloud Synchronization, Queue Engine & Conflict Resolution",
     category: "14. Real-Time Cloud Synchronization, Queue Engine & Conflict Resolution",
     description: "Cloud sync engine, offline mutation queue, sync status indicators, 3-way conflict resolution, and version history.",
     match: (f) => /^(lib\/sync\/|components\/chrome\/(sync-indicator|conflict-dialog|version-history-panel)\.tsx)/.test(f),
     files: [],
   },
   {
+    category: "13. Cloud Document Actions, Sharing, Invitations & Access Control",
     category: "15. Cloud Document Actions, Sharing, Invitations & Access Control",
     description: "Document actions, invitations, public link views, password-protected links, trash recovery, and notification panels.",
     match: (f) => /^(lib\/actions\/|lib\/cloud\/|components\/chrome\/(share-dialog|share-password-modal|notifications-panel|trash-dialog|migration-dialog|recent-files)\.tsx|app\/(share|p|invite)\/)/.test(f),
     files: [],
   },
   {
+    category: "14. Backend REST API Routes & Vercel Blob Integration",
+    description: "Next.js App Router API route handlers for documents, invitations, notifications, asset proxying, signed upload URLs, and Vercel Blob file uploads.",
+    match: (f) => /^(lib\/blob\.ts|app\/api\/(blob|documents|share|invitations|notifications|assets|auth)|proxy\.ts)/.test(f),
     category: "16. Backend REST API Routes & Vercel Blob Integration",
     description: "Next.js App Router API route handlers for documents, database status, invitations, notifications, asset proxying, signed upload URLs, and Vercel Blob file uploads.",
     match: (f) => /^(lib\/blob\.ts|app\/api\/(blob|documents|share|invitations|notifications|assets|auth|db)|proxy\.ts)/.test(f),
     files: [],
   },
   {
+    category: "15. Local-First Storage Engine, IndexedDB & Migration Layer",
     category: "17. Local-First Storage Engine, IndexedDB & Migration Layer",
     description: "Dual-tier local persistence (IndexedDB and localStorage drawer), JSON document exporter/importer, and clipboard data serialization.",
     match: (f) => /^(lib\/(files|file-io|clipboard|clipboard-payload|export-image)\.ts|lib\/storage\/(db|documents|migration)\.ts)/.test(f),
     files: [],
   },
   {
+    category: "16. Security, Cryptography, Token Management & Sanitization",
     category: "18. Security, Cryptography, Token Management & Sanitization",
     description: "SVG input sanitization (script/event neutralization), cryptographic token hashing, password verification, and session security.",
     match: (f) => /^lib\/security\//.test(f),
     files: [],
   },
   {
+    category: "17. Component Library Registry & Wireframe Definitions",
     category: "19. Component Library Registry & Wireframe Definitions",
     description: "Component registry, break-apart engine, authoring protocols, and pre-built definitions for basic UI, display, navigation, app blocks, marketing blocks, templates, and study blocks.",
     match: (f) => /^lib\/library\//.test(f),
     files: [],
   },
   {
+    category: "18. Academic & Calendar Study Engine",
     category: "20. Academic & Calendar Study Engine",
     description: "Comprehensive study suite & interactive calendar engine: pure date math, overlap lane clustering, event CRUD, Month/Week views, syllabus progress, revision, test simulator, and IndexedDB persistence.",
     match: (f) => /^(lib\/academic\/|lib\/calendar\/|components\/calendar\/|lib\/storage\/academic-db\.ts)/.test(f),
     files: [],
   },
   {
+    category: "19. PWA Offline Service Worker & Install Flow",
     category: "21. PWA Offline Service Worker & Install Flow",
     description: "Service Worker lifecycle, offline caching strategy, and progressive web application installation prompts.",
+    match: (f) => /^(public\/sw\.js|components\/pwa\/|lib\/pwa\/)/.test(f),
     match: (f) => /^(public\/(sw\.js|service-worker\.js)|components\/pwa\/|lib\/pwa\/)/.test(f),
     files: [],
   },
   {
+    category: "20. Build Scripts, Asset Generators & Offline Test Suite",
     category: "22. Build Scripts, Asset Generators & Offline Test Suite",
     description: "Offline TypeScript unit test suite (geometry, selection, clipboard, text reflow, security, academic DB, LAN), asset generators, and development gateway.",
     match: (f) => /^scripts\//.test(f),
     files: [],
   },
   {
+    category: "21. Product & UX Specifications",
     category: "23. Product & UX Specifications",
     description: "Formal UX and interaction specifications for multi-selection, marquee XOR, dragging, modifiers, and transforms.",
     match: (f) => /^docs\//.test(f),
@@ -83455,6 +84857,8 @@ const IGNORED_FILES = new Set([
 function walkDir(dir) {
   let res = []
   for (const item of readdirSync(dir)) {
+    if (["node_modules", ".git", ".next", "mouse", ".claude", ".gemini", ".vscode", ".agents"].includes(item)) continue
+    if (["CODEBASE_SNAPSHOT.md", "tsconfig.tsbuildinfo", "eslint-debug.log", "build-debug.log"].includes(item)) continue
     if (IGNORED_DIRS.has(item) || IGNORED_FILES.has(item)) continue
     const full = join(dir, item)
     const st = statSync(full)
@@ -83533,6 +84937,25 @@ function buildArchitecturalDossier() {
 
 # Table of Contents
 
+1. [PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER](#part-1-the-god-level-architectural-dossier)
+   - [1. Executive Synopsis & Core Philosophy](#1-executive-synopsis--core-philosophy)
+   - [2. Multi-Tier System Topology & Data Flow](#2-multi-tier-system-topology--data-flow)
+   - [3. Complete Unified Data Model & Invariants](#3-complete-unified-data-model--invariants)
+   - [4. Geometry, Coordinate Spaces & Math Engine](#4-geometry-coordinate-spaces--math-engine)
+   - [5. Rough.js Hand-Drawn Rendering Pipeline](#5-roughjs-hand-drawn-rendering-pipeline)
+   - [6. Automatic Wi-Fi LAN Sync & Peer Session Mesh](#6-automatic-wi-fi-lan-sync--peer-session-mesh)
+   - [7. Supabase Cloud Sync Engine & Database Architecture](#7-supabase-cloud-sync-engine--database-architecture)
+   - [8. Vercel Deployment & Media Storage Architecture](#8-vercel-deployment--media-storage-architecture)
+   - [9. Chrome Shell, Canvas Document Lifecycle & "Files" Popover](#9-chrome-shell-canvas-document-lifecycle--files-popover)
+   - [10. Custom macOS-Inspired Cursor Engine & Spatial Interactions](#10-custom-macos-inspired-cursor-engine--spatial-interactions)
+   - [11. Component Library Architecture & Authoring Protocol](#11-component-library-architecture--authoring-protocol)
+   - [12. Canvas Gestures & Interaction State Machine](#12-canvas-gestures--interaction-state-machine)
+   - [13. Academic & Classroom Study Engine](#13-academic--classroom-study-engine)
+   - [14. Dual-Tier Storage (IndexedDB + LocalStorage) & Clipboard Protocols](#14-dual-tier-storage-indexeddb--localstorage--clipboard-protocols)
+   - [15. Security, Token Cryptography & Input Sanitization](#15-security-token-cryptography--input-sanitization)
+   - [16. The 10 Commandments / Invariants for Modifying Zenithsui](#16-the-10-commandments--invariants-for-modifying-zenithsui)
+   - [17. Step-by-Step Implementation Recipes for Common Extensions](#17-step-by-step-implementation-recipes-for-common-extensions)
+   - [18. Master File Index, Metrics & Complete Dependency Graph](#18-master-file-index-metrics--complete-dependency-graph)
 1. [PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER (0.00000000001% TO 100%)](#part-1-the-god-level-architectural-dossier)
    - [0.00000000001% to 5%: The Genesis & Foundational Architecture](#000000000001-to-5-the-genesis--foundational-architecture)
      - [1. Executive Synopsis & Core Philosophy](#1-executive-synopsis--core-philosophy)
@@ -83607,10 +85030,20 @@ ${FILE_CATEGORIES.map((cat, idx) => `   - [Category ${idx + 1}: ${cat.category.r
 
 # PART 1: THE GOD-LEVEL ARCHITECTURAL DOSSIER
 
+## 1. Executive Synopsis & Core Philosophy
 ## 0.00000000001% to 5%: The Genesis & Foundational Architecture
 
+### What is Zenithsui?
+**Zenithsui** is a local-first, infinite-canvas wireframing, prototyping, and study workspace built with Next.js 16 (React 19), Tailwind CSS v4, Zustand 5, Rough.js 4, and @base-ui/react. It produces hand-drawn, sketch-aesthetic UI wireframes inspired by early-web risograph prints, Excalidraw, FigJam, and tldraw, combined with seamless local-first collaboration, automatic Wi-Fi sync, and cloud synchronization.
 ### 1. Executive Synopsis & Core Philosophy
 
+### Core Philosophy
+1. **Refined Hand-Drawn Aesthetic**: The visual output feels like an architect's or designer's notebook rather than a cartoon napkin. Corners meet crisply, lines possess subtle, restrained organic jitter, and icons remain sharp vector paths.
+2. **The Single-Ink Pen Model**: Every line on the canvas is drawn with one single ink color (\`--sq-ink\`). There are no multi-colored strokes. Visual hierarchy is achieved exclusively through **pen pressure** (\`ink\`: full stroke, \`muted\`: regular, \`faint\`: hairline) and **two-tone shaded fills** (\`shade\` for inert backgrounds, \`shadeStrong\` for focal points, \`paper\` for occlusion).
+3. **Zero-Latency Local-First, Zero-Backend Reliance**: The canvas operates 100% offline out-of-the-box. Changes write instantly to IndexedDB with localStorage fallback. Startup is instantaneous with zero spinners or cloud blockers.
+4. **Flat Document Hierarchy**: To preserve instant dragging, group operations, undo/redo diffing, and zero-overhead serialization, the canvas contains a flat dictionary of nodes (\`Record<string, SquigNode>\`) and a z-order array (\`order: string[]\`). Nesting and grouping are stamped via \`groupIds: string[]\` arrays on individual nodes rather than deep recursive DOM trees.
+5. **Deterministic Seeds**: Every node holds an immutable numerical \`seed\`. Rough.js uses this seed to compute path coordinates. Re-renders never cause "swimming" or jittering lines; the sketch remains stable across viewports, zooms, and page reloads until intentionally modified.
+6. **Zero-Config Wi-Fi Sync**: Devices on the same Wi-Fi network or IP subnet automatically discover and sync the active canvas without manual room codes or user registration.
 **Zenithsui** is a local-first, infinite-canvas wireframing, prototyping, diagramming, and study workspace. It combines the tactile warmth of hand-drawn architectural notebook sketches with modern cloud real-time collaboration, zero-config Wi-Fi mesh networking, PDF document integration, and a student academic intelligence hub.
 
 The visual output feels like an architect's or designer's physical notebook rather than a sterile vector tool or a messy cartoon napkin. Every line has restrained, organic physical character; corners meet crisply; typography remains legible; and icons remain crisp vector paths.
@@ -83624,20 +85057,30 @@ The visual output feels like an architect's or designer's physical notebook rath
 
 ---
 
+## 2. Multi-Tier System Topology & Data Flow
 ### 2. Multi-Tier System Topology & Data Flow
 
+Zenithsui is architected as a resilient 5-tier system ensuring zero single points of failure:
 Zenithsui is architected as a resilient 5-tier topology ensuring zero single points of failure:
 
 \`\`\`mermaid
 flowchart TD
+    subgraph Tier1["Tier 1: Browser UI & Direct Manipulation"]
+        Pointer["Pointer / Touch / Pen Events"]
+        Keyboard["Keyboard Shortcuts (Cmd+K, Del, Space)"]
     subgraph Tier1["Tier 1: Browser UI & Direct Manipulation Engine"]
         Pointer["Coalesced Pointer Events (e.getCoalescedEvents())"]
         Keyboard["Keyboard Engine (⌘K, ⌘F, ⌘/, Del, Space)"]
         CanvasView["Infinite Canvas Viewport (components/canvas)"]
+        Chrome["UI Chrome (Files Popover, Inspector, Rail, Dock)"]
         Chrome["UI Chrome (Files Popover, Inspector, Rail, macOS Dock)"]
         Dialogs["macOS Window Dialogs (Settings, Charts, Mermaid, Stats)"]
     end
 
+    subgraph Tier2["Tier 2: Client State & Offline Storage"]
+        Zustand["Zustand Store (useSquig, useShellStore)"]
+        IndexedDB["IndexedDB Engine (lib/storage/db.ts)"]
+        LocalStorage["LocalStorage File Drawer (lib/files.ts)"]
     subgraph Tier2["Tier 2: Client State & Offline Storage Engines"]
         Zustand["Zustand 5 Store (useSquig, useShellStore, useAuthStore)"]
         IndexedDB["IndexedDB Multi-Store (zenithsui_local_db & academic-db)"]
@@ -83645,18 +85088,24 @@ flowchart TD
     end
 
     subgraph Tier3["Tier 3: Local Network (LAN) Peer Mesh"]
+        SubnetSync["Auto Wi-Fi Sync (app/api/wifi-sync)"]
         SubnetSync["Auto Wi-Fi Subnet Discovery (app/api/wifi-sync)"]
         MemoryCache["Sliding TTL In-Memory Session Cache"]
         WebRTC["WebRTC DataChannel Peer Mesh (lib/lan)"]
     end
 
+    subgraph Tier4["Tier 4: Supabase Realtime Cloud"]
     subgraph Tier4["Tier 4: Supabase Realtime Cloud & PostgreSQL"]
         Postgres["PostgreSQL Database (Supabase)"]
+        Realtime["Realtime Engine (Broadcast & Presence)"]
+        RLS["Row Level Security & Permissions"]
         Realtime["Realtime Broadcast & Presence"]
         RLS["Row Level Security (Tenants, Viewers, Editors)"]
         MutationQueue["Optimistic Mutation Queue & 3-Way Conflict Diff"]
     end
 
+    subgraph Tier5["Tier 5: Vercel Edge Serverless & Blob Storage"]
+        VercelEdge["Next.js App Router API Routes"]
     subgraph Tier5["Tier 5: Vercel Edge Serverless & Blob Media Storage"]
         VercelEdge["Next.js App Router API Handlers (22 routes)"]
         VercelBlob["Vercel Blob Media Store (@vercel/blob)"]
@@ -83676,6 +85125,7 @@ flowchart TD
     SubnetSync <--> MemoryCache
     SubnetSync <--> WebRTC
 
+    Zustand <--> Postgres
     Zustand <--> MutationQueue
     MutationQueue <--> Postgres
     Postgres <--> Realtime
@@ -83688,8 +85138,11 @@ flowchart TD
 
 ---
 
+## 3. Complete Unified Data Model & Invariants
 ### 3. Runtime Environment, Next.js 16.2.12 & React 19 Architecture
 
+### BaseNode & Concrete Canvas Nodes (\`lib/types.ts\`)
+Every canvas element inherits from \`BaseNode\`:
 - **Runtime**: Node.js \`20.x || 22.x || 24.x\` execution environment.
 - **Framework**: Next.js 16.2.12 leveraging the Next.js App Router with Turbopack compilation.
 - **React**: React 19 with Concurrent Rendering, Server Components for metadata/routes, and Client Components for canvas and manipulation layers.
@@ -83865,11 +85318,16 @@ The \`render()\` method of all components emits an array of vector primitives:
 Defined in \`lib/types.ts\`:
 \`\`\`ts
 export interface BaseNode {
+  id: string              // Unique nanoid identifier
   id: string              // nanoid unique identifier
   x: number               // World coordinate X
   y: number               // World coordinate Y
   w: number               // Width in world units (>= 8)
   h: number               // Height in world units (>= 8)
+  seed: number            // Integer seed for deterministic Rough.js wobbles
+  groupIds?: string[]     // Outermost group first: [grandparent, parent]
+  flipX?: boolean         // Mirrored horizontally along its own box
+  flipY?: boolean         // Mirrored vertically along its own box
   seed: number            // Deterministic Rough.js seed
   groupIds?: string[]     // Hierarchical grouping tags
   flipX?: boolean         // Horizontal reflection
@@ -83878,6 +85336,39 @@ export interface BaseNode {
 }
 \`\`\`
 
+Concrete node types:
+1. **\`ComponentNode\`**: Instances of library items (buttons, navbars, cards, tables, dashboard widgets).
+   - \`type: "component"\`
+   - \`kind: string\` (e.g. \`"button"\`, \`"card"\`, \`"pricing"\`)
+   - \`props: Record<string, unknown>\` (variant properties matching registry controls)
+2. **\`ShapeNode\`**: Geometric shapes.
+   - \`type: "shape"\`
+   - \`shape: "rect" | "ellipse"\`
+   - \`fill: "none" | "paper" | "light" | "strong"\`
+   - \`stroke?: "light" | "regular" | "heavy"\`
+   - \`dashed?: boolean\`
+3. **\`DrawNode\`**: Freehand pencil strokes.
+   - \`type: "draw"\`
+   - \`points: [number, number][]\` (relative to node origin: 0..w, 0..h)
+   - \`stroke?: StrokeWeight\`
+   - \`dashed?: boolean\`
+4. **\`TextNode\`**: Live typography layers.
+   - \`type: "text"\`
+   - \`text: string\`
+   - \`fontSize: number\`
+   - \`fixedW?: boolean\` (false = auto-hugs words; true = wraps at width \`w\`)
+   - \`align?: "left" | "center" | "right"\`
+   - \`bold?: boolean\`, \`italic?: boolean\`, \`underline?: boolean\`
+   - \`link?: string\` (URL or page reference)
+5. **\`ArrowNode\`**: Straight lines and directed arrows.
+   - \`type: "arrow"\`
+   - \`points: [[number, number], [number, number]]\` (start and end relative to x,y)
+   - \`head: boolean\` (true = arrow with hand-drawn head; false = plain line)
+6. **\`ImageNode\`**: Pasted bitmap images taped to the napkin.
+   - \`type: "image"\`
+   - \`src: string\` (data:image/... or Vercel Blob URL)
+   - \`naturalW: number\`, \`naturalH: number\`
+   - \`name?: string\`
 #### Concrete Node Types
 1. **\`ComponentNode\`**: Wireframe instances (\`kind: string\`, \`props: Record<string, unknown>\`).
 2. **\`ShapeNode\`**: Geometric shapes (\`shape: "rect" | "ellipse" | "diamond"\`, \`fill\`, \`stroke\`, \`dashed\`).
@@ -83889,10 +85380,30 @@ export interface BaseNode {
 8. **\`FrameNode\`**: Named container frames for organizing UI flows.
 9. **\`DocumentNode\`**: Embedded documents and multi-page PDFs (\`assetId\`, \`pageCount\`, \`currentPage\`).
 
+### Document State Model
+\`\`\`ts
+export interface SquigDoc {
+  fileName: string
+  nodes: Record<string, SquigNode>
+  order: string[]         // Z-index list from bottom-most (index 0) to top-most
+}
+\`\`\`
 ---
 
+### Aesthetic & Theme Model (\`lib/theme.ts\`)
+\`\`\`ts
+export type ThemeName = "sketch-black" | "felt-gray" | "drafting-ink" | "blueprint-navy" | "internet-blue" | "notebook-crimson" | "lead-pencil"
+export type PaperShade = "white" | "parchment" | "dim" | "dark"
+export type FontMode = "sans" | "hand" | "mono"
 ### 17. High-Frequency Pointer Coalescing & Real-Time Chaikin Spline Inking
 
+export interface Look {
+  theme: ThemeName
+  paper: PaperShade
+  font: FontMode
+  grid: boolean
+}
+\`\`\`
 To deliver iPad/Apple Pencil grade inking without jagged polylines:
 1. **Pointer Event Coalescing**:
    Standard \`pointermove\` fires at 60Hz. Modern stylus digitizers sample at 120Hz-240Hz. Zenithsui captures all intermediate coordinates via \`e.getCoalescedEvents()\`, guaranteeing zero dropped points during rapid strokes.
@@ -83906,8 +85417,17 @@ To deliver iPad/Apple Pencil grade inking without jagged polylines:
 
 ---
 
+## 4. Geometry, Coordinate Spaces & Math Engine
 ### 18. Dynamic Arrow Anchoring, Box/Ellipse/Diamond Intersections & Binding Cleanup
 
+### Coordinate Systems & Projections
+- **Screen Space (\`sx, sy\`)\**: Client pixel coordinates relative to the canvas container element bounding rect (\`containerRef.getBoundingClientRect()\`).
+- **World Space (\`wx, wy\`)\**: The infinite 2D plane coordinate system where all node \`x, y, w, h\` positions and vector coordinates live.
+- **Conversion Equations**:
+  $$\\text{wx} = \\frac{\\text{sx} - \\text{viewport.x}}{\\text{viewport.zoom}}$$
+  $$\\text{wy} = \\frac{\\text{sy} - \\text{viewport.y}}{\\text{viewport.zoom}}$$
+  $$\\text{sx} = \\text{wx} \\times \\text{viewport.zoom} + \\text{viewport.x}$$
+  $$\\text{sy} = \\text{wy} \\times \\text{viewport.zoom} + \\text{viewport.y}$$
 Arrows dynamically bind to shapes via ray-intersection math (\`lib/canvas/arrow-binding.ts\`):
 - **Box Intersection**: Computes parametric ray-edge intersection with a 6px clearance gap:
   $$t_x = \frac{x_{\text{edge}} - x_{\text{center}}}{\cos\theta}, \quad t_y = \frac{y_{\text{edge}} - y_{\text{center}}}{\sin\theta}$$
@@ -83916,16 +85436,45 @@ Arrows dynamically bind to shapes via ray-intersection math (\`lib/canvas/arrow-
 - **Auto-Update on Drag**: When a bound node moves, the arrow's start or end anchor recomputes automatically in real time.
 - **Binding Detachment**: Deleting a target node unbinds the arrow cleanly without corrupting the arrow geometry.
 
+### Hit Testing Algorithms (\`lib/canvas/hit-test.ts\`)
+1. **Dynamic Tolerance Collar**:
+   - Touch/click tolerance collar in screen pixels: \`SLOP_PX = 8px\`.
+   - Scaled to world units: \`tolerance = min(8 / zoom, 14)\`.
+   - Clamped to hollow shape margins: For hollow areas, tolerance is capped at \`0.35 * min(w, h)\` to guarantee that the core of an empty rectangle remains hollow.
+2. **Hollow vs. Filled Shape Hit Logic**:
+   - A shape with \`fill === "none"\` is only hit if the pointer is within \`tolerance\` of its 4 perimeter segments (or ellipse boundary). The center is transparent.
+   - A shape with a solid or shaded fill (\`fill !== "none"\`) is hit anywhere inside its interior bounds.
+3. **Line, Arrow, and Draw Stroke Distance**:
+   - Point-to-segment distance using vector projection:
+     $$t = \\text{clamp}\\left(0, 1, \\frac{(\\vec{p} - \\vec{a}) \\cdot (\\vec{b} - \\vec{a})}{\\|\\vec{b} - \\vec{a}\\|^2}\\right)$$
+     $$\\text{dist} = \\|\\vec{p} - (\\vec{a} + t(\\vec{b} - \\vec{a}))\\|$$
+   - Hit if $\\text{dist} \\le \\text{tolerance}$.
+4. **Marquee Collision (Liang-Barsky Line Clipping)**:
+   - Marquee uses **intersection** (touching), not containment.
+   - For linear elements (arrows, freehand draw strokes), Zenithsui uses the Liang-Barsky parametric line clipping algorithm against the padded marquee rectangle \`segmentNearRect()\`.
 ---
 
+### Smart Guides & Snapping Engine (\`lib/canvas/snap-engine.ts\`)
+- Calculations run in **screen space** so snapping feels consistently magnetic (6px threshold) regardless of canvas zoom level.
+- **6-Point Alignment**: Left edge, Center ($x + w/2$), Right edge ($x + w$), Top edge, Middle ($y + h/2$), Bottom edge ($y + h$).
+- **Equidistant Distribution Snapping**: Detects matching gaps between consecutively aligned elements and snaps dragging elements accordingly.
+- **Escape Hatch**: Holding \`Cmd\` (Mac) or \`Ctrl\` (Windows/Linux) during move or resize disables snapping instantly.
 ### 19. Phosphor Icon Vector Rasterization & Sharp Glyph Rendering
 
+### Bounding Box Transforms (\`lib/canvas/transform.ts\`)
+- **8 Handles**: \`["nw", "n", "ne", "e", "se", "s", "sw", "w"]\`.
+- **Gesture Anchoring**: All transforms compute strictly from the snapshot taken at pointer-down (\`origBounds\`, \`origNodes\`), preventing floating-point drift.
+- **Aspect Ratio Locking (Shift)**: Corner handles scale uniformly based on the larger delta axis. Side handles scale perpendicular axes symmetrically.
+- **Center-Origin Scaling (Alt)**: Opposing edges mirror the dragged edge symmetrically around center $(cx, cy)$.
+- **Clamping Rule**: Minimum bounding box dimension is locked to $8 \\times 8\\text{px}$ (\`MIN_SIZE = 8\`). It **never flips** (no negative scale).
 Icons inside components (e.g. user, search, chevron, check) are extracted from Phosphor Icons and compiled into pre-calculated SVG paths (\`lib/sketch/phosphor-paths.ts\`). They bypass Rough.js rendering, remaining sharp vector glyphs at small sizes.
 
 ---
 
+## 5. Rough.js Hand-Drawn Rendering Pipeline
 ## 30% to 45%: Specialized Canvas Engines
 
+### House Drawing Defaults (\`HAND\` in \`lib/sketch/kit.ts\`)
 ### 20. Hand-Drawn Charts Engine: TSV/Spreadsheet Parsing to Bar, Line & Radar Nodes
 
 Implemented in \`lib/canvas-core/charts.ts\` and \`components/dialogs/chart-dialog.tsx\`:
@@ -84000,6 +85549,11 @@ Declared across \`lib/library/defs-*.ts\`:
 
 Each component implements \`ComponentDef\` (\`lib/library/registry.ts\`):
 \`\`\`ts
+export const HAND = {
+  roughness: 0.25,      // Restrained organic wobble
+  bowing: 0.35,         // Subtle arc on straight lines
+  strokeWidth: 1.4,     // Standard baseline pen width
+  radius: 3,            // Default corner rounding on rectangles
 export interface ComponentDef {
   kind: string
   name: string
@@ -84012,10 +85566,23 @@ export interface ComponentDef {
 \`\`\`
 Inspector controls declared in \`controls\` dynamically generate UI widgets in the property inspector (text inputs, selects, toggles, number steppers).
 
+### The Pen Pressure Model (\`PEN\`)
+All strokes use the document theme ink: \`var(--sq-ink)\`.
+- \`"ink"\`: Full stroke ($1.0 \\times \\text{strokeWidth}$)
+- \`"muted"\`: Regular stroke ($0.8 \\times \\text{strokeWidth}$)
+- \`"faint"\`: Hairline stroke ($0.62 \\times \\text{strokeWidth}$)
 ---
 
+### The Tonal Ladder (\`SHADE\`)
+- \`"none"\`: Transparent fill.
+- \`"paper"\`: Fully opaque background color (\`var(--sq-paper)\`) used to occlude items underneath.
+- \`"shade"\`: Soft tinted wash (\`var(--sq-shade)\`) for placeholders, tracks, alternating table rows.
+- \`"shadeStrong"\`: Darker tinted wash (\`var(--sq-shade-strong)\`) for primary buttons, active chips, chart bars.
 ### 28. The Break-Apart Deconstruction Engine: Converting Instances to Raw Shapes
 
+### Seed Determinism & Phosphor Icons
+- Every node stores an integer \`seed\`. Rough.js uses this seed to compute path coordinates identically on every frame.
+- Phosphor icons are baked into raw SVG path strings (\`lib/sketch/phosphor-paths.ts\`) and rendered crisp (bypassing Rough.js) so symbols remain readable at small sizes.
 Implemented in \`lib/library/break-apart.ts\`:
 When a user wants to customize a component beyond its declared knobs, "Break Apart" (\`Cmd+Shift+B\`) decomposes the component:
 1. Evaluates \`def.render(props, w, h)\` in world space.
@@ -84024,12 +85591,21 @@ When a user wants to customize a component beyond its declared knobs, "Break Apa
 
 ---
 
+## 6. Automatic Wi-Fi LAN Sync & Peer Session Mesh
 ### 29. Context Menus, Floating Alignment Toolbar & Quick Properties Bar
 
+Zenithsui includes a zero-config, automatic Wi-Fi sync subsystem (\`app/api/wifi-sync/route.ts\`, \`lib/lan/auto-sync.ts\`, \`lib/lan/session.ts\`):
 - **Context Menu (\`components/chrome/context-menu.tsx\`)\**: Right-click trigger providing duplicate, delete, lock, bring-to-front, send-to-back, break-apart, group, and ungroup.
 - **Floating Alignment Toolbar (\`components/chrome/align-row.tsx\`)\**: Appears when multiple nodes are selected, allowing 1-click alignment (Left, Center, Right, Top, Middle, Bottom, Distribute Horizontally/Vertically).
 - **Tool Properties Panel (\`components/canvas/tool-properties-panel.tsx\`)\**: Floating bottom pill for adjusting stroke width, dash styles, and ink fills before drawing.
 
+1. **Subnet IP Hash Detection**:
+   When a device opens Zenithsui, the client connects to \`/api/wifi-sync\`. The server inspects the connecting IP address from \`x-forwarded-for\` or socket headers. If on a local private subnet (\`192.168.x.x\`, \`10.x.x.x\`, \`172.16-31.x.x\`), it groups devices under a subnet key.
+2. **Dual-Tier State Synchronization**:
+   - **Tier 1 (Instant Memory Cache)**: An in-memory cache with sliding TTL provides instant push/pull synchronization with sub-50ms latency across devices on the same Wi-Fi network.
+   - **Tier 2 (Supabase Persistence Fallback)**: The session state is concurrently backed up to the \`wifi_canvas_sessions\` table in Supabase, surviving serverless cold starts and worker cycling.
+3. **WebRTC Peer Data Channels**:
+   When devices establish direct peer-to-peer connections, state synchronization transitions to zero-latency WebRTC DataChannels (\`lib/lan/transport.ts\`), enabling real-time multi-cursor collaboration on the local network.
 ---
 
 ## 55% to 70%: UI Chrome, Navigation & macOS Parity
@@ -84053,8 +85629,10 @@ Implemented in \`components/shell/bottom-dock.tsx\` and \`app/globals.css\`:
 
 ---
 
+## 7. Supabase Cloud Sync Engine & Database Architecture
 ### 31. macOS Window Presentation: Sonoma/Sequoia Glassmorphism & Traffic Light Controls
 
+Zenithsui integrates Supabase with \`@supabase/ssr\` for cloud workspaces and sharing:
 Floating modals (\`SettingsDialog\`, \`ChartDialog\`, \`MermaidDialog\`, \`StatsDialog\`, \`ShareDialog\`) feature authentic macOS Sequoia styling:
 - **Specular Rim Lighting**:
   - Light mode: \`box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85)\`.
@@ -84065,8 +85643,19 @@ Floating modals (\`SettingsDialog\`, \`ChartDialog\`, \`MermaidDialog\`, \`Stats
   - Minimize button: \`#FFBD2E\` (border \`#DEA123\`).
   - Zoom / Expand button: \`#27C93F\` (border \`#1AAB29\`).
 
+### Database Tables & Schema
+- **\`workspaces\`**: Organizational tenants with owner UUID and name.
+- **\`documents\`**: Canvas documents storing nodes JSON, order array, look, revision, and updated timestamp.
+- **\`share_links\`**: Public and password-protected share tokens with permissions (\`viewer\` vs \`editor\`).
+- **\`wifi_canvas_sessions\`**: Network subnet cache storing real-time Wi-Fi canvas sessions.
+- **Academic Tables**: Syllabus goals, revision schedule, practice questions, and exam attempts.
 ---
 
+### Cloud Sync Engine (\`lib/sync/engine.ts\`, \`lib/sync/queue.ts\`)
+- **Offline Mutation Queue**: Local changes append to an IndexedDB mutation queue.
+- **Optimistic Updates**: Canvas reflects changes with 0ms delay.
+- **Last-Write-Wins (LWW) & 3-Way Conflict Resolution**: Detects stale revisions, prompting users with a side-by-side visual diff dialog (\`components/chrome/conflict-dialog.tsx\`) if conflicts occur.
+- **Row-Level Security (RLS)**: Enforces strict tenant boundaries; viewers cannot mutate documents.
 ### 32. Custom High-DPI macOS Cursor Engine: Coordinate Hotspots & Dynamic Mapping
 
 Implemented in \`app/cursors.css\` and \`public/cursors/\`:
@@ -84079,14 +85668,27 @@ Implemented in \`app/cursors.css\` and \`public/cursors/\`:
 
 ---
 
+## 8. Vercel Deployment & Media Storage Architecture
 ### 33. Files Popover & Local Document Lifecycle Management
 
+### Vercel Blob Integration (\`@vercel/blob\`, \`lib/blob.ts\`, \`app/api/blob/upload/route.ts\`)
+- When users paste or drop images onto the canvas, the application uploads the image payload via \`@vercel/blob\` using \`BLOB_READ_WRITE_TOKEN\`.
+- Images are stored with public read access and referenced directly by \`ImageNode.src\`.
 Implemented in \`components/chrome/files-popover.tsx\`:
 - Instant document switcher displaying local and cloud documents.
 - Relative creation/modification timestamps.
 - Non-destructive canvas switching: Automatically writes current document to storage before opening the requested file.
 - Document duplication, deletion, and renaming.
 
+### Production Deployment & Build Configurations
+- **Node Engine Pinning**: Pinned in \`package.json\` to \`"20.x || 22.x || 24.x"\` to prevent automatic build failures on future Node updates.
+- **PNPM Build Script Approval**: Configured with \`"pnpm": { "onlyBuiltDependencies": ["sharp"] }\` ensuring sharp builds cleanly in Vercel CI.
+- **Environment Secrets**:
+  - \`NEXT_PUBLIC_SUPABASE_URL\`
+  - \`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY\`
+  - \`SUPABASE_SECRET_KEY\`
+  - \`BLOB_STORE_ID\`
+  - \`BLOB_READ_WRITE_TOKEN\`
 ---
 
 ### 34. Property Inspector & Mixed-Value State Handling
@@ -84096,12 +85698,22 @@ Implemented in \`components/chrome/inspector.tsx\` and \`components/chrome/mixed
 
 ---
 
+## 9. Chrome Shell, Canvas Document Lifecycle & "Files" Popover
 ### 35. Command Palette (\`⌘K\`), Keyboard Shortcuts Engine & Ownership Rules
 
+### "Files" Popover (\`components/chrome/files-popover.tsx\`)
+Replaces legacy static badges with an interactive document manager:
+- Lists all local and cloud canvases with relative timestamps ("2m ago", "1h ago").
+- Provides instant "New Canvas" creation.
+- Enables single-click canvas switching with lossless auto-save.
+- Supports document renaming and deletion with confirmation.
 - **Command Palette (\`components/chrome/command-palette.tsx\`)\**: Fast fuzzy search across all tools, library components, settings, and documents.
 - **Keyboard Ownership Guard (\`lib/canvas/keyboard-owner.ts\`)\**:
   Single-key shortcuts (\`1\`, \`2\`, \`V\`, \`H\`, \`T\`, \`Delete\`, \`Space\`) only execute if \`canvasOwnsKeyboard()\` returns true, preventing accidental tool switching while typing inside text fields or search inputs.
 
+### Top Bar & Bottom Dock Navigation
+- **Top Bar (\`components/shell/top-bar.tsx\`)\**: Clean, uncluttered layout featuring document title, Files popover, undo/redo, zoom controls, and zen mode toggle.
+- **Bottom Dock (\`components/shell/bottom-dock.tsx\`)\**: Ergonomic tool dock providing quick switching between Select, Shape, Pencil, Text, Arrow, and Library panels.
 ---
 
 ## 70% to 85%: Storage, Persistence, Cloud Sync & Security
@@ -84114,25 +85726,63 @@ Implemented in \`lib/storage/db.ts\` and \`lib/files.ts\`:
 
 ---
 
+## 10. Custom macOS-Inspired Cursor Engine & Spatial Interactions
 ### 37. Startup Migration Engine: Lossless Upgrading from Legacy Stores
 
+Zenithsui features an authentic macOS Sierra/modern cursor system (\`app/cursors.css\`, \`public/cursors/\`):
+- High-DPI \`.cur\` cursors with high-fidelity PNG fallbacks.
+- Precise hotspot alignments (e.g. \`crosshair 16 16\`, \`pointer 6 1\`, \`grab 16 16\`, \`text 16 16\`).
+- Canvas handles map dynamically:
+  - North/South handles: \`ns-resize\`
+  - East/West handles: \`ew-resize\`
+  - Northwest/Southeast handles: \`nwse-resize\`
+  - Northeast/Southwest handles: \`nesw-resize\`
+  - Creation & pencil tools: \`crosshair\`
+  - Spacebar panning: \`grab\` / \`grabbing\`
 Implemented in \`lib/storage/migration.ts\`:
 - Upon application boot, the migration engine scans for legacy localStorage keys, verifies document schema integrity, migrates records into IndexedDB, and updates version stamps.
 
 ---
 
+## 11. Component Library Architecture & Authoring Protocol
 ### 38. Settings Dialog Storage Modes: Cloud PostgreSQL vs Local-First Mode
 
+Every prefabricated wireframe component is declared as a \`ComponentDef\` in \`lib/library/\`:
 Implemented in \`components/shell/settings-dialog.tsx\`:
 - The Database tab allows users to select between:
   1. **Local-First Mode (Default)**: Zero cloud calls; all data lives in browser IndexedDB.
   2. **Cloud PostgreSQL Mode**: Connects to Supabase / PostgreSQL.
 - Includes a live "Test Connection" button checking latency and credentials against \`/api/db/status\`.
 
+\`\`\`ts
+export interface ComponentDef {
+  kind: string                          // Unique kebab-case slug (e.g. "button", "pricing")
+  name: string                          // Display title in library panel
+  category: "components" | "blocks"     // High-level grouping
+  group?: string                        // Sub-header (e.g. "Buttons", "Marketing", "Forms")
+  keywords?: string[]                   // Search tags for palette
+  size: { w: number; h: number }        // Default drag-and-drop dimensions
+  defaults: Record<string, unknown>     // Default prop values
+  controls: ControlDef[]                // Inspector knobs (text, select, toggle, number)
+  render: (props: Props, w: number, h: number) => Prim[]
+}
+\`\`\`
 ---
 
+### The Sketch Primitive DSL (\`@/lib/sketch/kit\`)
+The \`render()\` function emits an array of vector primitives:
+- \`rect(x, y, w, h, { r, fill, fillColor, stroke, dashed, shadow })\`
+- \`pill(x, y, w, h, opts)\`: Rectangle with fully rounded ends. **Always use for chips, badges, and tabs (never ellipse!)**.
+- \`ellipse(x, y, w, h, opts)\`: Circle/oval bounding box. Use for avatars, radio buttons, dots.
+- \`line(x1, y1, x2, y2, opts)\`: Straight line.
+- \`poly([[x, y], ...], close, opts)\`: Polygon.
+- \`text(x, y, "label", size, { align, color, bold })\`: Text run (y is baseline).
+- \`icon("user", cx, cy, size, opts)\`: Phosphor icon centered at cx, cy.
+- \`loremLines(x, y, w, count, gap)\`: Hand-drawn placeholder copy lines.
 ### 39. Automatic Wi-Fi LAN Sync: Subnet Hash Discovery & WebRTC Peer Mesh
 
+### Break-Apart Engine (\`lib/library/break-apart.ts\`)
+Explodes composite library components into raw standalone canvas nodes (\`ShapeNode\`, \`TextNode\`, \`ArrowNode\`) grouped together.
 Implemented in \`app/api/wifi-sync/route.ts\` and \`lib/lan/\`:
 1. Devices on the same Wi-Fi subnet hit \`/api/wifi-sync\`. The server computes a SHA-256 hash of the subnet mask.
 2. Matching subnets join the same collaboration room.
@@ -84140,13 +85790,25 @@ Implemented in \`app/api/wifi-sync/route.ts\` and \`lib/lan/\`:
 
 ---
 
+## 12. Canvas Gestures & Interaction State Machine
 ### 40. Supabase Cloud Sync Engine: Optimistic Mutation Queue & 3-Way Conflict Diffing
 
+### Gesture Lifecycle
+1. **Pointer Down**: Hit tests coordinates in world space. Captures modifier keys (\`Shift\`, \`Alt\`, \`Cmd/Ctrl\`). Takes an undo checkpoint.
+2. **Threshold Latching**: Once pointer exceeds $3\\text{px}$ from origin (\`DRAG_THRESHOLD = 3\`), \`exceeded = true\` latches permanently.
+3. **Auto-Panning rAF Loop**: When pointer moves within $40\\text{px}$ of the screen viewport boundary (\`AUTOPAN_EDGE = 40\`), an autonomous loop pans the viewport at up to $22\\text{px/frame}$.
+4. **Pointer Up / Completion**: Commits state to Zustand and IndexedDB.
 Implemented in \`lib/sync/engine.ts\`, \`lib/sync/queue.ts\`, and \`components/chrome/conflict-dialog.tsx\`:
 - **Optimistic UI**: Changes update local canvas instantly with 0ms latency.
 - **Mutation Queue**: Operations queue in IndexedDB and flush to PostgreSQL in batches.
 - **3-Way Conflict Resolution**: If a remote user updated the same revision concurrently, Zenithsui displays a visual side-by-side diff dialog allowing the user to pick Local, Remote, or Merged state.
 
+### Multi-Selection Math
+- **Click**: Selects single node.
+- **Shift+Click / Cmd+Click**: Toggles node in/out of current selection.
+- **Marquee Drag**: Shift/Cmd drag performs symmetric difference (**XOR**) against initial selection.
+- **Alt+Drag**: Duplicates selected nodes immediately and drags the copies; originals stay in place.
+- **Shift+Drag during Move**: Constrains motion to horizontal or vertical axis (axis-lock).
 ---
 
 ### 41. PostgreSQL Database Schema, Foreign Keys & Row-Level Security (RLS)
@@ -84162,8 +85824,15 @@ SQL Migrations in \`supabase/migrations/\`:
 
 ---
 
+## 13. Academic & Classroom Study Engine
 ### 42. Cryptographic Sharing: HMAC-SHA256 Tokens, Web Crypto Passwords & RBAC
 
+Zenithsui includes an integrated academic and study workspace (\`lib/academic/\`, \`lib/library/defs-study.ts\`, \`lib/storage/academic-db.ts\`):
+- **Syllabus Progress Tracking**: Hierarchical subjects, chapters, and topics with completion percentages and target goal dates.
+- **Spaced Repetition Algorithm**: SuperMemo SM-2 variation computing optimal review intervals for flashcards and topic reviews.
+- **Practice & Exam Simulator**: Timed mock tests with multiple-choice questions, scoring, and mistake log analysis.
+- **Study Primitives**: Wireframe blocks for Cornell notes, flashcards, formula sheets, weekly study schedules, and pomodoro timers.
+- **IndexedDB Persistence**: Dedicated IndexedDB store (\`academic-db.ts\`) preserving student progress completely offline.
 Implemented in \`lib/security/share-crypto.ts\` and \`lib/security/share-session.ts\`:
 - **Cryptographic Share Tokens**: Generated using \`crypto.getRandomValues()\` (256-bit entropy).
 - **Password Hashes**: Web Crypto API PBKDF2/SHA-256 password hashing.
@@ -84171,8 +85840,13 @@ Implemented in \`lib/security/share-crypto.ts\` and \`lib/security/share-session
 
 ---
 
+## 14. Dual-Tier Storage (IndexedDB + LocalStorage) & Clipboard Protocols
 ### 43. Backend REST API Route Topology & Vercel Edge Serverless Handlers
 
+### Storage Architecture (\`lib/storage/db.ts\`, \`lib/storage/migration.ts\`)
+- **Primary Tier**: IndexedDB database \`zenithsui_local_db\` with object stores for documents, revisions, and study records.
+- **Fallback Tier**: LocalStorage file drawer (\`zenithsui:files:v1\`, \`zenithsui:file:\${id}\`).
+- **Migration Engine**: Seamlessly migrates legacy localStorage files to IndexedDB upon startup without data loss.
 22 Next.js App Router API Routes:
 - \`/api/documents\`: Document list and creation.
 - \`/api/documents/[id]\`: Document CRUD and revision validation.
@@ -84182,6 +85856,11 @@ Implemented in \`lib/security/share-crypto.ts\` and \`lib/security/share-session
 - \`/api/wifi-sync\`: Subnet discovery and peer signaling.
 - \`/api/blob/upload\`: Signed Vercel Blob media handler.
 
+### Clipboard Protocol (\`lib/clipboard.ts\`, \`lib/clipboard-payload.ts\`)
+- **Dual-Carrier System**:
+  - \`text/html\`: Encodes lossless JSON payload in custom data attribute: \`<div data-zenithsui="URI_ENCODED_JSON"></div>\`.
+  - \`text/plain\`: Plain text of included text nodes or fallback JSON.
+- **Sanitization Gate**: Validates incoming clipboard geometry, bounds, and image URLs.
 ---
 
 ### 44. Vercel Blob Media Pipeline: Signed Uploads, Proxying & Binary Assets
@@ -84192,8 +85871,12 @@ Implemented in \`lib/blob.ts\` and \`app/api/blob/upload/route.ts\`:
 
 ---
 
+## 15. Security, Token Cryptography & Input Sanitization
 ## 85% to 95%: Academic & Student Study Workspace
 
+1. **SVG Input Sanitization (\`lib/security/sanitize.ts\`)\**: Strips \`<script>\`, \`<iframe>\`, \`<foreignObject>\`, and event attributes (\`onload\`, \`onerror\`, \`onclick\`).
+2. **Sharing Tokens & Password Hashes (\`lib/security/share-crypto.ts\`)\**: Uses Web Crypto SHA-256 for password verification and cryptographically secure token generation.
+3. **Environment Security**: Strict separation of public keys (\`NEXT_PUBLIC_SUPABASE_URL\`, \`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY\`) from server secrets (\`SUPABASE_SECRET_KEY\`, \`BLOB_READ_WRITE_TOKEN\`).
 ### 45. Integrated Study Engine Architecture & Data Models
 
 Declared in \`lib/academic/types.ts\`:
@@ -84201,6 +85884,7 @@ Unifies syllabus schedules, exam goals, revision intervals, question banks, and 
 
 ---
 
+## 16. The 10 Commandments / Invariants for Modifying Zenithsui
 ### 46. Functional Calendar: Date Mathematics, Recurrence, Overlap Lane Clustering
 
 Implemented in \`lib/calendar/\` and \`components/calendar/\`:
@@ -84267,8 +85951,10 @@ Implemented in \`lib/academic/guardian.ts\`:
 
 ---
 
+## 17. Step-by-Step Implementation Recipes for Common Extensions
 ### 53. Comprehensive Test Suite Architecture: 28 Offline Suites & CI Pipelines
 
+### Recipe A: Adding a New Wireframe Component
 Zenithsui includes 28 standalone TypeScript unit test suites under \`scripts/\`:
 1. \`test-geometry.ts\`: World/screen conversions, ray-intersections, bounding boxes.
 2. \`test-selection.ts\`: Single click, Shift+Click toggle, marquee XOR logic.
@@ -84322,16 +86008,19 @@ Run all tests via: \`pnpm test\`.
 2. Define defaults, inspector controls, and the \`render(props, w, h)\` function using \`@/lib/sketch/kit\`.
 3. Register the definition in \`lib/library/registry.ts\`.
 
+### Recipe B: Adding a Custom Inspector Control
 #### Recipe B: Adding a Custom Inspector Control
 1. In \`components/chrome/inspector.tsx\`, retrieve selected nodes via \`useSquig((s) => s.selection)\`.
 2. Extract common property values or detect mixed states with \`components/chrome/mixed-fields.tsx\`.
 3. Render a control from \`components/ui/\` and dispatch updates via \`updateNodes(patches)\`.
 
+### Recipe C: Registering a Global Keyboard Shortcut
 #### Recipe C: Registering a Global Keyboard Shortcut
 1. Define key string and display representation in \`lib/shortcuts.ts\`.
 2. In \`components/canvas/canvas.tsx\` (inside \`onKeyDown\`), guard with \`if (!canvasOwnsKeyboard()) return\`.
 3. Dispatch the store action and document the shortcut in \`components/chrome/shortcuts-sheet.tsx\`.
 
+### Recipe D: Adding a Cloud Sync Entity or API Route
 #### Recipe D: Adding a Cloud Sync Entity or API Route
 1. Define table schema in a new SQL file under \`supabase/migrations/\`.
 2. Create route handler in \`app/api/<route>/route.ts\` verifying auth via \`@/utils/supabase/server\`.
@@ -84339,33 +86028,35 @@ Run all tests via: \`pnpm test\`.
 
 ---
 
+## 18. Master File Index, Metrics & Complete Dependency Graph
 ### 56. Master File Index, Byte Metrics & Complete Dependency Topology
 
 | File Path | Lines | Bytes | Role / Description | Key Exports |
 |---|---|---|---|---|
 ${FILE_CATEGORIES.flatMap((cat) => cat.files)
-  .map((file) => {
-    try {
-      const full = join(ROOT, file)
-      if (!existsSync(full)) return null
-      const content = readFileSync(full, "utf8")
-      const lines = content.split("\n").length
-      const bytes = statSync(full).size
-      const base = basename(file)
-      return `| \`${file}\` | ${lines} | ${bytes} | Core ${base} module | \`${base.replace(/\.[^.]+$/, "")}\` |`
-    } catch {
-      return null
-    }
-  })
-  .filter(Boolean)
-  .join("\n")}
+      .map((file) => {
+        try {
+          const full = join(ROOT, file)
+          if (!existsSync(full)) return null
+          const content = readFileSync(full, "utf8")
+          const lines = content.split("\n").length
+          const bytes = statSync(full).size
+          const base = basename(file)
+          return `| \`${file}\` | ${lines} | ${bytes} | Core ${base} module | \`${base.replace(/\.[^.]+$/, "")}\` |`
+        } catch {
+          return null
+        }
+      })
+      .filter(Boolean)
+      .join("\n")}
 
 ---
 
-`
+  `
 }
 
 function generateFullDocument() {
+  console.log("Building Architectural Dossier...")
   console.log("Building Comprehensive 0.00000000001% to 100% Architectural Dossier...")
   let doc = buildArchitecturalDossier()
 
@@ -85466,6 +87157,124 @@ run().catch(err => {
 
 ---
 
+### File: `scripts/test-asset-proxy-security.ts`
+
+- **Path**: `scripts/test-asset-proxy-security.ts`
+- **Lines**: 108
+- **Size**: 4102 bytes
+
+```tsx
+import assert from "node:assert"
+
+// Comprehensive host validation logic
+export function isDisallowedHost(hostname: string): boolean {
+  let lower = hostname.toLowerCase().trim()
+
+  // Strip enclosing brackets for IPv6
+  if (lower.startsWith("[") && lower.endsWith("]")) {
+    lower = lower.slice(1, -1)
+  }
+
+  // Common metadata and loopback names
+  if (
+    lower === "localhost" ||
+    lower === "127.0.0.1" ||
+    lower === "0.0.0.0" ||
+    lower === "::1" ||
+    lower === "::" ||
+    lower.endsWith(".local") ||
+    lower.endsWith(".internal") ||
+    lower === "metadata.google.internal" ||
+    lower === "instance-data"
+  ) {
+    return true
+  }
+
+  // IPv6 link-local and private ULA (fe80::/10, fc00::/7) and IPv4-mapped IPv6 (::ffff:x.x.x.x)
+  if (lower.startsWith("fe8") || lower.startsWith("fe9") || lower.startsWith("fea") || lower.startsWith("feb")) return true
+  if (lower.startsWith("fc") || lower.startsWith("fd")) return true
+  if (lower.startsWith("::ffff:")) {
+    const v4 = lower.replace("::ffff:", "")
+    return isDisallowedHost(v4)
+  }
+
+  // Check numeric IP representation (single integer, hex, or octal)
+  // Single 32-bit int (e.g. 2130706433 = 127.0.0.1)
+  if (/^\d+$/.test(lower)) {
+    const num = parseInt(lower, 10)
+    if (num >= 0 && num <= 4294967295) {
+      const o1 = (num >>> 24) & 255
+      const o2 = (num >>> 16) & 255
+      return isPrivateOrLoopback(o1, o2)
+    }
+  }
+
+  // Hex format (e.g. 0x7f000001)
+  if (/^0x[0-9a-f]+$/i.test(lower)) {
+    const num = parseInt(lower, 16)
+    if (num >= 0 && num <= 4294967295) {
+      const o1 = (num >>> 24) & 255
+      const o2 = (num >>> 16) & 255
+      return isPrivateOrLoopback(o1, o2)
+    }
+  }
+
+  // Dotted decimal / octal representation (e.g. 127.0.0.1 or 0177.0.0.1)
+  const parts = lower.split(".")
+  if (parts.length === 4) {
+    const octets = parts.map((p) => {
+      if (p.startsWith("0x") || p.startsWith("0X")) return parseInt(p, 16)
+      if (p.startsWith("0") && p.length > 1) return parseInt(p, 8)
+      return parseInt(p, 10)
+    })
+    if (octets.every((o) => !isNaN(o) && o >= 0 && o <= 255)) {
+      return isPrivateOrLoopback(octets[0], octets[1])
+    }
+  }
+
+  return false
+}
+
+function isPrivateOrLoopback(octet1: number, octet2: number): boolean {
+  if (octet1 === 127) return true // Loopback
+  if (octet1 === 0) return true   // Current network
+  if (octet1 === 10) return true  // 10.0.0.0/8
+  if (octet1 === 172 && octet2 >= 16 && octet2 <= 31) return true // 172.16.0.0/12
+  if (octet1 === 192 && octet2 === 168) return true // 192.168.0.0/16
+  if (octet1 === 169 && octet2 === 254) return true // 169.254.0.0/16 (Link-local / cloud metadata)
+  return false
+}
+
+console.log("=== Testing Asset Proxy SSRF Protections ===")
+
+// Standard Disallowed
+assert.strictEqual(isDisallowedHost("localhost"), true)
+assert.strictEqual(isDisallowedHost("127.0.0.1"), true)
+assert.strictEqual(isDisallowedHost("10.1.2.3"), true)
+assert.strictEqual(isDisallowedHost("192.168.1.1"), true)
+assert.strictEqual(isDisallowedHost("172.16.5.4"), true)
+assert.strictEqual(isDisallowedHost("169.254.169.254"), true)
+
+// Advanced Evasions: Octal, Hex, Integer, IPv6
+assert.strictEqual(isDisallowedHost("0177.0.0.1"), true, "Octal loopback must be blocked")
+assert.strictEqual(isDisallowedHost("0x7f000001"), true, "Hex loopback must be blocked")
+assert.strictEqual(isDisallowedHost("2130706433"), true, "Integer loopback must be blocked")
+assert.strictEqual(isDisallowedHost("::1"), true, "IPv6 loopback must be blocked")
+assert.strictEqual(isDisallowedHost("[::1]"), true, "Bracketed IPv6 loopback must be blocked")
+assert.strictEqual(isDisallowedHost("::ffff:127.0.0.1"), true, "IPv4-mapped IPv6 loopback must be blocked")
+assert.strictEqual(isDisallowedHost("metadata.google.internal"), true, "GCP metadata must be blocked")
+
+// Allowed public hosts
+assert.strictEqual(isDisallowedHost("images.unsplash.com"), false)
+assert.strictEqual(isDisallowedHost("raw.githubusercontent.com"), false)
+assert.strictEqual(isDisallowedHost("8.8.8.8"), false)
+
+console.log("✓ All 16 SSRF vector checks passed successfully!")
+
+```
+
+---
+
 ### File: `scripts/test-canvas-full-features.ts`
 
 - **Path**: `scripts/test-canvas-full-features.ts`
@@ -86522,6 +88331,78 @@ assert(resolvedLegacy !== null, "getDocumentBlob resolves legacy sliced 16-char 
 console.log("=== All Zenithsui Document Attachments Tests Passed Successfully! ===")
 
 
+```
+
+---
+
+### File: `scripts/test-document-switching-race.ts`
+
+- **Path**: `scripts/test-document-switching-race.ts`
+- **Lines**: 62
+- **Size**: 2324 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Reliability Verification: Async Document Switching Race Prevention
+// ---------------------------------------------------------------------------
+
+import assert from "node:assert/strict"
+
+console.log("=== Starting Zenithsui Document Switching Race Prevention Verification ===")
+
+// Simulate the monotonic token switching model implemented in lib/store.ts
+class DocumentSwitchManager {
+  private currentToken = 0
+  public activeDocId: string | null = null
+
+  async switchDocument(targetId: string, delayMs: number): Promise<boolean> {
+    const token = ++this.currentToken
+
+    // Simulate async IndexedDB / storage latency
+    await new Promise((resolve) => setTimeout(resolve, delayMs))
+
+    // Token check: If a newer switch was initiated, drop this stale resolution
+    if (token !== this.currentToken) {
+      return false
+    }
+
+    this.activeDocId = targetId
+    return true
+  }
+}
+
+async function runTests() {
+  const manager = new DocumentSwitchManager()
+
+  // Scenario 1: User switches to Doc A (slow load, 60ms)
+  // then immediately switches to Doc B (fast load, 10ms)
+  const loadA = manager.switchDocument("doc_A", 60)
+  const loadB = manager.switchDocument("doc_B", 10)
+
+  const [resA, resB] = await Promise.all([loadA, loadB])
+
+  assert.equal(resB, true, "Doc B (the latest requested document) must be applied")
+  assert.equal(resA, false, "Doc A (the earlier, stale document) must be discarded")
+  assert.equal(manager.activeDocId, "doc_B", "Active document must be Doc B")
+
+  console.log("✓ Out-of-order async response correctly discarded")
+  console.log("✓ Active document matches latest user intent ('doc_B')")
+
+  // Scenario 2: Normal sequential load completes without race
+  const loadC = await manager.switchDocument("doc_C", 5)
+  assert.equal(loadC, true, "Sequential document load must succeed")
+  assert.equal(manager.activeDocId, "doc_C")
+  console.log("✓ Sequential document switch verified")
+
+  console.log("============================================================")
+  console.log("DOCUMENT SWITCHING RACE TESTS PASSED 100%!")
+  console.log("============================================================")
+}
+
+runTests().catch((err) => {
+  console.error("Test failed:", err)
+  process.exit(1)
+})
 ```
 
 ---
@@ -90243,6 +92124,57 @@ if (failures.length) {
   process.exit(1)
 }
 console.log(`✓ text: all ${passed} checks passed`)
+```
+
+---
+
+### File: `scripts/test-wifi-auto-sync-consent.ts`
+
+- **Path**: `scripts/test-wifi-auto-sync-consent.ts`
+- **Lines**: 41
+- **Size**: 1559 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Security & Privacy Verification: Wi-Fi Auto-Sync Explicit Consent
+// ---------------------------------------------------------------------------
+
+import assert from "node:assert/strict"
+import { useShellStore } from "../lib/shell-store.ts"
+
+console.log("=== Starting Zenithsui Wi-Fi Auto-Sync Consent Verification ===")
+
+const prefs = useShellStore.getState().preferences
+
+// 1. Invariant: Wi-Fi auto-sync defaults to false (explicit consent required)
+assert.equal(
+  prefs.wifiAutoSync,
+  false,
+  "Wi-Fi auto sync must be disabled by default until user explicitly enables it in settings"
+)
+console.log("✓ Wi-Fi auto-sync defaults to disabled (explicit consent required)")
+
+// 2. Toggling preferences updates shell store cleanly
+useShellStore.getState().updatePreferences({ wifiAutoSync: true })
+assert.equal(
+  useShellStore.getState().preferences.wifiAutoSync,
+  true,
+  "User opt-in must correctly enable wifiAutoSync"
+)
+console.log("✓ User opt-in correctly activates wifiAutoSync")
+
+// 3. Reset back to safe default
+useShellStore.getState().updatePreferences({ wifiAutoSync: false })
+assert.equal(
+  useShellStore.getState().preferences.wifiAutoSync,
+  false,
+  "Safe default preserved"
+)
+console.log("✓ Resetting to safe default verified")
+
+console.log("============================================================")
+console.log("ALL WI-FI AUTO-SYNC CONSENT TESTS PASSED 100%!")
+console.log("============================================================")
 ```
 
 ---

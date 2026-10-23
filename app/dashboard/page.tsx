@@ -12,7 +12,7 @@
 // 6. Mobile responsive slide-over drawer with 44px touch targets.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useMemo, useRef } from "react"
+import { useState, useEffect, useMemo, useRef, useCallback } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuthStore } from "@/lib/auth-store"
@@ -93,7 +93,7 @@ export default function DashboardPage() {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
   }, [])
 
-  const loadDocuments = () => {
+  const loadDocuments = useCallback(() => {
     let cancelled = false
 
     if (activeTab === "shared") {
@@ -161,11 +161,11 @@ export default function DashboardPage() {
     return () => {
       cancelled = true
     }
-  }
+  }, [activeTab, user])
 
   useEffect(() => {
     return loadDocuments()
-  }, [activeTab, user])
+  }, [loadDocuments])
 
   useEffect(() => {
     if (renamingId && renameInputRef.current) {
