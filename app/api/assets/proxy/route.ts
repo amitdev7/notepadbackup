@@ -203,3 +203,4 @@ export async function GET(request: NextRequest) {
 export async function HEAD(request: NextRequest) {
   return handleAssetProxy(request, true)
 }
+

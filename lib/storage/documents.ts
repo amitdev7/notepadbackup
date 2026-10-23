@@ -98,3 +98,33 @@ export async function permanentlyDeleteLocalDocument(id: string): Promise<void> 
   notifyDocChanged(id, "delete")
 }
 
+export async function restoreLocalDocument(id: string): Promise<void> {
+  const existing = await getLocalDocument(id)
+  if (!existing) return
+
+  existing.deletedAt = null
+  existing.updatedAt = Date.now()
+  await saveLocalDocument(existing)
+  notifyDocChanged(id, "save")
+}
+
+export async function duplicateLocalDocument(id: string): Promise<StoredLocalDoc | null> {
+  const existing = await getLocalDocument(id)
+  if (!existing) return null
+
+  const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
+  const clone: StoredLocalDoc = {
+    ...existing,
+    id: newId,
+    name: `${existing.name} (Copy)`,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    deletedAt: null,
+    syncStatus: "local-only",
+  }
+  await saveLocalDocument(clone)
+  notifyDocChanged(newId, "save")
+  return clone
+}
+
+

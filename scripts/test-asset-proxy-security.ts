@@ -104,3 +104,4 @@ assert.strictEqual(isDisallowedHost("raw.githubusercontent.com"), false)
 assert.strictEqual(isDisallowedHost("8.8.8.8"), false)
 
 console.log("✓ All 16 SSRF vector checks passed successfully!")
+

@@ -37,7 +37,7 @@ export function Panel({
     <div
       data-zenithsui-chrome
       className={cn(
-        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/80 bg-background shadow-panel",
+        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/70 bg-background/95 backdrop-blur-xl shadow-panel",
         className
       )}
       // a press on chrome is never a press on the canvas

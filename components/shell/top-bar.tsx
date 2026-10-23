@@ -3,9 +3,11 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Minimal Top Bar
 //
+// Apple-inspired frosted glass capsule:
 // - Centered document title with inline rename
-// - "Files" popover to create new canvas, view saved canvases, and switch files
-// - Background automatic Wi-Fi sync across any device on the same Wi-Fi
+// - Real-time sync/save status pill with pulse indicator
+// - Interactive "Files" popover to create, open, and switch canvases
+// - Automatic background Wi-Fi mesh synchronization
 // ---------------------------------------------------------------------------
 
 import { useState, useRef, useEffect } from "react"
@@ -13,7 +15,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { useSyncStore } from "@/lib/sync/engine"
-import { PencilSimple } from "@phosphor-icons/react"
+import { PencilSimple, Check } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -64,8 +66,8 @@ export function TopBar() {
 
   return (
     <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
-      {/* Center: Document Title + Files Popover */}
-      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/70 dark:border-stone-800/70 shadow-xs shadow-stone-900/5 min-w-0 transition-all duration-200 gpu-accelerated">
+      {/* Center: Frosted Glass Capsule */}
+      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full apple-glass-pill min-w-0 transition-all duration-200 gpu-accelerated select-none">
         {isEditingTitle ? (
           <input
             ref={inputRef}
@@ -81,26 +83,30 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-medium text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
+            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingTitle(true)}
-            className="group tactile-press flex items-center gap-1.5 text-xs font-medium text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate"
+            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate cursor-pointer outline-none"
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
             <span className="truncate max-w-[120px] sm:max-w-[280px]">{fileName}</span>
-            <PencilSimple size={11} className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110" aria-hidden="true" />
+            <PencilSimple
+              size={11}
+              className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
+              aria-hidden="true"
+            />
           </button>
         )}
 
-        <div className="h-3 w-px bg-stone-200 dark:bg-stone-700 mx-0.5 shrink-0" />
+        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
 
-        {/* Status Indicator */}
+        {/* Live Status Indicator Pill */}
         <div
-          className="flex items-center gap-1 text-[10px] text-stone-400 dark:text-stone-500 font-mono select-none px-1"
+          className="flex items-center gap-1.5 text-[10px] text-stone-400 dark:text-stone-500 font-mono select-none px-1"
           title={
             syncStatus === "syncing"
               ? "Synchronizing changes..."
@@ -117,7 +123,7 @@ export function TopBar() {
           {syncStatus === "syncing" ? (
             <>
               <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden="true" />
-              <span className="hidden sm:inline">syncing</span>
+              <span className="hidden sm:inline text-blue-600 dark:text-blue-400">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
             <>
@@ -132,7 +138,9 @@ export function TopBar() {
           ) : justSaved ? (
             <>
               <span className="size-1.5 rounded-full bg-emerald-500 transition-colors" aria-hidden="true" />
-              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline">saved</span>
+              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline flex items-center gap-0.5">
+                <Check size={10} weight="bold" /> saved
+              </span>
             </>
           ) : (
             <span className="size-1.5 rounded-full bg-stone-300 dark:bg-stone-600" aria-hidden="true" />
@@ -151,4 +159,3 @@ export function TopBar() {
     </header>
   )
 }
-

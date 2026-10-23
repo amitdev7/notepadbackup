@@ -3,16 +3,15 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Files Popover & Document Manager
 //
-// Replaces static "Saved locally" text with an interactive "Files" button.
-// Allows user to:
-// 1. See all saved canvases
-// 2. Create a new canvas with 1 click (+ New Canvas)
-// 3. Switch between canvases
-// 4. Delete or export canvases
+// Apple-inspired dropdown document manager:
+// 1. See all saved canvases with quick filter
+// 2. Create new canvas with 1 click (+ New Canvas)
+// 3. Switch between canvases with active indicators
+// 4. In-place delete or export
 // 5. Shows real-time save / Wi-Fi sync status
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import { relativeTime, type FileMeta } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
@@ -26,19 +25,21 @@ import {
   FolderOpen,
   WifiHigh,
   Clock,
+  MagnifyingGlass,
+  X,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export function FilesPopover() {
   const [isOpen, setIsOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [fileSearch, setFileSearch] = useState("")
   const popoverRef = useRef<HTMLDivElement>(null)
 
   const docId = useSquig((s) => s.docId)
-  const fileName = useSquig((s) => s.fileName)
   const files = useSquig((s) => s.files)
 
-  // Close when clicking outside
+  // Close when clicking outside or pressing Escape
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (popoverRef.current && !popoverRef.current.contains(event.target as Node)) {
@@ -46,11 +47,19 @@ export function FilesPopover() {
         setDeletingId(null)
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape" && isOpen) {
+        setIsOpen(false)
+        setDeletingId(null)
+      }
+    }
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside)
+      window.addEventListener("keydown", handleKeyDown)
     }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
+      window.removeEventListener("keydown", handleKeyDown)
     }
   }, [isOpen])
 
@@ -81,6 +90,12 @@ export function FilesPopover() {
     }
   }
 
+  const filteredFiles = useMemo(() => {
+    if (!fileSearch.trim()) return files
+    const q = fileSearch.toLowerCase().trim()
+    return files.filter((f) => f.name.toLowerCase().includes(q))
+  }, [files, fileSearch])
+
   return (
     <div className="relative inline-flex items-center" ref={popoverRef}>
       {/* Trigger Button: "Files" */}
@@ -91,56 +106,88 @@ export function FilesPopover() {
         aria-haspopup="true"
         aria-label="Manage canvas files"
         className={cn(
-          "group flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium transition-all select-none",
+          "group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer outline-none",
+          "focus-visible:ring-2 focus-visible:ring-blue-500/50",
           isOpen
-            ? "bg-stone-200/80 dark:bg-stone-700/80 text-stone-900 dark:text-white"
-            : "text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
+            ? "bg-stone-200/90 dark:bg-stone-700/90 text-stone-900 dark:text-white shadow-2xs"
+            : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
         )}
       >
-        <FolderSimple size={13} weight="fill" className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+        <FolderSimple
+          size={14}
+          weight="fill"
+          className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform"
+          aria-hidden="true"
+        />
         <span>Files</span>
         <CaretDown
           size={10}
           weight="bold"
           className={cn(
-            "text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150 shrink-0",
+            "text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-200 shrink-0",
             isOpen && "rotate-180"
           )}
           aria-hidden="true"
         />
         {/* Subtle active sync dot */}
-        <span className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle" title="Auto-saved and synced over Wi-Fi" />
+        <span
+          className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle"
+          title="Auto-saved and synced over Wi-Fi"
+        />
       </button>
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 sm:w-80 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 shadow-xl shadow-stone-900/15 z-50 p-2 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
           {/* Header with New Canvas Action */}
-          <div className="flex items-center justify-between pb-2 mb-1.5 px-2 border-b border-stone-100 dark:border-stone-800">
+          <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-stone-900 dark:text-white">Canvas Files</span>
-              <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
                 {files.length}
               </span>
             </div>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
+              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
               <span>New Canvas</span>
             </button>
           </div>
 
+          {/* Quick Search if more than 3 files */}
+          {files.length > 3 && (
+            <div className="relative mb-2 px-1">
+              <MagnifyingGlass size={13} className="absolute left-3 top-2 text-stone-400 pointer-events-none" />
+              <input
+                type="text"
+                value={fileSearch}
+                onChange={(e) => setFileSearch(e.target.value)}
+                placeholder="Search canvases…"
+                className="w-full pl-7 pr-6 py-1 rounded-lg text-xs bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+              />
+              {fileSearch && (
+                <button
+                  type="button"
+                  onClick={() => setFileSearch("")}
+                  className="absolute right-2.5 top-2 text-stone-400 hover:text-stone-600"
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </div>
+          )}
+
           {/* Files List */}
           <div className="max-h-60 overflow-y-auto space-y-0.5 pr-0.5 scrollbar-thin">
-            {files.length === 0 ? (
+            {filteredFiles.length === 0 ? (
               <div className="py-6 text-center text-stone-400 dark:text-stone-500">
-                No saved canvases yet.
+                {fileSearch ? "No matching canvases." : "No saved canvases yet."}
               </div>
             ) : (
-              files.map((file) => {
+              filteredFiles.map((file) => {
                 const isCurrent = file.id === docId
                 const isDeleting = deletingId === file.id
 
@@ -151,7 +198,7 @@ export function FilesPopover() {
                     className={cn(
                       "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer select-none transition-all duration-150 hover:translate-x-0.5",
                       isCurrent
-                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs"
+                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs font-semibold"
                         : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-800 dark:text-stone-200"
                     )}
                   >
@@ -165,7 +212,7 @@ export function FilesPopover() {
                         <p className={cn("truncate font-medium text-xs", isCurrent && "font-semibold")}>
                           {file.name}
                         </p>
-                        <p className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-1">
+                        <p className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-1 font-mono">
                           <Clock size={10} />
                           <span>{relativeTime(file.updatedAt)}</span>
                         </p>
@@ -177,10 +224,10 @@ export function FilesPopover() {
                       <button
                         type="button"
                         onClick={(e) => handleDeleteFile(e, file)}
-                        title={isDeleting ? "Click again to permanently delete" : "Delete canvas"}
+                        title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
                         aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
                         className={cn(
-                          "p-1.5 rounded-lg transition-all shrink-0",
+                          "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
                           isDeleting
                             ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
                             : "opacity-0 group-hover:opacity-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
@@ -196,17 +243,17 @@ export function FilesPopover() {
           </div>
 
           {/* Quick Disk Actions */}
-          <div className="pt-2 mt-1.5 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 px-1">
+          <div className="pt-2 mt-1.5 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 px-1">
             <button
               type="button"
               onClick={() => {
                 importDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
             >
-              <FolderOpen size={12} />
-              <span>Open disk file</span>
+              <FolderOpen size={13} />
+              <span>Open file</span>
             </button>
 
             <button
@@ -215,11 +262,11 @@ export function FilesPopover() {
                 exportDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-1.5 py-1 rounded-md hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
               title="Export as native .zenithsui document"
             >
-              <DownloadSimple size={12} />
-              <span>Export copy</span>
+              <DownloadSimple size={13} />
+              <span>Export</span>
             </button>
 
             <button
@@ -228,25 +275,24 @@ export function FilesPopover() {
                 exportExcalidrawDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-1.5 py-1 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950/40"
+              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
               title="Export as Universal Sketch (.sketch) file"
             >
-              <DownloadSimple size={12} />
-              <span>Export .sketch</span>
+              <DownloadSimple size={13} />
+              <span>.sketch</span>
             </button>
           </div>
 
           {/* Wi-Fi & Auto-Save Status Footer */}
           <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
             <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <WifiHigh size={11} weight="bold" className="animate-pulse-subtle" />
+              <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
               <span>Same Wi-Fi Sync Active</span>
             </span>
-            <span>Auto-saving</span>
+            <span className="font-mono">Auto-saving</span>
           </div>
         </div>
       )}
     </div>
   )
 }
-

@@ -196,6 +196,9 @@ export function CalendarEventEditor({
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="calendar-editor-title"
         className={cn(
           "w-full max-w-md rounded-lg p-5 flex flex-col gap-4 text-left shadow-xl transition-all",
           "bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)]"
@@ -209,7 +212,7 @@ export function CalendarEventEditor({
         <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-3">
           <div className="flex items-center gap-2">
             <CalendarBlank size={18} weight="bold" />
-            <h2 className="text-base font-semibold">
+            <h2 id="calendar-editor-title" className="text-base font-semibold">
               {event ? "Edit Event" : "Create New Event"}
             </h2>
           </div>

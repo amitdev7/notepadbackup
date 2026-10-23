@@ -294,7 +294,7 @@ function downloadPng(blob: Blob) {
   a.href = url
   a.download = `${name}.png`
   a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 5000)
+  URL.revokeObjectURL(url)
 }
 
 /**
@@ -377,6 +377,6 @@ export async function exportCanvasAsPng(
   a.href = url
   a.download = `${name}.png`
   a.click()
-  setTimeout(() => URL.revokeObjectURL(url), 5000)
+  URL.revokeObjectURL(url)
 }
 

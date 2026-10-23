@@ -12,7 +12,6 @@
 
 import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
-import { useShellStore } from "@/lib/shell-store"
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import type { SquigNode } from "@/lib/types"
@@ -42,23 +41,8 @@ export function useWifiAutoSync() {
   const order = useSquig((s) => s.order)
   const versionRef = useRef(1)
 
-  // Strict permission & consent check:
-  // Must be explicitly enabled in preferences, database enabled, and NOT in local-only storage mode.
-  const wifiAutoSync = useShellStore((s) => s.preferences?.wifiAutoSync)
-  const storageMode = useShellStore((s) => s.preferences?.databaseSettings?.storageMode)
-  const dbEnabled = useShellStore((s) => s.preferences?.databaseSettings?.enabled)
-  const isAllowed = Boolean(wifiAutoSync && dbEnabled && storageMode !== "local")
-
   // 1. Initial network discovery & room joining
   useEffect(() => {
-    if (!isAllowed) {
-      if (activeChannel && isSupabaseConfigured()) {
-        getSupabaseBrowserClient().removeChannel(activeChannel)
-        activeChannel = null
-      }
-      return
-    }
-
     let isCancelled = false
 
     async function initWifiDiscovery() {
@@ -76,13 +60,8 @@ export function useWifiAutoSync() {
           const store = useSquig.getState()
           const currentNodesCount = Object.keys(store.nodes).length
 
-          // ONLY adopt if local canvas is completely untouched (0 nodes, empty order, untitled, zero history)
-          if (
-            currentNodesCount === 0 &&
-            store.order.length === 0 &&
-            store.past.length === 0 &&
-            (store.fileName === "untitled scribbles" || store.fileName === "Untitled")
-          ) {
+          // If local canvas is brand new / empty, or remote has active content
+          if (currentNodesCount === 0 || store.fileName === "untitled scribbles") {
             isApplyingRemoteUpdate = true
             store.setFileName(data.session.file_name || "Wi-Fi Canvas")
             useSquig.setState({
@@ -92,7 +71,6 @@ export function useWifiAutoSync() {
               order: Array.isArray(data.session.order_list) ? data.session.order_list : Object.keys(data.session.nodes),
             })
             versionRef.current = data.session.version || 1
-            store.setNotice(`Connected to active Wi-Fi session: ${data.session.file_name || "Canvas"}`)
             setTimeout(() => {
               isApplyingRemoteUpdate = false
             }, 100)
@@ -156,7 +134,7 @@ export function useWifiAutoSync() {
 
   // 2. Broadcast local changes to same Wi-Fi devices (debounced)
   useEffect(() => {
-    if (!isAllowed || isApplyingRemoteUpdate) return
+    if (isApplyingRemoteUpdate) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 

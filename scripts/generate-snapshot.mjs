@@ -215,7 +215,6 @@ function walkDir(dir) {
       res = res.concat(walkDir(full))
     } else {
       const rel = relative(ROOT, full).split(sep).join("/")
-      if (!/\.(cur|png|ico|jpg|yaml|tsbuildinfo|log)$/i.test(rel)) {
       if (!/\.(cur|png|ico|jpg|yaml|tsbuildinfo|log|woff|woff2|ttf|eot)$/i.test(rel)) {
         res.push(rel)
       }
@@ -245,7 +244,6 @@ for (const file of allFiles) {
 if (unassigned.length > 0) {
   console.warn("Unassigned files discovered:", unassigned)
   FILE_CATEGORIES.push({
-    category: "22. Additional Discovered Source Files",
     category: "24. Additional Discovered Source Files",
     description: "Supplementary project source files discovered in the workspace.",
     match: () => false,
@@ -278,10 +276,8 @@ function getCodeFenceLanguage(filePath) {
 }
 
 function buildArchitecturalDossier() {
-  return `# Zenithsui: The Complete Architecture Dossier & Verbatim Source Codebase
   return `# Zenithsui: The Complete Architecture Dossier & Verbatim Source Codebase (0.00000000001% to 100%)
 
-> **AI Master Note**: This document is the ultimate, unabridged knowledge repository and verbatim source code snapshot of **Zenithsui** (formerly codenamed squig). Any AI language model reading this single document possesses full context, absolute architectural understanding, mathematical clarity, and exact source code access to debug, extend, refactor, or reproduce the entire project with zero ambiguity.
 > **AI Master Note**: This document is the ultimate, unabridged knowledge repository and verbatim source code snapshot of **Zenithsui** (formerly codenamed squig). It provides an exhaustive, mathematical, architectural, and line-by-line implementation dossier explaining the website from **0.00000000001%** (runtime bootstrap, design tokens, bit-level vector math, coordinate matrices, Rough.js seeds, event loop coalescing) to **100%** (infinite canvas, gesture engines, dynamic arrow bindings, PDF extraction, laser physics, charts, mermaid transpilations, local IndexedDB multi-store persistence, Wi-Fi LAN mesh, Supabase cloud sync with RLS, macOS 1:1 window & dock presentation, academic planner, spaced repetition, unit tests, and production deployment).
 >
 > Any AI language model reading this single document possesses full context, absolute architectural understanding, mathematical clarity, and exact source code access to debug, extend, refactor, or reproduce the entire project with zero ambiguity.
@@ -1387,21 +1383,6 @@ Run all tests via: \`pnpm test\`.
 | File Path | Lines | Bytes | Role / Description | Key Exports |
 |---|---|---|---|---|
 ${FILE_CATEGORIES.flatMap((cat) => cat.files)
-  .map((file) => {
-    try {
-      const full = join(ROOT, file)
-      if (!existsSync(full)) return null
-      const content = readFileSync(full, "utf8")
-      const lines = content.split("\n").length
-      const bytes = statSync(full).size
-      const base = basename(file)
-      return `| \`${file}\` | ${lines} | ${bytes} | Core ${base} module | \`${base.replace(/\.[^.]+$/, "")}\` |`
-    } catch {
-      return null
-    }
-  })
-  .filter(Boolean)
-  .join("\n")}
       .map((file) => {
         try {
           const full = join(ROOT, file)
@@ -1420,7 +1401,7 @@ ${FILE_CATEGORIES.flatMap((cat) => cat.files)
 
 ---
 
-`
+  `
 }
 
 function generateFullDocument() {
