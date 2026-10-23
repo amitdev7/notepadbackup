@@ -1144,7 +1144,7 @@ Run all tests via: `pnpm test`.
 | `vercel.json` | 6 | 171 | Core vercel.json module | `vercel` |
 | `vitest.config.mts` | 101 | 3063 | Core vitest.config.mts module | `vitest.config` |
 | `app/cursors.css` | 134 | 4635 | Core cursors.css module | `cursors` |
-| `app/dashboard/page.tsx` | 818 | 37312 | Core page.tsx module | `page` |
+| `app/dashboard/page.tsx` | 850 | 38556 | Core page.tsx module | `page` |
 | `app/error.tsx` | 55 | 2249 | Core error.tsx module | `error` |
 | `app/global-error.tsx` | 55 | 2179 | Core global-error.tsx module | `global-error` |
 | `app/globals.css` | 661 | 17149 | Core globals.css module | `globals` |
@@ -1196,7 +1196,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/phosphor-paths.ts` | 182 | 66464 | Core phosphor-paths.ts module | `phosphor-paths` |
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
-| `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
+| `components/canvas/canvas-stats.tsx` | 333 | 11964 | Core canvas-stats.tsx module | `canvas-stats` |
 | `components/canvas/canvas.tsx` | 2295 | 84804 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
@@ -1224,9 +1224,9 @@ Run all tests via: `pnpm test`.
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
 | `components/chrome/context-menu.tsx` | 303 | 11938 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 299 | 12380 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/files-popover.tsx` | 304 | 12495 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 775 | 30312 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 836 | 32037 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -2581,8 +2581,8 @@ textarea,
 ### File: `app/dashboard/page.tsx`
 
 - **Path**: `app/dashboard/page.tsx`
-- **Lines**: 818
-- **Size**: 37312 bytes
+- **Lines**: 850
+- **Size**: 38556 bytes
 
 ```tsx
 "use client"
@@ -2675,9 +2675,29 @@ export default function DashboardPage() {
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameDraft, setRenameDraft] = useState("")
   const renameInputRef = useRef<HTMLInputElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
+  }, [])
+
+  // Global search shortcut (⌘K or /)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      } else if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
   const loadDocuments = useCallback(() => {
@@ -3093,21 +3113,33 @@ export default function DashboardPage() {
                 className="absolute left-2.5 text-stone-400 dark:text-stone-500 pointer-events-none"
               />
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") {
+                    setSearchQuery("")
+                    searchInputRef.current?.blur()
+                  }
+                }}
                 placeholder="Filter drawings…"
                 aria-label="Filter drawings by name"
-                className="w-36 sm:w-56 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                className="w-36 sm:w-56 pl-8 pr-8 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
               />
-              {searchQuery && (
+              {searchQuery ? (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
                   className="absolute right-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                  aria-label="Clear search"
                 >
                   <X size={12} />
                 </button>
+              ) : (
+                <kbd className="hidden sm:inline-block absolute right-2 text-[10px] text-stone-400 font-mono px-1 rounded border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/60 pointer-events-none">
+                  ⌘K
+                </kbd>
               )}
             </div>
 
@@ -13683,8 +13715,8 @@ export function CanvasSearch() {
 ### File: `components/canvas/canvas-stats.tsx`
 
 - **Path**: `components/canvas/canvas-stats.tsx`
-- **Lines**: 235
-- **Size**: 8102 bytes
+- **Lines**: 333
+- **Size**: 11964 bytes
 
 ```tsx
 "use client"
@@ -13693,7 +13725,7 @@ export function CanvasSearch() {
 // Zenithsui Board Statistics HUD
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import {
   ChartBar,
   X,
@@ -13796,11 +13828,81 @@ export function CanvasStats() {
     }
   }, [nodes, order])
 
+  const selectedStats = useMemo(() => {
+    if (!nodes || !selection.length) return null
+    const selectedNodes = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
+    if (!selectedNodes.length) return null
+
+    let shapes = 0
+    let texts = 0
+    let arrows = 0
+    let images = 0
+    let docs = 0
+    let stickies = 0
+    let frames = 0
+    let components = 0
+
+    for (const n of selectedNodes) {
+      switch (n.type) {
+        case "shape":
+          shapes++
+          break
+        case "text":
+          texts++
+          break
+        case "arrow":
+          arrows++
+          break
+        case "image":
+          images++
+          break
+        case "document":
+          docs++
+          break
+        case "sticky":
+          stickies++
+          break
+        case "frame":
+          frames++
+          break
+        case "component":
+          components++
+          break
+      }
+    }
+
+    const bounds = unionBox(selectedNodes)
+    return {
+      count: selectedNodes.length,
+      shapes,
+      texts,
+      arrows,
+      images,
+      docs,
+      stickies,
+      frames,
+      components,
+      bounds,
+    }
+  }, [nodes, selection])
+
+  useEffect(() => {
+    if (!statsOpen) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setStatsOpen(false)
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [statsOpen, setStatsOpen])
+
   if (!statsOpen) return null
 
   return (
     <div
       data-zenithsui-chrome
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="canvas-stats-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/10 backdrop-blur-[2px]"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) setStatsOpen(false)
@@ -13810,7 +13912,7 @@ export function CanvasStats() {
         <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
           <div className="flex items-center gap-2">
             <ChartBar className="size-4.5 text-foreground" />
-            <h2 className="text-sm font-semibold text-foreground">Canvas Statistics</h2>
+            <h2 id="canvas-stats-title" className="text-sm font-semibold text-foreground">Canvas Statistics</h2>
           </div>
           <button
             type="button"
@@ -13832,6 +13934,34 @@ export function CanvasStats() {
             <div className="text-base font-bold text-foreground mt-0.5">{selection.length}</div>
           </div>
         </div>
+
+        {/* Active Selection Details */}
+        {selectedStats && (
+          <div className="p-2.5 rounded-chrome-sm border border-border/60 bg-muted/20 space-y-1.5 text-xs">
+            <div className="flex items-center justify-between text-[11px] font-medium text-foreground">
+              <span>Active Selection</span>
+              <span className="font-mono">{selectedStats.count} node{selectedStats.count === 1 ? "" : "s"}</span>
+            </div>
+            {selectedStats.bounds && (
+              <div className="flex items-center justify-between text-muted-foreground">
+                <span>Bounding Size</span>
+                <span className="font-mono text-foreground">
+                  {Math.round(selectedStats.bounds.maxX - selectedStats.bounds.minX)} ×{" "}
+                  {Math.round(selectedStats.bounds.maxY - selectedStats.bounds.minY)} px
+                </span>
+              </div>
+            )}
+            <div className="flex flex-wrap gap-1 pt-0.5">
+              {selectedStats.shapes > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.shapes} shape{selectedStats.shapes > 1 ? "s" : ""}</span>}
+              {selectedStats.texts > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.texts} text</span>}
+              {selectedStats.arrows > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.arrows} arrow{selectedStats.arrows > 1 ? "s" : ""}</span>}
+              {selectedStats.images > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.images} img</span>}
+              {selectedStats.docs > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.docs} doc{selectedStats.docs > 1 ? "s" : ""}</span>}
+              {selectedStats.stickies > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.stickies} sticky</span>}
+              {selectedStats.frames + selectedStats.components > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.frames + selectedStats.components} frame/comp</span>}
+            </div>
+          </div>
+        )}
 
         {/* Element Kind Breakdown */}
         <div className="space-y-1.5 text-xs">
@@ -24522,8 +24652,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 299
-- **Size**: 12380 bytes
+- **Lines**: 304
+- **Size**: 12495 bytes
 
 ```tsx
 "use client"
@@ -24666,7 +24796,12 @@ export function FilesPopover() {
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Canvas Files Manager"
+          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans"
+        >
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">
@@ -24921,8 +25056,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 775
-- **Size**: 30312 bytes
+- **Lines**: 836
+- **Size**: 32037 bytes
 
 ```tsx
 "use client"
@@ -24972,6 +25107,11 @@ import {
   SquaresFour,
   Lock,
   LockOpen,
+  ArrowLineUpIcon,
+  ArrowUpIcon,
+  ArrowDownIcon,
+  ArrowLineDownIcon,
+  ChartBar,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -25169,6 +25309,16 @@ function PageSettings() {
             className="scale-90"
           />
         </Row>
+        <Row spread label="Canvas stats">
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl text-xs gap-1.5"
+            onClick={() => st().setStatsOpen(true)}
+          >
+            <ChartBar className="size-3.5" /> Open
+          </Button>
+        </Row>
         <PanelNote>quick controls float above the selection</PanelNote>
       </PanelSection>
     </>
@@ -25241,6 +25391,8 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const controls = components.length === selected.length ? sharedControls(components) : []
   const variantControls = controls.filter((c) => c.type !== "text")
   const textControls = controls.filter((c) => c.type === "text")
+  const sharedOpacity = sharedNumber(selected, (n) => n.opacity ?? 100)
+  const bounds = unionBounds(selected)
 
   /** Only worth printing a count when the section misses part of the selection. */
   const partial = (n: number) => (n === selected.length ? undefined : n)
@@ -25292,6 +25444,13 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           />
         </div>
 
+        {multi && bounds && (
+          <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono px-0.5 pt-0.5">
+            <span>Selection Bounds</span>
+            <span>{Math.round(bounds.w)} × {Math.round(bounds.h)} px</span>
+          </div>
+        )}
+
         {/* eight icons don't fit beside a label column, so alignment takes the
             full width and flipping — which is always available — keeps the row */}
         {multi && (
@@ -25307,6 +25466,43 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           <IconAction label={`Flip vertically · ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
             <FlipVerticalIcon className="size-3.5" />
           </IconAction>
+        </Row>
+
+        <Row label="Layer">
+          <IconAction label={`Bring to front · ${kbd("far+]")}`} onClick={() => st().bringToFront(selected.map((n) => n.id))}>
+            <ArrowLineUpIcon className="size-3.5" />
+          </IconAction>
+          <IconAction label={`Bring forward · ${kbd("mod+]")}`} onClick={() => st().bringForward(selected.map((n) => n.id))}>
+            <ArrowUpIcon className="size-3.5" />
+          </IconAction>
+          <IconAction label={`Send backward · ${kbd("mod+[")}`} onClick={() => st().sendBackward(selected.map((n) => n.id))}>
+            <ArrowDownIcon className="size-3.5" />
+          </IconAction>
+          <IconAction label={`Send to back · ${kbd("far+[")}`} onClick={() => st().sendToBack(selected.map((n) => n.id))}>
+            <ArrowLineDownIcon className="size-3.5" />
+          </IconAction>
+        </Row>
+
+        <Row label="Opacity">
+          <div className="flex items-center gap-2 w-full">
+            <input
+              type="range"
+              min={10}
+              max={100}
+              step={5}
+              aria-label="Selection Opacity"
+              value={sharedOpacity.mixed ? 100 : sharedOpacity.value}
+              onPointerDown={startGesture}
+              onChange={(e) => {
+                const val = Number(e.target.value)
+                live(() => ({ opacity: val }))
+              }}
+              className="h-1.5 flex-1 cursor-pointer accent-foreground bg-muted rounded-full"
+            />
+            <span className="w-8 text-right text-xs font-mono tabular-nums text-muted-foreground">
+              {sharedOpacity.mixed ? "—" : `${sharedOpacity.value}%`}
+            </span>
+          </div>
         </Row>
 
         <Row spread label="Lock">
