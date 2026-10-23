@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { parseMermaidToZenithsui } from "@/lib/canvas-core/mermaid"
 import { TreeStructure, X, Sparkle } from "@phosphor-icons/react"
@@ -38,6 +38,15 @@ export function MermaidDialog() {
   const [code, setCode] = useState(MERMAID_TEMPLATES.flowchart_td)
   const [activeTemplate, setActiveTemplate] = useState<keyof typeof MERMAID_TEMPLATES>("flowchart_td")
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, setOpen])
+
   if (!open) return null
 
   const handleSelectTemplate = (tpl: keyof typeof MERMAID_TEMPLATES) => {
@@ -69,7 +78,7 @@ export function MermaidDialog() {
         if (e.target === e.currentTarget) setOpen(false)
       }}
     >
-      <div className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter">
+      <div role="dialog" aria-modal="true" aria-labelledby="mermaid-dialog-title" className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter">
         {/* Header with macOS Traffic Lights */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200/60 dark:border-stone-800/60">
           <div className="flex items-center gap-3">
@@ -88,7 +97,7 @@ export function MermaidDialog() {
                 <TreeStructure size={16} weight="bold" />
               </div>
               <div>
-                <h2 className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Mermaid Diagram</h2>
+                <h2 id="mermaid-dialog-title" className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Mermaid Diagram</h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400">Render flowcharts and sequence diagrams as editable canvas nodes</p>
               </div>
             </div>

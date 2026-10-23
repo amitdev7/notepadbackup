@@ -239,9 +239,10 @@ export interface ShellPreferences {
   performanceSettings: PerformanceSettings
   dockControls: DockControlsVisibility
   databaseSettings: DatabaseSettings
+  wifiAutoSync: boolean
 }
 
-const DEFAULT_PREFERENCES: ShellPreferences = {
+export const DEFAULT_PREFERENCES: ShellPreferences = {
   themeMode: "system",
   uiDensity: "comfortable",
   uiAccent: "blue",
@@ -265,6 +266,7 @@ const DEFAULT_PREFERENCES: ShellPreferences = {
   performanceSettings: DEFAULT_PERFORMANCE_SETTINGS,
   dockControls: DEFAULT_DOCK_CONTROLS,
   databaseSettings: DEFAULT_DATABASE_SETTINGS,
+  wifiAutoSync: false,
 }
 
 function loadInitialPreferences(): ShellPreferences {

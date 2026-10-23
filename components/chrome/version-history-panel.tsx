@@ -20,6 +20,15 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
   const fileName = useSquig((s) => s.fileName)
 
   useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [isOpen, onClose])
+
+  useEffect(() => {
     let active = true
     if (isOpen && cloudDocId) {
       queueMicrotask(() => {

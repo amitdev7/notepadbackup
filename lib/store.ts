@@ -425,6 +425,8 @@ function stepOrder(order: string[], ids: string[], dir: 1 | -1): string[] {
 let saveTimer: ReturnType<typeof setTimeout> | null = null
 /** true between an edit and the write that records it */
 let dirty = false
+/** monotonic generation token to prevent stale async document load race conditions */
+let fileSwitchToken = 0
 
 /** The four knobs that make up a look, gathered out of the flat state. */
 function lookOf(s: Pick<SquigState, "theme" | "paper" | "font" | "grid">): Look {
@@ -1391,6 +1393,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
 
   newFile: () => {
+    fileSwitchToken += 1
     // the file you were on keeps its place in the drawer — this is a new one
     flushSave(get)
     set({
@@ -1410,12 +1413,14 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   openFile: (id) => {
     if (id === get().docId) return
+    const token = ++fileSwitchToken
     flushSave(get)
     const doc = readFile(id)
     if (!doc) {
       if (typeof window !== "undefined") {
         getLocalDocument(id)
           .then((stored) => {
+            if (token !== fileSwitchToken) return // Discard stale out-of-order load
             if (stored?.doc) {
               const clean = sanitize(stored.doc.nodes, stored.doc.order)
               set({
@@ -1439,6 +1444,7 @@ export const useSquig = create<SquigState>((set, get) => ({
             }
           })
           .catch(() => {
+            if (token !== fileSwitchToken) return
             set({ files: dropFile(id) })
           })
         return

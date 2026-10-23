@@ -43,7 +43,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url)
 
   // 1. Skip non-GET requests and WebSocket / LAN endpoints
-  if (event.request.method !== "GET" || url.pathname.startsWith("/api/assets/signed-upload-url")) {
+  if (event.request.method !== "GET" || url.pathname.startsWith("/api/")) {
     return
   }
 

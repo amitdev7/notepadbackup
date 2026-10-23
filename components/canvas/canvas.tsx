@@ -250,10 +250,13 @@ export function Canvas() {
     const w = canvasSize.w
     const h = canvasSize.h
 
-    const minX = -viewport.x / viewport.zoom - marginPx
-    const minY = -viewport.y / viewport.zoom - marginPx
-    const maxX = (-viewport.x + w) / viewport.zoom + marginPx
-    const maxY = (-viewport.y + h) / viewport.zoom + marginPx
+    // Scale buffer margin by zoom so the screen-space culling buffer remains invariant
+    const marginWorld = marginPx / Math.max(0.01, viewport.zoom)
+
+    const minX = -viewport.x / viewport.zoom - marginWorld
+    const minY = -viewport.y / viewport.zoom - marginWorld
+    const maxX = (-viewport.x + w) / viewport.zoom + marginWorld
+    const maxY = (-viewport.y + h) / viewport.zoom + marginWorld
 
     const selectionSet = new Set(selection)
 

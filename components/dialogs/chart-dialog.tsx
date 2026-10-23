@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import {
   tryParseSpreadsheet,
@@ -52,6 +52,15 @@ export function ChartDialog() {
     return tryParseSpreadsheet(dataText)
   }, [dataText])
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, setOpen])
+
   if (!open) return null
 
   const handleInsert = () => {
@@ -86,7 +95,12 @@ export function ChartDialog() {
         if (e.target === e.currentTarget) setOpen(false)
       }}
     >
-      <div className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="chart-dialog-title"
+        className="macos-window relative w-full max-w-xl overflow-hidden rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/95 dark:bg-[#1C1C1F]/95 shadow-2xl flex flex-col max-h-[90vh] animate-modal-enter"
+      >
         {/* Header with macOS Traffic Lights */}
         <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200/60 dark:border-stone-800/60">
           <div className="flex items-center gap-3">
@@ -105,7 +119,7 @@ export function ChartDialog() {
                 <ChartBar size={16} weight="bold" />
               </div>
               <div>
-                <h2 className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
+                <h2 id="chart-dialog-title" className="text-xs font-semibold text-stone-900 dark:text-stone-100">Insert Hand-Drawn Chart</h2>
                 <p className="text-[11px] text-stone-500 dark:text-stone-400">Convert spreadsheet or table data into canvas elements</p>
               </div>
             </div>

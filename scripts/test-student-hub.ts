@@ -53,7 +53,7 @@ async function runTests() {
   check("Calculated progress is 50%", pct === 50)
 
   // 5. Chapter Completion Goals
-  const futureTarget = "2026-10-15"
+  const futureTarget = new Date(Date.now() + 30 * 86400000).toISOString().split("T")[0]
   store.setChapterGoal(subId, chap2, futureTarget, "Complete all derivation problems")
   const goal = useStudentStore.getState().goals.find((g) => g.chapterId === chap2 && g.status !== "cancelled")
   check("Goal exists for Chapter 2", Boolean(goal))
@@ -61,7 +61,7 @@ async function runTests() {
   check("Goal status is upcoming", goal?.status === "upcoming")
 
   // 6. Complete Chapter Early with Goal
-  // When completed, goal targetDate must remain 2026-10-15 while status becomes completed
+  // When completed, goal targetDate must remain futureTarget while status becomes completed
   store.toggleChapterComplete(chap2, true)
   const updatedGoal = useStudentStore.getState().goals.find((g) => g.chapterId === chap2)
   check("Goal marked completed when chapter is completed", updatedGoal?.status === "completed")
@@ -69,7 +69,8 @@ async function runTests() {
 
   // 7. Cancel Goal preserves Chapter
   const chap3 = store.addChapter(subId, "Thermodynamics")
-  store.setChapterGoal(subId, chap3, "2026-11-01")
+  const futureTarget3 = new Date(Date.now() + 60 * 86400000).toISOString().split("T")[0]
+  store.setChapterGoal(subId, chap3, futureTarget3)
   const goal3 = useStudentStore.getState().goals.find((g) => g.chapterId === chap3 && g.status !== "cancelled")
   check("Goal 3 created", Boolean(goal3))
   if (goal3) {
