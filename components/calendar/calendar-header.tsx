@@ -22,6 +22,7 @@ import {
   ListBullets,
   DownloadSimple,
   UploadSimple,
+  Trash,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -43,6 +44,8 @@ interface CalendarHeaderProps {
   isAgendaOpen?: boolean
   onExportIcs?: () => void
   onImportIcs?: (content: string) => void
+  onClearAll?: () => void
+  eventsCount?: number
 }
 
 const FILTER_OPTIONS = [
@@ -75,8 +78,11 @@ export function CalendarHeader({
   isAgendaOpen,
   onExportIcs,
   onImportIcs,
+  onClearAll,
+  eventsCount,
 }: CalendarHeaderProps) {
   const [showSearch, setShowSearch] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const isCompact = nodeWidth < 600
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -274,6 +280,46 @@ export function CalendarHeader({
             >
               <UploadSimple size={13} weight="bold" />
             </button>
+          )}
+
+          {/* Clear All Events with confirmation dialog */}
+          {onClearAll && eventsCount !== undefined && eventsCount > 0 && (
+            <div className="relative">
+              {showClearConfirm ? (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-red-500/40 bg-red-50 dark:bg-red-950/60 animate-in fade-in duration-100">
+                  <span className="text-[10px] font-semibold text-red-600 dark:text-red-400">
+                    Clear all {eventsCount}?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClearAll()
+                      setShowClearConfirm(false)
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold hover:bg-red-700 cursor-pointer"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowClearConfirm(false)}
+                    className="px-1.5 py-0.5 rounded border border-[var(--sq-border)] text-[10px] font-medium hover:bg-[var(--sq-shade)] cursor-pointer"
+                  >
+                    No
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowClearConfirm(true)}
+                  className="p-1 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 text-[var(--sq-ink)] opacity-70 hover:opacity-100 transition-colors cursor-pointer"
+                  title={`Clear all ${eventsCount} events`}
+                  aria-label="Clear all calendar events"
+                >
+                  <Trash size={13} weight="bold" />
+                </button>
+              )}
+            </div>
           )}
 
           {/* New Event Button */}

@@ -8,6 +8,7 @@
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState, useMemo, useRef } from "react"
+import { createPortal } from "react-dom"
 import type { CalendarEvent, CalendarEventType, CalendarEventPriority, CalendarRecurrence } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { checkEventConflict, getAvailableFreeSlots } from "@/lib/calendar/event-store"
@@ -75,6 +76,11 @@ export function CalendarEventEditor({
   const [recurrence, setRecurrence] = useState<CalendarRecurrence>("none")
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const titleInputRef = useRef<HTMLInputElement>(null)
 
@@ -138,7 +144,7 @@ export function CalendarEventEditor({
     }
   }, [date])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted || typeof document === "undefined") return null
 
   const handleSave = (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -184,7 +190,7 @@ export function CalendarEventEditor({
     onClose()
   }
 
-  return (
+  const modalElement = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
       onClick={onClose}
@@ -534,4 +540,6 @@ export function CalendarEventEditor({
       </div>
     </div>
   )
+
+  return createPortal(modalElement, document.body)
 }

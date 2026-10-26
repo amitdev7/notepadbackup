@@ -36,6 +36,7 @@ interface CalendarDayViewProps {
   onEventClick: (event: CalendarEvent) => void
   onToggleComplete: (id: string) => void
   onNewEventAtSlot: (date: string, startTime: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -51,6 +52,7 @@ export function CalendarDayView({
   onEventClick,
   onToggleComplete,
   onNewEventAtSlot,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarDayViewProps) {
@@ -299,6 +301,7 @@ export function CalendarDayView({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 </div>
               )

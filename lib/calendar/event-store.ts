@@ -5,7 +5,7 @@
 // into a single source-of-truth with local-first IndexedDB persistence.
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useStudentStore, type CalendarActivity, type ActivityType } from "@/lib/academic/student-store"
 import {
   createTask,
@@ -25,6 +25,24 @@ import {
 import { ACADEMIC_STORES, putAcademicItem, deleteAcademicItem } from "@/lib/storage/academic-db"
 import type { CalendarEvent, CreateCalendarEventInput, UpdateCalendarEventInput } from "./types"
 import { parseTimeToMinutes } from "./date-utils"
+
+type CalendarListener = () => void
+const calendarListeners = new Set<CalendarListener>()
+
+export function subscribeCalendarEvents(listener: CalendarListener): () => void {
+  calendarListeners.add(listener)
+  return () => {
+    calendarListeners.delete(listener)
+  }
+}
+
+export function notifyCalendarEventChange(): void {
+  for (const listener of Array.from(calendarListeners)) {
+    try {
+      listener()
+    } catch {}
+  }
+}
 
 function generateId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -90,13 +108,22 @@ export function useCalendarEvents(): {
   createEvent: (input: CreateCalendarEventInput) => CalendarEvent
   updateEvent: (id: string, updates: UpdateCalendarEventInput) => CalendarEvent | null
   deleteEvent: (id: string) => boolean
+  clearAllEvents: () => void
   moveEvent: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
   resizeEvent: (id: string, newEndTime: string) => void
   toggleComplete: (id: string) => void
 } {
   const activities = useStudentStore((s) => s.activities)
+  const [revision, setRevision] = useState(0)
+
+  useEffect(() => {
+    return subscribeCalendarEvents(() => {
+      setRevision((r) => r + 1)
+    })
+  }, [])
 
   const events = useMemo(() => {
+    void revision
     const seenIds = new Set<string>()
     const merged: CalendarEvent[] = []
 
@@ -130,13 +157,14 @@ export function useCalendarEvents(): {
     })
 
     return merged
-  }, [activities])
+  }, [activities, revision])
 
   return {
     events,
     createEvent: createCalendarEvent,
     updateEvent: updateCalendarEvent,
     deleteEvent: deleteCalendarEvent,
+    clearAllEvents: clearCalendarEvents,
     moveEvent: moveCalendarEvent,
     resizeEvent: resizeCalendarEvent,
     toggleComplete: toggleCalendarEventComplete,
@@ -222,6 +250,7 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
     })
   } catch {}
 
+  notifyCalendarEventChange()
   return event
 }
 
@@ -267,6 +296,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     })
   } catch {}
 
+  notifyCalendarEventChange()
   return null
 }
 
@@ -279,6 +309,7 @@ export function deleteCalendarEvent(id: string): boolean {
   try {
     deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
   } catch {}
+  notifyCalendarEventChange()
   return true
 }
 
@@ -305,6 +336,7 @@ export function moveCalendarEvent(
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
   })
+  notifyCalendarEventChange()
 }
 
 /**
@@ -340,6 +372,7 @@ export function toggleCalendarEventComplete(id: string): void {
       status: act.status === "completed" ? "completed" : "pending",
     })
   }
+  notifyCalendarEventChange()
 }
 
 /**
@@ -381,10 +414,11 @@ export function getCalendarEventsForDate(dateIso: string): CalendarEvent[] {
  * Clears all calendar events from stores.
  */
 export function clearCalendarEvents(): void {
-  useStudentStore.setState({ activities: [] })
+  useStudentStore.getState().clearActivities()
   try {
     clearStudyTasks()
   } catch {}
+  notifyCalendarEventChange()
 }
 
 /**

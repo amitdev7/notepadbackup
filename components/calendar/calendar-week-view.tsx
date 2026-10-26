@@ -35,6 +35,7 @@ interface CalendarWeekViewProps {
   onMoveEvent: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
   onResizeEvent: (id: string, newEndTime: string) => void
   onNewEventAtSlot: (date: string, startTime: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -55,6 +56,7 @@ export function CalendarWeekView({
   onMoveEvent,
   onResizeEvent,
   onNewEventAtSlot,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarWeekViewProps) {
@@ -360,6 +362,7 @@ export function CalendarWeekView({
                       <CalendarEventPill
                         event={ev}
                         onToggleComplete={() => onToggleComplete(ev.id)}
+                        onDelete={() => onDeleteEvent?.(ev.id)}
                       />
 
                       {/* Resize drag handle at bottom edge of event card */}

@@ -30,6 +30,7 @@ interface CalendarMonthViewProps {
   onToggleComplete: (id: string) => void
   onMoveEvent: (id: string, newDate: string) => void
   onNewEventAtDate: (date: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -45,6 +46,7 @@ export function CalendarMonthView({
   onToggleComplete,
   onMoveEvent,
   onNewEventAtDate,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarMonthViewProps) {
@@ -161,6 +163,7 @@ export function CalendarMonthView({
                       onEventClick(ev)
                     }}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 ))}
 
@@ -219,6 +222,7 @@ export function CalendarMonthView({
                     onEventClick(ev)
                   }}
                   onToggleComplete={() => onToggleComplete(ev.id)}
+                  onDelete={() => onDeleteEvent?.(ev.id)}
                 />
               ))}
             </div>

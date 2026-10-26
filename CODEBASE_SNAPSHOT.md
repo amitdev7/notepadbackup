@@ -1242,7 +1242,7 @@ Run all tests via: `pnpm test`.
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
 | `components/shell/top-bar.tsx` | 162 | 6457 | Core top-bar.tsx module | `top-bar` |
-| `components/ui/badge.tsx` | 57 | 1730 | Core badge.tsx module | `badge` |
+| `components/ui/badge.tsx` | 57 | 1729 | Core badge.tsx module | `badge` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
 | `components/ui/card.tsx` | 93 | 1834 | Core card.tsx module | `card` |
 | `components/ui/checkbox.tsx` | 60 | 2034 | Core checkbox.tsx module | `checkbox` |
@@ -1349,17 +1349,17 @@ Run all tests via: `pnpm test`.
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
 | `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
-| `components/calendar/calendar-agenda-view.tsx` | 288 | 12172 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
-| `components/calendar/calendar-day-view.tsx` | 312 | 11972 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 280 | 9665 | Core calendar-event-card.tsx module | `calendar-event-card` |
-| `components/calendar/calendar-event-editor.tsx` | 538 | 20384 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
-| `components/calendar/calendar-event-pill.tsx` | 90 | 3287 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
-| `components/calendar/calendar-header.tsx` | 293 | 10645 | Core calendar-header.tsx module | `calendar-header` |
-| `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 206 | 6353 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
+| `components/calendar/calendar-day-view.tsx` | 315 | 12088 | Core calendar-day-view.tsx module | `calendar-day-view` |
+| `components/calendar/calendar-event-card.tsx` | 335 | 12104 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 546 | 20637 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-event-pill.tsx` | 108 | 3930 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
+| `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
+| `components/calendar/calendar-month-view.tsx` | 248 | 9266 | Core calendar-month-view.tsx module | `calendar-month-view` |
+| `components/calendar/calendar-month-year-picker.tsx` | 214 | 6615 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
 | `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
-| `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
-| `components/calendar/functional-calendar.tsx` | 599 | 20723 | Core functional-calendar.tsx module | `functional-calendar` |
+| `components/calendar/calendar-week-view.tsx` | 398 | 14847 | Core calendar-week-view.tsx module | `calendar-week-view` |
+| `components/calendar/functional-calendar.tsx` | 620 | 21526 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
 | `lib/academic/announcements.ts` | 326 | 10058 | Core announcements.ts module | `announcements` |
 | `lib/academic/assignments.ts` | 860 | 23538 | Core assignments.ts module | `assignments` |
@@ -1372,12 +1372,12 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 912 | 31649 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 920 | 32173 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 276 | 8155 | Core date-utils.ts module | `date-utils` |
-| `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
+| `lib/calendar/event-store.ts` | 538 | 17353 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
@@ -1405,7 +1405,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
 | `scripts/test-document-attachments.ts` | 260 | 11108 | Core test-document-attachments.ts module | `test-document-attachments` |
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
-| `scripts/test-functional-calendar.ts` | 449 | 18476 | Core test-functional-calendar.ts module | `test-functional-calendar` |
+| `scripts/test-functional-calendar.ts` | 449 | 18468 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
@@ -31982,7 +31982,7 @@ export function TopBar() {
 
 - **Path**: `components/ui/badge.tsx`
 - **Lines**: 57
-- **Size**: 1730 bytes
+- **Size**: 1729 bytes
 
 ```tsx
 "use client"
@@ -32028,7 +32028,7 @@ const badgeVariants = cva(
 
 export interface BadgeProps
   extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+  VariantProps<typeof badgeVariants> { }
 
 export function Badge({ className, variant, size, ...props }: BadgeProps) {
   return (
@@ -61741,7 +61741,7 @@ function AgendaItem({
 
 - **Path**: `components/calendar/calendar-agenda-view.tsx`
 - **Lines**: 288
-- **Size**: 12172 bytes
+- **Size**: 12176 bytes
 
 ```tsx
 "use client"
@@ -61878,8 +61878,8 @@ export function CalendarAgendaView({
                         isToday
                           ? "text-blue-600 dark:text-blue-400 font-extrabold"
                           : isPast
-                          ? "text-[var(--sq-ink)] opacity-50"
-                          : "text-[var(--sq-ink)]"
+                            ? "text-[var(--sq-ink)] opacity-50"
+                            : "text-[var(--sq-ink)]"
                       )}
                     >
                       {dateLabel}
@@ -62038,8 +62038,8 @@ export function CalendarAgendaView({
 ### File: `components/calendar/calendar-day-view.tsx`
 
 - **Path**: `components/calendar/calendar-day-view.tsx`
-- **Lines**: 312
-- **Size**: 11972 bytes
+- **Lines**: 315
+- **Size**: 12088 bytes
 
 ```tsx
 "use client"
@@ -62080,6 +62080,7 @@ interface CalendarDayViewProps {
   onEventClick: (event: CalendarEvent) => void
   onToggleComplete: (id: string) => void
   onNewEventAtSlot: (date: string, startTime: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -62095,6 +62096,7 @@ export function CalendarDayView({
   onEventClick,
   onToggleComplete,
   onNewEventAtSlot,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarDayViewProps) {
@@ -62343,6 +62345,7 @@ export function CalendarDayView({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 </div>
               )
@@ -62360,19 +62363,22 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 280
-- **Size**: 9665 bytes
+- **Lines**: 335
+- **Size**: 12104 bytes
 
 ```tsx
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Calendar — Event Details Peek Card (Android & Windows Style)
+// Zenithsui Calendar — Event Details Peek Card (macOS & Apple Style)
 //
 // Shows complete event metadata, status, recurrence, location, and quick actions
-// without immediately popping open the form editor.
+// rendered via createPortal directly to document.body (immune to canvas transforms).
+// Supports inline confirmation deletion and keyboard Delete/Backspace shortcuts.
 // ---------------------------------------------------------------------------
 
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import type { CalendarEvent } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { formatTime, parseDateIso, parseTimeToMinutes } from "@/lib/calendar/date-utils"
@@ -62413,7 +62419,34 @@ export function CalendarEventCard({
   onDuplicate,
   onDelete,
 }: CalendarEventCardProps) {
-  if (!isOpen || !event) return null
+  const [mounted, setMounted] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    setConfirmingDelete(false)
+  }, [event?.id, isOpen])
+
+  // Native macOS shortcut: Delete or Backspace removes event immediately
+  useEffect(() => {
+    if (!isOpen || !event) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault()
+        onDelete(event.id)
+        onClose()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen, event, onDelete, onClose])
+
+  if (!isOpen || !event || !mounted || typeof document === "undefined") return null
 
   const isCompleted = event.status === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
@@ -62444,7 +62477,7 @@ export function CalendarEventCard({
     downloadIcsFile(icsString, filename)
   }
 
-  return (
+  const cardModal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
@@ -62474,93 +62507,95 @@ export function CalendarEventCard({
         {/* Header with Title and Close Button */}
         <div className="p-4 pb-2 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border"
-                style={{
-                  backgroundColor: colorPreset.bg,
-                  color: colorPreset.text,
-                  borderColor: colorPreset.border,
-                }}
-              >
-                {event.type || "Event"}
-              </span>
-
-              {event.priority && event.priority !== "Medium" && (
-                <span
-                  className={cn(
-                    "px-1.5 py-0.5 rounded text-[10px] font-medium border",
-                    event.priority === "High"
-                      ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400"
-                      : "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800"
-                  )}
-                >
-                  {event.priority}
-                </span>
-              )}
-            </div>
-
             <h3
               id="calendar-card-title"
               className={cn(
-                "text-base font-bold tracking-tight break-words",
+                "text-base font-bold text-[var(--sq-ink)] leading-snug break-words",
                 isCompleted && "line-through opacity-60"
               )}
             >
               {event.title}
             </h3>
+            <p className="text-xs text-[var(--sq-ink)] opacity-60 mt-0.5">
+              {dateLabel} · {timeLabel}
+            </p>
           </div>
-
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0 cursor-pointer"
-            aria-label="Close details"
+            className="p-1.5 rounded-full hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] opacity-60 hover:opacity-100 transition-colors shrink-0 cursor-pointer"
+            title="Close"
           >
             <X size={16} />
           </button>
         </div>
 
-        {/* Event Meta Details */}
-        <div className="px-4 py-3 space-y-2.5 text-xs border-y border-[var(--sq-border)]/60 bg-[var(--sq-paper)]">
-          {/* Date & Time */}
-          <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-            <CalendarBlank size={16} className="text-[var(--sq-muted)] shrink-0" />
-            <span className="font-medium">{dateLabel}</span>
-          </div>
+        {/* Content & Metadata Fields */}
+        <div className="p-4 pt-1 space-y-3 text-xs border-b border-[var(--sq-border)]">
+          {/* Category / Type & Priority Badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold text-[11px]"
+              style={{
+                backgroundColor: colorPreset.bg,
+                color: colorPreset.text,
+                border: `1px solid ${colorPreset.border}`,
+              }}
+            >
+              <Tag size={12} weight="bold" />
+              <span>{event.type || "Event"}</span>
+            </span>
 
-          <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-            <Clock size={16} className="text-[var(--sq-muted)] shrink-0" />
-            <span>{timeLabel}</span>
+            {event.priority && event.priority !== "Medium" && (
+              <span
+                className={cn(
+                  "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  event.priority === "High"
+                    ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                )}
+              >
+                {event.priority} Priority
+              </span>
+            )}
+
+            {event.recurrence && event.recurrence !== "none" && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-[var(--sq-ink)] opacity-70">
+                <ArrowsClockwise size={12} />
+                <span className="capitalize">{event.recurrence}</span>
+              </span>
+            )}
           </div>
 
           {/* Location */}
           {event.location && (
-            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-              <MapPin size={16} className="text-[var(--sq-muted)] shrink-0" />
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <MapPin size={14} className="shrink-0 opacity-70" />
               <span className="truncate">{event.location}</span>
             </div>
           )}
 
-          {/* Recurrence */}
-          {event.recurrence && event.recurrence !== "none" && (
-            <div className="flex items-center gap-2.5 text-[var(--sq-ink)] capitalize">
-              <ArrowsClockwise size={16} className="text-[var(--sq-muted)] shrink-0" />
-              <span>Repeats {event.recurrence}</span>
+          {/* Academic Subject */}
+          {event.subjectName && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <CalendarBlank size={14} className="shrink-0 opacity-70" />
+              <span>Subject: {event.subjectName}</span>
             </div>
           )}
 
           {/* Reminder */}
           {typeof event.reminderMinutes === "number" && (
-            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-              <Bell size={16} className="text-[var(--sq-muted)] shrink-0" />
-              <span>{event.reminderMinutes} minutes before</span>
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <Bell size={14} className="shrink-0 opacity-70" />
+              <span>
+                Reminder: {event.reminderMinutes === 0 ? "At event start" : `${event.reminderMinutes}m before`}
+              </span>
             </div>
           )}
 
-          {/* Description */}
+          {/* Description / Notes */}
           {event.description && (
-            <div className="pt-2 text-xs opacity-80 leading-relaxed border-t border-[var(--sq-border)]/40 whitespace-pre-wrap">
+            <div className="mt-2 p-2.5 rounded-lg bg-[var(--sq-shade)]/30 border border-[var(--sq-border)] text-[var(--sq-ink)] whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
               {event.description}
             </div>
           )}
@@ -62624,24 +62659,47 @@ export function CalendarEventCard({
             </button>
           </div>
 
-          {/* Delete */}
-          <button
-            type="button"
-            onClick={() => {
-              if (window.confirm(`Delete "${event.title}"?`)) {
-                onDelete(event.id)
-                onClose()
-              }
-            }}
-            className="p-1.5 rounded hover:bg-red-50 text-red-600 transition-colors cursor-pointer"
-            title="Delete event"
-          >
-            <Trash size={16} />
-          </button>
+          {/* Delete Action with Inline Confirmation */}
+          {confirmingDelete ? (
+            <div className="flex items-center gap-1.5 animate-in fade-in duration-100">
+              <span className="text-[11px] font-semibold text-red-600 dark:text-red-400">
+                Delete?
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  onDelete(event.id)
+                  onClose()
+                }}
+                className="px-2 py-1 rounded bg-red-600 text-white text-[11px] font-semibold hover:bg-red-700 transition-colors cursor-pointer shadow-xs"
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                className="px-2 py-1 rounded border border-[var(--sq-border)] text-[11px] font-semibold hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+              title="Delete event (Delete/Backspace)"
+              aria-label="Delete event"
+            >
+              <Trash size={16} />
+            </button>
+          )}
         </div>
       </div>
     </div>
   )
+
+  return createPortal(cardModal, document.body)
 }
 ```
 
@@ -62650,8 +62708,8 @@ export function CalendarEventCard({
 ### File: `components/calendar/calendar-event-editor.tsx`
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
-- **Lines**: 538
-- **Size**: 20384 bytes
+- **Lines**: 546
+- **Size**: 20637 bytes
 
 ```tsx
 "use client"
@@ -62664,6 +62722,7 @@ export function CalendarEventCard({
 // ---------------------------------------------------------------------------
 
 import { useEffect, useState, useMemo, useRef } from "react"
+import { createPortal } from "react-dom"
 import type { CalendarEvent, CalendarEventType, CalendarEventPriority, CalendarRecurrence } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { checkEventConflict, getAvailableFreeSlots } from "@/lib/calendar/event-store"
@@ -62731,6 +62790,11 @@ export function CalendarEventEditor({
   const [recurrence, setRecurrence] = useState<CalendarRecurrence>("none")
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const titleInputRef = useRef<HTMLInputElement>(null)
 
@@ -62794,7 +62858,7 @@ export function CalendarEventEditor({
     }
   }, [date])
 
-  if (!isOpen) return null
+  if (!isOpen || !mounted || typeof document === "undefined") return null
 
   const handleSave = (e?: React.FormEvent) => {
     e?.preventDefault()
@@ -62840,7 +62904,7 @@ export function CalendarEventEditor({
     onClose()
   }
 
-  return (
+  const modalElement = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
       onClick={onClose}
@@ -63190,6 +63254,8 @@ export function CalendarEventEditor({
       </div>
     </div>
   )
+
+  return createPortal(modalElement, document.body)
 }
 ```
 
@@ -63198,8 +63264,8 @@ export function CalendarEventEditor({
 ### File: `components/calendar/calendar-event-pill.tsx`
 
 - **Path**: `components/calendar/calendar-event-pill.tsx`
-- **Lines**: 90
-- **Size**: 3287 bytes
+- **Lines**: 108
+- **Size**: 3930 bytes
 
 ```tsx
 "use client"
@@ -63215,13 +63281,14 @@ import { useState } from "react"
 import type { CalendarEvent } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { cn } from "@/lib/utils"
-import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil } from "@phosphor-icons/react"
+import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil, X } from "@phosphor-icons/react"
 
 interface CalendarEventPillProps {
   event: CalendarEvent
   isMonthView?: boolean
   onClick?: (e: React.MouseEvent) => void
   onToggleComplete?: (e: React.MouseEvent) => void
+  onDelete?: (e: React.MouseEvent) => void
   draggable?: boolean
   onDragStart?: (e: React.DragEvent) => void
 }
@@ -63231,6 +63298,7 @@ export function CalendarEventPill({
   isMonthView = false,
   onClick,
   onToggleComplete,
+  onDelete,
   draggable = true,
   onDragStart,
 }: CalendarEventPillProps) {
@@ -63288,6 +63356,22 @@ export function CalendarEventPill({
       {event.priority === "High" && !isCompleted && (
         <span className="w-1.5 h-1.5 rounded-full bg-[var(--sq-ink)] shrink-0" title="High Priority" />
       )}
+      {/* Quick Delete action visible on hover */}
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onDelete(e)
+          }}
+          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 dark:hover:bg-red-950/40 transition-all cursor-pointer shrink-0 ml-auto"
+          title={`Delete "${event.title}"`}
+          aria-label={`Delete ${event.title}`}
+        >
+          <X size={10} weight="bold" />
+        </button>
+      )}
     </div>
   )
 }
@@ -63298,8 +63382,8 @@ export function CalendarEventPill({
 ### File: `components/calendar/calendar-header.tsx`
 
 - **Path**: `components/calendar/calendar-header.tsx`
-- **Lines**: 293
-- **Size**: 10645 bytes
+- **Lines**: 339
+- **Size**: 12753 bytes
 
 ```tsx
 "use client"
@@ -63326,6 +63410,7 @@ import {
   ListBullets,
   DownloadSimple,
   UploadSimple,
+  Trash,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -63347,6 +63432,8 @@ interface CalendarHeaderProps {
   isAgendaOpen?: boolean
   onExportIcs?: () => void
   onImportIcs?: (content: string) => void
+  onClearAll?: () => void
+  eventsCount?: number
 }
 
 const FILTER_OPTIONS = [
@@ -63379,8 +63466,11 @@ export function CalendarHeader({
   isAgendaOpen,
   onExportIcs,
   onImportIcs,
+  onClearAll,
+  eventsCount,
 }: CalendarHeaderProps) {
   const [showSearch, setShowSearch] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const isCompact = nodeWidth < 600
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -63580,6 +63670,46 @@ export function CalendarHeader({
             </button>
           )}
 
+          {/* Clear All Events with confirmation dialog */}
+          {onClearAll && eventsCount !== undefined && eventsCount > 0 && (
+            <div className="relative">
+              {showClearConfirm ? (
+                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded border border-red-500/40 bg-red-50 dark:bg-red-950/60 animate-in fade-in duration-100">
+                  <span className="text-[10px] font-semibold text-red-600 dark:text-red-400">
+                    Clear all {eventsCount}?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClearAll()
+                      setShowClearConfirm(false)
+                    }}
+                    className="px-1.5 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold hover:bg-red-700 cursor-pointer"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowClearConfirm(false)}
+                    className="px-1.5 py-0.5 rounded border border-[var(--sq-border)] text-[10px] font-medium hover:bg-[var(--sq-shade)] cursor-pointer"
+                  >
+                    No
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowClearConfirm(true)}
+                  className="p-1 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 text-[var(--sq-ink)] opacity-70 hover:opacity-100 transition-colors cursor-pointer"
+                  title={`Clear all ${eventsCount} events`}
+                  aria-label="Clear all calendar events"
+                >
+                  <Trash size={13} weight="bold" />
+                </button>
+              )}
+            </div>
+          )}
+
           {/* New Event Button */}
           <button
             type="button"
@@ -63601,8 +63731,8 @@ export function CalendarHeader({
 ### File: `components/calendar/calendar-month-view.tsx`
 
 - **Path**: `components/calendar/calendar-month-view.tsx`
-- **Lines**: 244
-- **Size**: 9092 bytes
+- **Lines**: 248
+- **Size**: 9266 bytes
 
 ```tsx
 "use client"
@@ -63637,6 +63767,7 @@ interface CalendarMonthViewProps {
   onToggleComplete: (id: string) => void
   onMoveEvent: (id: string, newDate: string) => void
   onNewEventAtDate: (date: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -63652,6 +63783,7 @@ export function CalendarMonthView({
   onToggleComplete,
   onMoveEvent,
   onNewEventAtDate,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarMonthViewProps) {
@@ -63768,6 +63900,7 @@ export function CalendarMonthView({
                       onEventClick(ev)
                     }}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 ))}
 
@@ -63826,6 +63959,7 @@ export function CalendarMonthView({
                     onEventClick(ev)
                   }}
                   onToggleComplete={() => onToggleComplete(ev.id)}
+                  onDelete={() => onDeleteEvent?.(ev.id)}
                 />
               ))}
             </div>
@@ -63855,8 +63989,8 @@ export function CalendarMonthView({
 ### File: `components/calendar/calendar-month-year-picker.tsx`
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
-- **Lines**: 206
-- **Size**: 6353 bytes
+- **Lines**: 214
+- **Size**: 6615 bytes
 
 ```tsx
 "use client"
@@ -63868,7 +64002,8 @@ export function CalendarMonthView({
 // and months with a single tap, inspired by the Windows calendar flyout.
 // ---------------------------------------------------------------------------
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import {
   CaretLeft,
   CaretRight,
@@ -63910,8 +64045,13 @@ export function CalendarMonthYearPicker({
   // Mode: "months" (picking month within year) or "years" (picking year within decade)
   const [mode, setMode] = useState<"months" | "years">("months")
   const [pickerYear, setPickerYear] = useState<number>(currentYear)
+  const [mounted, setMounted] = useState(false)
 
-  if (!isOpen) return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!isOpen || !mounted || typeof document === "undefined") return null
 
   // Calculate 12-year decade window (e.g. 2020 - 2031)
   const decadeStart = Math.floor(pickerYear / 10) * 10
@@ -63936,7 +64076,7 @@ export function CalendarMonthYearPicker({
     }
   }
 
-  return (
+  const pickerModal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
@@ -64063,6 +64203,8 @@ export function CalendarMonthYearPicker({
       </div>
     </div>
   )
+
+  return createPortal(pickerModal, document.body)
 }
 ```
 
@@ -64224,8 +64366,8 @@ export function CalendarReminderToast({
 ### File: `components/calendar/calendar-week-view.tsx`
 
 - **Path**: `components/calendar/calendar-week-view.tsx`
-- **Lines**: 395
-- **Size**: 14727 bytes
+- **Lines**: 398
+- **Size**: 14847 bytes
 
 ```tsx
 "use client"
@@ -64265,6 +64407,7 @@ interface CalendarWeekViewProps {
   onMoveEvent: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
   onResizeEvent: (id: string, newEndTime: string) => void
   onNewEventAtSlot: (date: string, startTime: string) => void
+  onDeleteEvent?: (id: string) => void
   nodeWidth: number
   nodeHeight: number
 }
@@ -64285,6 +64428,7 @@ export function CalendarWeekView({
   onMoveEvent,
   onResizeEvent,
   onNewEventAtSlot,
+  onDeleteEvent,
   nodeWidth,
   nodeHeight,
 }: CalendarWeekViewProps) {
@@ -64590,6 +64734,7 @@ export function CalendarWeekView({
                       <CalendarEventPill
                         event={ev}
                         onToggleComplete={() => onToggleComplete(ev.id)}
+                        onDelete={() => onDeleteEvent?.(ev.id)}
                       />
 
                       {/* Resize drag handle at bottom edge of event card */}
@@ -64629,8 +64774,8 @@ export function CalendarWeekView({
 ### File: `components/calendar/functional-calendar.tsx`
 
 - **Path**: `components/calendar/functional-calendar.tsx`
-- **Lines**: 599
-- **Size**: 20723 bytes
+- **Lines**: 620
+- **Size**: 21526 bytes
 
 ```tsx
 "use client"
@@ -64730,6 +64875,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     createEvent,
     updateEvent,
     deleteEvent,
+    clearAllEvents,
     moveEvent,
     resizeEvent,
     toggleComplete,
@@ -64977,6 +65123,21 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     [deleteEvent]
   )
 
+  // Native macOS shortcut: Backspace or Delete on active event
+  useEffect(() => {
+    if (!peekEvent) return
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault()
+        handleDeleteEvent(peekEvent.id)
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [peekEvent, handleDeleteEvent])
+
   // RFC 5545 iCalendar Export & Import
   const handleExportIcs = useCallback(() => {
     const icsContent = exportToIcs(events)
@@ -65087,6 +65248,8 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         isAgendaOpen={isAgendaOpen}
         onExportIcs={handleExportIcs}
         onImportIcs={handleImportIcs}
+        onClearAll={clearAllEvents}
+        eventsCount={events.length}
       />
 
       {/* 2. Main Viewport (Month, Week, Day, or Agenda) */}
@@ -65103,6 +65266,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onToggleComplete={toggleComplete}
             onMoveEvent={(id, newDate) => moveEvent(id, newDate)}
             onNewEventAtDate={(d) => handleOpenNewEvent(d)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -65121,6 +65285,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onMoveEvent={(id, newDate, newS, newE) => moveEvent(id, newDate, newS, newE)}
             onResizeEvent={(id, newEndTime) => resizeEvent(id, newEndTime)}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -65134,6 +65299,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -65143,7 +65309,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             timeFormat={timeFormat}
             onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
-            onDeleteEvent={(id) => deleteEvent(id)}
+            onDeleteEvent={handleDeleteEvent}
             onNewEvent={() => handleOpenNewEvent()}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
@@ -72790,8 +72956,8 @@ export function computeGapAnalysis(
 ### File: `lib/academic/student-store.ts`
 
 - **Path**: `lib/academic/student-store.ts`
-- **Lines**: 912
-- **Size**: 31649 bytes
+- **Lines**: 920
+- **Size**: 32173 bytes
 
 ```tsx
 "use client"
@@ -73200,6 +73366,8 @@ interface StudentState {
   updateActivity: (id: string, updates: Partial<CalendarActivity>) => void
   toggleActivityComplete: (id: string) => void
   deleteActivity: (id: string) => void
+  clearActivities: () => void
+  hasClearedInitialActivities?: boolean
   duplicateActivity: (id: string, targetDate: string) => void
   moveActivity: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
 
@@ -73235,7 +73403,8 @@ function loadInitialState() {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        activities: parsed.activities ?? INITIAL_ACTIVITIES,
+        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities),
+        activities: parsed.hasClearedInitialActivities ? (parsed.activities ?? []) : (parsed.activities ?? INITIAL_ACTIVITIES),
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }
@@ -73262,6 +73431,7 @@ function persistState(state: Partial<StudentState>) {
       chapters: state.chapters,
       goals: state.goals,
       activities: state.activities,
+      hasClearedInitialActivities: state.hasClearedInitialActivities,
       materials: state.materials,
       weeklyTargetHours: state.weeklyTargetHours,
     }
@@ -73586,9 +73756,13 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      set((state) => ({
-        activities: state.activities.filter((a) => a.id !== id),
-      }))
+      const nextActs = get().activities.filter((a) => a.id !== id)
+      set({ activities: nextActs, hasClearedInitialActivities: nextActs.length === 0 ? true : get().hasClearedInitialActivities })
+      persistState(get())
+    },
+
+    clearActivities: () => {
+      set({ activities: [], hasClearedInitialActivities: true })
       persistState(get())
     },
 
@@ -75665,8 +75839,8 @@ export function isDateInRange(targetDate: string, startDate: string, endDate?: s
 ### File: `lib/calendar/event-store.ts`
 
 - **Path**: `lib/calendar/event-store.ts`
-- **Lines**: 504
-- **Size**: 16468 bytes
+- **Lines**: 538
+- **Size**: 17353 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -75676,7 +75850,7 @@ export function isDateInRange(targetDate: string, startDate: string, endDate?: s
 // into a single source-of-truth with local-first IndexedDB persistence.
 // ---------------------------------------------------------------------------
 
-import { useMemo } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useStudentStore, type CalendarActivity, type ActivityType } from "@/lib/academic/student-store"
 import {
   createTask,
@@ -75696,6 +75870,24 @@ import {
 import { ACADEMIC_STORES, putAcademicItem, deleteAcademicItem } from "@/lib/storage/academic-db"
 import type { CalendarEvent, CreateCalendarEventInput, UpdateCalendarEventInput } from "./types"
 import { parseTimeToMinutes } from "./date-utils"
+
+type CalendarListener = () => void
+const calendarListeners = new Set<CalendarListener>()
+
+export function subscribeCalendarEvents(listener: CalendarListener): () => void {
+  calendarListeners.add(listener)
+  return () => {
+    calendarListeners.delete(listener)
+  }
+}
+
+export function notifyCalendarEventChange(): void {
+  for (const listener of Array.from(calendarListeners)) {
+    try {
+      listener()
+    } catch {}
+  }
+}
 
 function generateId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
@@ -75761,13 +75953,22 @@ export function useCalendarEvents(): {
   createEvent: (input: CreateCalendarEventInput) => CalendarEvent
   updateEvent: (id: string, updates: UpdateCalendarEventInput) => CalendarEvent | null
   deleteEvent: (id: string) => boolean
+  clearAllEvents: () => void
   moveEvent: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
   resizeEvent: (id: string, newEndTime: string) => void
   toggleComplete: (id: string) => void
 } {
   const activities = useStudentStore((s) => s.activities)
+  const [revision, setRevision] = useState(0)
+
+  useEffect(() => {
+    return subscribeCalendarEvents(() => {
+      setRevision((r) => r + 1)
+    })
+  }, [])
 
   const events = useMemo(() => {
+    void revision
     const seenIds = new Set<string>()
     const merged: CalendarEvent[] = []
 
@@ -75801,13 +76002,14 @@ export function useCalendarEvents(): {
     })
 
     return merged
-  }, [activities])
+  }, [activities, revision])
 
   return {
     events,
     createEvent: createCalendarEvent,
     updateEvent: updateCalendarEvent,
     deleteEvent: deleteCalendarEvent,
+    clearAllEvents: clearCalendarEvents,
     moveEvent: moveCalendarEvent,
     resizeEvent: resizeCalendarEvent,
     toggleComplete: toggleCalendarEventComplete,
@@ -75893,6 +76095,7 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
     })
   } catch {}
 
+  notifyCalendarEventChange()
   return event
 }
 
@@ -75938,6 +76141,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     })
   } catch {}
 
+  notifyCalendarEventChange()
   return null
 }
 
@@ -75950,6 +76154,7 @@ export function deleteCalendarEvent(id: string): boolean {
   try {
     deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
   } catch {}
+  notifyCalendarEventChange()
   return true
 }
 
@@ -75976,6 +76181,7 @@ export function moveCalendarEvent(
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
   })
+  notifyCalendarEventChange()
 }
 
 /**
@@ -76011,6 +76217,7 @@ export function toggleCalendarEventComplete(id: string): void {
       status: act.status === "completed" ? "completed" : "pending",
     })
   }
+  notifyCalendarEventChange()
 }
 
 /**
@@ -76052,10 +76259,11 @@ export function getCalendarEventsForDate(dateIso: string): CalendarEvent[] {
  * Clears all calendar events from stores.
  */
 export function clearCalendarEvents(): void {
-  useStudentStore.setState({ activities: [] })
+  useStudentStore.getState().clearActivities()
   try {
     clearStudyTasks()
   } catch {}
+  notifyCalendarEventChange()
 }
 
 /**
@@ -89513,7 +89721,7 @@ runTests().catch((err) => {
 
 - **Path**: `scripts/test-functional-calendar.ts`
 - **Lines**: 449
-- **Size**: 18476 bytes
+- **Size**: 18468 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -89954,10 +90162,10 @@ const viewControl = functionalDef!.controls?.find((c) => c.key === "view")
 assert(Boolean(viewControl), "Calendar component def exposes 'view' control")
 assert(
   Array.isArray(viewControl?.options) &&
-    viewControl.options.includes("month") &&
-    viewControl.options.includes("week") &&
-    viewControl.options.includes("day") &&
-    viewControl.options.includes("agenda"),
+  viewControl.options.includes("month") &&
+  viewControl.options.includes("week") &&
+  viewControl.options.includes("day") &&
+  viewControl.options.includes("agenda"),
   "Calendar view options include all 4 modes: month, week, day, agenda"
 )
 

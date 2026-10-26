@@ -95,6 +95,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     createEvent,
     updateEvent,
     deleteEvent,
+    clearAllEvents,
     moveEvent,
     resizeEvent,
     toggleComplete,
@@ -342,6 +343,21 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     [deleteEvent]
   )
 
+  // Native macOS shortcut: Backspace or Delete on active event
+  useEffect(() => {
+    if (!peekEvent) return
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault()
+        handleDeleteEvent(peekEvent.id)
+      }
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [peekEvent, handleDeleteEvent])
+
   // RFC 5545 iCalendar Export & Import
   const handleExportIcs = useCallback(() => {
     const icsContent = exportToIcs(events)
@@ -452,6 +468,8 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         isAgendaOpen={isAgendaOpen}
         onExportIcs={handleExportIcs}
         onImportIcs={handleImportIcs}
+        onClearAll={clearAllEvents}
+        eventsCount={events.length}
       />
 
       {/* 2. Main Viewport (Month, Week, Day, or Agenda) */}
@@ -468,6 +486,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onToggleComplete={toggleComplete}
             onMoveEvent={(id, newDate) => moveEvent(id, newDate)}
             onNewEventAtDate={(d) => handleOpenNewEvent(d)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -486,6 +505,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onMoveEvent={(id, newDate, newS, newE) => moveEvent(id, newDate, newS, newE)}
             onResizeEvent={(id, newEndTime) => resizeEvent(id, newEndTime)}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -499,6 +519,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            onDeleteEvent={handleDeleteEvent}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -508,7 +529,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             timeFormat={timeFormat}
             onEventClick={(ev) => setPeekEvent(ev)}
             onToggleComplete={toggleComplete}
-            onDeleteEvent={(id) => deleteEvent(id)}
+            onDeleteEvent={handleDeleteEvent}
             onNewEvent={() => handleOpenNewEvent()}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}

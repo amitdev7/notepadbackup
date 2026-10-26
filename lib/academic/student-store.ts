@@ -404,6 +404,8 @@ interface StudentState {
   updateActivity: (id: string, updates: Partial<CalendarActivity>) => void
   toggleActivityComplete: (id: string) => void
   deleteActivity: (id: string) => void
+  clearActivities: () => void
+  hasClearedInitialActivities?: boolean
   duplicateActivity: (id: string, targetDate: string) => void
   moveActivity: (id: string, newDate: string, newStartTime?: string, newEndTime?: string) => void
 
@@ -439,7 +441,8 @@ function loadInitialState() {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        activities: parsed.activities ?? INITIAL_ACTIVITIES,
+        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities),
+        activities: parsed.hasClearedInitialActivities ? (parsed.activities ?? []) : (parsed.activities ?? INITIAL_ACTIVITIES),
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }
@@ -466,6 +469,7 @@ function persistState(state: Partial<StudentState>) {
       chapters: state.chapters,
       goals: state.goals,
       activities: state.activities,
+      hasClearedInitialActivities: state.hasClearedInitialActivities,
       materials: state.materials,
       weeklyTargetHours: state.weeklyTargetHours,
     }
@@ -790,9 +794,13 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      set((state) => ({
-        activities: state.activities.filter((a) => a.id !== id),
-      }))
+      const nextActs = get().activities.filter((a) => a.id !== id)
+      set({ activities: nextActs, hasClearedInitialActivities: nextActs.length === 0 ? true : get().hasClearedInitialActivities })
+      persistState(get())
+    },
+
+    clearActivities: () => {
+      set({ activities: [], hasClearedInitialActivities: true })
       persistState(get())
     },
 

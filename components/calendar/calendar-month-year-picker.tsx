@@ -7,7 +7,8 @@
 // and months with a single tap, inspired by the Windows calendar flyout.
 // ---------------------------------------------------------------------------
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import {
   CaretLeft,
   CaretRight,
@@ -49,8 +50,13 @@ export function CalendarMonthYearPicker({
   // Mode: "months" (picking month within year) or "years" (picking year within decade)
   const [mode, setMode] = useState<"months" | "years">("months")
   const [pickerYear, setPickerYear] = useState<number>(currentYear)
+  const [mounted, setMounted] = useState(false)
 
-  if (!isOpen) return null
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!isOpen || !mounted || typeof document === "undefined") return null
 
   // Calculate 12-year decade window (e.g. 2020 - 2031)
   const decadeStart = Math.floor(pickerYear / 10) * 10
@@ -75,7 +81,7 @@ export function CalendarMonthYearPicker({
     }
   }
 
-  return (
+  const pickerModal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
@@ -202,4 +208,6 @@ export function CalendarMonthYearPicker({
       </div>
     </div>
   )
+
+  return createPortal(pickerModal, document.body)
 }

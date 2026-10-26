@@ -11,13 +11,14 @@ import { useState } from "react"
 import type { CalendarEvent } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { cn } from "@/lib/utils"
-import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil } from "@phosphor-icons/react"
+import { Check, Clock, Sparkle, BookOpen, GraduationCap, NotePencil, X } from "@phosphor-icons/react"
 
 interface CalendarEventPillProps {
   event: CalendarEvent
   isMonthView?: boolean
   onClick?: (e: React.MouseEvent) => void
   onToggleComplete?: (e: React.MouseEvent) => void
+  onDelete?: (e: React.MouseEvent) => void
   draggable?: boolean
   onDragStart?: (e: React.DragEvent) => void
 }
@@ -27,6 +28,7 @@ export function CalendarEventPill({
   isMonthView = false,
   onClick,
   onToggleComplete,
+  onDelete,
   draggable = true,
   onDragStart,
 }: CalendarEventPillProps) {
@@ -83,6 +85,22 @@ export function CalendarEventPill({
       {/* Priority badge if High */}
       {event.priority === "High" && !isCompleted && (
         <span className="w-1.5 h-1.5 rounded-full bg-[var(--sq-ink)] shrink-0" title="High Priority" />
+      )}
+      {/* Quick Delete action visible on hover */}
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            e.preventDefault()
+            onDelete(e)
+          }}
+          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 dark:hover:bg-red-950/40 transition-all cursor-pointer shrink-0 ml-auto"
+          title={`Delete "${event.title}"`}
+          aria-label={`Delete ${event.title}`}
+        >
+          <X size={10} weight="bold" />
+        </button>
       )}
     </div>
   )
