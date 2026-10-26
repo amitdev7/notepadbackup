@@ -1144,7 +1144,7 @@ Run all tests via: `pnpm test`.
 | `vercel.json` | 6 | 171 | Core vercel.json module | `vercel` |
 | `vitest.config.mts` | 101 | 3063 | Core vitest.config.mts module | `vitest.config` |
 | `app/cursors.css` | 134 | 4635 | Core cursors.css module | `cursors` |
-| `app/dashboard/page.tsx` | 850 | 38556 | Core page.tsx module | `page` |
+| `app/dashboard/page.tsx` | 818 | 38129 | Core page.tsx module | `page` |
 | `app/error.tsx` | 55 | 2249 | Core error.tsx module | `error` |
 | `app/global-error.tsx` | 55 | 2179 | Core global-error.tsx module | `global-error` |
 | `app/globals.css` | 661 | 17149 | Core globals.css module | `globals` |
@@ -1196,7 +1196,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/phosphor-paths.ts` | 182 | 66464 | Core phosphor-paths.ts module | `phosphor-paths` |
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
-| `components/canvas/canvas-stats.tsx` | 333 | 11964 | Core canvas-stats.tsx module | `canvas-stats` |
+| `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
 | `components/canvas/canvas.tsx` | 2295 | 84804 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
@@ -1224,9 +1224,9 @@ Run all tests via: `pnpm test`.
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
 | `components/chrome/context-menu.tsx` | 303 | 11938 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 304 | 12495 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/files-popover.tsx` | 299 | 12678 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 836 | 32037 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 775 | 29538 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1242,7 +1242,10 @@ Run all tests via: `pnpm test`.
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
 | `components/shell/top-bar.tsx` | 162 | 6457 | Core top-bar.tsx module | `top-bar` |
+| `components/ui/badge.tsx` | 57 | 1730 | Core badge.tsx module | `badge` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
+| `components/ui/card.tsx` | 93 | 1834 | Core card.tsx module | `card` |
+| `components/ui/checkbox.tsx` | 60 | 2034 | Core checkbox.tsx module | `checkbox` |
 | `components/ui/dropdown-menu.tsx` | 140 | 4512 | Core dropdown-menu.tsx module | `dropdown-menu` |
 | `components/ui/input.tsx` | 20 | 990 | Core input.tsx module | `input` |
 | `components/ui/panel.tsx` | 245 | 8378 | Core panel.tsx module | `panel` |
@@ -1250,6 +1253,8 @@ Run all tests via: `pnpm test`.
 | `components/ui/segmented.tsx` | 223 | 7289 | Core segmented.tsx module | `segmented` |
 | `components/ui/select.tsx` | 117 | 4464 | Core select.tsx module | `select` |
 | `components/ui/switch.tsx` | 45 | 1550 | Core switch.tsx module | `switch` |
+| `components/ui/tabs.tsx` | 135 | 3240 | Core tabs.tsx module | `tabs` |
+| `components/ui/textarea.tsx` | 22 | 790 | Core textarea.tsx module | `textarea` |
 | `components/ui/tooltip.tsx` | 50 | 1750 | Core tooltip.tsx module | `tooltip` |
 | `app/api/wifi-sync/route.ts` | 125 | 4203 | Core route.ts module | `route` |
 | `app/lan/view/[sessionId]/lan-viewer-client.tsx` | 95 | 3248 | Core lan-viewer-client.tsx module | `lan-viewer-client` |
@@ -1337,22 +1342,24 @@ Run all tests via: `pnpm test`.
 | `lib/library/defs-blocks-marketing.ts` | 1786 | 67897 | Core defs-blocks-marketing.ts module | `defs-blocks-marketing` |
 | `lib/library/defs-display.ts` | 503 | 19016 | Core defs-display.ts module | `defs-display` |
 | `lib/library/defs-extra.ts` | 207 | 8222 | Core defs-extra.ts module | `defs-extra` |
-| `lib/library/defs-functional-calendar.ts` | 202 | 7129 | Core defs-functional-calendar.ts module | `defs-functional-calendar` |
+| `lib/library/defs-functional-calendar.ts` | 202 | 7146 | Core defs-functional-calendar.ts module | `defs-functional-calendar` |
 | `lib/library/defs-more.ts` | 2653 | 111205 | Core defs-more.ts module | `defs-more` |
 | `lib/library/defs-nav.ts` | 114 | 4761 | Core defs-nav.ts module | `defs-nav` |
 | `lib/library/defs-study.ts` | 1127 | 50077 | Core defs-study.ts module | `defs-study` |
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
 | `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
+| `components/calendar/calendar-agenda-view.tsx` | 288 | 12172 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
+| `components/calendar/calendar-day-view.tsx` | 312 | 11972 | Core calendar-day-view.tsx module | `calendar-day-view` |
 | `components/calendar/calendar-event-card.tsx` | 280 | 9665 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 538 | 20384 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 90 | 3287 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
-| `components/calendar/calendar-header.tsx` | 302 | 10914 | Core calendar-header.tsx module | `calendar-header` |
+| `components/calendar/calendar-header.tsx` | 293 | 10645 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 244 | 9092 | Core calendar-month-view.tsx module | `calendar-month-view` |
 | `components/calendar/calendar-month-year-picker.tsx` | 206 | 6353 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
 | `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 395 | 14727 | Core calendar-week-view.tsx module | `calendar-week-view` |
-| `components/calendar/functional-calendar.tsx` | 542 | 18563 | Core functional-calendar.tsx module | `functional-calendar` |
+| `components/calendar/functional-calendar.tsx` | 599 | 20723 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
 | `lib/academic/announcements.ts` | 326 | 10058 | Core announcements.ts module | `announcements` |
 | `lib/academic/assignments.ts` | 860 | 23538 | Core assignments.ts module | `assignments` |
@@ -1369,11 +1376,11 @@ Run all tests via: `pnpm test`.
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
-| `lib/calendar/date-utils.ts` | 266 | 8022 | Core date-utils.ts module | `date-utils` |
+| `lib/calendar/date-utils.ts` | 276 | 8155 | Core date-utils.ts module | `date-utils` |
 | `lib/calendar/event-store.ts` | 504 | 16468 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
-| `lib/calendar/types.ts` | 146 | 3409 | Core types.ts module | `types` |
+| `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
 | `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
@@ -1398,7 +1405,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-database.ts` | 108 | 2968 | Core test-database.ts module | `test-database` |
 | `scripts/test-document-attachments.ts` | 260 | 11108 | Core test-document-attachments.ts module | `test-document-attachments` |
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
-| `scripts/test-functional-calendar.ts` | 424 | 17163 | Core test-functional-calendar.ts module | `test-functional-calendar` |
+| `scripts/test-functional-calendar.ts` | 449 | 18476 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
@@ -2581,8 +2588,8 @@ textarea,
 ### File: `app/dashboard/page.tsx`
 
 - **Path**: `app/dashboard/page.tsx`
-- **Lines**: 850
-- **Size**: 38556 bytes
+- **Lines**: 818
+- **Size**: 38129 bytes
 
 ```tsx
 "use client"
@@ -2675,29 +2682,9 @@ export default function DashboardPage() {
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [renameDraft, setRenameDraft] = useState("")
   const renameInputRef = useRef<HTMLInputElement>(null)
-  const searchInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
-  }, [])
-
-  // Global search shortcut (⌘K or /)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault()
-        searchInputRef.current?.focus()
-      } else if (
-        e.key === "/" &&
-        document.activeElement?.tagName !== "INPUT" &&
-        document.activeElement?.tagName !== "TEXTAREA"
-      ) {
-        e.preventDefault()
-        searchInputRef.current?.focus()
-      }
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
   }, [])
 
   const loadDocuments = useCallback(() => {
@@ -3113,33 +3100,21 @@ export default function DashboardPage() {
                 className="absolute left-2.5 text-stone-400 dark:text-stone-500 pointer-events-none"
               />
               <input
-                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Escape") {
-                    setSearchQuery("")
-                    searchInputRef.current?.blur()
-                  }
-                }}
                 placeholder="Filter drawings…"
                 aria-label="Filter drawings by name"
-                className="w-36 sm:w-56 pl-8 pr-8 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                className="w-36 sm:w-56 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
               />
-              {searchQuery ? (
+              {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
                   className="absolute right-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
-                  aria-label="Clear search"
                 >
                   <X size={12} />
                 </button>
-              ) : (
-                <kbd className="hidden sm:inline-block absolute right-2 text-[10px] text-stone-400 font-mono px-1 rounded border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/60 pointer-events-none">
-                  ⌘K
-                </kbd>
               )}
             </div>
 
@@ -13715,8 +13690,8 @@ export function CanvasSearch() {
 ### File: `components/canvas/canvas-stats.tsx`
 
 - **Path**: `components/canvas/canvas-stats.tsx`
-- **Lines**: 333
-- **Size**: 11964 bytes
+- **Lines**: 235
+- **Size**: 8102 bytes
 
 ```tsx
 "use client"
@@ -13725,7 +13700,7 @@ export function CanvasSearch() {
 // Zenithsui Board Statistics HUD
 // ---------------------------------------------------------------------------
 
-import { useEffect, useMemo } from "react"
+import { useMemo } from "react"
 import {
   ChartBar,
   X,
@@ -13828,81 +13803,11 @@ export function CanvasStats() {
     }
   }, [nodes, order])
 
-  const selectedStats = useMemo(() => {
-    if (!nodes || !selection.length) return null
-    const selectedNodes = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
-    if (!selectedNodes.length) return null
-
-    let shapes = 0
-    let texts = 0
-    let arrows = 0
-    let images = 0
-    let docs = 0
-    let stickies = 0
-    let frames = 0
-    let components = 0
-
-    for (const n of selectedNodes) {
-      switch (n.type) {
-        case "shape":
-          shapes++
-          break
-        case "text":
-          texts++
-          break
-        case "arrow":
-          arrows++
-          break
-        case "image":
-          images++
-          break
-        case "document":
-          docs++
-          break
-        case "sticky":
-          stickies++
-          break
-        case "frame":
-          frames++
-          break
-        case "component":
-          components++
-          break
-      }
-    }
-
-    const bounds = unionBox(selectedNodes)
-    return {
-      count: selectedNodes.length,
-      shapes,
-      texts,
-      arrows,
-      images,
-      docs,
-      stickies,
-      frames,
-      components,
-      bounds,
-    }
-  }, [nodes, selection])
-
-  useEffect(() => {
-    if (!statsOpen) return
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setStatsOpen(false)
-    }
-    window.addEventListener("keydown", handleKeyDown)
-    return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [statsOpen, setStatsOpen])
-
   if (!statsOpen) return null
 
   return (
     <div
       data-zenithsui-chrome
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="canvas-stats-title"
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/10 backdrop-blur-[2px]"
       onPointerDown={(e) => {
         if (e.target === e.currentTarget) setStatsOpen(false)
@@ -13912,7 +13817,7 @@ export function CanvasStats() {
         <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
           <div className="flex items-center gap-2">
             <ChartBar className="size-4.5 text-foreground" />
-            <h2 id="canvas-stats-title" className="text-sm font-semibold text-foreground">Canvas Statistics</h2>
+            <h2 className="text-sm font-semibold text-foreground">Canvas Statistics</h2>
           </div>
           <button
             type="button"
@@ -13934,34 +13839,6 @@ export function CanvasStats() {
             <div className="text-base font-bold text-foreground mt-0.5">{selection.length}</div>
           </div>
         </div>
-
-        {/* Active Selection Details */}
-        {selectedStats && (
-          <div className="p-2.5 rounded-chrome-sm border border-border/60 bg-muted/20 space-y-1.5 text-xs">
-            <div className="flex items-center justify-between text-[11px] font-medium text-foreground">
-              <span>Active Selection</span>
-              <span className="font-mono">{selectedStats.count} node{selectedStats.count === 1 ? "" : "s"}</span>
-            </div>
-            {selectedStats.bounds && (
-              <div className="flex items-center justify-between text-muted-foreground">
-                <span>Bounding Size</span>
-                <span className="font-mono text-foreground">
-                  {Math.round(selectedStats.bounds.maxX - selectedStats.bounds.minX)} ×{" "}
-                  {Math.round(selectedStats.bounds.maxY - selectedStats.bounds.minY)} px
-                </span>
-              </div>
-            )}
-            <div className="flex flex-wrap gap-1 pt-0.5">
-              {selectedStats.shapes > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.shapes} shape{selectedStats.shapes > 1 ? "s" : ""}</span>}
-              {selectedStats.texts > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.texts} text</span>}
-              {selectedStats.arrows > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.arrows} arrow{selectedStats.arrows > 1 ? "s" : ""}</span>}
-              {selectedStats.images > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.images} img</span>}
-              {selectedStats.docs > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.docs} doc{selectedStats.docs > 1 ? "s" : ""}</span>}
-              {selectedStats.stickies > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.stickies} sticky</span>}
-              {selectedStats.frames + selectedStats.components > 0 && <span className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono">{selectedStats.frames + selectedStats.components} frame/comp</span>}
-            </div>
-          </div>
-        )}
 
         {/* Element Kind Breakdown */}
         <div className="space-y-1.5 text-xs">
@@ -24652,8 +24529,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 304
-- **Size**: 12495 bytes
+- **Lines**: 299
+- **Size**: 12678 bytes
 
 ```tsx
 "use client"
@@ -24796,12 +24673,7 @@ export function FilesPopover() {
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Canvas Files Manager"
-          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans"
-        >
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">
@@ -25056,8 +24928,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 836
-- **Size**: 32037 bytes
+- **Lines**: 775
+- **Size**: 29538 bytes
 
 ```tsx
 "use client"
@@ -25107,11 +24979,6 @@ import {
   SquaresFour,
   Lock,
   LockOpen,
-  ArrowLineUpIcon,
-  ArrowUpIcon,
-  ArrowDownIcon,
-  ArrowLineDownIcon,
-  ChartBar,
 } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -25309,16 +25176,6 @@ function PageSettings() {
             className="scale-90"
           />
         </Row>
-        <Row spread label="Canvas stats">
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-ctl text-xs gap-1.5"
-            onClick={() => st().setStatsOpen(true)}
-          >
-            <ChartBar className="size-3.5" /> Open
-          </Button>
-        </Row>
         <PanelNote>quick controls float above the selection</PanelNote>
       </PanelSection>
     </>
@@ -25391,8 +25248,6 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const controls = components.length === selected.length ? sharedControls(components) : []
   const variantControls = controls.filter((c) => c.type !== "text")
   const textControls = controls.filter((c) => c.type === "text")
-  const sharedOpacity = sharedNumber(selected, (n) => n.opacity ?? 100)
-  const bounds = unionBounds(selected)
 
   /** Only worth printing a count when the section misses part of the selection. */
   const partial = (n: number) => (n === selected.length ? undefined : n)
@@ -25444,13 +25299,6 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           />
         </div>
 
-        {multi && bounds && (
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground font-mono px-0.5 pt-0.5">
-            <span>Selection Bounds</span>
-            <span>{Math.round(bounds.w)} × {Math.round(bounds.h)} px</span>
-          </div>
-        )}
-
         {/* eight icons don't fit beside a label column, so alignment takes the
             full width and flipping — which is always available — keeps the row */}
         {multi && (
@@ -25466,43 +25314,6 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           <IconAction label={`Flip vertically · ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
             <FlipVerticalIcon className="size-3.5" />
           </IconAction>
-        </Row>
-
-        <Row label="Layer">
-          <IconAction label={`Bring to front · ${kbd("far+]")}`} onClick={() => st().bringToFront(selected.map((n) => n.id))}>
-            <ArrowLineUpIcon className="size-3.5" />
-          </IconAction>
-          <IconAction label={`Bring forward · ${kbd("mod+]")}`} onClick={() => st().bringForward(selected.map((n) => n.id))}>
-            <ArrowUpIcon className="size-3.5" />
-          </IconAction>
-          <IconAction label={`Send backward · ${kbd("mod+[")}`} onClick={() => st().sendBackward(selected.map((n) => n.id))}>
-            <ArrowDownIcon className="size-3.5" />
-          </IconAction>
-          <IconAction label={`Send to back · ${kbd("far+[")}`} onClick={() => st().sendToBack(selected.map((n) => n.id))}>
-            <ArrowLineDownIcon className="size-3.5" />
-          </IconAction>
-        </Row>
-
-        <Row label="Opacity">
-          <div className="flex items-center gap-2 w-full">
-            <input
-              type="range"
-              min={10}
-              max={100}
-              step={5}
-              aria-label="Selection Opacity"
-              value={sharedOpacity.mixed ? 100 : sharedOpacity.value}
-              onPointerDown={startGesture}
-              onChange={(e) => {
-                const val = Number(e.target.value)
-                live(() => ({ opacity: val }))
-              }}
-              className="h-1.5 flex-1 cursor-pointer accent-foreground bg-muted rounded-full"
-            />
-            <span className="w-8 text-right text-xs font-mono tabular-nums text-muted-foreground">
-              {sharedOpacity.mixed ? "—" : `${sharedOpacity.value}%`}
-            </span>
-          </div>
         </Row>
 
         <Row spread label="Lock">
@@ -32167,6 +31978,73 @@ export function TopBar() {
 
 *Accessible headless UI wrappers styled with Tailwind v4 (buttons, dialogs, dropdowns, inputs, panels, selects, switches, tooltips).*
 
+### File: `components/ui/badge.tsx`
+
+- **Path**: `components/ui/badge.tsx`
+- **Lines**: 57
+- **Size**: 1730 bytes
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { cn } from "@/lib/utils"
+
+const badgeVariants = cva(
+  "inline-flex items-center gap-1 font-sans rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors select-none",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-2xs",
+        secondary:
+          "bg-muted text-muted-foreground hover:bg-muted/80",
+        outline:
+          "border border-border text-foreground bg-background/50",
+        destructive:
+          "bg-destructive/15 text-destructive border border-destructive/20",
+        success:
+          "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/25",
+        warning:
+          "bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/25",
+        info:
+          "bg-blue-500/15 text-blue-700 dark:text-blue-400 border border-blue-500/25",
+        pill:
+          "bg-[var(--sq-shade)] text-[var(--sq-ink)] border border-[var(--sq-border)]",
+      },
+      size: {
+        default: "px-2 py-0.5 text-[11px]",
+        sm: "px-1.5 py-0.25 text-[10px]",
+        lg: "px-2.5 py-1 text-xs font-semibold",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLSpanElement>,
+    VariantProps<typeof badgeVariants> {}
+
+export function Badge({ className, variant, size, ...props }: BadgeProps) {
+  return (
+    <span
+      data-slot="badge"
+      className={cn(badgeVariants({ variant, size, className }))}
+      {...props}
+    />
+  )
+}
+
+export { badgeVariants }
+```
+
+---
+
 ### File: `components/ui/button.tsx`
 
 - **Path**: `components/ui/button.tsx`
@@ -32245,6 +32123,179 @@ function Button({
 }
 
 export { Button, buttonVariants }
+```
+
+---
+
+### File: `components/ui/card.tsx`
+
+- **Path**: `components/ui/card.tsx`
+- **Lines**: 93
+- **Size**: 1834 bytes
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  glass?: boolean
+}
+
+export function Card({ className, glass = false, ...props }: CardProps) {
+  return (
+    <div
+      data-slot="card"
+      className={cn(
+        "rounded-xl border border-border/80 text-card-foreground transition-all",
+        glass
+          ? "apple-glass-panel shadow-sm"
+          : "bg-card shadow-xs",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export function CardHeader({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="card-header"
+      className={cn("flex flex-col space-y-1 p-3.5 sm:p-4", className)}
+      {...props}
+    />
+  )
+}
+
+export function CardTitle({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h3
+      data-slot="card-title"
+      className={cn(
+        "text-sm font-semibold leading-none tracking-tight text-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export function CardDescription({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      data-slot="card-description"
+      className={cn("text-xs text-muted-foreground", className)}
+      {...props}
+    />
+  )
+}
+
+export function CardContent({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("p-3.5 sm:p-4 pt-0", className)}
+      {...props}
+    />
+  )
+}
+
+export function CardFooter({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center p-3.5 sm:p-4 pt-0 gap-2", className)}
+      {...props}
+    />
+  )
+}
+```
+
+---
+
+### File: `components/ui/checkbox.tsx`
+
+- **Path**: `components/ui/checkbox.tsx`
+- **Lines**: 60
+- **Size**: 2034 bytes
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { Check, Minus } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export interface CheckboxProps
+  extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
+  checked?: boolean | "indeterminate"
+  onCheckedChange?: (checked: boolean) => void
+}
+
+export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
+  ({ className, checked = false, onCheckedChange, disabled, ...props }, ref) => {
+    const isChecked = checked === true
+    const isIndeterminate = checked === "indeterminate"
+
+    const handleClick = () => {
+      if (disabled) return
+      onCheckedChange?.(!isChecked)
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (disabled) return
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault()
+        onCheckedChange?.(!isChecked)
+      }
+    }
+
+    return (
+      <button
+        ref={ref}
+        type="button"
+        role="checkbox"
+        aria-checked={isIndeterminate ? "mixed" : isChecked}
+        disabled={disabled}
+        onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        data-slot="checkbox"
+        className={cn(
+          "peer relative size-4 shrink-0 rounded-[4px] border transition-all outline-none cursor-pointer flex items-center justify-center select-none",
+          "focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/25 focus-visible:border-[var(--sq-ink)]",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          isChecked || isIndeterminate
+            ? "border-[var(--sq-ink)] bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-2xs"
+            : "border-input bg-transparent hover:border-foreground/60 dark:bg-input/20",
+          className
+        )}
+        {...props}
+      >
+        {isChecked && <Check size={11} weight="bold" className="shrink-0" />}
+        {isIndeterminate && <Minus size={11} weight="bold" className="shrink-0" />}
+      </button>
+    )
+  }
+)
+
+Checkbox.displayName = "Checkbox"
 ```
 
 ---
@@ -33162,6 +33213,183 @@ function Switch({
 }
 
 export { Switch }
+```
+
+---
+
+### File: `components/ui/tabs.tsx`
+
+- **Path**: `components/ui/tabs.tsx`
+- **Lines**: 135
+- **Size**: 3240 bytes
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+interface TabsContextValue {
+  value: string
+  onValueChange: (value: string) => void
+}
+
+const TabsContext = React.createContext<TabsContextValue | null>(null)
+
+export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+  value?: string
+  defaultValue?: string
+  onValueChange?: (value: string) => void
+}
+
+export function Tabs({
+  value: controlledValue,
+  defaultValue = "",
+  onValueChange,
+  className,
+  children,
+  ...props
+}: TabsProps) {
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue)
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : uncontrolledValue
+
+  const handleValueChange = React.useCallback(
+    (next: string) => {
+      if (!isControlled) {
+        setUncontrolledValue(next)
+      }
+      onValueChange?.(next)
+    },
+    [isControlled, onValueChange]
+  )
+
+  return (
+    <TabsContext.Provider value={{ value, onValueChange: handleValueChange }}>
+      <div data-slot="tabs" className={cn("w-full", className)} {...props}>
+        {children}
+      </div>
+    </TabsContext.Provider>
+  )
+}
+
+export function TabsList({
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      role="tablist"
+      data-slot="tabs-list"
+      className={cn(
+        "inline-flex h-8 items-center justify-center rounded-lg bg-muted/60 p-0.5 text-muted-foreground select-none border border-border/50",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export interface TabsTriggerProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  value: string
+}
+
+export function TabsTrigger({
+  value,
+  className,
+  children,
+  disabled,
+  ...props
+}: TabsTriggerProps) {
+  const ctx = React.useContext(TabsContext)
+  if (!ctx) throw new Error("TabsTrigger must be used within Tabs")
+
+  const isSelected = ctx.value === value
+
+  return (
+    <button
+      role="tab"
+      type="button"
+      aria-selected={isSelected}
+      disabled={disabled}
+      onClick={() => ctx.onValueChange(value)}
+      data-slot="tabs-trigger"
+      className={cn(
+        "inline-flex items-center justify-center whitespace-nowrap rounded-md px-2.5 py-1 text-xs font-medium transition-all outline-none cursor-pointer",
+        "focus-visible:ring-2 focus-visible:ring-foreground/20",
+        "disabled:pointer-events-none disabled:opacity-50",
+        isSelected
+          ? "bg-background text-foreground shadow-2xs font-semibold"
+          : "hover:text-foreground hover:bg-background/40",
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+}
+
+export interface TabsContentProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  value: string
+}
+
+export function TabsContent({
+  value,
+  className,
+  children,
+  ...props
+}: TabsContentProps) {
+  const ctx = React.useContext(TabsContext)
+  if (!ctx) throw new Error("TabsContent must be used within Tabs")
+
+  if (ctx.value !== value) return null
+
+  return (
+    <div
+      role="tabpanel"
+      data-slot="tabs-content"
+      className={cn("mt-2 outline-none focus-visible:ring-2", className)}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/ui/textarea.tsx`
+
+- **Path**: `components/ui/textarea.tsx`
+- **Lines**: 22
+- **Size**: 790 bytes
+
+```tsx
+"use client"
+
+import * as React from "react"
+import { cn } from "@/lib/utils"
+
+export type TextareaProps = React.ComponentProps<"textarea">
+
+function Textarea({ className, ...props }: TextareaProps) {
+  return (
+    <textarea
+      data-slot="textarea"
+      className={cn(
+        "flex min-h-[64px] w-full rounded-chrome-sm border border-input bg-transparent px-3 py-2 text-row font-sans transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-[var(--sq-ink)] focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/15 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:bg-input/20 resize-y",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export { Textarea }
 ```
 
 ---
@@ -56338,7 +56566,7 @@ export const EXTRA_DEFS: ComponentDef[] = [iconDef, stickyDef, frameDef, callout
 
 - **Path**: `lib/library/defs-functional-calendar.ts`
 - **Lines**: 202
-- **Size**: 7129 bytes
+- **Size**: 7146 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -56387,7 +56615,7 @@ export const functionalCalendarDef: ComponentDef = {
       key: "view",
       label: "Default View",
       type: "select",
-      options: ["month", "week"],
+      options: ["month", "week", "day", "agenda"],
       quick: true,
     },
     {
@@ -61509,6 +61737,626 @@ function AgendaItem({
 
 ---
 
+### File: `components/calendar/calendar-agenda-view.tsx`
+
+- **Path**: `components/calendar/calendar-agenda-view.tsx`
+- **Lines**: 288
+- **Size**: 12172 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Agenda View
+//
+// Chronological timeline view of all upcoming and scheduled events featuring:
+// 1. Date grouping with smart relative labels (Today, Tomorrow, Weekdays)
+// 2. Category badge, priority pill, and location metadata
+// 3. One-click completion checkbox with immediate visual feedback
+// 4. Quick Edit and Delete action controls
+// 5. Elegant empty state with contextual call-to-action
+// ---------------------------------------------------------------------------
+
+import { useMemo } from "react"
+import {
+  getTodayIso,
+  addDaysIso,
+  parseDateIso,
+  getWeekday,
+  WEEKDAY_NAMES,
+  MONTH_NAMES,
+  formatTime,
+  parseTimeToMinutes,
+} from "@/lib/calendar/date-utils"
+import type { CalendarEvent } from "@/lib/calendar/types"
+import {
+  CalendarBlank,
+  Clock,
+  MapPin,
+  Check,
+  PencilSimple,
+  Trash,
+  Plus,
+  BookmarkSimple,
+  WarningCircle,
+} from "@phosphor-icons/react"
+import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
+
+interface CalendarAgendaViewProps {
+  events: CalendarEvent[]
+  timeFormat?: "12h" | "24h"
+  onEventClick: (event: CalendarEvent) => void
+  onToggleComplete: (id: string) => void
+  onDeleteEvent: (id: string) => void
+  onNewEvent: () => void
+  nodeWidth: number
+  nodeHeight: number
+}
+
+export function CalendarAgendaView({
+  events,
+  timeFormat = "12h",
+  onEventClick,
+  onToggleComplete,
+  onDeleteEvent,
+  onNewEvent,
+  nodeWidth,
+  nodeHeight: _nodeHeight,
+}: CalendarAgendaViewProps) {
+  const todayIso = useMemo(() => getTodayIso(), [])
+  const tomorrowIso = useMemo(() => addDaysIso(todayIso, 1), [todayIso])
+  const isCompact = nodeWidth < 500
+
+  // Group events by date sorted chronologically
+  const groupedEvents = useMemo(() => {
+    const map = new Map<string, CalendarEvent[]>()
+
+    // Sort events by date and time
+    const sorted = [...events].sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date)
+      if (a.isAllDay && !b.isAllDay) return -1
+      if (!a.isAllDay && b.isAllDay) return 1
+      return (a.startTime || "00:00").localeCompare(b.startTime || "00:00")
+    })
+
+    for (const ev of sorted) {
+      const d = ev.date.slice(0, 10)
+      const list = map.get(d) || []
+      list.push(ev)
+      map.set(d, list)
+    }
+
+    return Array.from(map.entries()).map(([date, dayEvents]) => ({
+      date,
+      events: dayEvents,
+    }))
+  }, [events])
+
+  return (
+    <div className="flex-1 w-full h-full min-h-0 overflow-y-auto bg-[var(--sq-paper)] p-3 sm:p-4 select-none scrollbar-thin">
+      {groupedEvents.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+          <div className="size-12 rounded-2xl bg-[var(--sq-shade)] border border-[var(--sq-border)] flex items-center justify-center text-[var(--sq-ink)] opacity-60 mb-3 shadow-2xs">
+            <CalendarBlank size={24} weight="duotone" />
+          </div>
+          <h3 className="text-sm font-bold text-[var(--sq-ink)]">No events scheduled</h3>
+          <p className="text-xs text-[var(--sq-ink)] opacity-60 max-w-xs mt-1 mb-4">
+            Your agenda is clear. Create study sessions, exams, assignment deadlines, or personal tasks.
+          </p>
+          <button
+            type="button"
+            onClick={onNewEvent}
+            className="tactile-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--sq-ink)] text-[var(--sq-paper)] text-xs font-semibold shadow-xs cursor-pointer hover:opacity-90 transition-opacity"
+          >
+            <Plus size={14} weight="bold" />
+            <span>Create Event</span>
+          </button>
+        </div>
+      ) : (
+        <div className="space-y-4 max-w-2xl mx-auto pb-8">
+          {groupedEvents.map(({ date, events: dayEvents }) => {
+            const parsed = parseDateIso(date)
+            const weekday = WEEKDAY_NAMES[getWeekday(parsed.year, parsed.month, parsed.day)]
+            const month = MONTH_NAMES[parsed.month - 1]
+            const isToday = date === todayIso
+            const isTomorrow = date === tomorrowIso
+            const isPast = date < todayIso
+
+            let dateLabel = `${weekday}, ${month} ${parsed.day}`
+            if (isToday) dateLabel = `Today · ${dateLabel}`
+            else if (isTomorrow) dateLabel = `Tomorrow · ${dateLabel}`
+
+            return (
+              <div key={date} className="space-y-1.5">
+                {/* Date Group Header */}
+                <div className="sticky top-0 z-10 flex items-center justify-between py-1 px-2 rounded-lg bg-[var(--sq-paper)]/95 backdrop-blur-sm border-b border-[var(--sq-border)]/60">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "text-xs font-bold tracking-tight",
+                        isToday
+                          ? "text-blue-600 dark:text-blue-400 font-extrabold"
+                          : isPast
+                          ? "text-[var(--sq-ink)] opacity-50"
+                          : "text-[var(--sq-ink)]"
+                      )}
+                    >
+                      {dateLabel}
+                    </span>
+                    {isToday && (
+                      <span className="size-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse-subtle" />
+                    )}
+                  </div>
+                  <span className="text-[10px] font-mono text-[var(--sq-ink)] opacity-50">
+                    {dayEvents.length} event{dayEvents.length === 1 ? "" : "s"}
+                  </span>
+                </div>
+
+                {/* Event Cards */}
+                <div className="space-y-1.5 pl-1 sm:pl-2">
+                  {dayEvents.map((ev) => {
+                    const isCompleted = ev.status === "completed"
+
+                    return (
+                      <div
+                        key={ev.id}
+                        onClick={() => onEventClick(ev)}
+                        className={cn(
+                          "group relative flex items-start gap-2.5 p-2.5 rounded-xl border transition-all cursor-pointer select-none",
+                          "hover:shadow-xs hover:border-[var(--sq-ink)]/30",
+                          isCompleted
+                            ? "bg-[var(--sq-shade)]/30 border-[var(--sq-border)]/40 opacity-70"
+                            : "bg-[var(--sq-paper)] border-[var(--sq-border)]"
+                        )}
+                        style={{
+                          borderLeftWidth: "4px",
+                          borderLeftColor: ev.color || "var(--sq-ink)",
+                        }}
+                      >
+                        {/* Completion Checkbox */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onToggleComplete(ev.id)
+                          }}
+                          className={cn(
+                            "size-4 rounded mt-0.5 flex items-center justify-center border transition-all shrink-0 cursor-pointer",
+                            isCompleted
+                              ? "bg-emerald-600 border-emerald-600 text-white"
+                              : "border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)]"
+                          )}
+                          title={isCompleted ? "Mark pending" : "Mark completed"}
+                        >
+                          {isCompleted && <Check size={11} weight="bold" />}
+                        </button>
+
+                        {/* Event Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4
+                              className={cn(
+                                "text-xs font-semibold text-[var(--sq-ink)] leading-snug truncate",
+                                isCompleted && "line-through opacity-50"
+                              )}
+                            >
+                              {ev.title}
+                            </h4>
+
+                            {ev.type && (
+                              <Badge variant="pill" size="sm" className="text-[10px]">
+                                {ev.type}
+                              </Badge>
+                            )}
+
+                            {ev.priority === "High" && (
+                              <Badge variant="destructive" size="sm" className="text-[10px]">
+                                High
+                              </Badge>
+                            )}
+                          </div>
+
+                          {/* Time & Meta Row */}
+                          <div className="flex items-center gap-3 text-[11px] font-mono text-[var(--sq-ink)] opacity-60 mt-1 flex-wrap">
+                            <span className="flex items-center gap-1">
+                              <Clock size={12} />
+                              {ev.isAllDay ? (
+                                <span>All-Day</span>
+                              ) : (
+                                <span>
+                                  {ev.startTime ? formatTime(parseTimeToMinutes(ev.startTime), timeFormat) : ""}
+                                  {ev.endTime ? ` – ${formatTime(parseTimeToMinutes(ev.endTime), timeFormat)}` : ""}
+                                </span>
+                              )}
+                            </span>
+
+                            {ev.location && (
+                              <span className="flex items-center gap-1 truncate max-w-[140px]">
+                                <MapPin size={12} />
+                                <span>{ev.location}</span>
+                              </span>
+                            )}
+
+                            {ev.subjectName && (
+                              <span className="flex items-center gap-1 truncate max-w-[140px]">
+                                <BookmarkSimple size={12} />
+                                <span>{ev.subjectName}</span>
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Description preview */}
+                          {ev.description && !isCompact && (
+                            <p className="text-[11px] text-[var(--sq-ink)] opacity-70 line-clamp-2 mt-1.5 font-sans leading-relaxed">
+                              {ev.description}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Quick action buttons on hover */}
+                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onEventClick(ev)
+                            }}
+                            className="p-1 rounded text-[var(--sq-ink)] opacity-60 hover:opacity-100 hover:bg-[var(--sq-shade)] cursor-pointer"
+                            title="Edit event"
+                          >
+                            <PencilSimple size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              onDeleteEvent(ev.id)
+                            }}
+                            className="p-1 rounded text-red-600 hover:bg-red-500/10 cursor-pointer"
+                            title="Delete event"
+                          >
+                            <Trash size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+```
+
+---
+
+### File: `components/calendar/calendar-day-view.tsx`
+
+- **Path**: `components/calendar/calendar-day-view.tsx`
+- **Lines**: 312
+- **Size**: 11972 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Calendar — Day View Schedule
+//
+// Single-day detailed schedule featuring:
+// 1. Time axis with configurable start/end hours and 12h/24h formats
+// 2. All-day events bar at the top
+// 3. Side-by-side lane allocation for overlapping appointments
+// 4. Real-time current-time indicator line with live breathing badge
+// 5. Click-to-create on any hour or half-hour slot
+// 6. Direct task completion toggling with instant visual feedback
+// ---------------------------------------------------------------------------
+
+import { useState, useMemo, useEffect, useRef } from "react"
+import {
+  getTodayIso,
+  formatTime,
+  parseDateIso,
+  getWeekday,
+  WEEKDAY_NAMES,
+  MONTH_NAMES,
+} from "@/lib/calendar/date-utils"
+import { computeDayEventPositions } from "@/lib/calendar/layout"
+import type { CalendarEvent, PositionedEvent } from "@/lib/calendar/types"
+import { CalendarEventPill } from "./calendar-event-pill"
+import { Plus, Clock, MapPin, Check } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+interface CalendarDayViewProps {
+  date: string
+  startHour?: number
+  endHour?: number
+  timeFormat?: "12h" | "24h"
+  events: CalendarEvent[]
+  onEventClick: (event: CalendarEvent) => void
+  onToggleComplete: (id: string) => void
+  onNewEventAtSlot: (date: string, startTime: string) => void
+  nodeWidth: number
+  nodeHeight: number
+}
+
+const HOUR_HEIGHT = 56 // Height per hour slot in px
+
+export function CalendarDayView({
+  date,
+  startHour = 7,
+  endHour = 21,
+  timeFormat = "12h",
+  events,
+  onEventClick,
+  onToggleComplete,
+  onNewEventAtSlot,
+  nodeWidth,
+  nodeHeight,
+}: CalendarDayViewProps) {
+  const [currentMinuteOfDay, setCurrentMinuteOfDay] = useState<number>(() => {
+    const now = new Date()
+    return now.getHours() * 60 + now.getMinutes()
+  })
+
+  const todayIso = useMemo(() => getTodayIso(), [])
+  const isToday = date === todayIso
+
+  const parsed = useMemo(() => parseDateIso(date), [date])
+  const weekdayIndex = useMemo(() => getWeekday(parsed.year, parsed.month, parsed.day), [parsed])
+  const weekdayName = WEEKDAY_NAMES[weekdayIndex]
+  const monthName = MONTH_NAMES[parsed.month - 1]
+
+  // Timer for current-time indicator
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date()
+      setCurrentMinuteOfDay(now.getHours() * 60 + now.getMinutes())
+    }
+    const interval = setInterval(tick, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
+  // Time slot hours list
+  const hours = useMemo(() => {
+    const list: number[] = []
+    for (let h = startHour; h < endHour; h++) {
+      list.push(h)
+    }
+    return list
+  }, [startHour, endHour])
+
+  // Split into All-Day events vs Timed events
+  const { allDayEvents, positionedTimedEvents } = useMemo(() => {
+    const dayNorm = date.slice(0, 10)
+    const dayEvents = events.filter((e) => {
+      const s = e.date.slice(0, 10)
+      const end = e.endDate ? e.endDate.slice(0, 10) : s
+      return dayNorm >= s && dayNorm <= end
+    })
+
+    const allDay = dayEvents.filter((e) => e.isAllDay)
+    const timed = computeDayEventPositions(
+      dayEvents,
+      date,
+      startHour,
+      endHour,
+      HOUR_HEIGHT
+    )
+
+    return { allDayEvents: allDay, positionedTimedEvents: timed }
+  }, [events, date, startHour, endHour])
+
+  // Scroll to current time or 8am on mount
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const hasInitialScrolledRef = useRef(false)
+  useEffect(() => {
+    if (!hasInitialScrolledRef.current && scrollContainerRef.current) {
+      hasInitialScrolledRef.current = true
+      const targetMinute = isToday ? Math.max(startHour * 60, currentMinuteOfDay - 60) : 8 * 60
+      const offsetMinutes = Math.max(0, targetMinute - startHour * 60)
+      scrollContainerRef.current.scrollTop = (offsetMinutes / 60) * HOUR_HEIGHT
+    }
+  }, [isToday, startHour, currentMinuteOfDay])
+
+  // Current time line calculation
+  const currentTimeTop = useMemo(() => {
+    if (!isToday) return null
+    const startM = startHour * 60
+    const endM = endHour * 60
+    if (currentMinuteOfDay < startM || currentMinuteOfDay > endM) return null
+    return ((currentMinuteOfDay - startM) / 60) * HOUR_HEIGHT
+  }, [isToday, currentMinuteOfDay, startHour, endHour])
+
+  return (
+    <div className="flex flex-col flex-1 w-full h-full min-h-0 bg-[var(--sq-paper)] select-none">
+      {/* Day Summary Banner */}
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/30">
+        <div className="flex items-center gap-2.5">
+          <div
+            className={cn(
+              "flex flex-col items-center justify-center size-10 rounded-xl font-bold border shadow-2xs",
+              isToday
+                ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] border-[var(--sq-ink)]"
+                : "bg-[var(--sq-paper)] text-[var(--sq-ink)] border-[var(--sq-border)]"
+            )}
+          >
+            <span className="text-[10px] uppercase font-semibold leading-none opacity-80">
+              {weekdayName.slice(0, 3)}
+            </span>
+            <span className="text-sm leading-tight mt-0.5">{parsed.day}</span>
+          </div>
+          <div>
+            <h2 className="text-xs font-bold text-[var(--sq-ink)] leading-tight">
+              {weekdayName}, {monthName} {parsed.day}, {parsed.year}
+            </h2>
+            <div className="text-[11px] text-[var(--sq-ink)] opacity-60 flex items-center gap-2 mt-0.5">
+              <span>{positionedTimedEvents.length + allDayEvents.length} events scheduled</span>
+              {isToday && (
+                <span className="px-1.5 py-0.25 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 font-semibold text-[10px]">
+                  Today
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Add Button */}
+        <button
+          type="button"
+          onClick={() => onNewEventAtSlot(date, "09:00")}
+          className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--sq-ink)] text-[var(--sq-paper)] text-xs font-semibold shadow-xs cursor-pointer hover:opacity-90 transition-opacity"
+        >
+          <Plus size={13} weight="bold" />
+          <span>Add Event</span>
+        </button>
+      </div>
+
+      {/* All-Day Events Strip */}
+      {allDayEvents.length > 0 && (
+        <div className="flex items-start gap-2 px-3 py-1.5 border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/15 shrink-0 overflow-x-auto">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--sq-ink)] opacity-60 w-14 shrink-0 pt-1">
+            All-Day
+          </span>
+          <div className="flex flex-wrap gap-1.5 flex-1 min-w-0">
+            {allDayEvents.map((ev) => (
+              <div
+                key={ev.id}
+                onClick={() => onEventClick(ev)}
+                className="group flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs font-medium cursor-pointer shadow-2xs hover:scale-[1.01] transition-transform"
+                style={{
+                  backgroundColor: ev.color ? `${ev.color}18` : "var(--sq-shade)",
+                  borderColor: ev.color || "var(--sq-border)",
+                  color: "var(--sq-ink)",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onToggleComplete(ev.id)
+                  }}
+                  className={cn(
+                    "size-3.5 rounded flex items-center justify-center border transition-all cursor-pointer",
+                    ev.status === "completed"
+                      ? "bg-emerald-600 border-emerald-600 text-white"
+                      : "border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)]"
+                  )}
+                >
+                  {ev.status === "completed" && <Check size={10} weight="bold" />}
+                </button>
+                <span className={cn("truncate", ev.status === "completed" && "line-through opacity-50")}>
+                  {ev.title}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Hourly Scroll Area */}
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 min-h-0 overflow-y-auto relative scrollbar-thin"
+      >
+        <div
+          className="relative"
+          style={{ height: hours.length * HOUR_HEIGHT }}
+        >
+          {/* Time axis rows */}
+          {hours.map((h, idx) => {
+            const timeLabel = formatTime(h * 60, timeFormat)
+            return (
+              <div
+                key={h}
+                className="absolute inset-x-0 border-b border-[var(--sq-border)]/50 flex"
+                style={{
+                  top: idx * HOUR_HEIGHT,
+                  height: HOUR_HEIGHT,
+                }}
+              >
+                {/* Time Label */}
+                <div className="w-16 shrink-0 text-right pr-3 pt-1 text-[11px] font-mono font-medium text-[var(--sq-ink)] opacity-50 select-none">
+                  {timeLabel}
+                </div>
+
+                {/* Slot Area (Clickable to create event) */}
+                <div
+                  className="flex-1 relative group cursor-pointer hover:bg-[var(--sq-shade)]/20 transition-colors"
+                  onClick={() =>
+                    onNewEventAtSlot(
+                      date,
+                      `${String(h).padStart(2, "0")}:00`
+                    )
+                  }
+                >
+                  {/* Half-hour subtle dashed line */}
+                  <div className="absolute inset-x-0 top-1/2 border-b border-[var(--sq-border)]/25 pointer-events-none" />
+
+                  {/* Hover create prompt */}
+                  <span className="hidden group-hover:inline-flex items-center gap-1 text-[10px] text-[var(--sq-ink)] opacity-40 font-mono pl-2 pt-1">
+                    <Plus size={10} /> {timeLabel}
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+
+          {/* Current-Time Line */}
+          {currentTimeTop !== null && (
+            <div
+              className="absolute inset-x-0 z-30 pointer-events-none flex items-center"
+              style={{ top: currentTimeTop }}
+            >
+              <div className="w-16 shrink-0 flex items-center justify-end pr-1">
+                <span className="px-1.5 py-0.5 rounded-full bg-red-600 text-white text-[9px] font-mono font-bold shadow-xs">
+                  {formatTime(currentMinuteOfDay, timeFormat)}
+                </span>
+              </div>
+              <div className="size-2 rounded-full bg-red-600 shadow-xs animate-pulse-subtle" />
+              <div className="flex-1 h-0.5 bg-red-600 shadow-xs" />
+            </div>
+          )}
+
+          {/* Positioned Timed Events Overlay */}
+          <div className="absolute top-0 bottom-0 left-16 right-2 pointer-events-none">
+            {positionedTimedEvents.map((ev) => {
+              const lanePct = 100 / (ev.totalLanes || 1)
+              const leftPct = (ev.lane || 0) * lanePct
+
+              return (
+                <div
+                  key={ev.id}
+                  className="absolute pointer-events-auto p-0.5"
+                  style={{
+                    top: Math.max(0, ev.topPx),
+                    height: Math.max(26, ev.heightPx),
+                    left: `${leftPct}%`,
+                    width: `${lanePct}%`,
+                  }}
+                >
+                  <CalendarEventPill
+                    event={ev}
+                    onClick={() => onEventClick(ev)}
+                    onToggleComplete={() => onToggleComplete(ev.id)}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
@@ -62450,8 +63298,8 @@ export function CalendarEventPill({
 ### File: `components/calendar/calendar-header.tsx`
 
 - **Path**: `components/calendar/calendar-header.tsx`
-- **Lines**: 302
-- **Size**: 10914 bytes
+- **Lines**: 293
+- **Size**: 10645 bytes
 
 ```tsx
 "use client"
@@ -62607,32 +63455,23 @@ export function CalendarHeader({
           )}
         </div>
 
-        {/* Right: View Mode Toggle (MONTH | WEEK) */}
+        {/* Right: View Mode Toggle (MONTH | WEEK | DAY | AGENDA) */}
         <div className="flex items-center p-0.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]">
-          <button
-            type="button"
-            onClick={() => onViewChange("month")}
-            className={cn(
-              "px-2.5 py-1 text-xs font-semibold rounded-xs transition-colors",
-              view === "month"
-                ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
-                : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
-            )}
-          >
-            MONTH
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewChange("week")}
-            className={cn(
-              "px-2.5 py-1 text-xs font-semibold rounded-xs transition-colors",
-              view === "week"
-                ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
-                : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
-            )}
-          >
-            WEEK
-          </button>
+          {(["month", "week", "day", "agenda"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => onViewChange(mode)}
+              className={cn(
+                "px-2 sm:px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-xs uppercase transition-colors cursor-pointer",
+                view === mode
+                  ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
+                  : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
+              )}
+            >
+              {mode}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -63790,8 +64629,8 @@ export function CalendarWeekView({
 ### File: `components/calendar/functional-calendar.tsx`
 
 - **Path**: `components/calendar/functional-calendar.tsx`
-- **Lines**: 542
-- **Size**: 18563 bytes
+- **Lines**: 599
+- **Size**: 20723 bytes
 
 ```tsx
 "use client"
@@ -63814,8 +64653,10 @@ import {
   formatMonthYear,
   addMonths,
   addWeeksIso,
+  addDaysIso,
   getTodayIso,
   parseTimeToMinutes,
+  MONTH_NAMES,
   type WeekStartsOn,
 } from "@/lib/calendar/date-utils"
 import { expandRecurringEvents } from "@/lib/calendar/layout"
@@ -63826,6 +64667,8 @@ import { exportToIcs, downloadIcsFile, parseIcs } from "@/lib/calendar/ics"
 import { CalendarHeader } from "./calendar-header"
 import { CalendarMonthView } from "./calendar-month-view"
 import { CalendarWeekView } from "./calendar-week-view"
+import { CalendarDayView } from "./calendar-day-view"
+import { CalendarAgendaView } from "./calendar-agenda-view"
 import { CalendarEventEditor } from "./calendar-event-editor"
 import { CalendarMonthYearPicker } from "./calendar-month-year-picker"
 import { CalendarEventCard } from "./calendar-event-card"
@@ -63997,10 +64840,16 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
 
   // Navigation handlers
   const handlePrev = useCallback(() => {
-    if (view === "month") {
+    if (view === "month" || view === "agenda") {
       const { year: nextY, month: nextM } = addMonths(navYear, navMonth, -1)
       setNavYear(nextY)
       setNavMonth(nextM)
+    } else if (view === "day") {
+      const prevDayIso = addDaysIso(selectedDate, -1)
+      setSelectedDate(prevDayIso)
+      const { year: py, month: pm } = parseDateIso(prevDayIso)
+      setNavYear(py)
+      setNavMonth(pm)
     } else {
       const prevWeekIso = addWeeksIso(selectedDate, -1)
       setSelectedDate(prevWeekIso)
@@ -64011,10 +64860,16 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
   }, [view, navYear, navMonth, selectedDate])
 
   const handleNext = useCallback(() => {
-    if (view === "month") {
+    if (view === "month" || view === "agenda") {
       const { year: nextY, month: nextM } = addMonths(navYear, navMonth, 1)
       setNavYear(nextY)
       setNavMonth(nextM)
+    } else if (view === "day") {
+      const nextDayIso = addDaysIso(selectedDate, 1)
+      setSelectedDate(nextDayIso)
+      const { year: ny, month: nm } = parseDateIso(nextDayIso)
+      setNavYear(ny)
+      setNavMonth(nm)
     } else {
       const nextWeekIso = addWeeksIso(selectedDate, 1)
       setSelectedDate(nextWeekIso)
@@ -64161,6 +65016,17 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     [createEvent]
   )
 
+  const headerTitle = useMemo(() => {
+    if (view === "day") {
+      const p = parseDateIso(selectedDate)
+      return `${MONTH_NAMES[p.month - 1]} ${p.day}, ${p.year}`
+    }
+    if (view === "agenda") {
+      return `${formatMonthYear(navYear, navMonth)} (Agenda)`
+    }
+    return formatMonthYear(navYear, navMonth)
+  }, [view, selectedDate, navYear, navMonth])
+
   return (
     <div
       className="w-full h-full flex flex-col rounded-md overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] relative"
@@ -64184,7 +65050,13 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         } else if (e.key === "w" || e.key === "W") {
           e.stopPropagation()
           handleViewChange("week")
-        } else if (e.key === "n" || e.key === "N") {
+        } else if (e.key === "d" || e.key === "D") {
+          e.stopPropagation()
+          handleViewChange("day")
+        } else if (e.key === "a" || e.key === "A") {
+          e.stopPropagation()
+          handleViewChange("agenda")
+        } else if (e.key === "n" || e.key === "N" || e.key === "c" || e.key === "C") {
           e.stopPropagation()
           handleOpenNewEvent()
         } else if (e.key === "ArrowLeft") {
@@ -64198,7 +65070,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     >
       {/* 1. Header Toolbar */}
       <CalendarHeader
-        title={formatMonthYear(navYear, navMonth)}
+        title={headerTitle}
         view={view}
         onViewChange={handleViewChange}
         onPrev={handlePrev}
@@ -64217,7 +65089,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         onImportIcs={handleImportIcs}
       />
 
-      {/* 2. Main Viewport (Month or Week) */}
+      {/* 2. Main Viewport (Month, Week, Day, or Agenda) */}
       <div className="flex-1 min-h-0 relative flex flex-col">
         {view === "month" ? (
           <CalendarMonthView
@@ -64234,7 +65106,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
-        ) : (
+        ) : view === "week" ? (
           <CalendarWeekView
             referenceDate={selectedDate}
             weekStartsOn={weekStartsOn}
@@ -64249,6 +65121,30 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onMoveEvent={(id, newDate, newS, newE) => moveEvent(id, newDate, newS, newE)}
             onResizeEvent={(id, newEndTime) => resizeEvent(id, newEndTime)}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            nodeWidth={nodeWidth}
+            nodeHeight={nodeHeight}
+          />
+        ) : view === "day" ? (
+          <CalendarDayView
+            date={selectedDate}
+            startHour={startHour}
+            endHour={endHour}
+            timeFormat={timeFormat}
+            events={filteredEvents}
+            onEventClick={(ev) => setPeekEvent(ev)}
+            onToggleComplete={toggleComplete}
+            onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            nodeWidth={nodeWidth}
+            nodeHeight={nodeHeight}
+          />
+        ) : (
+          <CalendarAgendaView
+            events={filteredEvents}
+            timeFormat={timeFormat}
+            onEventClick={(ev) => setPeekEvent(ev)}
+            onToggleComplete={toggleComplete}
+            onDeleteEvent={(id) => deleteEvent(id)}
+            onNewEvent={() => handleOpenNewEvent()}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
@@ -74483,8 +75379,8 @@ export const PRIORITY_ORDER: Record<TaskPriority, number> = {
 ### File: `lib/calendar/date-utils.ts`
 
 - **Path**: `lib/calendar/date-utils.ts`
-- **Lines**: 266
-- **Size**: 8022 bytes
+- **Lines**: 276
+- **Size**: 8155 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -74512,7 +75408,7 @@ export interface WeekDay {
   weekday: number
 }
 
-const MONTH_NAMES = [
+export const MONTH_NAMES = [
   "January",
   "February",
   "March",
@@ -74525,6 +75421,16 @@ const MONTH_NAMES = [
   "October",
   "November",
   "December",
+]
+
+export const WEEKDAY_NAMES = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
 ]
 
 const WEEKDAY_NAMES_SUN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -75807,14 +76713,14 @@ export function clampTimeToDay(minutes: number): number {
 
 - **Path**: `lib/calendar/types.ts`
 - **Lines**: 146
-- **Size**: 3409 bytes
+- **Size**: 3283 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
 // Zenithsui Calendar Engine — Unified Type Definitions
 // ---------------------------------------------------------------------------
 
-export type CalendarView = "month" | "week"
+export type CalendarView = "month" | "week" | "day" | "agenda"
 export type { WeekStartsOn } from "./date-utils"
 
 export type CalendarEventType =
@@ -88606,8 +89512,8 @@ runTests().catch((err) => {
 ### File: `scripts/test-functional-calendar.ts`
 
 - **Path**: `scripts/test-functional-calendar.ts`
-- **Lines**: 424
-- **Size**: 17163 bytes
+- **Lines**: 449
+- **Size**: 18476 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -88639,6 +89545,8 @@ import {
   minutesToTimeString,
   isSameDay,
   isDateInRange,
+  MONTH_NAMES,
+  WEEKDAY_NAMES,
 } from "../lib/calendar/date-utils.ts"
 
 import {
@@ -89031,6 +89939,29 @@ const foundByKeyword = ALL_DEFS.filter((d) => d.keywords.includes("schedule") ||
 assert(foundByKeyword.some((d) => d.kind === "functional-calendar"), "Searchable by 'schedule' or 'calendar' keywords")
 
 console.log("✓ Library registry & backward compatibility tests passed.")
+
+// ---------------------------------------------------------------------------
+// 8. 4-Mode Calendar View Architecture (Month, Week, Day, Agenda)
+// ---------------------------------------------------------------------------
+console.log("-> 8. Testing 4-mode calendar view architecture (Month, Week, Day, Agenda)...")
+
+assert(Array.isArray(MONTH_NAMES) && MONTH_NAMES.length === 12, "MONTH_NAMES has exactly 12 months")
+assert(MONTH_NAMES[0] === "January" && MONTH_NAMES[11] === "December", "MONTH_NAMES starts at Jan and ends at Dec")
+assert(Array.isArray(WEEKDAY_NAMES) && WEEKDAY_NAMES.length === 7, "WEEKDAY_NAMES has exactly 7 days")
+assert(WEEKDAY_NAMES[0] === "Sunday" && WEEKDAY_NAMES[6] === "Saturday", "WEEKDAY_NAMES starts at Sun and ends at Sat")
+
+const viewControl = functionalDef!.controls?.find((c) => c.key === "view")
+assert(Boolean(viewControl), "Calendar component def exposes 'view' control")
+assert(
+  Array.isArray(viewControl?.options) &&
+    viewControl.options.includes("month") &&
+    viewControl.options.includes("week") &&
+    viewControl.options.includes("day") &&
+    viewControl.options.includes("agenda"),
+  "Calendar view options include all 4 modes: month, week, day, agenda"
+)
+
+console.log("✓ 4-mode calendar view architecture tests passed.")
 
 console.log("=== All Zenithsui Functional Calendar Tests Passed Successfully! ===")
 ```

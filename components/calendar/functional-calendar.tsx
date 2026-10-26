@@ -18,8 +18,10 @@ import {
   formatMonthYear,
   addMonths,
   addWeeksIso,
+  addDaysIso,
   getTodayIso,
   parseTimeToMinutes,
+  MONTH_NAMES,
   type WeekStartsOn,
 } from "@/lib/calendar/date-utils"
 import { expandRecurringEvents } from "@/lib/calendar/layout"
@@ -30,6 +32,8 @@ import { exportToIcs, downloadIcsFile, parseIcs } from "@/lib/calendar/ics"
 import { CalendarHeader } from "./calendar-header"
 import { CalendarMonthView } from "./calendar-month-view"
 import { CalendarWeekView } from "./calendar-week-view"
+import { CalendarDayView } from "./calendar-day-view"
+import { CalendarAgendaView } from "./calendar-agenda-view"
 import { CalendarEventEditor } from "./calendar-event-editor"
 import { CalendarMonthYearPicker } from "./calendar-month-year-picker"
 import { CalendarEventCard } from "./calendar-event-card"
@@ -201,10 +205,16 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
 
   // Navigation handlers
   const handlePrev = useCallback(() => {
-    if (view === "month") {
+    if (view === "month" || view === "agenda") {
       const { year: nextY, month: nextM } = addMonths(navYear, navMonth, -1)
       setNavYear(nextY)
       setNavMonth(nextM)
+    } else if (view === "day") {
+      const prevDayIso = addDaysIso(selectedDate, -1)
+      setSelectedDate(prevDayIso)
+      const { year: py, month: pm } = parseDateIso(prevDayIso)
+      setNavYear(py)
+      setNavMonth(pm)
     } else {
       const prevWeekIso = addWeeksIso(selectedDate, -1)
       setSelectedDate(prevWeekIso)
@@ -215,10 +225,16 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
   }, [view, navYear, navMonth, selectedDate])
 
   const handleNext = useCallback(() => {
-    if (view === "month") {
+    if (view === "month" || view === "agenda") {
       const { year: nextY, month: nextM } = addMonths(navYear, navMonth, 1)
       setNavYear(nextY)
       setNavMonth(nextM)
+    } else if (view === "day") {
+      const nextDayIso = addDaysIso(selectedDate, 1)
+      setSelectedDate(nextDayIso)
+      const { year: ny, month: nm } = parseDateIso(nextDayIso)
+      setNavYear(ny)
+      setNavMonth(nm)
     } else {
       const nextWeekIso = addWeeksIso(selectedDate, 1)
       setSelectedDate(nextWeekIso)
@@ -365,6 +381,17 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     [createEvent]
   )
 
+  const headerTitle = useMemo(() => {
+    if (view === "day") {
+      const p = parseDateIso(selectedDate)
+      return `${MONTH_NAMES[p.month - 1]} ${p.day}, ${p.year}`
+    }
+    if (view === "agenda") {
+      return `${formatMonthYear(navYear, navMonth)} (Agenda)`
+    }
+    return formatMonthYear(navYear, navMonth)
+  }, [view, selectedDate, navYear, navMonth])
+
   return (
     <div
       className="w-full h-full flex flex-col rounded-md overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] relative"
@@ -388,7 +415,13 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         } else if (e.key === "w" || e.key === "W") {
           e.stopPropagation()
           handleViewChange("week")
-        } else if (e.key === "n" || e.key === "N") {
+        } else if (e.key === "d" || e.key === "D") {
+          e.stopPropagation()
+          handleViewChange("day")
+        } else if (e.key === "a" || e.key === "A") {
+          e.stopPropagation()
+          handleViewChange("agenda")
+        } else if (e.key === "n" || e.key === "N" || e.key === "c" || e.key === "C") {
           e.stopPropagation()
           handleOpenNewEvent()
         } else if (e.key === "ArrowLeft") {
@@ -402,7 +435,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
     >
       {/* 1. Header Toolbar */}
       <CalendarHeader
-        title={formatMonthYear(navYear, navMonth)}
+        title={headerTitle}
         view={view}
         onViewChange={handleViewChange}
         onPrev={handlePrev}
@@ -421,7 +454,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         onImportIcs={handleImportIcs}
       />
 
-      {/* 2. Main Viewport (Month or Week) */}
+      {/* 2. Main Viewport (Month, Week, Day, or Agenda) */}
       <div className="flex-1 min-h-0 relative flex flex-col">
         {view === "month" ? (
           <CalendarMonthView
@@ -438,7 +471,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />
-        ) : (
+        ) : view === "week" ? (
           <CalendarWeekView
             referenceDate={selectedDate}
             weekStartsOn={weekStartsOn}
@@ -453,6 +486,30 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
             onMoveEvent={(id, newDate, newS, newE) => moveEvent(id, newDate, newS, newE)}
             onResizeEvent={(id, newEndTime) => resizeEvent(id, newEndTime)}
             onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            nodeWidth={nodeWidth}
+            nodeHeight={nodeHeight}
+          />
+        ) : view === "day" ? (
+          <CalendarDayView
+            date={selectedDate}
+            startHour={startHour}
+            endHour={endHour}
+            timeFormat={timeFormat}
+            events={filteredEvents}
+            onEventClick={(ev) => setPeekEvent(ev)}
+            onToggleComplete={toggleComplete}
+            onNewEventAtSlot={(d, sT) => handleOpenNewEvent(d, sT)}
+            nodeWidth={nodeWidth}
+            nodeHeight={nodeHeight}
+          />
+        ) : (
+          <CalendarAgendaView
+            events={filteredEvents}
+            timeFormat={timeFormat}
+            onEventClick={(ev) => setPeekEvent(ev)}
+            onToggleComplete={toggleComplete}
+            onDeleteEvent={(id) => deleteEvent(id)}
+            onNewEvent={() => handleOpenNewEvent()}
             nodeWidth={nodeWidth}
             nodeHeight={nodeHeight}
           />

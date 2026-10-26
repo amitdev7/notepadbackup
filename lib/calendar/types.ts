@@ -2,7 +2,7 @@
 // Zenithsui Calendar Engine — Unified Type Definitions
 // ---------------------------------------------------------------------------
 
-export type CalendarView = "month" | "week"
+export type CalendarView = "month" | "week" | "day" | "agenda"
 export type { WeekStartsOn } from "./date-utils"
 
 export type CalendarEventType =

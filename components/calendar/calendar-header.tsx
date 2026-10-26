@@ -151,32 +151,23 @@ export function CalendarHeader({
           )}
         </div>
 
-        {/* Right: View Mode Toggle (MONTH | WEEK) */}
+        {/* Right: View Mode Toggle (MONTH | WEEK | DAY | AGENDA) */}
         <div className="flex items-center p-0.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)]">
-          <button
-            type="button"
-            onClick={() => onViewChange("month")}
-            className={cn(
-              "px-2.5 py-1 text-xs font-semibold rounded-xs transition-colors",
-              view === "month"
-                ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
-                : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
-            )}
-          >
-            MONTH
-          </button>
-          <button
-            type="button"
-            onClick={() => onViewChange("week")}
-            className={cn(
-              "px-2.5 py-1 text-xs font-semibold rounded-xs transition-colors",
-              view === "week"
-                ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
-                : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
-            )}
-          >
-            WEEK
-          </button>
+          {(["month", "week", "day", "agenda"] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => onViewChange(mode)}
+              className={cn(
+                "px-2 sm:px-2.5 py-1 text-[11px] sm:text-xs font-semibold rounded-xs uppercase transition-colors cursor-pointer",
+                view === mode
+                  ? "bg-[var(--sq-ink)] text-[var(--sq-paper)] shadow-xs"
+                  : "text-[var(--sq-ink)] opacity-70 hover:opacity-100 hover:bg-[var(--sq-shade)]"
+              )}
+            >
+              {mode}
+            </button>
+          ))}
         </div>
       </div>
 

@@ -44,7 +44,7 @@ export const functionalCalendarDef: ComponentDef = {
       key: "view",
       label: "Default View",
       type: "select",
-      options: ["month", "week"],
+      options: ["month", "week", "day", "agenda"],
       quick: true,
     },
     {

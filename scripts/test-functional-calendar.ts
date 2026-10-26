@@ -27,6 +27,8 @@ import {
   minutesToTimeString,
   isSameDay,
   isDateInRange,
+  MONTH_NAMES,
+  WEEKDAY_NAMES,
 } from "../lib/calendar/date-utils.ts"
 
 import {
@@ -419,5 +421,28 @@ const foundByKeyword = ALL_DEFS.filter((d) => d.keywords.includes("schedule") ||
 assert(foundByKeyword.some((d) => d.kind === "functional-calendar"), "Searchable by 'schedule' or 'calendar' keywords")
 
 console.log("✓ Library registry & backward compatibility tests passed.")
+
+// ---------------------------------------------------------------------------
+// 8. 4-Mode Calendar View Architecture (Month, Week, Day, Agenda)
+// ---------------------------------------------------------------------------
+console.log("-> 8. Testing 4-mode calendar view architecture (Month, Week, Day, Agenda)...")
+
+assert(Array.isArray(MONTH_NAMES) && MONTH_NAMES.length === 12, "MONTH_NAMES has exactly 12 months")
+assert(MONTH_NAMES[0] === "January" && MONTH_NAMES[11] === "December", "MONTH_NAMES starts at Jan and ends at Dec")
+assert(Array.isArray(WEEKDAY_NAMES) && WEEKDAY_NAMES.length === 7, "WEEKDAY_NAMES has exactly 7 days")
+assert(WEEKDAY_NAMES[0] === "Sunday" && WEEKDAY_NAMES[6] === "Saturday", "WEEKDAY_NAMES starts at Sun and ends at Sat")
+
+const viewControl = functionalDef!.controls?.find((c) => c.key === "view")
+assert(Boolean(viewControl), "Calendar component def exposes 'view' control")
+assert(
+  Array.isArray(viewControl?.options) &&
+  viewControl.options.includes("month") &&
+  viewControl.options.includes("week") &&
+  viewControl.options.includes("day") &&
+  viewControl.options.includes("agenda"),
+  "Calendar view options include all 4 modes: month, week, day, agenda"
+)
+
+console.log("✓ 4-mode calendar view architecture tests passed.")
 
 console.log("=== All Zenithsui Functional Calendar Tests Passed Successfully! ===")
