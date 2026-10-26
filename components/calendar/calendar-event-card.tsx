@@ -1,19 +1,22 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Calendar — Event Details Peek Card (Android & Windows Style)
+// Zenithsui Calendar — Event Details Peek Card (macOS & Apple Style)
 //
 // Shows complete event metadata, status, recurrence, location, and quick actions
-// without immediately popping open the form editor.
+// rendered via createPortal directly to document.body (immune to canvas transforms).
+// Supports inline confirmation deletion and keyboard Delete/Backspace shortcuts.
 // ---------------------------------------------------------------------------
 
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import type { CalendarEvent } from "@/lib/calendar/types"
 import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { formatTime, parseDateIso, parseTimeToMinutes } from "@/lib/calendar/date-utils"
 import { exportToIcs, downloadIcsFile } from "@/lib/calendar/ics"
 import {
-  Clock,
   CalendarBlank,
+  Clock,
   MapPin,
   Tag,
   CheckCircle,
@@ -24,7 +27,6 @@ import {
   X,
   Bell,
   ArrowsClockwise,
-  WarningCircle,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -47,7 +49,34 @@ export function CalendarEventCard({
   onDuplicate,
   onDelete,
 }: CalendarEventCardProps) {
-  if (!isOpen || !event) return null
+  const [mounted, setMounted] = useState(false)
+  const [confirmingDelete, setConfirmingDelete] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    setConfirmingDelete(false)
+  }, [event?.id, isOpen])
+
+  // Native macOS shortcut: Delete or Backspace removes event immediately
+  useEffect(() => {
+    if (!isOpen || !event) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return
+      if (e.key === "Backspace" || e.key === "Delete") {
+        e.preventDefault()
+        onDelete(event.id)
+        onClose()
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen, event, onDelete, onClose])
+
+  if (!isOpen || !event || !mounted || typeof document === "undefined") return null
 
   const isCompleted = event.status === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
@@ -68,20 +97,17 @@ export function CalendarEventCard({
     if (event.startTime && event.endTime) {
       timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} – ${formatTime(parseTimeToMinutes(event.endTime))}`
     } else if (event.startTime) {
-      timeLabel = `${formatTime(parseTimeToMinutes(event.startTime))} (${event.durationMinutes || 60}m)`
       timeLabel = formatTime(parseTimeToMinutes(event.startTime))
     }
   }
 
   const handleExportSingle = () => {
-    const ics = exportToIcs([event], event.title)
-    downloadIcsFile(`${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`, ics)
     const icsString = exportToIcs([event], `Zenithsui – ${event.title}`)
     const filename = `${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`
     downloadIcsFile(icsString, filename)
   }
 
-  return (
+  const cardModal = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
       onClick={onClose}
@@ -93,7 +119,6 @@ export function CalendarEventCard({
       }}
     >
       <div
-        className="w-full max-w-sm rounded-lg border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-2xl text-[var(--sq-ink)] overflow-hidden"
         role="dialog"
         aria-modal="true"
         aria-labelledby="calendar-card-title"
@@ -112,227 +137,197 @@ export function CalendarEventCard({
         {/* Header with Title and Close Button */}
         <div className="p-4 pb-2 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span
-                className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider border"
-                style={{
-                  backgroundColor: colorPreset.bg,
-                  color: colorPreset.text,
-                  borderColor: colorPreset.border,
-                }}
-              >
-                {event.type || "Event"}
-              </span>
-
-              {event.priority && event.priority !== "Medium" && (
-                <span
-                  className={cn(
-                    "px-1.5 py-0.5 rounded text-[10px] font-medium border",
-                    event.priority === "High"
-                      ? "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-400"
-                      : "bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800"
-                  )}
-                >
-                  {event.priority}
-                </span>
-              )}
-            </div>
-
             <h3
               id="calendar-card-title"
               className={cn(
-                "text-base font-bold tracking-tight break-words",
+                "text-base font-bold text-[var(--sq-ink)] leading-snug break-words",
                 isCompleted && "line-through opacity-60"
               )}
             >
               {event.title}
             </h3>
+            <p className="text-xs text-[var(--sq-ink)] opacity-60 mt-0.5">
+              {dateLabel} · {timeLabel}
+            </p>
           </div>
-
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0"
+            className="p-1.5 rounded-full hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] opacity-60 hover:opacity-100 transition-colors shrink-0 cursor-pointer"
             title="Close"
-            className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors shrink-0 cursor-pointer"
-            aria-label="Close details"
           >
             <X size={16} />
           </button>
         </div>
 
-        {/* Metadata Details */}
-        {/* Event Meta Details */}
-        <div className="px-4 py-3 space-y-2.5 text-xs border-y border-[var(--sq-border)]/60 bg-[var(--sq-paper)]">
-          {/* Date & Time */}
-          <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-            <CalendarBlank size={16} className="shrink-0 opacity-70" />
-            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-              <CalendarBlank size={16} className="text-[var(--sq-muted)] shrink-0" />
-              <span className="font-medium">{dateLabel}</span>
+        {/* Content & Metadata Fields */}
+        <div className="p-4 pt-1 space-y-3 text-xs border-b border-[var(--sq-border)]">
+          {/* Category / Type & Priority Badges */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold text-[11px]"
+              style={{
+                backgroundColor: colorPreset.bg,
+                color: colorPreset.text,
+                border: `1px solid ${colorPreset.border}`,
+              }}
+            >
+              <Tag size={12} weight="bold" />
+              <span>{event.type || "Event"}</span>
+            </span>
+
+            {event.priority && event.priority !== "Medium" && (
+              <span
+                className={cn(
+                  "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  event.priority === "High"
+                    ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
+                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                )}
+              >
+                {event.priority} Priority
+              </span>
+            )}
+
+            {event.recurrence && event.recurrence !== "none" && (
+              <span className="inline-flex items-center gap-1 text-[11px] text-[var(--sq-ink)] opacity-70">
+                <ArrowsClockwise size={12} />
+                <span className="capitalize">{event.recurrence}</span>
+              </span>
+            )}
+          </div>
+
+          {/* Location */}
+          {event.location && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <MapPin size={14} className="shrink-0 opacity-70" />
+              <span className="truncate">{event.location}</span>
             </div>
-
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-              <Clock size={16} className="shrink-0 opacity-70" />
-              <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-                <Clock size={16} className="text-[var(--sq-muted)] shrink-0" />
-                <span>{timeLabel}</span>
-              </div>
-
-              {/* Location */}
-              {event.location && (
-                <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-90">
-                  <MapPin size={16} className="shrink-0 opacity-70" />
-                  <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-                    <MapPin size={16} className="text-[var(--sq-muted)] shrink-0" />
-                    <span className="truncate">{event.location}</span>
-                  </div>
           )}
 
-                  {/* Recurrence */}
-                  {event.recurrence && event.recurrence !== "none" && (
-                    <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-                      <ArrowsClockwise size={16} className="shrink-0 opacity-70" />
-                      <span className="capitalize">Repeats {event.recurrence}</span>
-                      <div className="flex items-center gap-2.5 text-[var(--sq-ink)] capitalize">
-                        <ArrowsClockwise size={16} className="text-[var(--sq-muted)] shrink-0" />
-                        <span>Repeats {event.recurrence}</span>
-                      </div>
+          {/* Academic Subject */}
+          {event.subjectName && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <CalendarBlank size={14} className="shrink-0 opacity-70" />
+              <span>Subject: {event.subjectName}</span>
+            </div>
           )}
 
-                      {/* Reminder */}
-                      {typeof event.reminderMinutes === "number" && event.reminderMinutes >= 0 && (
-                        <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-                          <Bell size={16} className="shrink-0 opacity-70" />
-                          <span>
-                            {event.reminderMinutes === 0
-                              ? "At time of event"
-                              : `${event.reminderMinutes} minutes before`}
-                          </span>
-                          {typeof event.reminderMinutes === "number" && (
-                            <div className="flex items-center gap-2.5 text-[var(--sq-ink)]">
-                              <Bell size={16} className="text-[var(--sq-muted)] shrink-0" />
-                              <span>{event.reminderMinutes} minutes before</span>
-                            </div>
-                          )}
-
-                          {/* Description */}
-                          {event.description && (
-                            <div className="mt-2 pt-2 border-t border-[var(--sq-border)]/40 text-[var(--sq-ink)] text-xs whitespace-pre-wrap leading-relaxed opacity-85 max-h-28 overflow-y-auto">
-                              <div className="pt-2 text-xs opacity-80 leading-relaxed border-t border-[var(--sq-border)]/40 whitespace-pre-wrap">
-                                {event.description}
-                              </div>
+          {/* Reminder */}
+          {typeof event.reminderMinutes === "number" && (
+            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
+              <Bell size={14} className="shrink-0 opacity-70" />
+              <span>
+                Reminder: {event.reminderMinutes === 0 ? "At event start" : `${event.reminderMinutes}m before`}
+              </span>
+            </div>
           )}
-                            </div>
 
-        {/* Quick Action Toolbar */}
-                          <div className="p-3 bg-[var(--sq-shade)]/30 flex items-center justify-between gap-1 text-xs">
-                            {/* Quick Actions Footer Toolbar */}
-                            <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1">
-                              <div className="flex items-center gap-1">
-                                {/* Complete Toggle */}
-                                {/* Toggle Completion */}
-                                <button
-                                  type="button"
-                                  onClick={() => onToggleComplete(event.id)}
-                                  onClick={() => {
-                                    onToggleComplete(event.id)
-                                    onClose()
-                                  }}
-                                  className={cn(
-                                    "px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border transition-colors",
-                                    "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
-                                    isCompleted
-                                      ? "bg-emerald-600 text-white border-emerald-700"
-                                      : "bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] border-[var(--sq-border)]"
-                                        ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
-                                        : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
-                                  )}
-                                  title={isCompleted ? "Mark Pending" : "Mark Completed"}
-                                >
-                                  <CheckCircle size={15} weight={isCompleted ? "fill" : "regular"} />
-                                  <CheckCircle size={15} weight={isCompleted ? "fill" : "bold"} />
-                                  <span>{isCompleted ? "Done" : "Complete"}</span>
-                                </button>
+          {/* Description / Notes */}
+          {event.description && (
+            <div className="mt-2 p-2.5 rounded-lg bg-[var(--sq-shade)]/30 border border-[var(--sq-border)] text-[var(--sq-ink)] whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
+              {event.description}
+            </div>
+          )}
+        </div>
 
-                                {/* Edit */}
-                                <button
-                                  type="button"
-                                  onClick={() => onEdit(event)}
-                                  className="px-2 py-1.5 rounded flex items-center gap-1.5 font-medium border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-                                  title="Edit Event"
-                                  onClick={() => {
-                                    onEdit(event)
-                                    onClose()
-                                  }}
-                                  className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
-                                  title="Edit event"
-                                >
-                                  <PencilSimple size={15} />
-                                  <span>Edit</span>
-                                  <PencilSimple size={16} />
-                                </button>
-                              </div>
+        {/* Quick Actions Footer Toolbar */}
+        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1">
+          <div className="flex items-center gap-1">
+            {/* Toggle Completion */}
+            <button
+              type="button"
+              onClick={() => {
+                onToggleComplete(event.id)
+                onClose()
+              }}
+              className={cn(
+                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
+                isCompleted
+                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
+                  : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              )}
+            >
+              <CheckCircle size={15} weight={isCompleted ? "fill" : "bold"} />
+              <span>{isCompleted ? "Done" : "Complete"}</span>
+            </button>
 
-                              <div className="flex items-center gap-1">
-                                {/* Duplicate */}
-                                <button
-                                  type="button"
-                                  onClick={() => onDuplicate(event)}
-                                  className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-                                  title="Duplicate Event"
-                                  onClick={() => {
-                                    onDuplicate(event)
-                                    onClose()
-                                  }}
-                                  className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
-                                  title="Duplicate event"
-                                >
-                                  <Copy size={15} />
-                                  <Copy size={16} />
-                                </button>
+            {/* Edit */}
+            <button
+              type="button"
+              onClick={() => {
+                onEdit(event)
+                onClose()
+              }}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Edit event"
+            >
+              <PencilSimple size={16} />
+            </button>
 
-                                {/* Export .ics */}
-                                {/* Export single .ics */}
-                                <button
-                                  type="button"
-                                  onClick={handleExportSingle}
-                                  className="p-1.5 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:bg-[var(--sq-shade)] transition-colors"
-                                  title="Export as .ics"
-                                  className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
-                                  title="Export to .ics file"
-                                >
-                                  <DownloadSimple size={15} />
-                                  <DownloadSimple size={16} />
-                                </button>
-                              </div>
+            {/* Duplicate */}
+            <button
+              type="button"
+              onClick={() => {
+                onDuplicate(event)
+                onClose()
+              }}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Duplicate event"
+            >
+              <Copy size={16} />
+            </button>
 
-                              {/* Delete */}
-                              <button
-                                type="button"
-                                onClick={() => onDelete(event.id)}
-                                className="p-1.5 rounded border border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
-                                title="Delete Event"
-                              >
-                                <Trash size={15} />
-                              </button>
-                            </div>
-                            {/* Delete */}
-                            <button
-                              type="button"
-                              onClick={() => {
-                                if (window.confirm(`Delete "${event.title}"?`)) {
-                                  onDelete(event.id)
-                                  onClose()
-                                }
-                              }}
-                              className="p-1.5 rounded hover:bg-red-50 text-red-600 transition-colors cursor-pointer"
-                              title="Delete event"
-                            >
-                              <Trash size={16} />
-                            </button>
-                          </div>
-                        </div>
+            {/* Export single .ics */}
+            <button
+              type="button"
+              onClick={handleExportSingle}
+              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              title="Export to .ics file"
+            >
+              <DownloadSimple size={16} />
+            </button>
+          </div>
+
+          {/* Delete Action with Inline Confirmation */}
+          {confirmingDelete ? (
+            <div className="flex items-center gap-1.5 animate-in fade-in duration-100">
+              <span className="text-[11px] font-semibold text-red-600 dark:text-red-400">
+                Delete?
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  onDelete(event.id)
+                  onClose()
+                }}
+                className="px-2 py-1 rounded bg-red-600 text-white text-[11px] font-semibold hover:bg-red-700 transition-colors cursor-pointer shadow-xs"
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmingDelete(false)}
+                className="px-2 py-1 rounded border border-[var(--sq-border)] text-[11px] font-semibold hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setConfirmingDelete(true)}
+              className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+              title="Delete event (Delete/Backspace)"
+              aria-label="Delete event"
+            >
+              <Trash size={16} />
+            </button>
+          )}
+        </div>
+      </div>
     </div>
-                  )
-                  }
+  )
+
+  return createPortal(cardModal, document.body)
+}

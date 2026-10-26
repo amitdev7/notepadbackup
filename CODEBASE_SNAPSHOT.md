@@ -1130,7 +1130,7 @@ Run all tests via: `pnpm test`.
 | `.env.local` | 30 | 1420 | Core .env.local module | `.env` |
 | `.gitignore` | 57 | 837 | Core .gitignore module | `` |
 | `.npmrc` | 15 | 825 | Core .npmrc module | `` |
-| `.vercelignore` | 16 | 236 | Core .vercelignore module | `` |
+| `.vercelignore` | 14 | 208 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
@@ -1351,7 +1351,7 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 315 | 12088 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 333 | 12078 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-card.tsx` | 334 | 12087 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 546 | 20637 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3930 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
@@ -1705,8 +1705,8 @@ verify-deps-before-run=install
 ### File: `.vercelignore`
 
 - **Path**: `.vercelignore`
-- **Lines**: 16
-- **Size**: 236 bytes
+- **Lines**: 14
+- **Size**: 208 bytes
 
 ```
 # Vercel Deployment Ignore File
@@ -1722,8 +1722,6 @@ scratch/
 *.log
 .git/
 .agents/
-test_out*.png
-*.tsbuildinfo
 ```
 
 ---
@@ -62388,8 +62386,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 333
-- **Size**: 12078 bytes
+- **Lines**: 334
+- **Size**: 12087 bytes
 
 ```tsx
 "use client"
@@ -62410,6 +62408,7 @@ import { formatTime, parseDateIso, parseTimeToMinutes } from "@/lib/calendar/dat
 import { exportToIcs, downloadIcsFile } from "@/lib/calendar/ics"
 import {
   CalendarBlank,
+  Clock,
   MapPin,
   Tag,
   CheckCircle,
