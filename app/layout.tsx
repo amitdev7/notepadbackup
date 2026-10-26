@@ -25,8 +25,16 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
 });
 
+const defaultSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://zenithsui.sh");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenithsui.sh"),
+  metadataBase: new URL(defaultSiteUrl),
   applicationName: "zenithsui",
   title,
   description,

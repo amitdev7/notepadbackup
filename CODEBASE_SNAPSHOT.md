@@ -1130,12 +1130,12 @@ Run all tests via: `pnpm test`.
 | `.env.local` | 30 | 1420 | Core .env.local module | `.env` |
 | `.gitignore` | 57 | 837 | Core .gitignore module | `` |
 | `.npmrc` | 15 | 825 | Core .npmrc module | `` |
-| `.vercelignore` | 14 | 208 | Core .vercelignore module | `` |
+| `.vercelignore` | 16 | 236 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
-| `next.config.ts` | 37 | 1253 | Core next.config.ts module | `next.config` |
+| `next.config.ts` | 52 | 1820 | Core next.config.ts module | `next.config` |
 | `package.json` | 57 | 4574 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
@@ -1150,7 +1150,7 @@ Run all tests via: `pnpm test`.
 | `app/globals.css` | 661 | 17149 | Core globals.css module | `globals` |
 | `app/icon.svg` | 5 | 398 | Core icon.svg module | `icon` |
 | `app/kitchen-sink/page.tsx` | 110 | 3988 | Core page.tsx module | `page` |
-| `app/layout.tsx` | 100 | 2838 | Core layout.tsx module | `layout` |
+| `app/layout.tsx` | 108 | 3100 | Core layout.tsx module | `layout` |
 | `app/loading.tsx` | 13 | 544 | Core loading.tsx module | `loading` |
 | `app/manifest.ts` | 33 | 850 | Core manifest.ts module | `manifest` |
 | `app/not-found.tsx` | 33 | 1589 | Core not-found.tsx module | `not-found` |
@@ -1351,7 +1351,7 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 315 | 12088 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 335 | 12104 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-card.tsx` | 333 | 12078 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 546 | 20637 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3930 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
@@ -1705,8 +1705,8 @@ verify-deps-before-run=install
 ### File: `.vercelignore`
 
 - **Path**: `.vercelignore`
-- **Lines**: 14
-- **Size**: 208 bytes
+- **Lines**: 16
+- **Size**: 236 bytes
 
 ```
 # Vercel Deployment Ignore File
@@ -1722,6 +1722,8 @@ scratch/
 *.log
 .git/
 .agents/
+test_out*.png
+*.tsbuildinfo
 ```
 
 ---
@@ -1918,8 +1920,8 @@ import "./.next/types/routes.d.ts";
 ### File: `next.config.ts`
 
 - **Path**: `next.config.ts`
-- **Lines**: 37
-- **Size**: 1253 bytes
+- **Lines**: 52
+- **Size**: 1820 bytes
 
 ```tsx
 import type { NextConfig } from "next";
@@ -1951,6 +1953,21 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "SAMEORIGIN" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+        ],
+      },
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "public, max-age=0, must-revalidate" },
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+      {
+        source: "/manifest.webmanifest",
+        headers: [
+          { key: "Content-Type", value: "application/manifest+json; charset=utf-8" },
+          { key: "Cache-Control", value: "public, max-age=3600, must-revalidate" },
         ],
       },
     ];
@@ -4353,8 +4370,8 @@ export default function KitchenSink() {
 ### File: `app/layout.tsx`
 
 - **Path**: `app/layout.tsx`
-- **Lines**: 100
-- **Size**: 2838 bytes
+- **Lines**: 108
+- **Size**: 3100 bytes
 
 ```tsx
 import type { Metadata, Viewport } from "next";
@@ -4384,8 +4401,16 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
 });
 
+const defaultSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://zenithsui.sh");
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://zenithsui.sh"),
+  metadataBase: new URL(defaultSiteUrl),
   applicationName: "zenithsui",
   title,
   description,
@@ -62363,8 +62388,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 335
-- **Size**: 12104 bytes
+- **Lines**: 333
+- **Size**: 12078 bytes
 
 ```tsx
 "use client"
@@ -62384,7 +62409,6 @@ import { CALENDAR_COLORS } from "@/lib/calendar/types"
 import { formatTime, parseDateIso, parseTimeToMinutes } from "@/lib/calendar/date-utils"
 import { exportToIcs, downloadIcsFile } from "@/lib/calendar/ics"
 import {
-  Clock,
   CalendarBlank,
   MapPin,
   Tag,
@@ -62396,7 +62420,6 @@ import {
   X,
   Bell,
   ArrowsClockwise,
-  WarningCircle,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
