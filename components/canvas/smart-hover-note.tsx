@@ -240,10 +240,10 @@ export function SmartHoverCardContent({
         boxShadow: isClouds
           ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
           : isIos
-          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-          : isMac
-          ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
-          : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
+            ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+            : isMac
+              ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+              : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
       {/* Top Accent Gradient Bar */}

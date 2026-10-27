@@ -159,7 +159,9 @@ export function FilesPopover() {
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,22rem)] max-w-sm rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans overflow-hidden">
+          {/* Top celestial accent gradient matching visionOS Clouds */}
+          <div className="h-1 -mx-2.5 -mt-2.5 mb-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-400 opacity-90" />
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">

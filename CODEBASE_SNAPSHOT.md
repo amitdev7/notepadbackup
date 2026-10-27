@@ -1147,7 +1147,7 @@ Run all tests via: `pnpm test`.
 | `app/dashboard/page.tsx` | 818 | 38129 | Core page.tsx module | `page` |
 | `app/error.tsx` | 55 | 2249 | Core error.tsx module | `error` |
 | `app/global-error.tsx` | 55 | 2179 | Core global-error.tsx module | `global-error` |
-| `app/globals.css` | 661 | 17355 | Core globals.css module | `globals` |
+| `app/globals.css` | 706 | 18689 | Core globals.css module | `globals` |
 | `app/icon.svg` | 5 | 398 | Core icon.svg module | `icon` |
 | `app/kitchen-sink/page.tsx` | 110 | 3988 | Core page.tsx module | `page` |
 | `app/layout.tsx` | 108 | 3100 | Core layout.tsx module | `layout` |
@@ -1207,7 +1207,7 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
 | `components/canvas/quick-note-dialog.tsx` | 282 | 11198 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
-| `components/canvas/smart-hover-note.tsx` | 363 | 12498 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/smart-hover-note.tsx` | 363 | 12510 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1226,7 +1226,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
 | `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 339 | 14122 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/files-popover.tsx` | 341 | 14352 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
@@ -1240,10 +1240,10 @@ Run all tests via: `pnpm test`.
 | `components/dialogs/chart-dialog.tsx` | 235 | 9640 | Core chart-dialog.tsx module | `chart-dialog` |
 | `components/dialogs/mermaid-dialog.tsx` | 191 | 9066 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
 | `components/dialogs/stats-dialog.tsx` | 113 | 5473 | Core stats-dialog.tsx module | `stats-dialog` |
-| `components/shell/bottom-dock.tsx` | 628 | 26383 | Core bottom-dock.tsx module | `bottom-dock` |
+| `components/shell/bottom-dock.tsx` | 628 | 26063 | Core bottom-dock.tsx module | `bottom-dock` |
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
-| `components/shell/top-bar.tsx` | 162 | 6618 | Core top-bar.tsx module | `top-bar` |
+| `components/shell/top-bar.tsx` | 166 | 7052 | Core top-bar.tsx module | `top-bar` |
 | `components/ui/badge.tsx` | 57 | 1729 | Core badge.tsx module | `badge` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
 | `components/ui/card.tsx` | 93 | 1834 | Core card.tsx module | `card` |
@@ -3564,8 +3564,8 @@ export default function GlobalError({
 ### File: `app/globals.css`
 
 - **Path**: `app/globals.css`
-- **Lines**: 661
-- **Size**: 17355 bytes
+- **Lines**: 706
+- **Size**: 18689 bytes
 
 ```css
 @import "tailwindcss";
@@ -4228,6 +4228,50 @@ export default function GlobalError({
 
 .sq-range-slider::-moz-range-thumb:hover {
   transform: scale(1.12);
+}
+/* ── Ultra-Refined macOS & iOS 26 Styling Enhancements ── */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.35);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.6);
+}
+
+/* ── Apple visionOS Specular Reflection Glow & Rim Highlights ── */
+.apple-specular-glow {
+  position: relative;
+}
+.apple-specular-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.15) 45%, rgba(255, 255, 255, 0) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.dark .apple-specular-glow::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* ── Tactile Micro-Interactions ── */
+.tactile-press:active {
+  transform: scale(0.96);
+  transition: transform 80ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tactile-btn:active {
+  transform: scale(0.97);
 }
 ```
 
@@ -20069,7 +20113,7 @@ export function QuickNoteDialog({
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
 - **Lines**: 363
-- **Size**: 12498 bytes
+- **Size**: 12510 bytes
 
 ```tsx
 "use client"
@@ -20314,10 +20358,10 @@ export function SmartHoverCardContent({
         boxShadow: isClouds
           ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
           : isIos
-          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-          : isMac
-          ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
-          : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
+            ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+            : isMac
+              ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+              : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
       {/* Top Accent Gradient Bar */}
@@ -25509,8 +25553,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 339
-- **Size**: 14122 bytes
+- **Lines**: 341
+- **Size**: 14352 bytes
 
 ```tsx
 "use client"
@@ -25674,7 +25718,9 @@ export function FilesPopover() {
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-76 sm:w-84 rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,22rem)] max-w-sm rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans overflow-hidden">
+          {/* Top celestial accent gradient matching visionOS Clouds */}
+          <div className="h-1 -mx-2.5 -mt-2.5 mb-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-400 opacity-90" />
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
             <div className="flex items-center gap-1.5">
@@ -29087,7 +29133,7 @@ export function StatsDialog() {
 
 - **Path**: `components/shell/bottom-dock.tsx`
 - **Lines**: 628
-- **Size**: 26383 bytes
+- **Size**: 26063 bytes
 
 ```tsx
 "use client"
@@ -29248,8 +29294,8 @@ function MagnifiedDockItem({
               "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
               "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
               active
-                ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-medium"
-                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60",
+                ? "bg-gradient-to-b from-blue-500/15 to-blue-600/25 text-blue-600 dark:text-blue-400 font-semibold shadow-xs border border-blue-400/30 dark:border-blue-500/30"
+                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60 border border-transparent",
               className
             )}
           >
@@ -29423,7 +29469,7 @@ export function BottomDock() {
               aria-label="Zenithsui workspace menu"
               className="tactile-press flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 transition-colors outline-none cursor-pointer shrink-0"
             >
-              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight hidden sm:inline">zenithsui</span>
+              <span className="flex items-center gap-1 font-bold tracking-tight hidden sm:inline-flex text-blue-600 dark:text-blue-400"><span className="size-2 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-400 shadow-[0_0_6px_rgba(37,99,235,0.7)]" />zenithsui</span>
               <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight sm:hidden">z</span>
               <CaretDown size={10} weight="bold" className="text-stone-400" aria-hidden="true" />
             </DropdownMenuTrigger>
@@ -29525,7 +29571,7 @@ export function BottomDock() {
 
         {/* ── Separator after Brand Menu ── */}
         {dockControls.brandMenu && (visibleTools.length > 0 || hasQuickActions || dockControls.zoomControls) && (
-          <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+          <div className="h-5 w-px bg-gradient-to-b from-transparent via-stone-300 dark:via-stone-600 to-transparent mx-0.5 sm:mx-1 shrink-0" />
         )}
 
         {/* ── Desktop Tool Picker with Magnification Engine (sm:flex) ── */}
@@ -33027,8 +33073,8 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 ### File: `components/shell/top-bar.tsx`
 
 - **Path**: `components/shell/top-bar.tsx`
-- **Lines**: 162
-- **Size**: 6618 bytes
+- **Lines**: 166
+- **Size**: 7052 bytes
 
 ```tsx
 "use client"
@@ -33048,7 +33094,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { useSyncStore } from "@/lib/sync/engine"
-import { PencilSimple, Check } from "@phosphor-icons/react"
+import { PencilSimple, Check, Notebook } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -33098,9 +33144,13 @@ export function TopBar() {
   }
 
   return (
-    <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
+    <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
-      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full apple-glass-pill min-w-0 transition-all duration-200 gpu-accelerated select-none">
+      <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-all duration-200 gpu-accelerated select-none shadow-xl">
+        {/* Document Icon Badge */}
+        <div className="flex items-center justify-center size-5 sm:size-6 rounded-full bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 shrink-0 border border-blue-500/20 shadow-xs">
+          <Notebook size={12} weight="duotone" />
+        </div>
         {isEditingTitle ? (
           <input
             ref={inputRef}
@@ -33116,7 +33166,7 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
+            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-white/80 dark:bg-black/50 backdrop-blur-md ring-2 ring-blue-500/50 border border-blue-400/60 rounded-lg px-2 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
           />
         ) : (
           <button
@@ -33126,7 +33176,7 @@ export function TopBar() {
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
-            <span className="truncate max-w-[120px] sm:max-w-[280px]">{fileName}</span>
+            <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
             <PencilSimple
               size={11}
               className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
@@ -33155,7 +33205,7 @@ export function TopBar() {
         >
           {syncStatus === "syncing" ? (
             <>
-              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.85)]" aria-hidden="true" />
               <span className="hidden sm:inline text-blue-600 dark:text-blue-400">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
@@ -33170,7 +33220,7 @@ export function TopBar() {
             </>
           ) : justSaved ? (
             <>
-              <span className="size-1.5 rounded-full bg-emerald-500 transition-colors" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] transition-all" aria-hidden="true" />
               <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline flex items-center gap-0.5">
                 <Check size={10} weight="bold" /> saved
               </span>

@@ -659,3 +659,47 @@
 .sq-range-slider::-moz-range-thumb:hover {
   transform: scale(1.12);
 }
+/* ── Ultra-Refined macOS & iOS 26 Styling Enhancements ── */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.35);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.6);
+}
+
+/* ── Apple visionOS Specular Reflection Glow & Rim Highlights ── */
+.apple-specular-glow {
+  position: relative;
+}
+.apple-specular-glow::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 0.15) 45%, rgba(255, 255, 255, 0) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.dark .apple-specular-glow::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* ── Tactile Micro-Interactions ── */
+.tactile-press:active {
+  transform: scale(0.96);
+  transition: transform 80ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tactile-btn:active {
+  transform: scale(0.97);
+}

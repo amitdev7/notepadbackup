@@ -156,8 +156,8 @@ function MagnifiedDockItem({
               "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
               "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
               active
-                ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-medium"
-                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60",
+                ? "bg-gradient-to-b from-blue-500/15 to-blue-600/25 text-blue-600 dark:text-blue-400 font-semibold shadow-xs border border-blue-400/30 dark:border-blue-500/30"
+                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60 border border-transparent",
               className
             )}
           >
@@ -331,7 +331,7 @@ export function BottomDock() {
               aria-label="Zenithsui workspace menu"
               className="tactile-press flex items-center gap-1 px-1.5 sm:px-2.5 py-1.5 rounded-xl text-xs font-semibold text-stone-700 dark:text-stone-200 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 transition-colors outline-none cursor-pointer shrink-0"
             >
-              <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight hidden sm:inline">zenithsui</span>
+              <span className="flex items-center gap-1 font-bold tracking-tight hidden sm:inline-flex text-blue-600 dark:text-blue-400"><span className="size-2 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-400 shadow-[0_0_6px_rgba(37,99,235,0.7)]" />zenithsui</span>
               <span className="text-blue-600 dark:text-blue-400 font-bold tracking-tight sm:hidden">z</span>
               <CaretDown size={10} weight="bold" className="text-stone-400" aria-hidden="true" />
             </DropdownMenuTrigger>
@@ -433,7 +433,7 @@ export function BottomDock() {
 
         {/* ── Separator after Brand Menu ── */}
         {dockControls.brandMenu && (visibleTools.length > 0 || hasQuickActions || dockControls.zoomControls) && (
-          <div className="h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+          <div className="h-5 w-px bg-gradient-to-b from-transparent via-stone-300 dark:via-stone-600 to-transparent mx-0.5 sm:mx-1 shrink-0" />
         )}
 
         {/* ── Desktop Tool Picker with Magnification Engine (sm:flex) ── */}

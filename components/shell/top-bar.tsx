@@ -15,7 +15,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { useSyncStore } from "@/lib/sync/engine"
-import { PencilSimple, Check } from "@phosphor-icons/react"
+import { PencilSimple, Check, Notebook } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -65,9 +65,13 @@ export function TopBar() {
   }
 
   return (
-    <header className="pointer-events-none fixed top-3 inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
+    <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
-      <div className="pointer-events-auto flex items-center gap-2 px-3 py-1 rounded-full apple-glass-pill min-w-0 transition-all duration-200 gpu-accelerated select-none">
+      <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-all duration-200 gpu-accelerated select-none shadow-xl">
+        {/* Document Icon Badge */}
+        <div className="flex items-center justify-center size-5 sm:size-6 rounded-full bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 shrink-0 border border-blue-500/20 shadow-xs">
+          <Notebook size={12} weight="duotone" />
+        </div>
         {isEditingTitle ? (
           <input
             ref={inputRef}
@@ -83,7 +87,7 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-transparent outline-none border-b border-blue-500 px-1 py-0.5 min-w-[80px] max-w-[180px] sm:max-w-[240px] text-center transition-all duration-150 animate-popover-enter"
+            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-white/80 dark:bg-black/50 backdrop-blur-md ring-2 ring-blue-500/50 border border-blue-400/60 rounded-lg px-2 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
           />
         ) : (
           <button
@@ -93,7 +97,7 @@ export function TopBar() {
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
-            <span className="truncate max-w-[120px] sm:max-w-[280px]">{fileName}</span>
+            <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
             <PencilSimple
               size={11}
               className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
@@ -122,7 +126,7 @@ export function TopBar() {
         >
           {syncStatus === "syncing" ? (
             <>
-              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.85)]" aria-hidden="true" />
               <span className="hidden sm:inline text-blue-600 dark:text-blue-400">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
@@ -137,7 +141,7 @@ export function TopBar() {
             </>
           ) : justSaved ? (
             <>
-              <span className="size-1.5 rounded-full bg-emerald-500 transition-colors" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] transition-all" aria-hidden="true" />
               <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline flex items-center gap-0.5">
                 <Check size={10} weight="bold" /> saved
               </span>
