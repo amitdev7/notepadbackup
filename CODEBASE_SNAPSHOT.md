@@ -1206,11 +1206,11 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 320 | 13104 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
-| `components/canvas/smart-hover-note.tsx` | 550 | 19446 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/quick-note-dialog.tsx` | 283 | 11275 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/smart-hover-note.tsx` | 702 | 24365 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
-| `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
+| `lib/canvas-core/charts.ts` | 757 | 19075 | Core charts.ts module | `charts` |
 | `lib/canvas-core/convert.ts` | 452 | 13754 | Core convert.ts module | `convert` |
 | `lib/canvas-core/index.ts` | 13 | 476 | Core index.ts module | `index` |
 | `lib/canvas-core/laser.ts` | 106 | 2734 | Core laser.ts module | `laser` |
@@ -1228,7 +1228,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/files-popover.tsx` | 344 | 14456 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 1049 | 39865 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 1049 | 39920 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1237,7 +1237,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/text-controls.tsx` | 164 | 6828 | Core text-controls.tsx module | `text-controls` |
 | `components/chrome/variant-controls.tsx` | 155 | 5102 | Core variant-controls.tsx module | `variant-controls` |
 | `components/chrome/workspace-switcher.tsx` | 55 | 1858 | Core workspace-switcher.tsx module | `workspace-switcher` |
-| `components/dialogs/chart-dialog.tsx` | 235 | 9640 | Core chart-dialog.tsx module | `chart-dialog` |
+| `components/dialogs/chart-dialog.tsx` | 262 | 10557 | Core chart-dialog.tsx module | `chart-dialog` |
 | `components/dialogs/mermaid-dialog.tsx` | 191 | 9066 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
 | `components/dialogs/stats-dialog.tsx` | 113 | 5473 | Core stats-dialog.tsx module | `stats-dialog` |
 | `components/shell/bottom-dock.tsx` | 628 | 26063 | Core bottom-dock.tsx module | `bottom-dock` |
@@ -1387,7 +1387,7 @@ Run all tests via: `pnpm test`.
 | `components/pwa/sw-register.tsx` | 45 | 1260 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
 | `public/service-worker.js` | 21 | 834 | Core service-worker.js module | `service-worker` |
-| `public/sw.js` | 104 | 3087 | Core sw.js module | `sw` |
+| `public/sw.js` | 109 | 3200 | Core sw.js module | `sw` |
 | `scripts/doodle.zenithsui.json` | 7547 | 142231 | Core doodle.zenithsui.json module | `doodle.zenithsui` |
 | `scripts/gateway.mjs` | 144 | 5163 | Core gateway.mjs module | `gateway` |
 | `scripts/gen-doodle.mjs` | 104 | 3386 | Core gen-doodle.mjs module | `gen-doodle` |
@@ -19824,8 +19824,8 @@ export function PerfHud({
 ### File: `components/canvas/quick-note-dialog.tsx`
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
-- **Lines**: 320
-- **Size**: 13104 bytes
+- **Lines**: 283
+- **Size**: 11275 bytes
 
 ```tsx
 "use client"
@@ -19859,18 +19859,11 @@ const NOTE_TEMPLATES = [
 ]
 
 const THEME_OPTIONS = [
-  { id: "clouds", label: "Clouds ☁️" },
+  { id: "wordcloud", label: "Word Cloud (Only Text) ☁️" },
+  { id: "frosted", label: "3D Frosted Cloud ⛅" },
   { id: "macos", label: "macOS 🍏" },
   { id: "ios", label: "iOS Glass 📱" },
   { id: "minimalist", label: "Clean 📄" },
-]
-
-const CLOUD_STYLE_OPTIONS = [
-  { id: "sun", label: "Sun ☀️", desc: "Golden sun with warm subsurface glow" },
-  { id: "rain", label: "Rain 🌧️", desc: "Cyan droplets below" },
-  { id: "lightning", label: "Thunder ⚡", desc: "Cyan lightning bolt below" },
-  { id: "wind", label: "Breeze ❄️", desc: "Cyan frosted wind below" },
-  { id: "classic", label: "Pure ☁️", desc: "Clean cumulus cloud" },
 ]
 
 export function QuickNoteDialog({
@@ -19883,8 +19876,7 @@ export function QuickNoteDialog({
   const [mounted, setMounted] = useState(false)
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
-  const [theme, setTheme] = useState("clouds")
-  const [cloudStyle, setCloudStyle] = useState("sun")
+  const [theme, setTheme] = useState("wordcloud")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -19896,8 +19888,7 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
-    setTheme(existing?.theme || "clouds")
-    setCloudStyle(existing?.cloudStyle || "sun")
+    setTheme(existing?.theme || "wordcloud")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -19930,7 +19921,6 @@ export function QuickNoteDialog({
       body: trimmedBody,
       enabled: true,
       theme,
-      cloudStyle: theme === "clouds" ? cloudStyle : undefined,
       createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -20059,33 +20049,6 @@ export function QuickNoteDialog({
             </div>
           </div>
 
-          {/* Cloud Weather Accent (Only visible when Clouds theme is active) */}
-          {theme === "clouds" && (
-            <div className="space-y-1.5 pt-0.5">
-              <label className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">
-                Cloud Weather Style
-              </label>
-              <div className="flex items-center gap-1.5 flex-wrap">
-                {CLOUD_STYLE_OPTIONS.map((cs) => (
-                  <button
-                    key={cs.id}
-                    type="button"
-                    onClick={() => setCloudStyle(cs.id)}
-                    className={cn(
-                      "px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border select-none",
-                      cloudStyle === cs.id
-                        ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white border-sky-400/40 shadow-xs scale-102"
-                        : "bg-sky-50/80 hover:bg-sky-100/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-sky-800 dark:text-sky-200 border-sky-200/50 dark:border-sky-800/50"
-                    )}
-                    title={cs.desc}
-                  >
-                    {cs.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Quick template starters */}
           <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mr-0.5">Quick add:</span>
@@ -20154,8 +20117,8 @@ export function QuickNoteDialog({
 ### File: `components/canvas/smart-hover-note.tsx`
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 550
-- **Size**: 19446 bytes
+- **Lines**: 702
+- **Size**: 24365 bytes
 
 ```tsx
 "use client"
@@ -20175,7 +20138,7 @@ export function QuickNoteDialog({
 // 6. Zero canvas clutter: 100% hidden when not hovering over the object's area.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
 import { Cloud, ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
@@ -20354,6 +20317,153 @@ export interface SmartHoverCardContentProps {
   className?: string
 }
 
+// ---------------------------------------------------------------------------
+// 1:1 Vue Word Cloud Hover Note Presentation (pdsuwwz/vue-word-cloud)
+// Renders ONLY text — zero background boxes, zero borders, zero cards, zero weather SVGs.
+// Uses ECharts-style color generation, dynamic typography weights, and interactive
+// word emphasis hover matching pdsuwwz/vue-word-cloud.
+// ---------------------------------------------------------------------------
+
+const VUE_WORD_CLOUD_PALETTE = [
+  "#2563EB", // Blue
+  "#7C3AED", // Violet
+  "#DB2777", // Pink
+  "#059669", // Emerald
+  "#D97706", // Amber
+  "#0891B2", // Cyan
+  "#4F46E5", // Indigo
+  "#DC2626", // Red
+  "#0284C7", // Sky
+  "#9333EA", // Purple
+  "#10B981", // Teal
+  "#E11D48", // Rose
+]
+
+/** Color generator matching pdsuwwz/vue-word-cloud */
+function getWordCloudColor(word: string, index: number): string {
+  let hash = index * 17
+  for (let i = 0; i < word.length; i++) {
+    hash = (hash << 5) - hash + word.charCodeAt(i)
+    hash |= 0
+  }
+  const idx = Math.abs(hash) % VUE_WORD_CLOUD_PALETTE.length
+  return VUE_WORD_CLOUD_PALETTE[idx]
+}
+
+export function VueWordCloudHoverText({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const titleText = note.title?.trim() || ""
+  const bodyText = note.body ? note.body.trim() : ""
+
+  // Parse words from title & body
+  const wordTokens = useMemo(() => {
+    const tokens: Array<{ text: string; weight: number }> = []
+
+    if (hasTitle) {
+      tokens.push({ text: titleText, weight: 100 })
+    }
+
+    if (bodyText) {
+      // Split by whitespace, newlines, commas, colons
+      const words = bodyText
+        .split(/[\s,\n]+/)
+        .map((w) => w.trim())
+        .filter(Boolean)
+
+      const freqMap: Record<string, number> = {}
+      words.forEach((w) => {
+        const lower = w.toLowerCase()
+        freqMap[lower] = (freqMap[lower] || 0) + 1
+      })
+
+      words.forEach((w, i) => {
+        // Prevent excessive duplicate tags if word repeated
+        if (tokens.some((t) => t.text.toLowerCase() === w.toLowerCase())) return
+        const count = freqMap[w.toLowerCase()] || 1
+        const weight = 30 + count * 15 + Math.max(0, 20 - i * 2)
+        tokens.push({ text: w, weight })
+      })
+    }
+
+    return tokens
+  }, [hasTitle, titleText, bodyText])
+
+  // If single word or short phrase (e.g. "amit")
+  if (wordTokens.length <= 1) {
+    const text = titleText || bodyText || "Note"
+    const color = getWordCloudColor(text, 0)
+
+    return (
+      <div
+        className={cn(
+          "pointer-events-auto select-none bg-transparent border-0 shadow-none p-1.5 animate-in fade-in zoom-in-95 duration-150",
+          className
+        )}
+      >
+        <span
+          className="inline-block font-sans font-black text-2xl sm:text-3xl tracking-tight transition-all duration-200 cursor-default hover:scale-110 hover:text-[#552288] dark:hover:text-[#C084FC]"
+          style={{
+            color,
+            textShadow:
+              "0 2px 10px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9), 0 0 16px rgba(59,130,246,0.25)",
+          }}
+          title={text}
+        >
+          {text}
+        </span>
+      </div>
+    )
+  }
+
+  // Multi-word Word Cloud Cluster (1:1 pdsuwwz/vue-word-cloud layout)
+  return (
+    <div
+      className={cn(
+        "pointer-events-auto select-none bg-transparent border-0 shadow-none max-w-[340px] sm:max-w-[420px] p-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 animate-in fade-in zoom-in-95 duration-150",
+        className
+      )}
+    >
+      {wordTokens.map((item, idx) => {
+        const color = getWordCloudColor(item.text, idx)
+        const isHeader = idx === 0 && hasTitle
+        const fontSizeClass = isHeader
+          ? "text-xl sm:text-2xl font-black"
+          : item.weight > 45
+            ? "text-base sm:text-lg font-extrabold"
+            : item.weight > 35
+              ? "text-sm sm:text-base font-bold"
+              : "text-xs sm:text-sm font-semibold"
+
+        return (
+          <span
+            key={`${item.text}-${idx}`}
+            className={cn(
+              "inline-block font-sans tracking-tight transition-all duration-200 cursor-default",
+              "hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC] hover:z-10",
+              fontSizeClass
+            )}
+            style={{
+              color,
+              textShadow:
+                "0 2px 8px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9)",
+            }}
+          >
+            {item.text}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 export function SmartHoverCardContent({
   node,
   note,
@@ -20362,10 +20472,15 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const theme = note.theme || "clouds"
+  const theme = note.theme || "wordcloud"
 
-  // When theme is clouds (default), render the 3D frosted glass cloud matching user reference
-  if (theme === "clouds") {
+  // 1:1 pdsuwwz/vue-word-cloud (Default): ONLY SHOWS TEXT with ECharts vibrant typography
+  if (!note.theme || theme === "wordcloud" || theme === "clouds") {
+    return <VueWordCloudHoverText note={note} node={node} className={className} />
+  }
+
+  // 3D frosted glass cumulus cloud (when explicitly selected as frosted)
+  if (theme === "frosted") {
     return <Frosted3DCloud note={note} node={node} className={className} />
   }
 
@@ -21623,8 +21738,8 @@ export function ToolPropertiesPanel() {
 ### File: `lib/canvas-core/charts.ts`
 
 - **Path**: `lib/canvas-core/charts.ts`
-- **Lines**: 644
-- **Size**: 15924 bytes
+- **Lines**: 757
+- **Size**: 19075 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -21651,7 +21766,7 @@ export type ParseSpreadsheetResult =
   | { ok: true; data: SpreadsheetData }
   | { ok: false; reason: string }
 
-export type ChartType = "bar" | "line" | "radar"
+export type ChartType = "bar" | "line" | "radar" | "wordcloud"
 
 /** Parse a cell value as a number */
 export const tryParseNumber = (s: string): number | null => {
@@ -22266,6 +22381,119 @@ export function renderRadarChart(
       }
       nodes.push(dot)
     }
+  })
+
+  return nodes
+}
+
+// ---------------------------------------------------------------------------
+// Word Cloud Chart Engine (1:1 port of pdsuwwz/vue-word-cloud)
+// Generates hand-drawn canvas text nodes placed in an organic cloud formation
+// with vibrant ECharts-style color generation and font scaling.
+// ---------------------------------------------------------------------------
+
+const VUE_WORD_CLOUD_PALETTE = [
+  "#2563EB", // blue
+  "#7C3AED", // violet
+  "#DB2777", // pink
+  "#059669", // emerald
+  "#D97706", // amber
+  "#0891B2", // cyan
+  "#4F46E5", // indigo
+  "#DC2626", // red
+  "#0284C7", // sky
+  "#9333EA", // purple
+  "#10B981", // green
+  "#E11D48", // rose
+]
+
+export function renderWordCloudChart(
+  spreadsheet: SpreadsheetData,
+  centerX: number,
+  centerY: number
+): SquigNode[] {
+  const nodes: SquigNode[] = []
+  const { labels, series, title } = spreadsheet
+  if (!labels || labels.length === 0) return nodes
+
+  const groupId = nanoid(8)
+
+  // Title if present
+  if (title) {
+    const titleNode: TextNode = {
+      id: nanoid(8),
+      seed: makeSeed(),
+      type: "text",
+      x: centerX - Math.round((title.length * 5)),
+      y: centerY - 150,
+      w: Math.max(80, title.length * 10),
+      h: 28,
+      text: title,
+      fontSize: 22,
+      bold: true,
+      align: "center",
+      groupIds: [groupId],
+    }
+    nodes.push(titleNode)
+  }
+
+  // Extract keywords and weights
+  const values = series[0]?.values || []
+  let minVal = Infinity
+  let maxVal = -Infinity
+
+  const items = labels.map((name, i) => {
+    const val = typeof values[i] === "number" && !isNaN(values[i]) ? values[i] : 10 + (labels.length - i) * 6
+    if (val < minVal) minVal = val
+    if (val > maxVal) maxVal = val
+    return { name, val }
+  })
+
+  if (minVal === maxVal) {
+    maxVal = minVal + 1
+  }
+
+  // Sort descending by weight so primary keywords anchor the center
+  items.sort((a, b) => b.val - a.val)
+
+  // Golden ratio spiral placement (~137.5 degrees) for organic cloud distribution
+  const goldenAngle = 2.3999632
+  const stepRadius = 24
+
+  items.forEach((item, index) => {
+    // Dynamic font sizing between 14px and 42px
+    const ratio = (item.val - minVal) / (maxVal - minVal)
+    const fontSize = Math.round(14 + ratio * 28)
+
+    // Estimate width & height
+    const wordWidth = Math.max(30, Math.round(item.name.length * (fontSize * 0.65)))
+    const wordHeight = Math.round(fontSize * 1.3)
+
+    // Position along spiral
+    const r = Math.sqrt(index) * stepRadius
+    const theta = index * goldenAngle
+    const x = Math.round(centerX + r * Math.cos(theta) - wordWidth / 2)
+    const y = Math.round(centerY + (r * 0.72) * Math.sin(theta) - wordHeight / 2)
+
+    // Pick vibrant color matching pdsuwwz/vue-word-cloud
+    const color = VUE_WORD_CLOUD_PALETTE[index % VUE_WORD_CLOUD_PALETTE.length]
+
+    const textNode: TextNode = {
+      id: nanoid(8),
+      seed: makeSeed(),
+      type: "text",
+      x,
+      y,
+      w: wordWidth,
+      h: wordHeight,
+      text: item.name,
+      fontSize,
+      bold: true,
+      color,
+      align: "center",
+      groupIds: [groupId],
+    }
+    nodes.push(textNode)
   })
 
   return nodes
@@ -26227,7 +26455,7 @@ export function InkPicker() {
 
 - **Path**: `components/chrome/inspector.tsx`
 - **Lines**: 1049
-- **Size**: 39865 bytes
+- **Size**: 39920 bytes
 
 ```tsx
 "use client"
@@ -27088,10 +27316,10 @@ function HoverNoteSection({
             <label className="text-micro text-muted-foreground font-medium">Theme</label>
             <div className="grid grid-cols-2 gap-1">
               {[
-                { id: "clouds", label: "Clouds ☁️" },
-                { id: "macos", label: "macOS 🍏" },
+                { id: "wordcloud", label: "Word Cloud (Text) ☁️" },
+                { id: "frosted", label: "3D Frosted Cloud ⛅" },
+                { id: "macos", label: "macOS Card 🍏" },
                 { id: "ios", label: "iOS Glass 📱" },
-                { id: "minimalist", label: "Clean 📄" },
               ].map((t) => (
                 <button
                   key={t.id}
@@ -27106,7 +27334,7 @@ function HoverNoteSection({
                   }}
                   className={cn(
                     "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
-                    (note.theme || "clouds") === t.id
+                    (note.theme || "wordcloud") === t.id
                       ? "bg-primary text-primary-foreground border-primary"
                       : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
                   )}
@@ -27117,8 +27345,8 @@ function HoverNoteSection({
             </div>
           </div>
 
-          {/* Cloud Weather Accent if clouds theme */}
-          {(note.theme || "clouds") === "clouds" && (
+          {/* Cloud Weather Accent if frosted 3D cloud theme */}
+          {(note.theme === "frosted" || note.theme === "clouds") && (
             <div className="flex flex-col gap-1">
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
@@ -28867,8 +29095,8 @@ export function WorkspaceSwitcher() {
 ### File: `components/dialogs/chart-dialog.tsx`
 
 - **Path**: `components/dialogs/chart-dialog.tsx`
-- **Lines**: 235
-- **Size**: 9640 bytes
+- **Lines**: 262
+- **Size**: 10557 bytes
 
 ```tsx
 "use client"
@@ -28880,9 +29108,10 @@ import {
   renderBarChart,
   renderLineChart,
   renderRadarChart,
+  renderWordCloudChart,
   type ChartType,
 } from "@/lib/canvas-core/charts"
-import { ChartBar, ChartLine, Compass, X, Sparkle } from "@phosphor-icons/react"
+import { ChartBar, ChartLine, Compass, X, Sparkle, Cloud } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 const SAMPLE_DATA: Record<ChartType, string> = {
@@ -28903,6 +29132,19 @@ Physics\t85\t80
 Chemistry\t70\t88
 Biology\t65\t92
 English\t95\t70`,
+  wordcloud: `Keyword\tWeight
+Zenithsui\t120
+Architecture\t95
+InfiniteCanvas\t80
+TypeScript\t75
+Collaboration\t68
+WordCloud\t62
+Vector\t55
+Prototyping\t48
+Diagrams\t42
+HandDrawn\t36
+StudyHub\t30
+RealtimeSync\t25`,
 }
 
 export function ChartDialog() {
@@ -28948,8 +29190,10 @@ export function ChartDialog() {
       createdNodes = renderBarChart(parsed.data, cx - 200, cy + 100)
     } else if (chartType === "line") {
       createdNodes = renderLineChart(parsed.data, cx - 200, cy + 100)
-    } else {
+    } else if (chartType === "radar") {
       createdNodes = renderRadarChart(parsed.data, cx, cy)
+    } else {
+      createdNodes = renderWordCloudChart(parsed.data, cx, cy)
     }
 
     if (createdNodes.length > 0) {
@@ -29042,6 +29286,17 @@ export function ChartDialog() {
               )}
             >
               <Compass size={14} /> Radar Chart
+            </button>
+            <button
+              onClick={() => handleTabChange("wordcloud")}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium transition-all",
+                chartType === "wordcloud"
+                  ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                  : "text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200"
+              )}
+            >
+              <Cloud size={14} /> Word Cloud
             </button>
           </div>
 
@@ -49138,8 +49393,8 @@ export function validNode(v: unknown): SquigNode | null {
           enabled: candidate.enabled,
           title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
           body: candidate.body.slice(0, 2500),
-          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 30) : undefined,
-          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 30) : undefined,
+          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 40) : undefined,
+          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 40) : undefined,
         }
       }
     }
@@ -51229,8 +51484,8 @@ export function validateSecureNode(v: unknown): SquigNode | null {
           enabled: candidate.enabled,
           title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
           body: candidate.body.slice(0, 2500),
-          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 30) : undefined,
-          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 30) : undefined,
+          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 40) : undefined,
+          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 40) : undefined,
         }
       }
     }
@@ -79667,15 +79922,15 @@ self.addEventListener("activate", () => {
 ### File: `public/sw.js`
 
 - **Path**: `public/sw.js`
-- **Lines**: 104
-- **Size**: 3087 bytes
+- **Lines**: 109
+- **Size**: 3200 bytes
 
 ```javascript
 // ---------------------------------------------------------------------------
 // Zenithsui Service Worker (v1.0.0) — Offline Shell & Asset Caching
 // ---------------------------------------------------------------------------
 
-const CACHE_NAME = "zenithsui-shell-v2"
+const CACHE_NAME = "zenithsui-shell-v1"
 
 const PRECACHE_ASSETS = [
   "/",
@@ -79742,20 +79997,25 @@ self.addEventListener("fetch", (event) => {
     return
   }
 
-  // 3. Network-First for HTML page navigations (immediate updates, fallback to cache when offline)
+  // 3. Stale-While-Revalidate for HTML page navigations
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse.status === 200) {
-            const clone = networkResponse.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-          }
-          return networkResponse
-        })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => cached || caches.match("/"))
-        })
+      caches.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse.status === 200) {
+              const clone = networkResponse.clone()
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+            }
+            return networkResponse
+          })
+          .catch(() => {
+            // Offline fallback to root cached index
+            return cached || caches.match("/")
+          })
+
+        return cached || fetchPromise
+      })
     )
     return
   }

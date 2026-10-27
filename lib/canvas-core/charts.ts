@@ -22,7 +22,7 @@ export type ParseSpreadsheetResult =
   | { ok: true; data: SpreadsheetData }
   | { ok: false; reason: string }
 
-export type ChartType = "bar" | "line" | "radar"
+export type ChartType = "bar" | "line" | "radar" | "wordcloud"
 
 /** Parse a cell value as a number */
 export const tryParseNumber = (s: string): number | null => {
@@ -637,6 +637,119 @@ export function renderRadarChart(
       }
       nodes.push(dot)
     }
+  })
+
+  return nodes
+}
+
+// ---------------------------------------------------------------------------
+// Word Cloud Chart Engine (1:1 port of pdsuwwz/vue-word-cloud)
+// Generates hand-drawn canvas text nodes placed in an organic cloud formation
+// with vibrant ECharts-style color generation and font scaling.
+// ---------------------------------------------------------------------------
+
+const VUE_WORD_CLOUD_PALETTE = [
+  "#2563EB", // blue
+  "#7C3AED", // violet
+  "#DB2777", // pink
+  "#059669", // emerald
+  "#D97706", // amber
+  "#0891B2", // cyan
+  "#4F46E5", // indigo
+  "#DC2626", // red
+  "#0284C7", // sky
+  "#9333EA", // purple
+  "#10B981", // green
+  "#E11D48", // rose
+]
+
+export function renderWordCloudChart(
+  spreadsheet: SpreadsheetData,
+  centerX: number,
+  centerY: number
+): SquigNode[] {
+  const nodes: SquigNode[] = []
+  const { labels, series, title } = spreadsheet
+  if (!labels || labels.length === 0) return nodes
+
+  const groupId = nanoid(8)
+
+  // Title if present
+  if (title) {
+    const titleNode: TextNode = {
+      id: nanoid(8),
+      seed: makeSeed(),
+      type: "text",
+      x: centerX - Math.round((title.length * 5)),
+      y: centerY - 150,
+      w: Math.max(80, title.length * 10),
+      h: 28,
+      text: title,
+      fontSize: 22,
+      bold: true,
+      align: "center",
+      groupIds: [groupId],
+    }
+    nodes.push(titleNode)
+  }
+
+  // Extract keywords and weights
+  const values = series[0]?.values || []
+  let minVal = Infinity
+  let maxVal = -Infinity
+
+  const items = labels.map((name, i) => {
+    const val = typeof values[i] === "number" && !isNaN(values[i]) ? values[i] : 10 + (labels.length - i) * 6
+    if (val < minVal) minVal = val
+    if (val > maxVal) maxVal = val
+    return { name, val }
+  })
+
+  if (minVal === maxVal) {
+    maxVal = minVal + 1
+  }
+
+  // Sort descending by weight so primary keywords anchor the center
+  items.sort((a, b) => b.val - a.val)
+
+  // Golden ratio spiral placement (~137.5 degrees) for organic cloud distribution
+  const goldenAngle = 2.3999632
+  const stepRadius = 24
+
+  items.forEach((item, index) => {
+    // Dynamic font sizing between 14px and 42px
+    const ratio = (item.val - minVal) / (maxVal - minVal)
+    const fontSize = Math.round(14 + ratio * 28)
+
+    // Estimate width & height
+    const wordWidth = Math.max(30, Math.round(item.name.length * (fontSize * 0.65)))
+    const wordHeight = Math.round(fontSize * 1.3)
+
+    // Position along spiral
+    const r = Math.sqrt(index) * stepRadius
+    const theta = index * goldenAngle
+    const x = Math.round(centerX + r * Math.cos(theta) - wordWidth / 2)
+    const y = Math.round(centerY + (r * 0.72) * Math.sin(theta) - wordHeight / 2)
+
+    // Pick vibrant color matching pdsuwwz/vue-word-cloud
+    const color = VUE_WORD_CLOUD_PALETTE[index % VUE_WORD_CLOUD_PALETTE.length]
+
+    const textNode: TextNode = {
+      id: nanoid(8),
+      seed: makeSeed(),
+      type: "text",
+      x,
+      y,
+      w: wordWidth,
+      h: wordHeight,
+      text: item.name,
+      fontSize,
+      bold: true,
+      color,
+      align: "center",
+      groupIds: [groupId],
+    }
+    nodes.push(textNode)
   })
 
   return nodes

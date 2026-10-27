@@ -2,7 +2,7 @@
 // Zenithsui Service Worker (v1.0.0) — Offline Shell & Asset Caching
 // ---------------------------------------------------------------------------
 
-const CACHE_NAME = "zenithsui-shell-v2"
+const CACHE_NAME = "zenithsui-shell-v1"
 
 const PRECACHE_ASSETS = [
   "/",
@@ -69,20 +69,25 @@ self.addEventListener("fetch", (event) => {
     return
   }
 
-  // 3. Network-First for HTML page navigations (immediate updates, fallback to cache when offline)
+  // 3. Stale-While-Revalidate for HTML page navigations
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse.status === 200) {
-            const clone = networkResponse.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-          }
-          return networkResponse
-        })
-        .catch(() => {
-          return caches.match(event.request).then((cached) => cached || caches.match("/"))
-        })
+      caches.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse.status === 200) {
+              const clone = networkResponse.clone()
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+            }
+            return networkResponse
+          })
+          .catch(() => {
+            // Offline fallback to root cached index
+            return cached || caches.match("/")
+          })
+
+        return cached || fetchPromise
+      })
     )
     return
   }

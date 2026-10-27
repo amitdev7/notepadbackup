@@ -15,7 +15,7 @@
 // 6. Zero canvas clutter: 100% hidden when not hovering over the object's area.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
 import { Cloud, ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
@@ -194,6 +194,153 @@ export interface SmartHoverCardContentProps {
   className?: string
 }
 
+// ---------------------------------------------------------------------------
+// 1:1 Vue Word Cloud Hover Note Presentation (pdsuwwz/vue-word-cloud)
+// Renders ONLY text — zero background boxes, zero borders, zero cards, zero weather SVGs.
+// Uses ECharts-style color generation, dynamic typography weights, and interactive
+// word emphasis hover matching pdsuwwz/vue-word-cloud.
+// ---------------------------------------------------------------------------
+
+const VUE_WORD_CLOUD_PALETTE = [
+  "#2563EB", // Blue
+  "#7C3AED", // Violet
+  "#DB2777", // Pink
+  "#059669", // Emerald
+  "#D97706", // Amber
+  "#0891B2", // Cyan
+  "#4F46E5", // Indigo
+  "#DC2626", // Red
+  "#0284C7", // Sky
+  "#9333EA", // Purple
+  "#10B981", // Teal
+  "#E11D48", // Rose
+]
+
+/** Color generator matching pdsuwwz/vue-word-cloud */
+function getWordCloudColor(word: string, index: number): string {
+  let hash = index * 17
+  for (let i = 0; i < word.length; i++) {
+    hash = (hash << 5) - hash + word.charCodeAt(i)
+    hash |= 0
+  }
+  const idx = Math.abs(hash) % VUE_WORD_CLOUD_PALETTE.length
+  return VUE_WORD_CLOUD_PALETTE[idx]
+}
+
+export function VueWordCloudHoverText({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const titleText = note.title?.trim() || ""
+  const bodyText = note.body ? note.body.trim() : ""
+
+  // Parse words from title & body
+  const wordTokens = useMemo(() => {
+    const tokens: Array<{ text: string; weight: number }> = []
+
+    if (hasTitle) {
+      tokens.push({ text: titleText, weight: 100 })
+    }
+
+    if (bodyText) {
+      // Split by whitespace, newlines, commas, colons
+      const words = bodyText
+        .split(/[\s,\n]+/)
+        .map((w) => w.trim())
+        .filter(Boolean)
+
+      const freqMap: Record<string, number> = {}
+      words.forEach((w) => {
+        const lower = w.toLowerCase()
+        freqMap[lower] = (freqMap[lower] || 0) + 1
+      })
+
+      words.forEach((w, i) => {
+        // Prevent excessive duplicate tags if word repeated
+        if (tokens.some((t) => t.text.toLowerCase() === w.toLowerCase())) return
+        const count = freqMap[w.toLowerCase()] || 1
+        const weight = 30 + count * 15 + Math.max(0, 20 - i * 2)
+        tokens.push({ text: w, weight })
+      })
+    }
+
+    return tokens
+  }, [hasTitle, titleText, bodyText])
+
+  // If single word or short phrase (e.g. "amit")
+  if (wordTokens.length <= 1) {
+    const text = titleText || bodyText || "Note"
+    const color = getWordCloudColor(text, 0)
+
+    return (
+      <div
+        className={cn(
+          "pointer-events-auto select-none bg-transparent border-0 shadow-none p-1.5 animate-in fade-in zoom-in-95 duration-150",
+          className
+        )}
+      >
+        <span
+          className="inline-block font-sans font-black text-2xl sm:text-3xl tracking-tight transition-all duration-200 cursor-default hover:scale-110 hover:text-[#552288] dark:hover:text-[#C084FC]"
+          style={{
+            color,
+            textShadow:
+              "0 2px 10px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9), 0 0 16px rgba(59,130,246,0.25)",
+          }}
+          title={text}
+        >
+          {text}
+        </span>
+      </div>
+    )
+  }
+
+  // Multi-word Word Cloud Cluster (1:1 pdsuwwz/vue-word-cloud layout)
+  return (
+    <div
+      className={cn(
+        "pointer-events-auto select-none bg-transparent border-0 shadow-none max-w-[340px] sm:max-w-[420px] p-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 animate-in fade-in zoom-in-95 duration-150",
+        className
+      )}
+    >
+      {wordTokens.map((item, idx) => {
+        const color = getWordCloudColor(item.text, idx)
+        const isHeader = idx === 0 && hasTitle
+        const fontSizeClass = isHeader
+          ? "text-xl sm:text-2xl font-black"
+          : item.weight > 45
+            ? "text-base sm:text-lg font-extrabold"
+            : item.weight > 35
+              ? "text-sm sm:text-base font-bold"
+              : "text-xs sm:text-sm font-semibold"
+
+        return (
+          <span
+            key={`${item.text}-${idx}`}
+            className={cn(
+              "inline-block font-sans tracking-tight transition-all duration-200 cursor-default",
+              "hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC] hover:z-10",
+              fontSizeClass
+            )}
+            style={{
+              color,
+              textShadow:
+                "0 2px 8px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9)",
+            }}
+          >
+            {item.text}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
 export function SmartHoverCardContent({
   node,
   note,
@@ -202,10 +349,15 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const theme = note.theme || "clouds"
+  const theme = note.theme || "wordcloud"
 
-  // When theme is clouds (default), render the 3D frosted glass cloud matching user reference
-  if (theme === "clouds") {
+  // 1:1 pdsuwwz/vue-word-cloud (Default): ONLY SHOWS TEXT with ECharts vibrant typography
+  if (!note.theme || theme === "wordcloud" || theme === "clouds") {
+    return <VueWordCloudHoverText note={note} node={node} className={className} />
+  }
+
+  // 3D frosted glass cumulus cloud (when explicitly selected as frosted)
+  if (theme === "frosted") {
     return <Frosted3DCloud note={note} node={node} className={className} />
   }
 

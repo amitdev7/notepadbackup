@@ -7,9 +7,10 @@ import {
   renderBarChart,
   renderLineChart,
   renderRadarChart,
+  renderWordCloudChart,
   type ChartType,
 } from "@/lib/canvas-core/charts"
-import { ChartBar, ChartLine, Compass, X, Sparkle } from "@phosphor-icons/react"
+import { ChartBar, ChartLine, Compass, X, Sparkle, Cloud } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 const SAMPLE_DATA: Record<ChartType, string> = {
@@ -30,6 +31,19 @@ Physics\t85\t80
 Chemistry\t70\t88
 Biology\t65\t92
 English\t95\t70`,
+  wordcloud: `Keyword\tWeight
+Zenithsui\t120
+Architecture\t95
+InfiniteCanvas\t80
+TypeScript\t75
+Collaboration\t68
+WordCloud\t62
+Vector\t55
+Prototyping\t48
+Diagrams\t42
+HandDrawn\t36
+StudyHub\t30
+RealtimeSync\t25`,
 }
 
 export function ChartDialog() {
@@ -75,8 +89,10 @@ export function ChartDialog() {
       createdNodes = renderBarChart(parsed.data, cx - 200, cy + 100)
     } else if (chartType === "line") {
       createdNodes = renderLineChart(parsed.data, cx - 200, cy + 100)
-    } else {
+    } else if (chartType === "radar") {
       createdNodes = renderRadarChart(parsed.data, cx, cy)
+    } else {
+      createdNodes = renderWordCloudChart(parsed.data, cx, cy)
     }
 
     if (createdNodes.length > 0) {
@@ -169,6 +185,17 @@ export function ChartDialog() {
               )}
             >
               <Compass size={14} /> Radar Chart
+            </button>
+            <button
+              onClick={() => handleTabChange("wordcloud")}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium transition-all",
+                chartType === "wordcloud"
+                  ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 shadow-sm"
+                  : "text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200"
+              )}
+            >
+              <Cloud size={14} /> Word Cloud
             </button>
           </div>
 
