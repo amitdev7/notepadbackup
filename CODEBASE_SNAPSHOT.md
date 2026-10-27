@@ -1147,7 +1147,7 @@ Run all tests via: `pnpm test`.
 | `app/dashboard/page.tsx` | 818 | 38129 | Core page.tsx module | `page` |
 | `app/error.tsx` | 55 | 2249 | Core error.tsx module | `error` |
 | `app/global-error.tsx` | 55 | 2179 | Core global-error.tsx module | `global-error` |
-| `app/globals.css` | 661 | 17149 | Core globals.css module | `globals` |
+| `app/globals.css` | 661 | 17355 | Core globals.css module | `globals` |
 | `app/icon.svg` | 5 | 398 | Core icon.svg module | `icon` |
 | `app/kitchen-sink/page.tsx` | 110 | 3988 | Core page.tsx module | `page` |
 | `app/layout.tsx` | 108 | 3100 | Core layout.tsx module | `layout` |
@@ -1177,7 +1177,7 @@ Run all tests via: `pnpm test`.
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
 | `lib/canvas/duplicate.ts` | 43 | 1693 | Core duplicate.ts module | `duplicate` |
 | `lib/canvas/edit-target.ts` | 180 | 6655 | Core edit-target.ts module | `edit-target` |
-| `lib/canvas/hit-test.ts` | 421 | 14251 | Core hit-test.ts module | `hit-test` |
+| `lib/canvas/hit-test.ts` | 420 | 14250 | Core hit-test.ts module | `hit-test` |
 | `lib/canvas/keyboard-owner.ts` | 38 | 1867 | Core keyboard-owner.ts module | `keyboard-owner` |
 | `lib/canvas/snap-engine.ts` | 775 | 23634 | Core snap-engine.ts module | `snap-engine` |
 | `lib/canvas/stroke-smoothing.ts` | 109 | 3536 | Core stroke-smoothing.ts module | `stroke-smoothing` |
@@ -1225,8 +1225,8 @@ Run all tests via: `pnpm test`.
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 349 | 13451 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 308 | 12823 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/context-menu.tsx` | 347 | 13263 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/files-popover.tsx` | 339 | 14122 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
@@ -1250,7 +1250,7 @@ Run all tests via: `pnpm test`.
 | `components/ui/checkbox.tsx` | 60 | 2034 | Core checkbox.tsx module | `checkbox` |
 | `components/ui/dropdown-menu.tsx` | 140 | 4512 | Core dropdown-menu.tsx module | `dropdown-menu` |
 | `components/ui/input.tsx` | 20 | 990 | Core input.tsx module | `input` |
-| `components/ui/panel.tsx` | 245 | 8622 | Core panel.tsx module | `panel` |
+| `components/ui/panel.tsx` | 245 | 8466 | Core panel.tsx module | `panel` |
 | `components/ui/scroll-area.tsx` | 57 | 2228 | Core scroll-area.tsx module | `scroll-area` |
 | `components/ui/segmented.tsx` | 223 | 7289 | Core segmented.tsx module | `segmented` |
 | `components/ui/select.tsx` | 117 | 4464 | Core select.tsx module | `select` |
@@ -1263,7 +1263,7 @@ Run all tests via: `pnpm test`.
 | `app/lan/view/[sessionId]/page.tsx` | 20 | 482 | Core page.tsx module | `page` |
 | `components/chrome/wifi-device-panel.tsx` | 91 | 3590 | Core wifi-device-panel.tsx module | `wifi-device-panel` |
 | `components/chrome/wifi-publish-dialog.tsx` | 251 | 7808 | Core wifi-publish-dialog.tsx module | `wifi-publish-dialog` |
-| `lib/lan/auto-sync.ts` | 199 | 6513 | Core auto-sync.ts module | `auto-sync` |
+| `lib/lan/auto-sync.ts` | 188 | 6108 | Core auto-sync.ts module | `auto-sync` |
 | `lib/lan/classroom-transport.ts` | 519 | 14986 | Core classroom-transport.ts module | `classroom-transport` |
 | `lib/lan/discovery.ts` | 54 | 1477 | Core discovery.ts module | `discovery` |
 | `lib/lan/identity.ts` | 100 | 3107 | Core identity.ts module | `identity` |
@@ -1332,7 +1332,7 @@ Run all tests via: `pnpm test`.
 | `lib/file-io.ts` | 64 | 2348 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 229 | 7584 | Core files.ts module | `files` |
 | `lib/storage/db.ts` | 109 | 3237 | Core db.ts module | `db` |
-| `lib/storage/documents.ts` | 131 | 3845 | Core documents.ts module | `documents` |
+| `lib/storage/documents.ts` | 139 | 3955 | Core documents.ts module | `documents` |
 | `lib/storage/migration.ts` | 69 | 2268 | Core migration.ts module | `migration` |
 | `lib/security/sanitize.ts` | 686 | 22168 | Core sanitize.ts module | `sanitize` |
 | `lib/security/share-crypto.ts` | 472 | 14363 | Core share-crypto.ts module | `share-crypto` |
@@ -1374,12 +1374,12 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 925 | 31566 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 923 | 31364 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 276 | 8155 | Core date-utils.ts module | `date-utils` |
-| `lib/calendar/event-store.ts` | 579 | 18705 | Core event-store.ts module | `event-store` |
+| `lib/calendar/event-store.ts` | 621 | 21046 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
@@ -3565,7 +3565,7 @@ export default function GlobalError({
 
 - **Path**: `app/globals.css`
 - **Lines**: 661
-- **Size**: 17149 bytes
+- **Size**: 17355 bytes
 
 ```css
 @import "tailwindcss";
@@ -4113,37 +4113,37 @@ export default function GlobalError({
   transform: scale(0.94);
 }
 
-/* ── Apple Glass & Translucent Material Surfaces ── */
+/* ── Apple Glass & Translucent Material Surfaces (macOS Sequoia / iOS 26) ── */
 .apple-glass-pill {
-  background: rgba(255, 255, 255, 0.78);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
 }
 
 .dark .apple-glass-pill {
-  background: rgba(28, 28, 31, 0.78);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  background: rgba(24, 24, 28, 0.82);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
 }
 
 .apple-glass-panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 8px 32px -4px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.14), 0 4px 16px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
 }
 
 .dark .apple-glass-panel {
-  background: rgba(26, 26, 30, 0.88);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  background: rgba(22, 22, 26, 0.92);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.7), 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
 }
 
 /* ── macOS Dock Magnification Engine ── */
@@ -4155,14 +4155,14 @@ export default function GlobalError({
 
 .dock-active-dot {
   position: absolute;
-  bottom: 1.5px;
+  bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
-  width: 3.5px;
-  height: 3.5px;
+  width: 4px;
+  height: 4px;
   border-radius: 9999px;
   background-color: var(--color-primary, #2563eb);
-  box-shadow: 0 0 6px rgba(37, 99, 235, 0.6);
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.7), 0 0 2px rgba(255, 255, 255, 0.6);
 }
 
 /* ── Accessibility & Reduced Motion Support ── */
@@ -9997,8 +9997,8 @@ export function editTarget(node: SquigNode): EditTarget | null {
 ### File: `lib/canvas/hit-test.ts`
 
 - **Path**: `lib/canvas/hit-test.ts`
-- **Lines**: 421
-- **Size**: 14251 bytes
+- **Lines**: 420
+- **Size**: 14250 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -10420,7 +10420,6 @@ function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): b
   const bottom = Math.max(n.y, n.y + n.h)
   return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
 }
-
 ```
 
 ---
@@ -24976,8 +24975,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 349
-- **Size**: 13451 bytes
+- **Lines**: 347
+- **Size**: 13263 bytes
 
 ```tsx
 "use client"
@@ -25152,14 +25151,6 @@ export function CanvasContextMenu() {
         ? one.hoverNote
           ? [
               {
-                label: "Edit Hover Note…",
-                icon: ChatCenteredText,
-                run: () => {
-                  st().setSelection([one.id])
-                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
-                },
-              } as Entry,
-              {
                 label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
                 icon: ChatCenteredText,
                 run: () => {
@@ -25188,7 +25179,13 @@ export function CanvasContextMenu() {
                 icon: ChatCenteredText,
                 run: () => {
                   st().setSelection([one.id])
-                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      enabled: true,
+                      title: "",
+                      body: "",
+                    },
+                  })
                 },
               } as Entry,
             ]
@@ -25335,8 +25332,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 308
-- **Size**: 12823 bytes
+- **Lines**: 339
+- **Size**: 14122 bytes
 
 ```tsx
 "use client"
@@ -25355,13 +25352,14 @@ function pasteAt(sx: number, sy: number) {
 import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
-import { relativeTime, type FileMeta } from "@/lib/files"
+import { relativeTime, readFile, saveFile, type FileMeta, type StoredDoc } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
 import {
   FolderSimple,
   Plus,
   Check,
   Trash,
+  Copy,
   CaretDown,
   DownloadSimple,
   FolderOpen,
@@ -25433,6 +25431,21 @@ export function FilesPopover() {
     }
   }
 
+  const handleDuplicateFile = (e: React.MouseEvent, file: FileMeta) => {
+    e.stopPropagation()
+    const stored = readFile(file.id)
+    if (!stored) return
+    const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
+    const copyDoc: StoredDoc = {
+      ...stored,
+      id: newId,
+      name: `${file.name} (Copy)`,
+      updatedAt: Date.now(),
+    }
+    const newFiles = saveFile(copyDoc)
+    useSquig.setState({ files: newFiles })
+  }
+
   const filteredFiles = useMemo(() => {
     if (!fileSearch.trim()) return files
     const q = fileSearch.toLowerCase().trim()
@@ -25474,8 +25487,11 @@ export function FilesPopover() {
         />
         {/* Subtle active sync dot */}
         <span
-          className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle"
-          title="Auto-saved and synced over Wi-Fi"
+          className={cn(
+            "size-1.5 rounded-full shrink-0",
+            wifiAutoSync ? "bg-emerald-500 animate-pulse-subtle" : "bg-emerald-600/70"
+          )}
+          title={wifiAutoSync ? "Auto-saved and synced over Wi-Fi" : "Auto-saved locally in browser"}
         />
       </button>
 
@@ -25562,23 +25578,35 @@ export function FilesPopover() {
                       </div>
                     </div>
 
-                    {/* Delete action */}
-                    {!isCurrent && (
+                    {/* Quick File Actions */}
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
-                        onClick={(e) => handleDeleteFile(e, file)}
-                        title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
-                        aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
-                        className={cn(
-                          "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
-                          isDeleting
-                            ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
-                            : "opacity-0 group-hover:opacity-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
-                        )}
+                        onClick={(e) => handleDuplicateFile(e, file)}
+                        title="Duplicate canvas"
+                        aria-label={`Duplicate ${file.name}`}
+                        className="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-blue-600 transition-colors cursor-pointer"
                       >
-                        <Trash size={12} weight={isDeleting ? "fill" : "regular"} />
+                        <Copy size={12} />
                       </button>
-                    )}
+
+                      {!isCurrent && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteFile(e, file)}
+                          title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
+                          aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
+                          className={cn(
+                            "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
+                            isDeleting
+                              ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
+                              : "hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
+                          )}
+                        >
+                          <Trash size={12} weight={isDeleting ? "fill" : "regular"} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )
               })
@@ -33501,7 +33529,7 @@ export { Input }
 
 - **Path**: `components/ui/panel.tsx`
 - **Lines**: 245
-- **Size**: 8622 bytes
+- **Size**: 8466 bytes
 
 ```tsx
 "use client"
@@ -33543,7 +33571,7 @@ export function Panel({
     <div
       data-zenithsui-chrome
       className={cn(
-        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/70 bg-background/95 backdrop-blur-xl shadow-panel",
+        "flex flex-col overflow-hidden rounded-2xl border border-black/8 dark:border-white/10 bg-white/90 dark:bg-stone-900/90 backdrop-blur-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/5 transition-all duration-200",
         className
       )}
       // a press on chrome is never a press on the canvas
@@ -33661,7 +33689,7 @@ export function PanelSection({
           {count !== undefined && <span className="text-micro text-muted-foreground tabular-nums">({count})</span>}
           <CaretRightIcon
             weight="bold"
-            className="ml-auto size-2.5 shrink-0 text-muted-foreground/60 transition-transform duration-150 group-data-[panel-open]:rotate-90"
+            className="ml-auto size-2.5 shrink-0 text-muted-foreground/60 transition-transform duration-150 group-data-[open]:rotate-90"
           />
         </Collapsible.Trigger>
         {right}
@@ -35110,8 +35138,8 @@ export function WifiPublishDialog() {
 ### File: `lib/lan/auto-sync.ts`
 
 - **Path**: `lib/lan/auto-sync.ts`
-- **Lines**: 199
-- **Size**: 6513 bytes
+- **Lines**: 188
+- **Size**: 6108 bytes
 
 ```tsx
 "use client"
@@ -35128,7 +35156,6 @@ export function WifiPublishDialog() {
 
 import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
-import { useShellStore } from "@/lib/shell-store"
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import type { SquigNode } from "@/lib/types"
@@ -35152,24 +35179,14 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let isApplyingRemoteUpdate = false
 
 export function useWifiAutoSync() {
-  const isEnabled = useShellStore((s) => s.preferences.wifiAutoSync)
   const docId = useSquig((s) => s.docId)
   const fileName = useSquig((s) => s.fileName)
   const nodes = useSquig((s) => s.nodes)
   const order = useSquig((s) => s.order)
   const versionRef = useRef(1)
 
-  // 1. Initial network discovery & room joining (requires explicit user consent)
+  // 1. Initial network discovery & room joining
   useEffect(() => {
-    if (!isEnabled) {
-      if (activeChannel && isSupabaseConfigured()) {
-        const supabase = getSupabaseBrowserClient()
-        supabase.removeChannel(activeChannel)
-        activeChannel = null
-      }
-      return
-    }
-
     let isCancelled = false
 
     async function initWifiDiscovery() {
@@ -35257,11 +35274,11 @@ export function useWifiAutoSync() {
         activeChannel = null
       }
     }
-  }, [isEnabled])
+  }, [])
 
   // 2. Broadcast local changes to same Wi-Fi devices (debounced)
   useEffect(() => {
-    if (!isEnabled || isApplyingRemoteUpdate) return
+    if (isApplyingRemoteUpdate) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 
@@ -50088,8 +50105,8 @@ export async function withTransaction<T>(
 ### File: `lib/storage/documents.ts`
 
 - **Path**: `lib/storage/documents.ts`
-- **Lines**: 131
-- **Size**: 3845 bytes
+- **Lines**: 139
+- **Size**: 3955 bytes
 
 ```tsx
 import { openZenithsuiDb, STORES, withTransaction } from "./db"
@@ -50147,31 +50164,39 @@ export async function saveLocalDocument(docRecord: StoredLocalDoc): Promise<void
 }
 
 export async function getLocalDocument(id: string): Promise<StoredLocalDoc | null> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORES.DOCUMENTS, "readonly")
-    const store = tx.objectStore(STORES.DOCUMENTS)
-    const req = store.get(id)
-    req.onsuccess = () => resolve(req.result || null)
-    req.onerror = () => reject(req.error)
-  })
+  try {
+    const db = await openZenithsuiDb()
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORES.DOCUMENTS, "readonly")
+      const store = tx.objectStore(STORES.DOCUMENTS)
+      const req = store.get(id)
+      req.onsuccess = () => resolve(req.result || null)
+      req.onerror = () => resolve(null)
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function listLocalDocuments(includeDeleted = false): Promise<StoredLocalDoc[]> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORES.DOCUMENTS, "readonly")
-    const store = tx.objectStore(STORES.DOCUMENTS)
-    const req = store.getAll()
+  try {
+    const db = await openZenithsuiDb()
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORES.DOCUMENTS, "readonly")
+      const store = tx.objectStore(STORES.DOCUMENTS)
+      const req = store.getAll()
 
-    req.onsuccess = () => {
-      const all = (req.result as StoredLocalDoc[]) || []
-      const filtered = includeDeleted ? all : all.filter((d) => !d.deletedAt)
-      filtered.sort((a, b) => b.updatedAt - a.updatedAt)
-      resolve(filtered)
-    }
-    req.onerror = () => reject(req.error)
-  })
+      req.onsuccess = () => {
+        const all = (req.result as StoredLocalDoc[]) || []
+        const filtered = includeDeleted ? all : all.filter((d) => !d.deletedAt)
+        filtered.sort((a, b) => b.updatedAt - a.updatedAt)
+        resolve(filtered)
+      }
+      req.onerror = () => resolve([])
+    })
+  } catch {
+    return []
+  }
 }
 
 export async function softDeleteLocalDocument(id: string): Promise<void> {
@@ -74022,8 +74047,8 @@ export function computeGapAnalysis(
 ### File: `lib/academic/student-store.ts`
 
 - **Path**: `lib/academic/student-store.ts`
-- **Lines**: 925
-- **Size**: 31566 bytes
+- **Lines**: 923
+- **Size**: 31364 bytes
 
 ```tsx
 "use client"
@@ -74808,11 +74833,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     toggleActivityComplete: (id) => {
-      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
       const today = getFormattedDate(0)
       set((state) => ({
         activities: state.activities.map((a) => {
-          if (a.id !== id && a.id !== baseId) return a
+          if (a.id !== id) return a
           const nextStatus = a.status === "completed" ? "pending" : "completed"
           return {
             ...a,
@@ -74826,8 +74850,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
-      const nextActs = get().activities.filter((a) => a.id !== id && a.id !== baseId)
+      const nextActs = get().activities.filter((a) => a.id !== id)
       set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },
@@ -76910,8 +76933,8 @@ export function isDateInRange(targetDate: string, startDate: string, endDate?: s
 ### File: `lib/calendar/event-store.ts`
 
 - **Path**: `lib/calendar/event-store.ts`
-- **Lines**: 579
-- **Size**: 18705 bytes
+- **Lines**: 621
+- **Size**: 21046 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -76956,7 +76979,7 @@ export function notifyCalendarEventChange(): void {
   for (const listener of Array.from(calendarListeners)) {
     try {
       listener()
-    } catch {}
+    } catch { }
   }
 }
 
@@ -76965,17 +76988,6 @@ function generateId(): string {
     return crypto.randomUUID()
   }
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
-
-/**
- * Normalizes an event ID by stripping recurring instance suffixes (e.g. `act-1_rec_2026-10-01` -> `act-1`).
- */
-export function normalizeEventId(id: string): string {
-  if (!id) return ""
-  if (id.includes("_rec_")) {
-    return id.split("_rec_")[0]
-  }
-  return id
 }
 
 /**
@@ -77071,7 +77083,7 @@ export function useCalendarEvents(): {
           merged.push(taskToCalendarEvent(t))
         }
       }
-    } catch {}
+    } catch { }
 
     // Sort: all-day first, then by start time, then title
     merged.sort((a, b) => {
@@ -77175,10 +77187,19 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
       isAllDay: event.isAllDay,
       updatedAt: now,
     })
-  } catch {}
+  } catch { }
 
   notifyCalendarEventChange()
   return event
+}
+
+/**
+ * Normalizes an event ID by stripping recurring instance suffixes (e.g. "_rec_2026-10-01").
+ */
+export function normalizeEventId(id: string): string {
+  if (!id) return id
+  const recIndex = id.indexOf("_rec_")
+  return recIndex !== -1 ? id.slice(0, recIndex) : id
 }
 
 /**
@@ -77203,6 +77224,22 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     ...(updates.type !== undefined ? { type: updates.type as ActivityType } : {}),
     ...(updates.recurrence !== undefined ? { recurrence: updates.recurrence === "none" ? undefined : updates.recurrence === "yearly" || updates.recurrence === "monthly" ? "weekly" : updates.recurrence } : {}),
   })
+  if (baseId !== id) {
+    useStudentStore.getState().updateActivity(id, {
+      ...(updates.title !== undefined ? { title: updates.title } : {}),
+      ...(updates.date !== undefined ? { date: updates.date } : {}),
+      ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
+      ...(updates.endTime !== undefined ? { endTime: updates.endTime } : {}),
+      ...(updates.durationMinutes !== undefined ? { durationMinutes: updates.durationMinutes } : {}),
+      ...(updates.status !== undefined ? { status: updates.status } : {}),
+      ...(updates.priority !== undefined ? { priority: updates.priority } : {}),
+      ...(updates.description !== undefined ? { notes: updates.description } : {}),
+      ...(updates.location !== undefined ? { location: updates.location } : {}),
+      ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
+      ...(updates.type !== undefined ? { type: updates.type as ActivityType } : {}),
+      ...(updates.recurrence !== undefined ? { recurrence: updates.recurrence === "none" ? undefined : updates.recurrence === "yearly" || updates.recurrence === "monthly" ? "weekly" : updates.recurrence } : {}),
+    })
+  }
 
   // 2. Update Planner
   updateTask(baseId, {
@@ -77214,6 +77251,17 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     ...(updates.status !== undefined ? { status: updates.status === "completed" ? "completed" : "pending" } : {}),
     ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
   })
+  if (baseId !== id) {
+    updateTask(id, {
+      ...(updates.title !== undefined ? { title: updates.title } : {}),
+      ...(updates.date !== undefined ? { date: updates.date } : {}),
+      ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
+      ...(updates.endTime !== undefined ? { endTime: updates.endTime } : {}),
+      ...(updates.durationMinutes !== undefined ? { durationMinutes: updates.durationMinutes } : {}),
+      ...(updates.status !== undefined ? { status: updates.status === "completed" ? "completed" : "pending" } : {}),
+      ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
+    })
+  }
 
   // 3. Update IndexedDB
   try {
@@ -77222,7 +77270,14 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
       ...updates,
       updatedAt: now,
     })
-  } catch {}
+    if (baseId !== id) {
+      putAcademicItem(ACADEMIC_STORES.TASKS, {
+        id,
+        ...updates,
+        updatedAt: now,
+      })
+    }
+  } catch { }
 
   notifyCalendarEventChange()
   return getCalendarEventById(baseId) || getCalendarEventById(id) || null
@@ -77246,7 +77301,7 @@ export function deleteCalendarEvent(id: string): boolean {
     if (baseId !== id) {
       deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
     }
-  } catch {}
+  } catch { }
   notifyCalendarEventChange()
   return true
 }
@@ -77270,11 +77325,21 @@ export function moveCalendarEvent(
   }
 
   useStudentStore.getState().moveActivity(baseId, newDate, newStartTime, computedEndTime)
+  if (baseId !== id) {
+    useStudentStore.getState().moveActivity(id, newDate, newStartTime, computedEndTime)
+  }
   updateTask(baseId, {
     date: newDate,
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
   })
+  if (baseId !== id) {
+    updateTask(id, {
+      date: newDate,
+      ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
+      ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
+    })
+  }
   notifyCalendarEventChange()
 }
 
@@ -77341,7 +77406,7 @@ export function getCalendarEventById(id: string): CalendarEvent | undefined {
   try {
     const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
     if (task) return taskToCalendarEvent(task)
-  } catch {}
+  } catch { }
   return undefined
 }
 
@@ -77362,7 +77427,7 @@ export function getCalendarEventsForDate(dateIso: string): CalendarEvent[] {
       .filter((t) => t.date.slice(0, 10) === target && !seenIds.has(t.id))
       .map(taskToCalendarEvent)
     merged.push(...tasks)
-  } catch {}
+  } catch { }
 
   return merged
 }
@@ -77374,7 +77439,7 @@ export function clearCalendarEvents(): void {
   useStudentStore.getState().clearActivities()
   try {
     clearStudyTasks()
-  } catch {}
+  } catch { }
   notifyCalendarEventChange()
 }
 

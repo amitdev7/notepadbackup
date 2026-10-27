@@ -37,7 +37,7 @@ export function Panel({
     <div
       data-zenithsui-chrome
       className={cn(
-        "flex flex-col overflow-hidden rounded-chrome-lg border border-border/70 bg-background/95 backdrop-blur-xl shadow-panel",
+        "flex flex-col overflow-hidden rounded-2xl border border-black/8 dark:border-white/10 bg-white/90 dark:bg-stone-900/90 backdrop-blur-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/5 transition-all duration-200",
         className
       )}
       // a press on chrome is never a press on the canvas
@@ -155,7 +155,7 @@ export function PanelSection({
           {count !== undefined && <span className="text-micro text-muted-foreground tabular-nums">({count})</span>}
           <CaretRightIcon
             weight="bold"
-            className="ml-auto size-2.5 shrink-0 text-muted-foreground/60 transition-transform duration-150 group-data-[panel-open]:rotate-90"
+            className="ml-auto size-2.5 shrink-0 text-muted-foreground/60 transition-transform duration-150 group-data-[open]:rotate-90"
           />
         </Collapsible.Trigger>
         {right}

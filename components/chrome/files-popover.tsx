@@ -14,13 +14,14 @@
 import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
-import { relativeTime, type FileMeta } from "@/lib/files"
+import { relativeTime, readFile, saveFile, type FileMeta, type StoredDoc } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
 import {
   FolderSimple,
   Plus,
   Check,
   Trash,
+  Copy,
   CaretDown,
   DownloadSimple,
   FolderOpen,
@@ -92,6 +93,21 @@ export function FilesPopover() {
     }
   }
 
+  const handleDuplicateFile = (e: React.MouseEvent, file: FileMeta) => {
+    e.stopPropagation()
+    const stored = readFile(file.id)
+    if (!stored) return
+    const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
+    const copyDoc: StoredDoc = {
+      ...stored,
+      id: newId,
+      name: `${file.name} (Copy)`,
+      updatedAt: Date.now(),
+    }
+    const newFiles = saveFile(copyDoc)
+    useSquig.setState({ files: newFiles })
+  }
+
   const filteredFiles = useMemo(() => {
     if (!fileSearch.trim()) return files
     const q = fileSearch.toLowerCase().trim()
@@ -133,8 +149,11 @@ export function FilesPopover() {
         />
         {/* Subtle active sync dot */}
         <span
-          className="size-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse-subtle"
-          title="Auto-saved and synced over Wi-Fi"
+          className={cn(
+            "size-1.5 rounded-full shrink-0",
+            wifiAutoSync ? "bg-emerald-500 animate-pulse-subtle" : "bg-emerald-600/70"
+          )}
+          title={wifiAutoSync ? "Auto-saved and synced over Wi-Fi" : "Auto-saved locally in browser"}
         />
       </button>
 
@@ -221,23 +240,35 @@ export function FilesPopover() {
                       </div>
                     </div>
 
-                    {/* Delete action */}
-                    {!isCurrent && (
+                    {/* Quick File Actions */}
+                    <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         type="button"
-                        onClick={(e) => handleDeleteFile(e, file)}
-                        title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
-                        aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
-                        className={cn(
-                          "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
-                          isDeleting
-                            ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
-                            : "opacity-0 group-hover:opacity-100 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
-                        )}
+                        onClick={(e) => handleDuplicateFile(e, file)}
+                        title="Duplicate canvas"
+                        aria-label={`Duplicate ${file.name}`}
+                        className="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-blue-600 transition-colors cursor-pointer"
                       >
-                        <Trash size={12} weight={isDeleting ? "fill" : "regular"} />
+                        <Copy size={12} />
                       </button>
-                    )}
+
+                      {!isCurrent && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteFile(e, file)}
+                          title={isDeleting ? "Click again to confirm delete" : "Delete canvas"}
+                          aria-label={isDeleting ? "Confirm delete" : "Delete canvas"}
+                          className={cn(
+                            "p-1.5 rounded-lg transition-all shrink-0 cursor-pointer",
+                            isDeleting
+                              ? "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400 animate-badge-pop"
+                              : "hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-rose-600"
+                          )}
+                        >
+                          <Trash size={12} weight={isDeleting ? "fill" : "regular"} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )
               })

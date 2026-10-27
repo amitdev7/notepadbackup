@@ -53,31 +53,39 @@ export async function saveLocalDocument(docRecord: StoredLocalDoc): Promise<void
 }
 
 export async function getLocalDocument(id: string): Promise<StoredLocalDoc | null> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORES.DOCUMENTS, "readonly")
-    const store = tx.objectStore(STORES.DOCUMENTS)
-    const req = store.get(id)
-    req.onsuccess = () => resolve(req.result || null)
-    req.onerror = () => reject(req.error)
-  })
+  try {
+    const db = await openZenithsuiDb()
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORES.DOCUMENTS, "readonly")
+      const store = tx.objectStore(STORES.DOCUMENTS)
+      const req = store.get(id)
+      req.onsuccess = () => resolve(req.result || null)
+      req.onerror = () => resolve(null)
+    })
+  } catch {
+    return null
+  }
 }
 
 export async function listLocalDocuments(includeDeleted = false): Promise<StoredLocalDoc[]> {
-  const db = await openZenithsuiDb()
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction(STORES.DOCUMENTS, "readonly")
-    const store = tx.objectStore(STORES.DOCUMENTS)
-    const req = store.getAll()
+  try {
+    const db = await openZenithsuiDb()
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORES.DOCUMENTS, "readonly")
+      const store = tx.objectStore(STORES.DOCUMENTS)
+      const req = store.getAll()
 
-    req.onsuccess = () => {
-      const all = (req.result as StoredLocalDoc[]) || []
-      const filtered = includeDeleted ? all : all.filter((d) => !d.deletedAt)
-      filtered.sort((a, b) => b.updatedAt - a.updatedAt)
-      resolve(filtered)
-    }
-    req.onerror = () => reject(req.error)
-  })
+      req.onsuccess = () => {
+        const all = (req.result as StoredLocalDoc[]) || []
+        const filtered = includeDeleted ? all : all.filter((d) => !d.deletedAt)
+        filtered.sort((a, b) => b.updatedAt - a.updatedAt)
+        resolve(filtered)
+      }
+      req.onerror = () => resolve([])
+    })
+  } catch {
+    return []
+  }
 }
 
 export async function softDeleteLocalDocument(id: string): Promise<void> {

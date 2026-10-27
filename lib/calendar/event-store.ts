@@ -40,7 +40,7 @@ export function notifyCalendarEventChange(): void {
   for (const listener of Array.from(calendarListeners)) {
     try {
       listener()
-    } catch {}
+    } catch { }
   }
 }
 
@@ -49,17 +49,6 @@ function generateId(): string {
     return crypto.randomUUID()
   }
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
-}
-
-/**
- * Normalizes an event ID by stripping recurring instance suffixes (e.g. `act-1_rec_2026-10-01` -> `act-1`).
- */
-export function normalizeEventId(id: string): string {
-  if (!id) return ""
-  if (id.includes("_rec_")) {
-    return id.split("_rec_")[0]
-  }
-  return id
 }
 
 /**
@@ -155,7 +144,7 @@ export function useCalendarEvents(): {
           merged.push(taskToCalendarEvent(t))
         }
       }
-    } catch {}
+    } catch { }
 
     // Sort: all-day first, then by start time, then title
     merged.sort((a, b) => {
@@ -259,10 +248,19 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
       isAllDay: event.isAllDay,
       updatedAt: now,
     })
-  } catch {}
+  } catch { }
 
   notifyCalendarEventChange()
   return event
+}
+
+/**
+ * Normalizes an event ID by stripping recurring instance suffixes (e.g. "_rec_2026-10-01").
+ */
+export function normalizeEventId(id: string): string {
+  if (!id) return id
+  const recIndex = id.indexOf("_rec_")
+  return recIndex !== -1 ? id.slice(0, recIndex) : id
 }
 
 /**
@@ -287,6 +285,22 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     ...(updates.type !== undefined ? { type: updates.type as ActivityType } : {}),
     ...(updates.recurrence !== undefined ? { recurrence: updates.recurrence === "none" ? undefined : updates.recurrence === "yearly" || updates.recurrence === "monthly" ? "weekly" : updates.recurrence } : {}),
   })
+  if (baseId !== id) {
+    useStudentStore.getState().updateActivity(id, {
+      ...(updates.title !== undefined ? { title: updates.title } : {}),
+      ...(updates.date !== undefined ? { date: updates.date } : {}),
+      ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
+      ...(updates.endTime !== undefined ? { endTime: updates.endTime } : {}),
+      ...(updates.durationMinutes !== undefined ? { durationMinutes: updates.durationMinutes } : {}),
+      ...(updates.status !== undefined ? { status: updates.status } : {}),
+      ...(updates.priority !== undefined ? { priority: updates.priority } : {}),
+      ...(updates.description !== undefined ? { notes: updates.description } : {}),
+      ...(updates.location !== undefined ? { location: updates.location } : {}),
+      ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
+      ...(updates.type !== undefined ? { type: updates.type as ActivityType } : {}),
+      ...(updates.recurrence !== undefined ? { recurrence: updates.recurrence === "none" ? undefined : updates.recurrence === "yearly" || updates.recurrence === "monthly" ? "weekly" : updates.recurrence } : {}),
+    })
+  }
 
   // 2. Update Planner
   updateTask(baseId, {
@@ -298,6 +312,17 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
     ...(updates.status !== undefined ? { status: updates.status === "completed" ? "completed" : "pending" } : {}),
     ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
   })
+  if (baseId !== id) {
+    updateTask(id, {
+      ...(updates.title !== undefined ? { title: updates.title } : {}),
+      ...(updates.date !== undefined ? { date: updates.date } : {}),
+      ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
+      ...(updates.endTime !== undefined ? { endTime: updates.endTime } : {}),
+      ...(updates.durationMinutes !== undefined ? { durationMinutes: updates.durationMinutes } : {}),
+      ...(updates.status !== undefined ? { status: updates.status === "completed" ? "completed" : "pending" } : {}),
+      ...(updates.isAllDay !== undefined ? { isAllDay: updates.isAllDay } : {}),
+    })
+  }
 
   // 3. Update IndexedDB
   try {
@@ -306,7 +331,14 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
       ...updates,
       updatedAt: now,
     })
-  } catch {}
+    if (baseId !== id) {
+      putAcademicItem(ACADEMIC_STORES.TASKS, {
+        id,
+        ...updates,
+        updatedAt: now,
+      })
+    }
+  } catch { }
 
   notifyCalendarEventChange()
   return getCalendarEventById(baseId) || getCalendarEventById(id) || null
@@ -330,7 +362,7 @@ export function deleteCalendarEvent(id: string): boolean {
     if (baseId !== id) {
       deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
     }
-  } catch {}
+  } catch { }
   notifyCalendarEventChange()
   return true
 }
@@ -354,11 +386,21 @@ export function moveCalendarEvent(
   }
 
   useStudentStore.getState().moveActivity(baseId, newDate, newStartTime, computedEndTime)
+  if (baseId !== id) {
+    useStudentStore.getState().moveActivity(id, newDate, newStartTime, computedEndTime)
+  }
   updateTask(baseId, {
     date: newDate,
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
   })
+  if (baseId !== id) {
+    updateTask(id, {
+      date: newDate,
+      ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
+      ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
+    })
+  }
   notifyCalendarEventChange()
 }
 
@@ -425,7 +467,7 @@ export function getCalendarEventById(id: string): CalendarEvent | undefined {
   try {
     const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
     if (task) return taskToCalendarEvent(task)
-  } catch {}
+  } catch { }
   return undefined
 }
 
@@ -446,7 +488,7 @@ export function getCalendarEventsForDate(dateIso: string): CalendarEvent[] {
       .filter((t) => t.date.slice(0, 10) === target && !seenIds.has(t.id))
       .map(taskToCalendarEvent)
     merged.push(...tasks)
-  } catch {}
+  } catch { }
 
   return merged
 }
@@ -458,7 +500,7 @@ export function clearCalendarEvents(): void {
   useStudentStore.getState().clearActivities()
   try {
     clearStudyTasks()
-  } catch {}
+  } catch { }
   notifyCalendarEventChange()
 }
 

@@ -170,14 +170,6 @@ export function CanvasContextMenu() {
         ? one.hoverNote
           ? [
               {
-                label: "Edit Hover Note…",
-                icon: ChatCenteredText,
-                run: () => {
-                  st().setSelection([one.id])
-                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
-                },
-              } as Entry,
-              {
                 label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
                 icon: ChatCenteredText,
                 run: () => {
@@ -206,7 +198,13 @@ export function CanvasContextMenu() {
                 icon: ChatCenteredText,
                 run: () => {
                   st().setSelection([one.id])
-                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      enabled: true,
+                      title: "",
+                      body: "",
+                    },
+                  })
                 },
               } as Entry,
             ]

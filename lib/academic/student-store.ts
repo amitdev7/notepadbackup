@@ -780,11 +780,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     toggleActivityComplete: (id) => {
-      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
       const today = getFormattedDate(0)
       set((state) => ({
         activities: state.activities.map((a) => {
-          if (a.id !== id && a.id !== baseId) return a
+          if (a.id !== id) return a
           const nextStatus = a.status === "completed" ? "pending" : "completed"
           return {
             ...a,
@@ -798,8 +797,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
-      const nextActs = get().activities.filter((a) => a.id !== id && a.id !== baseId)
+      const nextActs = get().activities.filter((a) => a.id !== id)
       set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },

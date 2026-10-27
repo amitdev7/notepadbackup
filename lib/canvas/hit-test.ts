@@ -417,4 +417,3 @@ function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): b
   const bottom = Math.max(n.y, n.y + n.h)
   return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
 }
-
