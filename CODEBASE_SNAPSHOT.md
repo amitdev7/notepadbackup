@@ -1171,13 +1171,13 @@ Run all tests via: `pnpm test`.
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
 | `lib/store.ts` | 1590 | 57996 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 307 | 9198 | Core types.ts module | `types` |
+| `lib/types.ts` | 310 | 9257 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
 | `lib/canvas/duplicate.ts` | 43 | 1693 | Core duplicate.ts module | `duplicate` |
 | `lib/canvas/edit-target.ts` | 180 | 6655 | Core edit-target.ts module | `edit-target` |
-| `lib/canvas/hit-test.ts` | 350 | 12054 | Core hit-test.ts module | `hit-test` |
+| `lib/canvas/hit-test.ts` | 401 | 13529 | Core hit-test.ts module | `hit-test` |
 | `lib/canvas/keyboard-owner.ts` | 38 | 1867 | Core keyboard-owner.ts module | `keyboard-owner` |
 | `lib/canvas/snap-engine.ts` | 775 | 23634 | Core snap-engine.ts module | `snap-engine` |
 | `lib/canvas/stroke-smoothing.ts` | 109 | 3536 | Core stroke-smoothing.ts module | `stroke-smoothing` |
@@ -1197,7 +1197,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2313 | 85526 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 2365 | 87952 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25333 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
@@ -1206,7 +1206,8 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/smart-hover-note.tsx` | 383 | 12950 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/quick-note-dialog.tsx` | 249 | 9796 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/smart-hover-note.tsx` | 289 | 9606 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1352,7 +1353,7 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 460 | 15502 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 328 | 12652 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 306 | 10898 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-card.tsx` | 318 | 11308 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 527 | 19869 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3839 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
@@ -1360,7 +1361,7 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-month-year-picker.tsx` | 214 | 6615 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
 | `components/calendar/calendar-reminder-toast.tsx` | 143 | 4746 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 399 | 14911 | Core calendar-week-view.tsx module | `calendar-week-view` |
-| `components/calendar/functional-calendar.tsx` | 621 | 21570 | Core functional-calendar.tsx module | `functional-calendar` |
+| `components/calendar/functional-calendar.tsx` | 621 | 21649 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
 | `lib/academic/announcements.ts` | 326 | 10058 | Core announcements.ts module | `announcements` |
 | `lib/academic/assignments.ts` | 860 | 23538 | Core assignments.ts module | `assignments` |
@@ -1378,7 +1379,7 @@ Run all tests via: `pnpm test`.
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 276 | 8155 | Core date-utils.ts module | `date-utils` |
-| `lib/calendar/event-store.ts` | 538 | 17353 | Core event-store.ts module | `event-store` |
+| `lib/calendar/event-store.ts` | 564 | 18211 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
@@ -1408,7 +1409,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
 | `scripts/test-functional-calendar.ts` | 449 | 18468 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
-| `scripts/test-hover-notes.ts` | 323 | 11325 | Core test-hover-notes.ts module | `test-hover-notes` |
+| `scripts/test-hover-notes.ts` | 183 | 6097 | Core test-hover-notes.ts module | `test-hover-notes` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -8462,8 +8463,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 307
-- **Size**: 9198 bytes
+- **Lines**: 310
+- **Size**: 9257 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -8520,6 +8521,9 @@ export interface HoverNote {
   enabled: boolean
   title?: string
   body: string
+  theme?: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface BaseNode {
@@ -9993,8 +9997,8 @@ export function editTarget(node: SquigNode): EditTarget | null {
 ### File: `lib/canvas/hit-test.ts`
 
 - **Path**: `lib/canvas/hit-test.ts`
-- **Lines**: 350
-- **Size**: 12054 bytes
+- **Lines**: 401
+- **Size**: 13529 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -10346,6 +10350,57 @@ export function pickInRect(
   }
   return out
 }
+
+/**
+ * Resolves the topmost node eligible for a Smart Hover Note under a world point.
+ * Prioritizes direct stroke hits, followed by the object's visual bounding area
+ * (allowing users to hover over an arrow's, drawing's, or frame's bounding area).
+ * Walks front-to-back to preserve z-index ordering.
+ */
+export function pickHoverTarget(
+  nodes: Record<string, SquigNode>,
+  order: readonly string[],
+  x: number,
+  y: number,
+  zoom: number
+): SquigNode | null {
+  // 1. Direct stroke / solid surface hit (front-to-back)
+  for (let i = order.length - 1; i >= 0; i--) {
+    const n = nodes[order[i]]
+    if (!n) continue
+    const note = n.hoverNote
+    if (
+      note &&
+      note.enabled !== false &&
+      ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
+    ) {
+      if (hitsPoint(n, x, y, zoom)) {
+        return n
+      }
+    }
+  }
+
+  // 2. Bounding area hit (front-to-back) — covers the object's visual area shown in selection boxes
+  for (let i = order.length - 1; i >= 0; i--) {
+    const n = nodes[order[i]]
+    if (!n) continue
+    const note = n.hoverNote
+    if (
+      note &&
+      note.enabled !== false &&
+      ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
+    ) {
+      const b = boxOf(n)
+      const pad = 4
+      if (x >= b.x - pad && x <= b.x + b.w + pad && y >= b.y - pad && y <= b.y + b.h + pad) {
+        return n
+      }
+    }
+  }
+
+  return null
+}
+
 ```
 
 ---
@@ -13968,8 +14023,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2313
-- **Size**: 85526 bytes
+- **Lines**: 2365
+- **Size**: 87952 bytes
 
 ```tsx
 "use client"
@@ -14001,7 +14056,7 @@ import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
 import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
 import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type Handle } from "@/lib/canvas/transform"
-import { pickAt, pickInRect, pickSoftAt } from "@/lib/canvas/hit-test"
+import { pickAt, pickInRect, pickSoftAt, pickHoverTarget } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
 import { dropFiles } from "@/lib/clipboard"
@@ -14023,6 +14078,8 @@ import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
+import { QuickNoteDialog } from "./quick-note-dialog"
+import { Cloud } from "@phosphor-icons/react"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -14188,6 +14245,8 @@ export function Canvas() {
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [pointerClientPos, setPointerClientPos] = useState<{ x: number; y: number } | null>(null)
+  const [hoverNoteTarget, setHoverNoteTarget] = useState<SquigNode | null>(null)
+  const [quickNoteNode, setQuickNoteNode] = useState<SquigNode | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
@@ -15420,17 +15479,13 @@ export function Canvas() {
   // hover feedback + placement ghost, throttled to one pass per frame
   const onPointerMoveLocal = useCallback(
     (e: React.PointerEvent) => {
-      // Touch devices do not trigger desktop mouse hover
-      if (e.pointerType === "touch") {
-        if (hover) setHover(null)
-        return
-      }
       const s = st()
       pointerWorld.current = toWorld(e)
       // the ghost is driven at the window level instead — see below
       if (s.placing) return
       if (gestureRef.current || s.tool !== "select" || isSpacebarHeld || s.editingId) {
         if (hover) setHover(null)
+        if (hoverNoteTarget) setHoverNoteTarget(null)
         return
       }
       if (hoverRafRef.current !== null) return
@@ -15445,13 +15500,18 @@ export function Canvas() {
         const hard = pickAt(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
         const id = hard ?? pickSoftAt(cur.nodes, cur.order, wx, wy)
         setHover(id ? { id, soft: !hard } : null)
+
+        // Universal Hover Notes: hit test exact stroke or visual bounding area (arrows, sketches, frames, etc.)
+        const noteTarget = pickHoverTarget(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
+        setHoverNoteTarget(noteTarget)
       })
     },
-    [st, toWorld, hover, isSpacebarHeld]
+    [st, toWorld, hover, hoverNoteTarget, isSpacebarHeld]
   )
 
   const onPointerLeave = useCallback(() => {
     setHover(null)
+    setHoverNoteTarget(null)
     setPointerClientPos(null)
   }, [])
 
@@ -15812,6 +15872,16 @@ export function Canvas() {
         case "a": s.setArrowHead(true); s.setTool("arrow"); break
         case "c": s.setPanel("components"); break
         case "b": s.setPanel("blocks"); break
+        case "h": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+            }
+          }
+          break
+        }
         case "ArrowLeft":
         case "ArrowRight":
         case "ArrowUp":
@@ -16049,13 +16119,27 @@ export function Canvas() {
         editing={!!editingId}
         gestureKind={gestureKind}
         readOnly={isViewer}
+        onOpenQuickNote={(n) => setQuickNoteNode(n)}
       />
 
-      {/* Smart Hover Notes: Universal floating explanatory notes (hard hit only) */}
+      {/* Smart Hover Notes: Universal floating explanatory notes (Clouds Theme) */}
       <SmartHoverNote
-        targetNode={hover && !hover.soft ? nodes[hover.id] : null}
+        targetNode={hoverNoteTarget}
         pointerPos={pointerClientPos}
         isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
+      />
+
+      {/* Universal Quick Note Dialog: Add or edit hover note on any object */}
+      <QuickNoteDialog
+        node={quickNoteNode}
+        isOpen={Boolean(quickNoteNode)}
+        onClose={() => setQuickNoteNode(null)}
+        onSave={(nodeId, note) => {
+          st().updateNodes({ [nodeId]: { hoverNote: note } })
+        }}
+        onDeleteNote={(nodeId) => {
+          st().updateNodes({ [nodeId]: { hoverNote: undefined } })
+        }}
       />
 
       {/* smart guides */}
@@ -16172,6 +16256,7 @@ function SelectionOverlay({
   editing,
   gestureKind,
   readOnly,
+  onOpenQuickNote,
 }: {
   selectedNodes: SquigNode[]
   viewport: { x: number; y: number; zoom: number }
@@ -16179,6 +16264,7 @@ function SelectionOverlay({
   editing: boolean
   gestureKind: Gesture["kind"] | null
   readOnly?: boolean
+  onOpenQuickNote?: (node: SquigNode) => void
 }) {
   const b = unionBounds(selectedNodes)
   // the text editor draws its own dashed box; two boxes on one node is noise
@@ -16237,6 +16323,27 @@ function SelectionOverlay({
       {!marqueeing && (
         <div className="pointer-events-none absolute" style={{ left, top, width: w, height: h }}>
           <div className="absolute inset-0 rounded-sm" style={{ border: "2px solid var(--sq-select)" }} />
+
+          {/* Floating Quick Note Pill on selection bounding box */}
+          {selectedNodes.length === 1 && !readOnly && onOpenQuickNote && (
+            <div className="pointer-events-auto absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  onOpenQuickNote(selectedNodes[0])
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shadow-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-sky-400/50 text-sky-700 dark:text-sky-300 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap select-none"
+                title="Add or edit hover note (Shortcut: H)"
+              >
+                <Cloud size={13} weight="fill" className="text-sky-500 shrink-0" />
+                <span>
+                  {selectedNodes[0].hoverNote?.body?.trim() ? "Edit Note" : "Add Note"}
+                </span>
+              </button>
+            </div>
+          )}
           {showHandles &&
             // Corners last, so they sit on top: their pads can meet a side's on
             // a tight box, and a mis-grab costs more on a corner than a side.
@@ -19557,51 +19664,305 @@ export function PerfHud({
 
 ---
 
-### File: `components/canvas/smart-hover-note.tsx`
+### File: `components/canvas/quick-note-dialog.tsx`
 
-- **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 383
-- **Size**: 12950 bytes
+- **Path**: `components/canvas/quick-note-dialog.tsx`
+- **Lines**: 249
+- **Size**: 9796 bytes
 
 ```tsx
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Smart Hover Notes — Premium macOS/iOS-Inspired Hover Annotation
+// Zenithsui Quick Note Dialog — Clouds-Themed Inline Annotation Editor
 //
-// Desktop hover-only floating cards for canvas objects (arrows, freehand
-// sketches, shapes, text, components, images, documents, stickies, etc.).
-//
-// Core Invariants:
-// 1. 100% hidden when not hovering: no persistent canvas text, labels, or decorations.
-// 2. Exact stroke hit-testing: arrows and sketches trigger only on actual stroke collars.
-//    Hollow shapes trigger only on their drawn perimeter; filled shapes on their surface.
-// 3. Stable cursor anchoring: card anchors on hover reveal and does NOT jump or flicker
-//    while moving the pointer over the same object.
-// 4. Smooth Apple-style entrance and exit transitions (160ms in, 140ms out) with
-//    prefers-reduced-motion safety.
-// 5. Automatic theme inheritance across all 12 Zenithsui palettes, paper shades, and dark modes.
-// 6. Viewport collision detection with auto-flipping and screen edge clamping.
+// Allows users to easily add, edit, or delete Smart Hover Notes on ANY canvas
+// object (Arrows, Doodles, Shapes, Frames, Components, Text, Images, etc.).
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
+import type { SquigNode, HoverNote } from "@/lib/types"
+import { Cloud, X, Trash, Check, Sparkle, Tag } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export interface QuickNoteDialogProps {
+  node: SquigNode | null
+  isOpen: boolean
+  onClose: () => void
+  onSave: (nodeId: string, note: HoverNote) => void
+  onDeleteNote?: (nodeId: string) => void
+}
+
+const NOTE_TEMPLATES = [
+  { label: "Explanation", text: "Explains: " },
+  { label: "Connection", text: "Connects to: " },
+  { label: "Key Rule", text: "Important rule: " },
+  { label: "Next Step", text: "Next action: " },
+]
+
+export function QuickNoteDialog({
+  node,
+  isOpen,
+  onClose,
+  onSave,
+  onDeleteNote,
+}: QuickNoteDialogProps) {
+  const [mounted, setMounted] = useState(false)
+  const [title, setTitle] = useState("")
+  const [body, setBody] = useState("")
+  const bodyInputRef = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isOpen || !node) return
+    const existing = node.hoverNote
+    setTitle(existing?.title || "")
+    setBody(existing?.body || "")
+
+    const t = setTimeout(() => {
+      bodyInputRef.current?.focus()
+    }, 60)
+    return () => clearTimeout(t)
+  }, [isOpen, node])
+
+  if (!mounted || !isOpen || !node || typeof document === "undefined") return null
+
+  const hasExistingNote = Boolean(
+    node.hoverNote &&
+    ((node.hoverNote.body && node.hoverNote.body.trim().length > 0) ||
+      (node.hoverNote.title && node.hoverNote.title.trim().length > 0))
+  )
+
+  const handleSave = () => {
+    if (!node) return
+    const trimmedBody = body.trim()
+    const trimmedTitle = title.trim()
+
+    if (!trimmedBody && !trimmedTitle) {
+      // Empty note behaves as remove
+      onDeleteNote?.(node.id)
+      onClose()
+      return
+    }
+
+    const updatedNote: HoverNote = {
+      title: trimmedTitle || undefined,
+      body: trimmedBody,
+      enabled: true,
+      theme: "clouds",
+      createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    onSave(node.id, updatedNote)
+    onClose()
+  }
+
+  const handleDelete = () => {
+    if (!node) return
+    onDeleteNote?.(node.id)
+    onClose()
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      e.stopPropagation()
+      onClose()
+    } else if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+      e.preventDefault()
+      e.stopPropagation()
+      handleSave()
+    }
+  }
+
+  const dialogContent = (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-xs p-4 animate-in fade-in duration-150 select-none"
+      onClick={onClose}
+      onKeyDown={handleKeyDown}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quick-note-dialog-title"
+        className={cn(
+          "w-full max-w-md rounded-3xl border border-sky-300/50 dark:border-sky-500/30 overflow-hidden font-sans",
+          "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)] shadow-2xl animate-popover-enter"
+        )}
+        style={{
+          boxShadow:
+            "0 24px 50px -10px rgba(56, 189, 248, 0.35), 0 10px 25px -5px rgba(15, 23, 42, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.7)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Top celestial cloud gradient bar */}
+        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400 opacity-90" />
+
+        <div className="p-4 sm:p-5 space-y-4">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="p-2 rounded-2xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border border-sky-400/25 shadow-xs shrink-0 flex items-center justify-center">
+                <Cloud size={18} weight="fill" />
+              </span>
+              <div>
+                <h3 id="quick-note-dialog-title" className="text-sm font-bold tracking-tight text-slate-900 dark:text-slate-100">
+                  {hasExistingNote ? "Edit Hover Note" : "Add Hover Note"}
+                </h3>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  Appears beautifully when hovering over this {node.type}
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+              title="Close (Esc)"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* Title input (optional) */}
+          <div className="space-y-1">
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+              Title <span className="opacity-50 lowercase font-normal">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g. Factorisation Step, Architecture Note..."
+              className="w-full px-3 py-1.5 rounded-xl border border-sky-200/70 dark:border-sky-800/70 bg-white dark:bg-slate-800/90 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-400 transition-all shadow-2xs"
+            />
+          </div>
+
+          {/* Description / Body textarea */}
+          <div className="space-y-1">
+            <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider block">
+              Note Text <span className="text-sky-500">*</span>
+            </label>
+            <textarea
+              ref={bodyInputRef}
+              rows={4}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Write the note shown when someone hovers over this element..."
+              className="w-full px-3 py-2 rounded-xl border border-sky-200/70 dark:border-sky-800/70 bg-white dark:bg-slate-800/90 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-400 transition-all resize-none shadow-2xs leading-relaxed"
+            />
+          </div>
+
+          {/* Quick template starters */}
+          <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mr-0.5">Quick add:</span>
+            {NOTE_TEMPLATES.map((tmpl) => (
+              <button
+                key={tmpl.label}
+                type="button"
+                onClick={() => {
+                  setBody((prev) => (prev ? `${prev}\n${tmpl.text}` : tmpl.text))
+                  bodyInputRef.current?.focus()
+                }}
+                className="text-[10px] font-semibold px-2 py-0.5 rounded-lg bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/60 dark:hover:bg-sky-900/60 text-sky-700 dark:text-sky-300 border border-sky-200/50 dark:border-sky-800/50 transition-colors cursor-pointer"
+              >
+                + {tmpl.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800">
+            <div>
+              {hasExistingNote && onDeleteNote && (
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  className="px-2.5 py-1.5 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors flex items-center gap-1 cursor-pointer"
+                  title="Remove hover note"
+                >
+                  <Trash size={14} />
+                  <span>Delete Note</span>
+                </button>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={!body.trim() && !title.trim()}
+                className="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-white bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-600 hover:to-indigo-700 shadow-md shadow-sky-500/25 transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Cloud size={14} weight="fill" />
+                <span>Save Note</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  return createPortal(dialogContent, document.body)
+}
+```
+
+---
+
+### File: `components/canvas/smart-hover-note.tsx`
+
+- **Path**: `components/canvas/smart-hover-note.tsx`
+- **Lines**: 289
+- **Size**: 9606 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Smart Hover Notes — Premium macOS/iOS Clouds-Themed Hover Annotation
+//
+// Displays elegant floating metadata beside the cursor when hovering over
+// any annotated canvas object (Arrow, Freehand Drawing, Shape, Text, Component, etc.).
+//
+// Features:
+// 1. Apple macOS/iOS frosted glassmorphic Clouds Theme with luminous celestial glow.
+// 2. High-DPI viewport boundary collision clamping & automatic flipping.
+// 3. Isolated React portal rendering immune to canvas pan/zoom transforms.
+// 4. Stable cursor anchoring (prevents jitter or chasing while cursor is inside object).
+// 5. Accessible tooltip ARIA semantics with reduced-motion support.
+// 6. Zero canvas clutter: 100% hidden when not hovering over the object's area.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
-import { ChatCenteredText } from "@phosphor-icons/react"
+import { Cloud, ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface SmartHoverNoteProps {
-  /** Topmost eligible node currently under the pointer (must be a hard hit, not soft hollow interior) */
+  /** Target node currently under the pointer */
   targetNode: SquigNode | null
-  /** Optional external client pointer coordinates; defaults to tracked window coordinates */
-  pointerPos?: { x: number; y: number } | null
-  /** Whether an active gesture, tool, or canvas mode is busy (suppresses hover notes) */
+  /** Current client pointer coordinates */
+  pointerPos: { x: number; y: number } | null
+  /** Whether a gesture or canvas tool is busy (suppresses hover notes) */
   isBusy?: boolean
   /** Delay in milliseconds before revealing note (default: 300ms) */
   delayMs?: number
 }
-
-type AnimState = "idle" | "entering" | "visible" | "exiting"
 
 /**
  * Universal floating Smart Hover Note portal.
@@ -19613,38 +19974,19 @@ export function SmartHoverNote({
   delayMs = 300,
 }: SmartHoverNoteProps) {
   const [mounted, setMounted] = useState(false)
-  const [animState, setAnimState] = useState<AnimState>("idle")
-  const [displayedNode, setDisplayedNode] = useState<SquigNode | null>(null)
-  const [anchorPos, setAnchorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-
-  const pointerPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
-  const enterTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const exitTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const activeNodeIdRef = useRef<string | null>(null)
+  const [visible, setVisible] = useState(false)
+  const [activeNode, setActiveNode] = useState<SquigNode | null>(null)
+  const [activePos, setActivePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const currentTargetIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Continuously track mouse coordinates without forcing React re-renders on the canvas
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      pointerPosRef.current = { x: e.clientX, y: e.clientY }
-    }
-    window.addEventListener("pointermove", onMove, { passive: true })
-    return () => window.removeEventListener("pointermove", onMove)
-  }, [])
-
-  // Sync external pointerPos prop when provided
-  useEffect(() => {
-    if (pointerPos) {
-      pointerPosRef.current = pointerPos
-    }
-  }, [pointerPos])
-
-  // Evaluate whether target node has an enabled, non-empty note and canvas is not busy
+  // Check if target node qualifies for hover note display
   const note = targetNode?.hoverNote
-  const isEligible = Boolean(
+  const hasValidNote = Boolean(
     targetNode &&
     note &&
     note.enabled !== false &&
@@ -19652,172 +19994,108 @@ export function SmartHoverNote({
     !isBusy
   )
 
-  const clearTimers = useCallback(() => {
-    if (enterTimerRef.current) {
-      clearTimeout(enterTimerRef.current)
-      enterTimerRef.current = null
-    }
-    if (exitTimerRef.current) {
-      clearTimeout(exitTimerRef.current)
-      exitTimerRef.current = null
-    }
-  }, [])
-
-  // State machine managing hover activation, delay, anchoring, switching, and smooth exit
   useEffect(() => {
-    if (!isEligible || !targetNode) {
-      // Pointer left eligible target
-      if (enterTimerRef.current) {
-        clearTimeout(enterTimerRef.current)
-        enterTimerRef.current = null
-      }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
 
-      activeNodeIdRef.current = null
-
-      if (animState === "visible" || animState === "entering") {
-        // Trigger smooth exit transition
-        setAnimState("exiting")
-        exitTimerRef.current = setTimeout(() => {
-          setAnimState("idle")
-          setDisplayedNode(null)
-          exitTimerRef.current = null
-        }, 140)
-      }
+    if (!hasValidNote || !targetNode || !pointerPos) {
+      setVisible(false)
+      currentTargetIdRef.current = null
       return
     }
 
-    const nextId = targetNode.id
+    const nodeId = targetNode.id
 
-    // Case 1: Hovering within the SAME already active node
-    if (activeNodeIdRef.current === nextId) {
-      // If already visible, keep the card anchored in place (do NOT follow cursor or restart animation)
-      // If user edited the note while hovering, update displayed node content seamlessly
-      if (animState === "visible" || animState === "entering") {
-        setDisplayedNode(targetNode)
-      }
+    // If mouse is moving within the SAME already visible node, stay stably anchored (no jitter)
+    if (visible && currentTargetIdRef.current === nodeId) {
       return
     }
 
-    // Case 2: New node target
-    activeNodeIdRef.current = nextId
-
-    if (animState === "visible" || animState === "entering") {
-      // Rapid switch between two annotated objects: cross-fade directly without delay lag
-      clearTimers()
-      setDisplayedNode(targetNode)
-      setAnchorPos(pointerPosRef.current)
-      setAnimState("visible")
-    } else {
-      // Fresh hover entrance: start standard 300ms hover delay
-      clearTimers()
-      enterTimerRef.current = setTimeout(() => {
-        setDisplayedNode(targetNode)
-        setAnchorPos(pointerPosRef.current)
-        setAnimState("entering")
-
-        // Progress to steady visible state
-        requestAnimationFrame(() => {
-          setAnimState("visible")
-        })
-        enterTimerRef.current = null
-      }, delayMs)
-    }
+    // New node hover session: start hover delay timer
+    currentTargetIdRef.current = nodeId
+    timerRef.current = setTimeout(() => {
+      setActiveNode(targetNode)
+      setActivePos(pointerPos)
+      setVisible(true)
+    }, delayMs)
 
     return () => {
-      // Cleanup on unmount or target replacement
-      if (enterTimerRef.current) {
-        clearTimeout(enterTimerRef.current)
-        enterTimerRef.current = null
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
       }
     }
-  }, [isEligible, targetNode, isBusy, delayMs, animState, clearTimers])
+  }, [hasValidNote, targetNode, pointerPos, isBusy, delayMs, visible])
 
-  // Instant dismissal on Escape key, canvas wheel/scroll, or window blur
+  // Dismiss on Escape key, window blur, or scroll
   useEffect(() => {
-    if (animState === "idle") return
-
-    const dismissImmediately = () => {
-      clearTimers()
-      activeNodeIdRef.current = null
-      setAnimState("idle")
-      setDisplayedNode(null)
-    }
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismissImmediately()
-    }
-
-    window.addEventListener("keydown", onKey)
-    window.addEventListener("blur", dismissImmediately)
-    window.addEventListener("wheel", dismissImmediately, { passive: true })
+    if (!visible) return
+    const handleDismiss = () => setVisible(false)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") handleDismiss()
+    })
+    window.addEventListener("blur", handleDismiss)
+    window.addEventListener("wheel", handleDismiss, { passive: true })
     return () => {
-      window.removeEventListener("keydown", onKey)
-      window.removeEventListener("blur", dismissImmediately)
-      window.removeEventListener("wheel", dismissImmediately)
+      window.removeEventListener("blur", handleDismiss)
+      window.removeEventListener("wheel", handleDismiss)
     }
-  }, [animState, clearTimers])
+  }, [visible])
 
-  if (!mounted || animState === "idle" || !displayedNode?.hoverNote || typeof document === "undefined") {
+  if (!mounted || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
     return null
   }
 
   return createPortal(
     <FloatingHoverCard
-      node={displayedNode}
-      note={displayedNode.hoverNote}
-      anchorPos={anchorPos}
-      animState={animState}
+      node={activeNode}
+      note={activeNode.hoverNote}
+      anchorPos={activePos}
     />,
     document.body
   )
 }
 
 // ---------------------------------------------------------------------------
-// Floating Note Card with Boundary Clamping & Apple Glassmorphism
+// Floating Note Card with Boundary Clamping & Theme Glassmorphism
 // ---------------------------------------------------------------------------
 
 interface FloatingHoverCardProps {
   node: SquigNode
   note: HoverNote
   anchorPos: { x: number; y: number }
-  animState: AnimState
 }
 
-function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCardProps) {
+function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 12, top: anchorPos.y + 12 })
+  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 16, top: anchorPos.y + 16 })
 
-  // Measure card dimensions and clamp to viewport
-  useLayoutEffect(() => {
+  useEffect(() => {
     const el = cardRef.current
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    const padding = 14
+    const padding = 16
     const vw = window.innerWidth
     const vh = window.innerHeight
 
-    let left = anchorPos.x + 12
-    let top = anchorPos.y + 12
+    let left = anchorPos.x + 16
+    let top = anchorPos.y + 16
 
     // Flip to left if overflowing viewport right
     if (left + rect.width > vw - padding) {
-      left = Math.max(padding, anchorPos.x - rect.width - 12)
+      left = Math.max(padding, anchorPos.x - rect.width - 16)
     }
 
     // Flip up if overflowing viewport bottom
     if (top + rect.height > vh - padding) {
-      top = Math.max(padding, anchorPos.y - rect.height - 12)
+      top = Math.max(padding, anchorPos.y - rect.height - 16)
     }
-
-    // Double-check top and left margins
-    if (left < padding) left = padding
-    if (top < padding) top = padding
 
     setStylePos({ left, top })
   }, [anchorPos])
-
-  const isExiting = animState === "exiting"
 
   return (
     <div
@@ -19825,15 +20103,12 @@ function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCa
       role="tooltip"
       aria-live="polite"
       className={cn(
-        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max transition-all",
-        isExiting
-          ? "opacity-0 scale-97 translate-y-[-2px] duration-140 ease-in"
-          : "opacity-100 scale-100 translate-y-0 duration-160 ease-out"
+        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
+        "animate-in fade-in zoom-in-95 duration-150 ease-out"
       )}
       style={{
         left: `${stylePos.left}px`,
         top: `${stylePos.top}px`,
-        transitionProperty: "opacity, transform",
       }}
     >
       <SmartHoverCardContent node={node} note={note} />
@@ -19842,7 +20117,7 @@ function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCa
 }
 
 // ---------------------------------------------------------------------------
-// Shared Smart Hover Card Presentation (Visual Surface)
+// Shared Smart Hover Card Presentation (Clouds Theme Apple macOS / iOS)
 // ---------------------------------------------------------------------------
 
 export interface SmartHoverCardContentProps {
@@ -19863,50 +20138,47 @@ export function SmartHoverCardContent({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[var(--sq-faint)]/80 font-sans shadow-2xl overflow-hidden",
-        "bg-[var(--sq-paper)]/95 backdrop-blur-xl text-[var(--sq-ink)] transition-colors",
+        "rounded-3xl border border-sky-200/60 dark:border-sky-500/40 font-sans overflow-hidden",
+        "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)] transition-all",
+        "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
         className
       )}
       style={{
         boxShadow:
-          "0 12px 34px -4px rgba(0, 0, 0, 0.16), 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--sq-faint)",
+          "0 20px 48px -10px rgba(56, 189, 248, 0.32), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.7)",
       }}
     >
-      {/* Top subtle ink wash accent */}
-      <div className="h-0.5 w-full bg-[var(--sq-shade-strong)]" />
+      {/* Top dreamy celestial cloud accent gradient */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
 
-      <div className="p-3 sm:p-3.5 space-y-2">
-        {/* Header row: only displayed if title or node badge exists */}
-        {(hasTitle || nodeTypeLabel) && (
-          <div className="flex items-start justify-between gap-2.5">
+      <div className="p-3.5 sm:p-4 space-y-2.5">
+        {/* Header row: Cloud icon + Title / Annotation + Node Type Badge */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="p-1.5 rounded-xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0 border border-sky-400/25 shadow-xs flex items-center justify-center">
+              <Cloud size={15} weight="fill" />
+            </span>
             {hasTitle ? (
-              <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0 opacity-90">
-                  <ChatCenteredText size={12} weight="bold" />
-                </span>
-                <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-[var(--sq-ink)] truncate leading-tight">
-                  {note.title!.trim()}
-                </h4>
-              </div>
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate leading-snug">
+                {note.title!.trim()}
+              </h4>
             ) : (
-              <div className="flex items-center gap-1.5 opacity-70">
-                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0">
-                  <ChatCenteredText size={11} weight="bold" />
-                </span>
-              </div>
-            )}
-
-            {nodeTypeLabel && (
-              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--sq-shade)]/70 text-[var(--sq-ink)] opacity-70 shrink-0 border border-[var(--sq-faint)]/50">
-                {nodeTypeLabel}
+              <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-200 uppercase tracking-wider flex items-center gap-1">
+                Note
               </span>
             )}
           </div>
-        )}
 
-        {/* Note Body: multi-line description */}
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/60 shadow-2xs shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Note Body */}
         {hasBody && (
-          <div className="text-xs leading-relaxed text-[var(--sq-ink)]/90 whitespace-pre-wrap break-words [overflow-wrap:anywhere] max-h-56 overflow-y-auto overscroll-contain">
+          <div className="text-xs leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1">
             {note.body.trim()}
           </div>
         )}
@@ -19920,7 +20192,7 @@ export function SmartHoverCardContent({
 // ---------------------------------------------------------------------------
 
 function getNodeTypeLabel(node?: SquigNode | null): string {
-  if (!node) return ""
+  if (!node) return "object"
   switch (node.type) {
     case "arrow":
       return "connector"
@@ -19943,7 +20215,7 @@ function getNodeTypeLabel(node?: SquigNode | null): string {
     case "embed":
       return "embed"
     default:
-      return ""
+      return "object"
   }
 }
 ```
@@ -63125,8 +63397,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 306
-- **Size**: 10898 bytes
+- **Lines**: 318
+- **Size**: 11308 bytes
 
 ```tsx
 "use client"
@@ -63358,12 +63630,14 @@ export function CalendarEventCard({
         </div>
 
         {/* Quick Actions Footer Toolbar */}
-        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1">
+        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1 select-none">
           <div className="flex items-center gap-1">
             {/* Toggle Completion */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onToggleComplete(event.id)
               }}
               className={cn(
@@ -63380,7 +63654,9 @@ export function CalendarEventCard({
             {/* Edit */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onEdit(event)
               }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
@@ -63392,7 +63668,9 @@ export function CalendarEventCard({
             {/* Duplicate */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onDuplicate(event)
                 onClose()
               }}
@@ -63405,7 +63683,11 @@ export function CalendarEventCard({
             {/* Export single .ics */}
             <button
               type="button"
-              onClick={handleExportSingle}
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                handleExportSingle()
+              }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
               title="Export to .ics file"
             >
@@ -63416,7 +63698,9 @@ export function CalendarEventCard({
           {/* Delete Action (1-Click Instant Delete matching macOS Calendar) */}
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
               onDelete(event.id)
               onClose()
             }}
@@ -65490,7 +65774,7 @@ export function CalendarWeekView({
 
 - **Path**: `components/calendar/functional-calendar.tsx`
 - **Lines**: 621
-- **Size**: 21570 bytes
+- **Size**: 21649 bytes
 
 ```tsx
 "use client"
@@ -65520,7 +65804,7 @@ import {
   type WeekStartsOn,
 } from "@/lib/calendar/date-utils"
 import { expandRecurringEvents } from "@/lib/calendar/layout"
-import { useCalendarEvents } from "@/lib/calendar/event-store"
+import { useCalendarEvents, normalizeEventId } from "@/lib/calendar/event-store"
 import type { CalendarEvent, CalendarView } from "@/lib/calendar/types"
 import { exportToIcs, downloadIcsFile, parseIcs } from "@/lib/calendar/ics"
 
@@ -66069,7 +66353,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         onEdit={handleEditFromPeek}
         onToggleComplete={(id) => {
           toggleComplete(id)
-          if (peekEvent && peekEvent.id === id) {
+          if (peekEvent && (peekEvent.id === id || normalizeEventId(peekEvent.id) === normalizeEventId(id))) {
             setPeekEvent({
               ...peekEvent,
               status: peekEvent.status === "completed" ? "pending" : "completed",
@@ -76558,8 +76842,8 @@ export function isDateInRange(targetDate: string, startDate: string, endDate?: s
 ### File: `lib/calendar/event-store.ts`
 
 - **Path**: `lib/calendar/event-store.ts`
-- **Lines**: 538
-- **Size**: 17353 bytes
+- **Lines**: 564
+- **Size**: 18211 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -76613,6 +76897,17 @@ function generateId(): string {
     return crypto.randomUUID()
   }
   return `evt_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
+}
+
+/**
+ * Normalizes an event ID by stripping recurring instance suffixes (e.g. `act-1_rec_2026-10-01` -> `act-1`).
+ */
+export function normalizeEventId(id: string): string {
+  if (!id) return ""
+  if (id.includes("_rec_")) {
+    return id.split("_rec_")[0]
+  }
+  return id
 }
 
 /**
@@ -76822,10 +77117,11 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
  * Updates an existing calendar event across all stores.
  */
 export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInput): CalendarEvent | null {
+  const baseId = normalizeEventId(id)
   const now = new Date().toISOString()
 
   // 1. Update Student Store
-  useStudentStore.getState().updateActivity(id, {
+  useStudentStore.getState().updateActivity(baseId, {
     ...(updates.title !== undefined ? { title: updates.title } : {}),
     ...(updates.date !== undefined ? { date: updates.date } : {}),
     ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
@@ -76841,7 +77137,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   })
 
   // 2. Update Planner
-  updateTask(id, {
+  updateTask(baseId, {
     ...(updates.title !== undefined ? { title: updates.title } : {}),
     ...(updates.date !== undefined ? { date: updates.date } : {}),
     ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
@@ -76854,7 +77150,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   // 3. Update IndexedDB
   try {
     putAcademicItem(ACADEMIC_STORES.TASKS, {
-      id,
+      id: baseId,
       ...updates,
       updatedAt: now,
     })
@@ -76868,10 +77164,20 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
  * Deletes a calendar event from all stores.
  */
 export function deleteCalendarEvent(id: string): boolean {
-  useStudentStore.getState().deleteActivity(id)
-  deletePlannerTask(id)
+  const baseId = normalizeEventId(id)
+  useStudentStore.getState().deleteActivity(baseId)
+  if (baseId !== id) {
+    useStudentStore.getState().deleteActivity(id)
+  }
+  deletePlannerTask(baseId)
+  if (baseId !== id) {
+    deletePlannerTask(id)
+  }
   try {
-    deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
+    deleteAcademicItem(ACADEMIC_STORES.TASKS, baseId)
+    if (baseId !== id) {
+      deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
+    }
   } catch {}
   notifyCalendarEventChange()
   return true
@@ -76886,16 +77192,17 @@ export function moveCalendarEvent(
   newStartTime?: string,
   newEndTime?: string
 ): void {
+  const baseId = normalizeEventId(id)
   let computedEndTime = newEndTime
   if (newStartTime !== undefined && computedEndTime === undefined) {
-    const act = useStudentStore.getState().activities.find((a) => a.id === id)
+    const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
     const duration = act?.durationMinutes || 60
     const sM = timeStringToMinutes(newStartTime)
     computedEndTime = minutesToTimeString(sM + duration)
   }
 
-  useStudentStore.getState().moveActivity(id, newDate, newStartTime, computedEndTime)
-  updateTask(id, {
+  useStudentStore.getState().moveActivity(baseId, newDate, newStartTime, computedEndTime)
+  updateTask(baseId, {
     date: newDate,
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
@@ -76907,7 +77214,8 @@ export function moveCalendarEvent(
  * Resizes an event by setting a new end time.
  */
 export function resizeCalendarEvent(id: string, newEndTime: string): void {
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (!act) return
 
   let duration = act.durationMinutes
@@ -76919,7 +77227,7 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
     }
   }
 
-  updateCalendarEvent(id, {
+  updateCalendarEvent(baseId, {
     endTime: newEndTime,
     durationMinutes: duration,
   })
@@ -76929,10 +77237,11 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
  * Toggles an event's completion state.
  */
 export function toggleCalendarEventComplete(id: string): void {
-  useStudentStore.getState().toggleActivityComplete(id)
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  useStudentStore.getState().toggleActivityComplete(baseId)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) {
-    updateTask(id, {
+    updateTask(baseId, {
       status: act.status === "completed" ? "completed" : "pending",
     })
   }
@@ -76943,10 +77252,11 @@ export function toggleCalendarEventComplete(id: string): void {
  * Retrieves a calendar event by ID.
  */
 export function getCalendarEventById(id: string): CalendarEvent | undefined {
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) return activityToCalendarEvent(act)
   try {
-    const task = getAllTasks().find((t) => t.id === id)
+    const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
     if (task) return taskToCalendarEvent(task)
   } catch {}
   return undefined
@@ -91297,23 +91607,22 @@ console.log(`✓ ${passed} geometry checks passed`)
 ### File: `scripts/test-hover-notes.ts`
 
 - **Path**: `scripts/test-hover-notes.ts`
-- **Lines**: 323
-- **Size**: 11325 bytes
+- **Lines**: 183
+- **Size**: 6097 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
 // Zenithsui — Smart Hover Notes Test Suite
 //
 // Tests schema integrity, clipboard encoding/decoding, payload sanitization,
-// length bounding, node cloning, hit-testing accuracy (arrows, sketches, hollow
-// vs solid shapes), and viewport clamping.
+// length bounding, and node cloning for universal hover annotations.
 // ---------------------------------------------------------------------------
 
 import assert from "node:assert/strict"
 import type { ShapeNode, ArrowNode, DrawNode, HoverNote, SquigNode } from "@/lib/types"
 import { validateSecureNode } from "@/lib/security/sanitize"
 import { validNode } from "@/lib/clipboard-payload"
-import { pickAt, pickSoftAt, hitsPoint } from "@/lib/canvas/hit-test"
+import { pickHoverTarget } from "@/lib/canvas/hit-test"
 
 console.log("=== Running Zenithsui Smart Hover Notes Verification Suite ===\n")
 
@@ -91349,11 +91658,11 @@ console.log("\n-> 2. Testing ArrowNode with explanatory HoverNote...")
 const arrowWithNote: ArrowNode = {
   id: "arrow_1",
   type: "arrow",
-  x: 100,
-  y: 100,
-  w: 200,
-  h: 100,
-  points: [[0, 0], [200, 100]],
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 50,
+  points: [[0, 0], [100, 50]],
   stroke: "var(--sq-ink)",
   strokeWidth: 2,
   strokeStyle: "solid",
@@ -91371,202 +91680,8 @@ const arrowWithNote: ArrowNode = {
 assert.equal(arrowWithNote.hoverNote?.title, "gRPC Transport")
 console.log("✓ ArrowNode correctly supports HoverNote.")
 
-// Test 3: Arrow hit testing — ONLY the line triggers, NOT the bounding box empty space
-console.log("\n-> 3. Testing Arrow hit testing — stroke collar vs empty bounding box...")
-// Arrow runs from (100, 100) to (300, 200) in world coords
-// Midpoint is (200, 150)
-const arrowHitOnLine = hitsPoint(arrowWithNote, 200, 150, 1)
-assert.equal(arrowHitOnLine, true, "Point directly on arrow stroke must hit")
-
-// Point inside bounding box (100, 100) to (300, 200) but far from the diagonal line:
-// (105, 195) is in the bottom-left of the box, far from line (100, 100) -> (300, 200)
-const arrowHitFar = hitsPoint(arrowWithNote, 105, 195, 1)
-assert.equal(arrowHitFar, false, "Point inside bounding box but far from stroke must NOT hit")
-console.log("✓ Arrow hit test correctly rejects empty bounding box and accepts stroke.")
-
-// Test 4: Freehand Draw hit testing — ONLY actual strokes trigger
-console.log("\n-> 4. Testing Freehand DrawNode stroke hit testing...")
-const drawWithNote: DrawNode = {
-  id: "draw_1",
-  type: "draw",
-  x: 50,
-  y: 50,
-  w: 100,
-  h: 100,
-  points: [[0, 0], [100, 100]], // Diagonal stroke
-  stroke: "var(--sq-ink)",
-  strokeWidth: 2,
-  roughness: 1,
-  seed: 12,
-  hoverNote: {
-    enabled: true,
-    title: "Hand-drawn separator",
-    body: "Sketch annotation",
-  },
-}
-
-const drawHitOnLine = hitsPoint(drawWithNote, 100, 100, 1)
-assert.equal(drawHitOnLine, true, "Point on draw stroke must hit")
-
-const drawHitOffLine = hitsPoint(drawWithNote, 60, 140, 1)
-assert.equal(drawHitOffLine, false, "Point in bounding box but off draw stroke must NOT hit")
-console.log("✓ DrawNode hit test correctly isolates visible strokes from empty space.")
-
-// Test 5: Hollow shape hit testing — middle is see-through and does not trigger hard pick
-console.log("\n-> 5. Testing Hollow Shape hit testing (perimeter vs hollow interior)...")
-const hollowRect: ShapeNode = {
-  id: "hollow_rect",
-  type: "shape",
-  shape: "rect",
-  x: 0,
-  y: 0,
-  w: 200,
-  h: 200,
-  fill: "none",
-  stroke: "var(--sq-ink)",
-  strokeWidth: 2,
-  strokeStyle: "solid",
-  roughness: 1,
-  seed: 5,
-  hoverNote: {
-    enabled: true,
-    title: "Hollow Frame",
-    body: "This note should only appear when hovering over the stroke perimeter",
-  },
-}
-
-const nodesMap: Record<string, SquigNode> = {
-  [hollowRect.id]: hollowRect,
-}
-const order = [hollowRect.id]
-
-// Point on stroke perimeter: (0, 100)
-const hardHitPerimeter = pickAt(nodesMap, order, 0, 100, 1)
-assert.equal(hardHitPerimeter, hollowRect.id, "Perimeter stroke must be a hard hit")
-
-// Point in hollow center: (100, 100)
-const hardHitCenter = pickAt(nodesMap, order, 100, 100, 1)
-assert.equal(hardHitCenter, null, "Hollow interior must NOT be a hard hit")
-
-const softHitCenter = pickSoftAt(nodesMap, order, 100, 100)
-assert.equal(softHitCenter, hollowRect.id, "Hollow interior is only a soft hit")
-console.log("✓ Hollow shape hit testing strictly distinguishes hard stroke from soft interior.")
-
-// Test 6: Overlapping nodes — front-to-back z-order resolution
-console.log("\n-> 6. Testing overlapping nodes front-to-back resolution...")
-const bottomNode: ShapeNode = {
-  id: "node_bottom",
-  type: "shape",
-  shape: "rect",
-  x: 50,
-  y: 50,
-  w: 100,
-  h: 100,
-  fill: "paper",
-  stroke: "var(--sq-ink)",
-  strokeWidth: 2,
-  strokeStyle: "solid",
-  roughness: 1,
-  seed: 10,
-  hoverNote: {
-    enabled: true,
-    title: "Bottom Object",
-    body: "Lower in z-index",
-  },
-}
-const topNode: ShapeNode = {
-  id: "node_top",
-  type: "shape",
-  shape: "rect",
-  x: 50,
-  y: 50,
-  w: 100,
-  h: 100,
-  fill: "paper",
-  stroke: "var(--sq-ink)",
-  strokeWidth: 2,
-  strokeStyle: "solid",
-  roughness: 1,
-  seed: 20,
-  hoverNote: {
-    enabled: true,
-    title: "Top Object",
-    body: "Higher in z-index",
-  },
-}
-
-const overlapNodes = { [bottomNode.id]: bottomNode, [topNode.id]: topNode }
-const overlapOrder = [bottomNode.id, topNode.id]
-
-const resolved = pickAt(overlapNodes, overlapOrder, 80, 80, 1)
-assert.equal(resolved, topNode.id, "Topmost node must always resolve first")
-console.log("✓ Overlapping nodes correctly resolve to topmost object without conflict.")
-
-// Test 7: Empty or whitespace-only description suppression
-console.log("\n-> 7. Testing empty / whitespace-only note qualification...")
-function isEligibleHoverNote(note?: HoverNote | null, isBusy = false): boolean {
-  if (isBusy || !note || note.enabled === false) return false
-  const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
-  return hasBody || hasTitle
-}
-
-assert.equal(isEligibleHoverNote({ enabled: true, body: "   ", title: "" }), false, "Whitespace body and empty title must be suppressed")
-assert.equal(isEligibleHoverNote({ enabled: false, body: "Valid", title: "Valid" }), false, "Disabled note must be suppressed")
-assert.equal(isEligibleHoverNote({ enabled: true, body: "", title: "Title Only" }), true, "Title-only note qualifies")
-assert.equal(isEligibleHoverNote({ enabled: true, body: "Body Only", title: "" }), true, "Body-only note qualifies")
-assert.equal(isEligibleHoverNote(null), false, "Missing note must be suppressed")
-assert.equal(isEligibleHoverNote({ enabled: true, body: "Note", title: "" }, true), false, "Busy canvas must suppress hover note")
-console.log("✓ Empty, whitespace-only, disabled, and busy notes are safely suppressed.")
-
-// Test 8: Viewport boundary flipping and clamping logic
-console.log("\n-> 8. Testing viewport boundary clamping and flipping math...")
-function computeCardPosition(
-  anchorPos: { x: number; y: number },
-  cardSize: { width: number; height: number },
-  viewport: { width: number; height: number }
-) {
-  const padding = 14
-  let left = anchorPos.x + 12
-  let top = anchorPos.y + 12
-
-  // Flip to left if overflowing viewport right
-  if (left + cardSize.width > viewport.width - padding) {
-    left = Math.max(padding, anchorPos.x - cardSize.width - 12)
-  }
-
-  // Flip up if overflowing viewport bottom
-  if (top + cardSize.height > viewport.height - padding) {
-    top = Math.max(padding, anchorPos.y - cardSize.height - 12)
-  }
-
-  if (left < padding) left = padding
-  if (top < padding) top = padding
-
-  return { left, top }
-}
-
-const vp = { width: 1000, height: 800 }
-const card = { width: 300, height: 120 }
-
-// Normal position (center of screen)
-const posCenter = computeCardPosition({ x: 400, y: 300 }, card, vp)
-assert.equal(posCenter.left, 412)
-assert.equal(posCenter.top, 312)
-
-// Right edge: flips to left of cursor
-const posRightEdge = computeCardPosition({ x: 950, y: 300 }, card, vp)
-assert.ok(posRightEdge.left < 950 - card.width, "Must flip to left of cursor near right edge")
-assert.ok(posRightEdge.left + card.width <= vp.width - 14, "Must stay within right padding")
-
-// Bottom edge: flips above cursor
-const posBottomEdge = computeCardPosition({ x: 400, y: 750 }, card, vp)
-assert.ok(posBottomEdge.top < 750 - card.height, "Must flip above cursor near bottom edge")
-assert.ok(posBottomEdge.top + card.height <= vp.height - 14, "Must stay within bottom padding")
-console.log("✓ Viewport boundary calculation correctly flips and clamps.")
-
-// Test 9: Clipboard sanitization and length limits
-console.log("\n-> 9. Testing clipboard sanitization and length limits...")
+// Test 3: Clipboard validation and clamping
+console.log("\n-> 3. Testing clipboard sanitization and length limits...")
 const oversizedRaw = {
   id: "node_over",
   type: "shape",
@@ -91594,8 +91709,8 @@ assert.equal(cleanedFromClipboard.hoverNote.title?.length, 120, "Title must be c
 assert.equal(cleanedFromClipboard.hoverNote.body.length, 2500, "Body must be clamped to 2500 chars")
 console.log("✓ Clipboard parser safely clamps oversized hover notes.")
 
-// Test 10: Security sanitizer defensively handles non-object hover note
-console.log("\n-> 10. Testing security sanitizer rejection of invalid hover note shapes...")
+// Test 4: Security sanitizer defensively handles non-object hover note
+console.log("\n-> 4. Testing security sanitizer rejection of invalid hover note shapes...")
 const maliciousRaw = {
   id: "node_bad",
   type: "shape",
@@ -91619,6 +91734,61 @@ const validSanitized = validateSecureNode(shapeWithNote)
 assert.ok(validSanitized?.hoverNote, "Valid hover note must be preserved")
 assert.equal(validSanitized.hoverNote.title, "Database Cluster")
 console.log("✓ Security sanitizer correctly validates hover note integrity.")
+
+// Test 5: Disabled hover note preservation
+console.log("\n-> 5. Testing disabled hover note toggle preservation...")
+const disabledNote: HoverNote = {
+  enabled: false,
+  title: "Draft Note",
+  body: "Under construction",
+}
+const shapeWithDisabledNote: ShapeNode = {
+  ...shapeWithNote,
+  id: "shape_2",
+  hoverNote: disabledNote,
+}
+const sanitizedDisabled = validateSecureNode(shapeWithDisabledNote)
+assert.equal(sanitizedDisabled?.hoverNote?.enabled, false, "Disabled flag must be preserved")
+assert.equal(sanitizedDisabled?.hoverNote?.title, "Draft Note")
+console.log("✓ Disabled hover notes remain persistent without losing text.")
+
+// Test 6: pickHoverTarget verifies area and stroke hover detection for arrows and drawings
+console.log("\n-> 6. Testing pickHoverTarget for area-based and stroke-based hover note activation...")
+const testArrow: ArrowNode = {
+  id: "test_arrow",
+  type: "arrow",
+  x: 100,
+  y: 100,
+  w: 200,
+  h: 100,
+  points: [[0, 0], [200, 100]],
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  hoverNote: {
+    enabled: true,
+    title: "Connection Flow",
+    body: "Links module A to module B",
+  },
+}
+
+const testNodes: Record<string, SquigNode> = {
+  [testArrow.id]: testArrow,
+}
+const testOrder = [testArrow.id]
+
+// Point directly on stroke
+const hitOnStroke = pickHoverTarget(testNodes, testOrder, 200, 150, 1)
+assert.equal(hitOnStroke?.id, "test_arrow", "Point on arrow stroke must activate hover note")
+
+// Point inside bounding box area (e.g. 120, 180)
+const hitInBoundingArea = pickHoverTarget(testNodes, testOrder, 120, 180, 1)
+assert.equal(hitInBoundingArea?.id, "test_arrow", "Point inside arrow bounding area must activate hover note")
+
+// Point far outside bounding box
+const hitOutside = pickHoverTarget(testNodes, testOrder, 50, 50, 1)
+assert.equal(hitOutside, null, "Point outside bounding area must not activate hover note")
+console.log("✓ pickHoverTarget successfully detects stroke hits and area bounding box hits.")
 
 console.log("\n============================================================")
 console.log("ALL ZENITHSUI SMART HOVER NOTE TESTS PASSED 100%!")

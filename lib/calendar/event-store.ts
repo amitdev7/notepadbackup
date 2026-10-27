@@ -52,6 +52,17 @@ function generateId(): string {
 }
 
 /**
+ * Normalizes an event ID by stripping recurring instance suffixes (e.g. `act-1_rec_2026-10-01` -> `act-1`).
+ */
+export function normalizeEventId(id: string): string {
+  if (!id) return ""
+  if (id.includes("_rec_")) {
+    return id.split("_rec_")[0]
+  }
+  return id
+}
+
+/**
  * Normalizes a Student Hub activity into a unified CalendarEvent.
  */
 function activityToCalendarEvent(act: CalendarActivity): CalendarEvent {
@@ -258,10 +269,11 @@ export function createCalendarEvent(input: CreateCalendarEventInput): CalendarEv
  * Updates an existing calendar event across all stores.
  */
 export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInput): CalendarEvent | null {
+  const baseId = normalizeEventId(id)
   const now = new Date().toISOString()
 
   // 1. Update Student Store
-  useStudentStore.getState().updateActivity(id, {
+  useStudentStore.getState().updateActivity(baseId, {
     ...(updates.title !== undefined ? { title: updates.title } : {}),
     ...(updates.date !== undefined ? { date: updates.date } : {}),
     ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
@@ -277,7 +289,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   })
 
   // 2. Update Planner
-  updateTask(id, {
+  updateTask(baseId, {
     ...(updates.title !== undefined ? { title: updates.title } : {}),
     ...(updates.date !== undefined ? { date: updates.date } : {}),
     ...(updates.startTime !== undefined ? { startTime: updates.startTime } : {}),
@@ -290,7 +302,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   // 3. Update IndexedDB
   try {
     putAcademicItem(ACADEMIC_STORES.TASKS, {
-      id,
+      id: baseId,
       ...updates,
       updatedAt: now,
     })
@@ -304,10 +316,20 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
  * Deletes a calendar event from all stores.
  */
 export function deleteCalendarEvent(id: string): boolean {
-  useStudentStore.getState().deleteActivity(id)
-  deletePlannerTask(id)
+  const baseId = normalizeEventId(id)
+  useStudentStore.getState().deleteActivity(baseId)
+  if (baseId !== id) {
+    useStudentStore.getState().deleteActivity(id)
+  }
+  deletePlannerTask(baseId)
+  if (baseId !== id) {
+    deletePlannerTask(id)
+  }
   try {
-    deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
+    deleteAcademicItem(ACADEMIC_STORES.TASKS, baseId)
+    if (baseId !== id) {
+      deleteAcademicItem(ACADEMIC_STORES.TASKS, id)
+    }
   } catch {}
   notifyCalendarEventChange()
   return true
@@ -322,16 +344,17 @@ export function moveCalendarEvent(
   newStartTime?: string,
   newEndTime?: string
 ): void {
+  const baseId = normalizeEventId(id)
   let computedEndTime = newEndTime
   if (newStartTime !== undefined && computedEndTime === undefined) {
-    const act = useStudentStore.getState().activities.find((a) => a.id === id)
+    const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
     const duration = act?.durationMinutes || 60
     const sM = timeStringToMinutes(newStartTime)
     computedEndTime = minutesToTimeString(sM + duration)
   }
 
-  useStudentStore.getState().moveActivity(id, newDate, newStartTime, computedEndTime)
-  updateTask(id, {
+  useStudentStore.getState().moveActivity(baseId, newDate, newStartTime, computedEndTime)
+  updateTask(baseId, {
     date: newDate,
     ...(newStartTime !== undefined ? { startTime: newStartTime } : {}),
     ...(computedEndTime !== undefined ? { endTime: computedEndTime } : {}),
@@ -343,7 +366,8 @@ export function moveCalendarEvent(
  * Resizes an event by setting a new end time.
  */
 export function resizeCalendarEvent(id: string, newEndTime: string): void {
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (!act) return
 
   let duration = act.durationMinutes
@@ -355,7 +379,7 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
     }
   }
 
-  updateCalendarEvent(id, {
+  updateCalendarEvent(baseId, {
     endTime: newEndTime,
     durationMinutes: duration,
   })
@@ -365,10 +389,11 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
  * Toggles an event's completion state.
  */
 export function toggleCalendarEventComplete(id: string): void {
-  useStudentStore.getState().toggleActivityComplete(id)
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  useStudentStore.getState().toggleActivityComplete(baseId)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) {
-    updateTask(id, {
+    updateTask(baseId, {
       status: act.status === "completed" ? "completed" : "pending",
     })
   }
@@ -379,10 +404,11 @@ export function toggleCalendarEventComplete(id: string): void {
  * Retrieves a calendar event by ID.
  */
 export function getCalendarEventById(id: string): CalendarEvent | undefined {
-  const act = useStudentStore.getState().activities.find((a) => a.id === id)
+  const baseId = normalizeEventId(id)
+  const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) return activityToCalendarEvent(act)
   try {
-    const task = getAllTasks().find((t) => t.id === id)
+    const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
     if (task) return taskToCalendarEvent(task)
   } catch {}
   return undefined

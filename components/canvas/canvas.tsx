@@ -27,7 +27,7 @@ import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
 import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
 import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type Handle } from "@/lib/canvas/transform"
-import { pickAt, pickInRect, pickSoftAt } from "@/lib/canvas/hit-test"
+import { pickAt, pickInRect, pickSoftAt, pickHoverTarget } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
 import { dropFiles } from "@/lib/clipboard"
@@ -49,6 +49,8 @@ import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
+import { QuickNoteDialog } from "./quick-note-dialog"
+import { Cloud } from "@phosphor-icons/react"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -214,6 +216,8 @@ export function Canvas() {
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [pointerClientPos, setPointerClientPos] = useState<{ x: number; y: number } | null>(null)
+  const [hoverNoteTarget, setHoverNoteTarget] = useState<SquigNode | null>(null)
+  const [quickNoteNode, setQuickNoteNode] = useState<SquigNode | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
@@ -1446,17 +1450,13 @@ export function Canvas() {
   // hover feedback + placement ghost, throttled to one pass per frame
   const onPointerMoveLocal = useCallback(
     (e: React.PointerEvent) => {
-      // Touch devices do not trigger desktop mouse hover
-      if (e.pointerType === "touch") {
-        if (hover) setHover(null)
-        return
-      }
       const s = st()
       pointerWorld.current = toWorld(e)
       // the ghost is driven at the window level instead — see below
       if (s.placing) return
       if (gestureRef.current || s.tool !== "select" || isSpacebarHeld || s.editingId) {
         if (hover) setHover(null)
+        if (hoverNoteTarget) setHoverNoteTarget(null)
         return
       }
       if (hoverRafRef.current !== null) return
@@ -1471,13 +1471,18 @@ export function Canvas() {
         const hard = pickAt(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
         const id = hard ?? pickSoftAt(cur.nodes, cur.order, wx, wy)
         setHover(id ? { id, soft: !hard } : null)
+
+        // Universal Hover Notes: hit test exact stroke or visual bounding area (arrows, sketches, frames, etc.)
+        const noteTarget = pickHoverTarget(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
+        setHoverNoteTarget(noteTarget)
       })
     },
-    [st, toWorld, hover, isSpacebarHeld]
+    [st, toWorld, hover, hoverNoteTarget, isSpacebarHeld]
   )
 
   const onPointerLeave = useCallback(() => {
     setHover(null)
+    setHoverNoteTarget(null)
     setPointerClientPos(null)
   }, [])
 
@@ -1838,6 +1843,16 @@ export function Canvas() {
         case "a": s.setArrowHead(true); s.setTool("arrow"); break
         case "c": s.setPanel("components"); break
         case "b": s.setPanel("blocks"); break
+        case "h": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+            }
+          }
+          break
+        }
         case "ArrowLeft":
         case "ArrowRight":
         case "ArrowUp":
@@ -2075,13 +2090,27 @@ export function Canvas() {
         editing={!!editingId}
         gestureKind={gestureKind}
         readOnly={isViewer}
+        onOpenQuickNote={(n) => setQuickNoteNode(n)}
       />
 
-      {/* Smart Hover Notes: Universal floating explanatory notes (hard hit only) */}
+      {/* Smart Hover Notes: Universal floating explanatory notes (Clouds Theme) */}
       <SmartHoverNote
-        targetNode={hover && !hover.soft ? nodes[hover.id] : null}
+        targetNode={hoverNoteTarget}
         pointerPos={pointerClientPos}
         isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
+      />
+
+      {/* Universal Quick Note Dialog: Add or edit hover note on any object */}
+      <QuickNoteDialog
+        node={quickNoteNode}
+        isOpen={Boolean(quickNoteNode)}
+        onClose={() => setQuickNoteNode(null)}
+        onSave={(nodeId, note) => {
+          st().updateNodes({ [nodeId]: { hoverNote: note } })
+        }}
+        onDeleteNote={(nodeId) => {
+          st().updateNodes({ [nodeId]: { hoverNote: undefined } })
+        }}
       />
 
       {/* smart guides */}
@@ -2198,6 +2227,7 @@ function SelectionOverlay({
   editing,
   gestureKind,
   readOnly,
+  onOpenQuickNote,
 }: {
   selectedNodes: SquigNode[]
   viewport: { x: number; y: number; zoom: number }
@@ -2205,6 +2235,7 @@ function SelectionOverlay({
   editing: boolean
   gestureKind: Gesture["kind"] | null
   readOnly?: boolean
+  onOpenQuickNote?: (node: SquigNode) => void
 }) {
   const b = unionBounds(selectedNodes)
   // the text editor draws its own dashed box; two boxes on one node is noise
@@ -2263,6 +2294,27 @@ function SelectionOverlay({
       {!marqueeing && (
         <div className="pointer-events-none absolute" style={{ left, top, width: w, height: h }}>
           <div className="absolute inset-0 rounded-sm" style={{ border: "2px solid var(--sq-select)" }} />
+
+          {/* Floating Quick Note Pill on selection bounding box */}
+          {selectedNodes.length === 1 && !readOnly && onOpenQuickNote && (
+            <div className="pointer-events-auto absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  onOpenQuickNote(selectedNodes[0])
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shadow-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-sky-400/50 text-sky-700 dark:text-sky-300 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap select-none"
+                title="Add or edit hover note (Shortcut: H)"
+              >
+                <Cloud size={13} weight="fill" className="text-sky-500 shrink-0" />
+                <span>
+                  {selectedNodes[0].hoverNote?.body?.trim() ? "Edit Note" : "Add Note"}
+                </span>
+              </button>
+            </div>
+          )}
           {showHandles &&
             // Corners last, so they sit on top: their pads can meet a side's on
             // a tight box, and a mis-grab costs more on a corner than a side.

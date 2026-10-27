@@ -25,7 +25,7 @@ import {
   type WeekStartsOn,
 } from "@/lib/calendar/date-utils"
 import { expandRecurringEvents } from "@/lib/calendar/layout"
-import { useCalendarEvents } from "@/lib/calendar/event-store"
+import { useCalendarEvents, normalizeEventId } from "@/lib/calendar/event-store"
 import type { CalendarEvent, CalendarView } from "@/lib/calendar/types"
 import { exportToIcs, downloadIcsFile, parseIcs } from "@/lib/calendar/ics"
 
@@ -574,7 +574,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
         onEdit={handleEditFromPeek}
         onToggleComplete={(id) => {
           toggleComplete(id)
-          if (peekEvent && peekEvent.id === id) {
+          if (peekEvent && (peekEvent.id === id || normalizeEventId(peekEvent.id) === normalizeEventId(id))) {
             setPeekEvent({
               ...peekEvent,
               status: peekEvent.status === "completed" ? "pending" : "completed",

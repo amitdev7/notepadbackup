@@ -227,12 +227,14 @@ export function CalendarEventCard({
         </div>
 
         {/* Quick Actions Footer Toolbar */}
-        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1">
+        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1 select-none">
           <div className="flex items-center gap-1">
             {/* Toggle Completion */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onToggleComplete(event.id)
               }}
               className={cn(
@@ -249,7 +251,9 @@ export function CalendarEventCard({
             {/* Edit */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onEdit(event)
               }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
@@ -261,7 +265,9 @@ export function CalendarEventCard({
             {/* Duplicate */}
             <button
               type="button"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
                 onDuplicate(event)
                 onClose()
               }}
@@ -274,7 +280,11 @@ export function CalendarEventCard({
             {/* Export single .ics */}
             <button
               type="button"
-              onClick={handleExportSingle}
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                handleExportSingle()
+              }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
               title="Export to .ics file"
             >
@@ -285,7 +295,9 @@ export function CalendarEventCard({
           {/* Delete Action (1-Click Instant Delete matching macOS Calendar) */}
           <button
             type="button"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
               onDelete(event.id)
               onClose()
             }}

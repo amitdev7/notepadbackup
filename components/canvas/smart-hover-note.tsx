@@ -1,41 +1,36 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Zenithsui Smart Hover Notes — Premium macOS/iOS-Inspired Hover Annotation
+// Zenithsui Smart Hover Notes — Premium macOS/iOS Clouds-Themed Hover Annotation
 //
-// Desktop hover-only floating cards for canvas objects (arrows, freehand
-// sketches, shapes, text, components, images, documents, stickies, etc.).
+// Displays elegant floating metadata beside the cursor when hovering over
+// any annotated canvas object (Arrow, Freehand Drawing, Shape, Text, Component, etc.).
 //
-// Core Invariants:
-// 1. 100% hidden when not hovering: no persistent canvas text, labels, or decorations.
-// 2. Exact stroke hit-testing: arrows and sketches trigger only on actual stroke collars.
-//    Hollow shapes trigger only on their drawn perimeter; filled shapes on their surface.
-// 3. Stable cursor anchoring: card anchors on hover reveal and does NOT jump or flicker
-//    while moving the pointer over the same object.
-// 4. Smooth Apple-style entrance and exit transitions (160ms in, 140ms out) with
-//    prefers-reduced-motion safety.
-// 5. Automatic theme inheritance across all 12 Zenithsui palettes, paper shades, and dark modes.
-// 6. Viewport collision detection with auto-flipping and screen edge clamping.
+// Features:
+// 1. Apple macOS/iOS frosted glassmorphic Clouds Theme with luminous celestial glow.
+// 2. High-DPI viewport boundary collision clamping & automatic flipping.
+// 3. Isolated React portal rendering immune to canvas pan/zoom transforms.
+// 4. Stable cursor anchoring (prevents jitter or chasing while cursor is inside object).
+// 5. Accessible tooltip ARIA semantics with reduced-motion support.
+// 6. Zero canvas clutter: 100% hidden when not hovering over the object's area.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
-import { ChatCenteredText } from "@phosphor-icons/react"
+import { Cloud, ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface SmartHoverNoteProps {
-  /** Topmost eligible node currently under the pointer (must be a hard hit, not soft hollow interior) */
+  /** Target node currently under the pointer */
   targetNode: SquigNode | null
-  /** Optional external client pointer coordinates; defaults to tracked window coordinates */
-  pointerPos?: { x: number; y: number } | null
-  /** Whether an active gesture, tool, or canvas mode is busy (suppresses hover notes) */
+  /** Current client pointer coordinates */
+  pointerPos: { x: number; y: number } | null
+  /** Whether a gesture or canvas tool is busy (suppresses hover notes) */
   isBusy?: boolean
   /** Delay in milliseconds before revealing note (default: 300ms) */
   delayMs?: number
 }
-
-type AnimState = "idle" | "entering" | "visible" | "exiting"
 
 /**
  * Universal floating Smart Hover Note portal.
@@ -47,38 +42,19 @@ export function SmartHoverNote({
   delayMs = 300,
 }: SmartHoverNoteProps) {
   const [mounted, setMounted] = useState(false)
-  const [animState, setAnimState] = useState<AnimState>("idle")
-  const [displayedNode, setDisplayedNode] = useState<SquigNode | null>(null)
-  const [anchorPos, setAnchorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-
-  const pointerPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
-  const enterTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const exitTimerRef = useRef<NodeJS.Timeout | null>(null)
-  const activeNodeIdRef = useRef<string | null>(null)
+  const [visible, setVisible] = useState(false)
+  const [activeNode, setActiveNode] = useState<SquigNode | null>(null)
+  const [activePos, setActivePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const currentTargetIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Continuously track mouse coordinates without forcing React re-renders on the canvas
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      pointerPosRef.current = { x: e.clientX, y: e.clientY }
-    }
-    window.addEventListener("pointermove", onMove, { passive: true })
-    return () => window.removeEventListener("pointermove", onMove)
-  }, [])
-
-  // Sync external pointerPos prop when provided
-  useEffect(() => {
-    if (pointerPos) {
-      pointerPosRef.current = pointerPos
-    }
-  }, [pointerPos])
-
-  // Evaluate whether target node has an enabled, non-empty note and canvas is not busy
+  // Check if target node qualifies for hover note display
   const note = targetNode?.hoverNote
-  const isEligible = Boolean(
+  const hasValidNote = Boolean(
     targetNode &&
     note &&
     note.enabled !== false &&
@@ -86,172 +62,108 @@ export function SmartHoverNote({
     !isBusy
   )
 
-  const clearTimers = useCallback(() => {
-    if (enterTimerRef.current) {
-      clearTimeout(enterTimerRef.current)
-      enterTimerRef.current = null
-    }
-    if (exitTimerRef.current) {
-      clearTimeout(exitTimerRef.current)
-      exitTimerRef.current = null
-    }
-  }, [])
-
-  // State machine managing hover activation, delay, anchoring, switching, and smooth exit
   useEffect(() => {
-    if (!isEligible || !targetNode) {
-      // Pointer left eligible target
-      if (enterTimerRef.current) {
-        clearTimeout(enterTimerRef.current)
-        enterTimerRef.current = null
-      }
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
 
-      activeNodeIdRef.current = null
-
-      if (animState === "visible" || animState === "entering") {
-        // Trigger smooth exit transition
-        setAnimState("exiting")
-        exitTimerRef.current = setTimeout(() => {
-          setAnimState("idle")
-          setDisplayedNode(null)
-          exitTimerRef.current = null
-        }, 140)
-      }
+    if (!hasValidNote || !targetNode || !pointerPos) {
+      setVisible(false)
+      currentTargetIdRef.current = null
       return
     }
 
-    const nextId = targetNode.id
+    const nodeId = targetNode.id
 
-    // Case 1: Hovering within the SAME already active node
-    if (activeNodeIdRef.current === nextId) {
-      // If already visible, keep the card anchored in place (do NOT follow cursor or restart animation)
-      // If user edited the note while hovering, update displayed node content seamlessly
-      if (animState === "visible" || animState === "entering") {
-        setDisplayedNode(targetNode)
-      }
+    // If mouse is moving within the SAME already visible node, stay stably anchored (no jitter)
+    if (visible && currentTargetIdRef.current === nodeId) {
       return
     }
 
-    // Case 2: New node target
-    activeNodeIdRef.current = nextId
-
-    if (animState === "visible" || animState === "entering") {
-      // Rapid switch between two annotated objects: cross-fade directly without delay lag
-      clearTimers()
-      setDisplayedNode(targetNode)
-      setAnchorPos(pointerPosRef.current)
-      setAnimState("visible")
-    } else {
-      // Fresh hover entrance: start standard 300ms hover delay
-      clearTimers()
-      enterTimerRef.current = setTimeout(() => {
-        setDisplayedNode(targetNode)
-        setAnchorPos(pointerPosRef.current)
-        setAnimState("entering")
-
-        // Progress to steady visible state
-        requestAnimationFrame(() => {
-          setAnimState("visible")
-        })
-        enterTimerRef.current = null
-      }, delayMs)
-    }
+    // New node hover session: start hover delay timer
+    currentTargetIdRef.current = nodeId
+    timerRef.current = setTimeout(() => {
+      setActiveNode(targetNode)
+      setActivePos(pointerPos)
+      setVisible(true)
+    }, delayMs)
 
     return () => {
-      // Cleanup on unmount or target replacement
-      if (enterTimerRef.current) {
-        clearTimeout(enterTimerRef.current)
-        enterTimerRef.current = null
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
       }
     }
-  }, [isEligible, targetNode, isBusy, delayMs, animState, clearTimers])
+  }, [hasValidNote, targetNode, pointerPos, isBusy, delayMs, visible])
 
-  // Instant dismissal on Escape key, canvas wheel/scroll, or window blur
+  // Dismiss on Escape key, window blur, or scroll
   useEffect(() => {
-    if (animState === "idle") return
-
-    const dismissImmediately = () => {
-      clearTimers()
-      activeNodeIdRef.current = null
-      setAnimState("idle")
-      setDisplayedNode(null)
-    }
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") dismissImmediately()
-    }
-
-    window.addEventListener("keydown", onKey)
-    window.addEventListener("blur", dismissImmediately)
-    window.addEventListener("wheel", dismissImmediately, { passive: true })
+    if (!visible) return
+    const handleDismiss = () => setVisible(false)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") handleDismiss()
+    })
+    window.addEventListener("blur", handleDismiss)
+    window.addEventListener("wheel", handleDismiss, { passive: true })
     return () => {
-      window.removeEventListener("keydown", onKey)
-      window.removeEventListener("blur", dismissImmediately)
-      window.removeEventListener("wheel", dismissImmediately)
+      window.removeEventListener("blur", handleDismiss)
+      window.removeEventListener("wheel", handleDismiss)
     }
-  }, [animState, clearTimers])
+  }, [visible])
 
-  if (!mounted || animState === "idle" || !displayedNode?.hoverNote || typeof document === "undefined") {
+  if (!mounted || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
     return null
   }
 
   return createPortal(
     <FloatingHoverCard
-      node={displayedNode}
-      note={displayedNode.hoverNote}
-      anchorPos={anchorPos}
-      animState={animState}
+      node={activeNode}
+      note={activeNode.hoverNote}
+      anchorPos={activePos}
     />,
     document.body
   )
 }
 
 // ---------------------------------------------------------------------------
-// Floating Note Card with Boundary Clamping & Apple Glassmorphism
+// Floating Note Card with Boundary Clamping & Theme Glassmorphism
 // ---------------------------------------------------------------------------
 
 interface FloatingHoverCardProps {
   node: SquigNode
   note: HoverNote
   anchorPos: { x: number; y: number }
-  animState: AnimState
 }
 
-function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCardProps) {
+function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 12, top: anchorPos.y + 12 })
+  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 16, top: anchorPos.y + 16 })
 
-  // Measure card dimensions and clamp to viewport
-  useLayoutEffect(() => {
+  useEffect(() => {
     const el = cardRef.current
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    const padding = 14
+    const padding = 16
     const vw = window.innerWidth
     const vh = window.innerHeight
 
-    let left = anchorPos.x + 12
-    let top = anchorPos.y + 12
+    let left = anchorPos.x + 16
+    let top = anchorPos.y + 16
 
     // Flip to left if overflowing viewport right
     if (left + rect.width > vw - padding) {
-      left = Math.max(padding, anchorPos.x - rect.width - 12)
+      left = Math.max(padding, anchorPos.x - rect.width - 16)
     }
 
     // Flip up if overflowing viewport bottom
     if (top + rect.height > vh - padding) {
-      top = Math.max(padding, anchorPos.y - rect.height - 12)
+      top = Math.max(padding, anchorPos.y - rect.height - 16)
     }
-
-    // Double-check top and left margins
-    if (left < padding) left = padding
-    if (top < padding) top = padding
 
     setStylePos({ left, top })
   }, [anchorPos])
-
-  const isExiting = animState === "exiting"
 
   return (
     <div
@@ -259,15 +171,12 @@ function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCa
       role="tooltip"
       aria-live="polite"
       className={cn(
-        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max transition-all",
-        isExiting
-          ? "opacity-0 scale-97 translate-y-[-2px] duration-140 ease-in"
-          : "opacity-100 scale-100 translate-y-0 duration-160 ease-out"
+        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
+        "animate-in fade-in zoom-in-95 duration-150 ease-out"
       )}
       style={{
         left: `${stylePos.left}px`,
         top: `${stylePos.top}px`,
-        transitionProperty: "opacity, transform",
       }}
     >
       <SmartHoverCardContent node={node} note={note} />
@@ -276,7 +185,7 @@ function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCa
 }
 
 // ---------------------------------------------------------------------------
-// Shared Smart Hover Card Presentation (Visual Surface)
+// Shared Smart Hover Card Presentation (Clouds Theme Apple macOS / iOS)
 // ---------------------------------------------------------------------------
 
 export interface SmartHoverCardContentProps {
@@ -297,50 +206,47 @@ export function SmartHoverCardContent({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[var(--sq-faint)]/80 font-sans shadow-2xl overflow-hidden",
-        "bg-[var(--sq-paper)]/95 backdrop-blur-xl text-[var(--sq-ink)] transition-colors",
+        "rounded-3xl border border-sky-200/60 dark:border-sky-500/40 font-sans overflow-hidden",
+        "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)] transition-all",
+        "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
         className
       )}
       style={{
         boxShadow:
-          "0 12px 34px -4px rgba(0, 0, 0, 0.16), 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--sq-faint)",
+          "0 20px 48px -10px rgba(56, 189, 248, 0.32), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.7)",
       }}
     >
-      {/* Top subtle ink wash accent */}
-      <div className="h-0.5 w-full bg-[var(--sq-shade-strong)]" />
+      {/* Top dreamy celestial cloud accent gradient */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
 
-      <div className="p-3 sm:p-3.5 space-y-2">
-        {/* Header row: only displayed if title or node badge exists */}
-        {(hasTitle || nodeTypeLabel) && (
-          <div className="flex items-start justify-between gap-2.5">
+      <div className="p-3.5 sm:p-4 space-y-2.5">
+        {/* Header row: Cloud icon + Title / Annotation + Node Type Badge */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <span className="p-1.5 rounded-xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0 border border-sky-400/25 shadow-xs flex items-center justify-center">
+              <Cloud size={15} weight="fill" />
+            </span>
             {hasTitle ? (
-              <div className="flex items-center gap-1.5 min-w-0 flex-1">
-                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0 opacity-90">
-                  <ChatCenteredText size={12} weight="bold" />
-                </span>
-                <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-[var(--sq-ink)] truncate leading-tight">
-                  {note.title!.trim()}
-                </h4>
-              </div>
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate leading-snug">
+                {note.title!.trim()}
+              </h4>
             ) : (
-              <div className="flex items-center gap-1.5 opacity-70">
-                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0">
-                  <ChatCenteredText size={11} weight="bold" />
-                </span>
-              </div>
-            )}
-
-            {nodeTypeLabel && (
-              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--sq-shade)]/70 text-[var(--sq-ink)] opacity-70 shrink-0 border border-[var(--sq-faint)]/50">
-                {nodeTypeLabel}
+              <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-200 uppercase tracking-wider flex items-center gap-1">
+                Note
               </span>
             )}
           </div>
-        )}
 
-        {/* Note Body: multi-line description */}
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/60 shadow-2xs shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Note Body */}
         {hasBody && (
-          <div className="text-xs leading-relaxed text-[var(--sq-ink)]/90 whitespace-pre-wrap break-words [overflow-wrap:anywhere] max-h-56 overflow-y-auto overscroll-contain">
+          <div className="text-xs leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1">
             {note.body.trim()}
           </div>
         )}
@@ -354,7 +260,7 @@ export function SmartHoverCardContent({
 // ---------------------------------------------------------------------------
 
 function getNodeTypeLabel(node?: SquigNode | null): string {
-  if (!node) return ""
+  if (!node) return "object"
   switch (node.type) {
     case "arrow":
       return "connector"
@@ -377,6 +283,6 @@ function getNodeTypeLabel(node?: SquigNode | null): string {
     case "embed":
       return "embed"
     default:
-      return ""
+      return "object"
   }
 }

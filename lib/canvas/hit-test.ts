@@ -347,3 +347,54 @@ export function pickInRect(
   }
   return out
 }
+
+/**
+ * Resolves the topmost node eligible for a Smart Hover Note under a world point.
+ * Prioritizes direct stroke hits, followed by the object's visual bounding area
+ * (allowing users to hover over an arrow's, drawing's, or frame's bounding area).
+ * Walks front-to-back to preserve z-index ordering.
+ */
+export function pickHoverTarget(
+  nodes: Record<string, SquigNode>,
+  order: readonly string[],
+  x: number,
+  y: number,
+  zoom: number
+): SquigNode | null {
+  // 1. Direct stroke / solid surface hit (front-to-back)
+  for (let i = order.length - 1; i >= 0; i--) {
+    const n = nodes[order[i]]
+    if (!n) continue
+    const note = n.hoverNote
+    if (
+      note &&
+      note.enabled !== false &&
+      ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
+    ) {
+      if (hitsPoint(n, x, y, zoom)) {
+        return n
+      }
+    }
+  }
+
+  // 2. Bounding area hit (front-to-back) — covers the object's visual area shown in selection boxes
+  for (let i = order.length - 1; i >= 0; i--) {
+    const n = nodes[order[i]]
+    if (!n) continue
+    const note = n.hoverNote
+    if (
+      note &&
+      note.enabled !== false &&
+      ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
+    ) {
+      const b = boxOf(n)
+      const pad = 4
+      if (x >= b.x - pad && x <= b.x + b.w + pad && y >= b.y - pad && y <= b.y + b.h + pad) {
+        return n
+      }
+    }
+  }
+
+  return null
+}
+
