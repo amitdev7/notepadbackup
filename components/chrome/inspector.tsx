@@ -860,33 +860,36 @@ function HoverNoteSection({
                 { id: "frosted", label: "3D Frosted Cloud ⛅" },
                 { id: "macos", label: "macOS Card 🍏" },
                 { id: "ios", label: "iOS Glass 📱" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => {
-                    patch((n) => ({
-                      hoverNote: {
-                        ...(n.hoverNote || { enabled: true, body: "" }),
-                        theme: t.id,
-                      },
-                    }))
-                  }}
-                  className={cn(
-                    "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
-                    (note.theme || "wordcloud") === t.id
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
-                  )}
-                >
-                  {t.label}
-                </button>
-              ))}
+              ].map((t) => {
+                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "wordcloud"
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => {
+                      patch((n) => ({
+                        hoverNote: {
+                          ...(n.hoverNote || { enabled: true, body: "" }),
+                          theme: t.id,
+                        },
+                      }))
+                    }}
+                    className={cn(
+                      "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
+                      curTheme === t.id
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                    )}
+                  >
+                    {t.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {/* Cloud Weather Accent if frosted 3D cloud theme */}
-          {(note.theme === "frosted" || note.theme === "clouds") && (
+          {(((note as Record<string, unknown> | undefined)?.theme === "frosted" || (note as Record<string, unknown> | undefined)?.theme === "clouds")) && (
             <div className="flex flex-col gap-1">
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
@@ -896,28 +899,31 @@ function HoverNoteSection({
                   { id: "lightning", label: "Thunder ⚡" },
                   { id: "wind", label: "Breeze ❄️" },
                   { id: "classic", label: "Pure ☁️" },
-                ].map((cs) => (
-                  <button
-                    key={cs.id}
-                    type="button"
-                    onClick={() => {
-                      patch((n) => ({
-                        hoverNote: {
-                          ...(n.hoverNote || { enabled: true, body: "" }),
-                          cloudStyle: cs.id,
-                        },
-                      }))
-                    }}
-                    className={cn(
-                      "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
-                      (note.cloudStyle || "sun") === cs.id
-                        ? "bg-sky-500 text-white border-sky-400 font-semibold"
-                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
-                    )}
-                  >
-                    {cs.label}
-                  </button>
-                ))}
+                ].map((cs) => {
+                  const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
+                  return (
+                    <button
+                      key={cs.id}
+                      type="button"
+                      onClick={() => {
+                        patch((n) => ({
+                          hoverNote: {
+                            ...(n.hoverNote || { enabled: true, body: "" }),
+                            cloudStyle: cs.id,
+                          },
+                        }))
+                      }}
+                      className={cn(
+                        "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
+                        curCs === cs.id
+                          ? "bg-sky-500 text-white border-sky-400 font-semibold"
+                          : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                      )}
+                    >
+                      {cs.label}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}

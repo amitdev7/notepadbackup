@@ -349,10 +349,12 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const theme = note.theme || "wordcloud"
+  const noteRecord = note as Record<string, unknown>
+  const rawTheme = typeof noteRecord.theme === "string" ? noteRecord.theme : ""
+  const theme = rawTheme || "clouds"
 
   // 1:1 pdsuwwz/vue-word-cloud (Default): ONLY SHOWS TEXT with ECharts vibrant typography
-  if (!note.theme || theme === "wordcloud" || theme === "clouds") {
+  if (!rawTheme || theme === "wordcloud" || theme === "clouds") {
     return <VueWordCloudHoverText note={note} node={node} className={className} />
   }
 
@@ -487,7 +489,8 @@ export function Frosted3DCloud({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const text = note.body ? note.body.trim() : ""
-  const cloudStyle = note.cloudStyle || "sun"
+  const noteRecord = note as Record<string, unknown>
+  const cloudStyle = typeof noteRecord.cloudStyle === "string" ? noteRecord.cloudStyle : "sun"
   const isSun = cloudStyle === "sun"
   const isRain = cloudStyle === "rain"
   const isLightning = cloudStyle === "lightning"

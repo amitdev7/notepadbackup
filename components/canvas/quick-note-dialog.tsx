@@ -57,7 +57,8 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
-    setTheme(existing?.theme || "clouds")
+    const exTheme = (existing as Record<string, unknown> | undefined)?.theme
+    setTheme(typeof exTheme === "string" ? exTheme : "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -85,12 +86,13 @@ export function QuickNoteDialog({
       return
     }
 
+    const existingCreatedAt = (node.hoverNote as Record<string, unknown> | undefined)?.createdAt
     const updatedNote: HoverNote = {
       title: trimmedTitle || undefined,
       body: trimmedBody,
       enabled: true,
       theme,
-      createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
+      createdAt: typeof existingCreatedAt === "string" ? existingCreatedAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
 

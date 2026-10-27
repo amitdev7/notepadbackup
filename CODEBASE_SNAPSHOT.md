@@ -1130,7 +1130,7 @@ Run all tests via: `pnpm test`.
 | `.env.local` | 30 | 1420 | Core .env.local module | `.env` |
 | `.gitignore` | 57 | 837 | Core .gitignore module | `` |
 | `.npmrc` | 15 | 825 | Core .npmrc module | `` |
-| `.vercelignore` | 27 | 376 | Core .vercelignore module | `` |
+| `.vercelignore` | 17 | 257 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
@@ -1141,7 +1141,7 @@ Run all tests via: `pnpm test`.
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 56 | 1049 | Core tsconfig.json module | `tsconfig` |
-| `vercel.json` | 7 | 150 | Core vercel.json module | `vercel` |
+| `vercel.json` | 6 | 149 | Core vercel.json module | `vercel` |
 | `vitest.config.mts` | 101 | 3063 | Core vitest.config.mts module | `vitest.config` |
 | `app/cursors.css` | 134 | 4635 | Core cursors.css module | `cursors` |
 | `app/dashboard/page.tsx` | 818 | 38129 | Core page.tsx module | `page` |
@@ -1171,7 +1171,7 @@ Run all tests via: `pnpm test`.
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
 | `lib/store.ts` | 1594 | 56575 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 311 | 9279 | Core types.ts module | `types` |
+| `lib/types.ts` | 312 | 9304 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
@@ -1206,8 +1206,8 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 282 | 11198 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
-| `components/canvas/smart-hover-note.tsx` | 702 | 24365 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/quick-note-dialog.tsx` | 284 | 11424 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/smart-hover-note.tsx` | 705 | 24593 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 757 | 19075 | Core charts.ts module | `charts` |
@@ -1228,7 +1228,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/files-popover.tsx` | 344 | 14456 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 1049 | 39920 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 1055 | 40360 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1708,33 +1708,23 @@ verify-deps-before-run=install
 ### File: `.vercelignore`
 
 - **Path**: `.vercelignore`
-- **Lines**: 27
-- **Size**: 376 bytes
+- **Lines**: 17
+- **Size**: 257 bytes
 
 ```
 # Vercel Deployment Ignore File
-# Exclude massive reference archives, docs, tests, and non-production folders to keep builds lightning-fast
+# Exclude massive reference archives, docs, and local test artifacts to keep builds lightning-fast
 
 sources/
 mouse/
 scripts/
 docs/
 scratch/
-files/
-zenithsui-app/
-packages/
-examples/
-firebase-project/
-supabase/
 *.zip
 *.tar.gz
 *.log
 .git/
 .agents/
-.claude/
-.codesandbox/
-.husky/
-.vscode/
 .gemini/
 .system_generated/
 CODEBASE_SNAPSHOT.md
@@ -2343,8 +2333,8 @@ console.error = (...args) => {
 ### File: `vercel.json`
 
 - **Path**: `vercel.json`
-- **Lines**: 7
-- **Size**: 150 bytes
+- **Lines**: 6
+- **Size**: 149 bytes
 
 ```json
 {
@@ -8524,8 +8514,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 311
-- **Size**: 9279 bytes
+- **Lines**: 312
+- **Size**: 9304 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -8586,6 +8576,7 @@ export interface HoverNote {
   cloudStyle?: string
   createdAt?: string
   updatedAt?: string
+  [key: string]: unknown
 }
 
 export interface BaseNode {
@@ -19834,8 +19825,8 @@ export function PerfHud({
 ### File: `components/canvas/quick-note-dialog.tsx`
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
-- **Lines**: 282
-- **Size**: 11198 bytes
+- **Lines**: 284
+- **Size**: 11424 bytes
 
 ```tsx
 "use client"
@@ -19897,7 +19888,8 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
-    setTheme(existing?.theme || "clouds")
+    const exTheme = (existing as Record<string, unknown> | undefined)?.theme
+    setTheme(typeof exTheme === "string" ? exTheme : "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -19925,12 +19917,13 @@ export function QuickNoteDialog({
       return
     }
 
+    const existingCreatedAt = (node.hoverNote as Record<string, unknown> | undefined)?.createdAt
     const updatedNote: HoverNote = {
       title: trimmedTitle || undefined,
       body: trimmedBody,
       enabled: true,
       theme,
-      createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
+      createdAt: typeof existingCreatedAt === "string" ? existingCreatedAt : new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
 
@@ -20126,8 +20119,8 @@ export function QuickNoteDialog({
 ### File: `components/canvas/smart-hover-note.tsx`
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 702
-- **Size**: 24365 bytes
+- **Lines**: 705
+- **Size**: 24593 bytes
 
 ```tsx
 "use client"
@@ -20481,10 +20474,12 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const theme = note.theme || "wordcloud"
+  const noteRecord = note as Record<string, unknown>
+  const rawTheme = typeof noteRecord.theme === "string" ? noteRecord.theme : ""
+  const theme = rawTheme || "clouds"
 
   // 1:1 pdsuwwz/vue-word-cloud (Default): ONLY SHOWS TEXT with ECharts vibrant typography
-  if (!note.theme || theme === "wordcloud" || theme === "clouds") {
+  if (!rawTheme || theme === "wordcloud" || theme === "clouds") {
     return <VueWordCloudHoverText note={note} node={node} className={className} />
   }
 
@@ -20619,7 +20614,8 @@ export function Frosted3DCloud({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const text = note.body ? note.body.trim() : ""
-  const cloudStyle = note.cloudStyle || "sun"
+  const noteRecord = note as Record<string, unknown>
+  const cloudStyle = typeof noteRecord.cloudStyle === "string" ? noteRecord.cloudStyle : "sun"
   const isSun = cloudStyle === "sun"
   const isRain = cloudStyle === "rain"
   const isLightning = cloudStyle === "lightning"
@@ -26463,8 +26459,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 1049
-- **Size**: 39920 bytes
+- **Lines**: 1055
+- **Size**: 40360 bytes
 
 ```tsx
 "use client"
@@ -27329,33 +27325,36 @@ function HoverNoteSection({
                 { id: "frosted", label: "3D Frosted Cloud ⛅" },
                 { id: "macos", label: "macOS Card 🍏" },
                 { id: "ios", label: "iOS Glass 📱" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => {
-                    patch((n) => ({
-                      hoverNote: {
-                        ...(n.hoverNote || { enabled: true, body: "" }),
-                        theme: t.id,
-                      },
-                    }))
-                  }}
-                  className={cn(
-                    "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
-                    (note.theme || "wordcloud") === t.id
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
-                  )}
-                >
-                  {t.label}
-                </button>
-              ))}
+              ].map((t) => {
+                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "wordcloud"
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => {
+                      patch((n) => ({
+                        hoverNote: {
+                          ...(n.hoverNote || { enabled: true, body: "" }),
+                          theme: t.id,
+                        },
+                      }))
+                    }}
+                    className={cn(
+                      "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
+                      curTheme === t.id
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                    )}
+                  >
+                    {t.label}
+                  </button>
+                )
+              })}
             </div>
           </div>
 
           {/* Cloud Weather Accent if frosted 3D cloud theme */}
-          {(note.theme === "frosted" || note.theme === "clouds") && (
+          {(((note as Record<string, unknown> | undefined)?.theme === "frosted" || (note as Record<string, unknown> | undefined)?.theme === "clouds")) && (
             <div className="flex flex-col gap-1">
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
@@ -27365,28 +27364,31 @@ function HoverNoteSection({
                   { id: "lightning", label: "Thunder ⚡" },
                   { id: "wind", label: "Breeze ❄️" },
                   { id: "classic", label: "Pure ☁️" },
-                ].map((cs) => (
-                  <button
-                    key={cs.id}
-                    type="button"
-                    onClick={() => {
-                      patch((n) => ({
-                        hoverNote: {
-                          ...(n.hoverNote || { enabled: true, body: "" }),
-                          cloudStyle: cs.id,
-                        },
-                      }))
-                    }}
-                    className={cn(
-                      "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
-                      (note.cloudStyle || "sun") === cs.id
-                        ? "bg-sky-500 text-white border-sky-400 font-semibold"
-                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
-                    )}
-                  >
-                    {cs.label}
-                  </button>
-                ))}
+                ].map((cs) => {
+                  const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
+                  return (
+                    <button
+                      key={cs.id}
+                      type="button"
+                      onClick={() => {
+                        patch((n) => ({
+                          hoverNote: {
+                            ...(n.hoverNote || { enabled: true, body: "" }),
+                            cloudStyle: cs.id,
+                          },
+                        }))
+                      }}
+                      className={cn(
+                        "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
+                        curCs === cs.id
+                          ? "bg-sky-500 text-white border-sky-400 font-semibold"
+                          : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                      )}
+                    >
+                      {cs.label}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}
