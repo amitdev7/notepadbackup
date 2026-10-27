@@ -349,18 +349,16 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const noteRecord = note as Record<string, unknown>
-  const rawTheme = typeof noteRecord.theme === "string" ? noteRecord.theme : ""
-  const theme = rawTheme || "clouds"
+  const theme = note.theme || "clouds"
 
-  // 1:1 pdsuwwz/vue-word-cloud (Default): ONLY SHOWS TEXT with ECharts vibrant typography
-  if (!rawTheme || theme === "wordcloud" || theme === "clouds") {
-    return <VueWordCloudHoverText note={note} node={node} className={className} />
+  // 3D Frosted Glass Cloud (Default & Primary matching user reference images)
+  if (!note.theme || theme === "clouds" || theme === "frosted") {
+    return <Frosted3DCloud note={note} node={node} className={className} />
   }
 
-  // 3D frosted glass cumulus cloud (when explicitly selected as frosted)
-  if (theme === "frosted") {
-    return <Frosted3DCloud note={note} node={node} className={className} />
+  // 1:1 pdsuwwz/vue-word-cloud text effect
+  if (theme === "wordcloud") {
+    return <VueWordCloudHoverText note={note} node={node} className={className} />
   }
 
   // Alternate visual themes: macOS, iOS, Minimalist
@@ -479,18 +477,15 @@ export function SmartHoverCardContent({
 
 export function Frosted3DCloud({
   note,
-  node,
   className,
 }: {
   note: HoverNote
   node?: SquigNode | null
   className?: string
 }) {
-  const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const text = note.body ? note.body.trim() : ""
-  const noteRecord = note as Record<string, unknown>
-  const cloudStyle = typeof noteRecord.cloudStyle === "string" ? noteRecord.cloudStyle : "sun"
+  const cloudStyle = note.cloudStyle || "sun"
   const isSun = cloudStyle === "sun"
   const isRain = cloudStyle === "rain"
   const isLightning = cloudStyle === "lightning"
@@ -660,12 +655,6 @@ export function Frosted3DCloud({
         <div className="text-xs sm:text-[14px] font-semibold leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words max-h-48 overflow-y-auto scrollbar-thin">
           {text}
         </div>
-
-        {nodeTypeLabel && (
-          <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider font-bold bg-sky-500/12 dark:bg-sky-400/15 text-sky-700 dark:text-sky-300 border border-sky-400/25 shadow-2xs">
-            {nodeTypeLabel}
-          </div>
-        )}
       </div>
     </div>
   )
