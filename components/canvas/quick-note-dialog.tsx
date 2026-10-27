@@ -29,8 +29,7 @@ const NOTE_TEMPLATES = [
 ]
 
 const THEME_OPTIONS = [
-  { id: "wordcloud", label: "Word Cloud (Only Text) ☁️" },
-  { id: "frosted", label: "3D Frosted Cloud ⛅" },
+  { id: "clouds", label: "Clouds ☁️" },
   { id: "macos", label: "macOS 🍏" },
   { id: "ios", label: "iOS Glass 📱" },
   { id: "minimalist", label: "Clean 📄" },
@@ -46,7 +45,7 @@ export function QuickNoteDialog({
   const [mounted, setMounted] = useState(false)
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
-  const [theme, setTheme] = useState("wordcloud")
+  const [theme, setTheme] = useState("clouds")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -58,7 +57,7 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
-    setTheme(existing?.theme || "wordcloud")
+    setTheme(existing?.theme || "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
