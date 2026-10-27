@@ -1384,10 +1384,10 @@ Run all tests via: `pnpm test`.
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
 | `lib/storage/academic-db.ts` | 667 | 17533 | Core academic-db.ts module | `academic-db` |
-| `components/pwa/sw-register.tsx` | 43 | 1218 | Core sw-register.tsx module | `sw-register` |
+| `components/pwa/sw-register.tsx` | 45 | 1260 | Core sw-register.tsx module | `sw-register` |
 | `lib/pwa/use-pwa-install.ts` | 78 | 2213 | Core use-pwa-install.ts module | `use-pwa-install` |
 | `public/service-worker.js` | 21 | 834 | Core service-worker.js module | `service-worker` |
-| `public/sw.js` | 109 | 3200 | Core sw.js module | `sw` |
+| `public/sw.js` | 104 | 3087 | Core sw.js module | `sw` |
 | `scripts/doodle.zenithsui.json` | 7547 | 142231 | Core doodle.zenithsui.json module | `doodle.zenithsui` |
 | `scripts/gateway.mjs` | 144 | 5163 | Core gateway.mjs module | `gateway` |
 | `scripts/gen-doodle.mjs` | 104 | 3386 | Core gen-doodle.mjs module | `gen-doodle` |
@@ -79493,8 +79493,8 @@ export function clearAcademicMemoryStores(): void {
 ### File: `components/pwa/sw-register.tsx`
 
 - **Path**: `components/pwa/sw-register.tsx`
-- **Lines**: 43
-- **Size**: 1218 bytes
+- **Lines**: 45
+- **Size**: 1260 bytes
 
 ```tsx
 "use client"
@@ -79510,6 +79510,8 @@ export function ServiceWorkerRegister() {
         navigator.serviceWorker
           .register("/sw.js")
           .then((reg) => {
+            reg.update().catch(() => {})
+
             reg.onupdatefound = () => {
               const installing = reg.installing
               if (installing) {
@@ -79665,15 +79667,15 @@ self.addEventListener("activate", () => {
 ### File: `public/sw.js`
 
 - **Path**: `public/sw.js`
-- **Lines**: 109
-- **Size**: 3200 bytes
+- **Lines**: 104
+- **Size**: 3087 bytes
 
 ```javascript
 // ---------------------------------------------------------------------------
 // Zenithsui Service Worker (v1.0.0) — Offline Shell & Asset Caching
 // ---------------------------------------------------------------------------
 
-const CACHE_NAME = "zenithsui-shell-v1"
+const CACHE_NAME = "zenithsui-shell-v2"
 
 const PRECACHE_ASSETS = [
   "/",
@@ -79740,25 +79742,20 @@ self.addEventListener("fetch", (event) => {
     return
   }
 
-  // 3. Stale-While-Revalidate for HTML page navigations
+  // 3. Network-First for HTML page navigations (immediate updates, fallback to cache when offline)
   if (event.request.mode === "navigate") {
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const fetchPromise = fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              const clone = networkResponse.clone()
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-            }
-            return networkResponse
-          })
-          .catch(() => {
-            // Offline fallback to root cached index
-            return cached || caches.match("/")
-          })
-
-        return cached || fetchPromise
-      })
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse.status === 200) {
+            const clone = networkResponse.clone()
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+          }
+          return networkResponse
+        })
+        .catch(() => {
+          return caches.match(event.request).then((cached) => cached || caches.match("/"))
+        })
     )
     return
   }

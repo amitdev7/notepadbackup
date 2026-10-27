@@ -35,6 +35,14 @@ const THEME_OPTIONS = [
   { id: "minimalist", label: "Clean 📄" },
 ]
 
+const CLOUD_STYLE_OPTIONS = [
+  { id: "sun", label: "Sun ☀️", desc: "Golden sun with warm subsurface glow" },
+  { id: "rain", label: "Rain 🌧️", desc: "Cyan droplets below" },
+  { id: "lightning", label: "Thunder ⚡", desc: "Cyan lightning bolt below" },
+  { id: "wind", label: "Breeze ❄️", desc: "Cyan frosted wind below" },
+  { id: "classic", label: "Pure ☁️", desc: "Clean cumulus cloud" },
+]
+
 export function QuickNoteDialog({
   node,
   isOpen,
@@ -46,6 +54,7 @@ export function QuickNoteDialog({
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [theme, setTheme] = useState("clouds")
+  const [cloudStyle, setCloudStyle] = useState("sun")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -58,6 +67,7 @@ export function QuickNoteDialog({
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
     setTheme(existing?.theme || "clouds")
+    setCloudStyle(existing?.cloudStyle || "sun")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -90,6 +100,7 @@ export function QuickNoteDialog({
       body: trimmedBody,
       enabled: true,
       theme,
+      cloudStyle: theme === "clouds" ? cloudStyle : undefined,
       createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -217,6 +228,33 @@ export function QuickNoteDialog({
               ))}
             </div>
           </div>
+
+          {/* Cloud Weather Accent (Only visible when Clouds theme is active) */}
+          {theme === "clouds" && (
+            <div className="space-y-1.5 pt-0.5">
+              <label className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">
+                Cloud Weather Style
+              </label>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {CLOUD_STYLE_OPTIONS.map((cs) => (
+                  <button
+                    key={cs.id}
+                    type="button"
+                    onClick={() => setCloudStyle(cs.id)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border select-none",
+                      cloudStyle === cs.id
+                        ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white border-sky-400/40 shadow-xs scale-102"
+                        : "bg-sky-50/80 hover:bg-sky-100/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-sky-800 dark:text-sky-200 border-sky-200/50 dark:border-sky-800/50"
+                    )}
+                    title={cs.desc}
+                  >
+                    {cs.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Quick template starters */}
           <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
