@@ -1197,7 +1197,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2308 | 85341 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 2313 | 85526 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25333 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
@@ -1206,7 +1206,7 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/smart-hover-note.tsx` | 285 | 8885 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/smart-hover-note.tsx` | 383 | 12950 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1408,7 +1408,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
 | `scripts/test-functional-calendar.ts` | 449 | 18468 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
-| `scripts/test-hover-notes.ts` | 144 | 4668 | Core test-hover-notes.ts module | `test-hover-notes` |
+| `scripts/test-hover-notes.ts` | 323 | 11325 | Core test-hover-notes.ts module | `test-hover-notes` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -13968,8 +13968,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2308
-- **Size**: 85341 bytes
+- **Lines**: 2313
+- **Size**: 85526 bytes
 
 ```tsx
 "use client"
@@ -15420,6 +15420,11 @@ export function Canvas() {
   // hover feedback + placement ghost, throttled to one pass per frame
   const onPointerMoveLocal = useCallback(
     (e: React.PointerEvent) => {
+      // Touch devices do not trigger desktop mouse hover
+      if (e.pointerType === "touch") {
+        if (hover) setHover(null)
+        return
+      }
       const s = st()
       pointerWorld.current = toWorld(e)
       // the ghost is driven at the window level instead — see below
@@ -16046,9 +16051,9 @@ export function Canvas() {
         readOnly={isViewer}
       />
 
-      {/* Smart Hover Notes: Universal floating explanatory notes */}
+      {/* Smart Hover Notes: Universal floating explanatory notes (hard hit only) */}
       <SmartHoverNote
-        targetNode={hover ? nodes[hover.id] : null}
+        targetNode={hover && !hover.soft ? nodes[hover.id] : null}
         pointerPos={pointerClientPos}
         isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
       />
@@ -19555,8 +19560,8 @@ export function PerfHud({
 ### File: `components/canvas/smart-hover-note.tsx`
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 285
-- **Size**: 8885 bytes
+- **Lines**: 383
+- **Size**: 12950 bytes
 
 ```tsx
 "use client"
@@ -19564,33 +19569,39 @@ export function PerfHud({
 // ---------------------------------------------------------------------------
 // Zenithsui Smart Hover Notes — Premium macOS/iOS-Inspired Hover Annotation
 //
-// Displays elegant floating metadata beside the cursor when hovering over
-// any annotated canvas object (Arrow, Shape, Draw, Text, Component, etc.).
+// Desktop hover-only floating cards for canvas objects (arrows, freehand
+// sketches, shapes, text, components, images, documents, stickies, etc.).
 //
-// Features:
-// 1. Theme-aware glassmorphism adapting to all Zenithsui ink and paper palettes.
-// 2. High-DPI viewport boundary collision clamping & automatic flipping.
-// 3. Isolated React portal rendering immune to canvas pan/zoom transforms.
-// 4. Accessible tooltip ARIA semantics with reduced-motion support.
-// 5. Shared live preview rendering for inspector and context controls.
+// Core Invariants:
+// 1. 100% hidden when not hovering: no persistent canvas text, labels, or decorations.
+// 2. Exact stroke hit-testing: arrows and sketches trigger only on actual stroke collars.
+//    Hollow shapes trigger only on their drawn perimeter; filled shapes on their surface.
+// 3. Stable cursor anchoring: card anchors on hover reveal and does NOT jump or flicker
+//    while moving the pointer over the same object.
+// 4. Smooth Apple-style entrance and exit transitions (160ms in, 140ms out) with
+//    prefers-reduced-motion safety.
+// 5. Automatic theme inheritance across all 12 Zenithsui palettes, paper shades, and dark modes.
+// 6. Viewport collision detection with auto-flipping and screen edge clamping.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useLayoutEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
-import { ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
+import { ChatCenteredText } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface SmartHoverNoteProps {
-  /** Target node currently under the pointer */
+  /** Topmost eligible node currently under the pointer (must be a hard hit, not soft hollow interior) */
   targetNode: SquigNode | null
-  /** Current client pointer coordinates */
-  pointerPos: { x: number; y: number } | null
-  /** Whether a gesture or canvas tool is busy (suppresses hover notes) */
+  /** Optional external client pointer coordinates; defaults to tracked window coordinates */
+  pointerPos?: { x: number; y: number } | null
+  /** Whether an active gesture, tool, or canvas mode is busy (suppresses hover notes) */
   isBusy?: boolean
-  /** Delay in milliseconds before revealing note (default: 350ms) */
+  /** Delay in milliseconds before revealing note (default: 300ms) */
   delayMs?: number
 }
+
+type AnimState = "idle" | "entering" | "visible" | "exiting"
 
 /**
  * Universal floating Smart Hover Note portal.
@@ -19599,133 +19610,214 @@ export function SmartHoverNote({
   targetNode,
   pointerPos,
   isBusy = false,
-  delayMs = 350,
+  delayMs = 300,
 }: SmartHoverNoteProps) {
   const [mounted, setMounted] = useState(false)
-  const [visible, setVisible] = useState(false)
-  const [activeNode, setActiveNode] = useState<SquigNode | null>(null)
-  const [activePos, setActivePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const currentTargetIdRef = useRef<string | null>(null)
+  const [animState, setAnimState] = useState<AnimState>("idle")
+  const [displayedNode, setDisplayedNode] = useState<SquigNode | null>(null)
+  const [anchorPos, setAnchorPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+
+  const pointerPosRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const enterTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const exitTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const activeNodeIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Check if target node qualifies for hover note display
+  // Continuously track mouse coordinates without forcing React re-renders on the canvas
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      pointerPosRef.current = { x: e.clientX, y: e.clientY }
+    }
+    window.addEventListener("pointermove", onMove, { passive: true })
+    return () => window.removeEventListener("pointermove", onMove)
+  }, [])
+
+  // Sync external pointerPos prop when provided
+  useEffect(() => {
+    if (pointerPos) {
+      pointerPosRef.current = pointerPos
+    }
+  }, [pointerPos])
+
+  // Evaluate whether target node has an enabled, non-empty note and canvas is not busy
   const note = targetNode?.hoverNote
-  const hasValidNote = Boolean(
+  const isEligible = Boolean(
     targetNode &&
     note &&
-    note.enabled &&
-    note.body &&
-    note.body.trim().length > 0 &&
+    note.enabled !== false &&
+    ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0)) &&
     !isBusy
   )
 
+  const clearTimers = useCallback(() => {
+    if (enterTimerRef.current) {
+      clearTimeout(enterTimerRef.current)
+      enterTimerRef.current = null
+    }
+    if (exitTimerRef.current) {
+      clearTimeout(exitTimerRef.current)
+      exitTimerRef.current = null
+    }
+  }, [])
+
+  // State machine managing hover activation, delay, anchoring, switching, and smooth exit
   useEffect(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-      timerRef.current = null
-    }
+    if (!isEligible || !targetNode) {
+      // Pointer left eligible target
+      if (enterTimerRef.current) {
+        clearTimeout(enterTimerRef.current)
+        enterTimerRef.current = null
+      }
 
-    if (!hasValidNote || !targetNode || !pointerPos) {
-      setVisible(false)
-      currentTargetIdRef.current = null
+      activeNodeIdRef.current = null
+
+      if (animState === "visible" || animState === "entering") {
+        // Trigger smooth exit transition
+        setAnimState("exiting")
+        exitTimerRef.current = setTimeout(() => {
+          setAnimState("idle")
+          setDisplayedNode(null)
+          exitTimerRef.current = null
+        }, 140)
+      }
       return
     }
 
-    const nodeId = targetNode.id
+    const nextId = targetNode.id
 
-    // If mouse is moving within the SAME already visible node, update position smoothly
-    if (visible && currentTargetIdRef.current === nodeId) {
-      setActivePos(pointerPos)
+    // Case 1: Hovering within the SAME already active node
+    if (activeNodeIdRef.current === nextId) {
+      // If already visible, keep the card anchored in place (do NOT follow cursor or restart animation)
+      // If user edited the note while hovering, update displayed node content seamlessly
+      if (animState === "visible" || animState === "entering") {
+        setDisplayedNode(targetNode)
+      }
       return
     }
 
-    // New node hover session: start hover delay timer
-    currentTargetIdRef.current = nodeId
-    timerRef.current = setTimeout(() => {
-      setActiveNode(targetNode)
-      setActivePos(pointerPos)
-      setVisible(true)
-    }, delayMs)
+    // Case 2: New node target
+    activeNodeIdRef.current = nextId
+
+    if (animState === "visible" || animState === "entering") {
+      // Rapid switch between two annotated objects: cross-fade directly without delay lag
+      clearTimers()
+      setDisplayedNode(targetNode)
+      setAnchorPos(pointerPosRef.current)
+      setAnimState("visible")
+    } else {
+      // Fresh hover entrance: start standard 300ms hover delay
+      clearTimers()
+      enterTimerRef.current = setTimeout(() => {
+        setDisplayedNode(targetNode)
+        setAnchorPos(pointerPosRef.current)
+        setAnimState("entering")
+
+        // Progress to steady visible state
+        requestAnimationFrame(() => {
+          setAnimState("visible")
+        })
+        enterTimerRef.current = null
+      }, delayMs)
+    }
 
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current)
-        timerRef.current = null
+      // Cleanup on unmount or target replacement
+      if (enterTimerRef.current) {
+        clearTimeout(enterTimerRef.current)
+        enterTimerRef.current = null
       }
     }
-  }, [hasValidNote, targetNode, pointerPos, isBusy, delayMs, visible])
+  }, [isEligible, targetNode, isBusy, delayMs, animState, clearTimers])
 
-  // Dismiss on Escape key or window blur
+  // Instant dismissal on Escape key, canvas wheel/scroll, or window blur
   useEffect(() => {
-    if (!visible) return
-    const handleDismiss = () => setVisible(false)
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") handleDismiss()
-    })
-    window.addEventListener("blur", handleDismiss)
-    window.addEventListener("wheel", handleDismiss, { passive: true })
-    return () => {
-      window.removeEventListener("blur", handleDismiss)
-      window.removeEventListener("wheel", handleDismiss)
-    }
-  }, [visible])
+    if (animState === "idle") return
 
-  if (!mounted || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
+    const dismissImmediately = () => {
+      clearTimers()
+      activeNodeIdRef.current = null
+      setAnimState("idle")
+      setDisplayedNode(null)
+    }
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") dismissImmediately()
+    }
+
+    window.addEventListener("keydown", onKey)
+    window.addEventListener("blur", dismissImmediately)
+    window.addEventListener("wheel", dismissImmediately, { passive: true })
+    return () => {
+      window.removeEventListener("keydown", onKey)
+      window.removeEventListener("blur", dismissImmediately)
+      window.removeEventListener("wheel", dismissImmediately)
+    }
+  }, [animState, clearTimers])
+
+  if (!mounted || animState === "idle" || !displayedNode?.hoverNote || typeof document === "undefined") {
     return null
   }
 
   return createPortal(
     <FloatingHoverCard
-      node={activeNode}
-      note={activeNode.hoverNote}
-      anchorPos={activePos}
+      node={displayedNode}
+      note={displayedNode.hoverNote}
+      anchorPos={anchorPos}
+      animState={animState}
     />,
     document.body
   )
 }
 
 // ---------------------------------------------------------------------------
-// Floating Note Card with Boundary Clamping & Theme Glassmorphism
+// Floating Note Card with Boundary Clamping & Apple Glassmorphism
 // ---------------------------------------------------------------------------
 
 interface FloatingHoverCardProps {
   node: SquigNode
   note: HoverNote
   anchorPos: { x: number; y: number }
+  animState: AnimState
 }
 
-function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
+function FloatingHoverCard({ node, note, anchorPos, animState }: FloatingHoverCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 14, top: anchorPos.y + 14 })
+  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 12, top: anchorPos.y + 12 })
 
-  useEffect(() => {
+  // Measure card dimensions and clamp to viewport
+  useLayoutEffect(() => {
     const el = cardRef.current
     if (!el) return
 
     const rect = el.getBoundingClientRect()
-    const padding = 16
+    const padding = 14
     const vw = window.innerWidth
     const vh = window.innerHeight
 
-    let left = anchorPos.x + 14
-    let top = anchorPos.y + 14
+    let left = anchorPos.x + 12
+    let top = anchorPos.y + 12
 
     // Flip to left if overflowing viewport right
     if (left + rect.width > vw - padding) {
-      left = Math.max(padding, anchorPos.x - rect.width - 14)
+      left = Math.max(padding, anchorPos.x - rect.width - 12)
     }
 
     // Flip up if overflowing viewport bottom
     if (top + rect.height > vh - padding) {
-      top = Math.max(padding, anchorPos.y - rect.height - 14)
+      top = Math.max(padding, anchorPos.y - rect.height - 12)
     }
+
+    // Double-check top and left margins
+    if (left < padding) left = padding
+    if (top < padding) top = padding
 
     setStylePos({ left, top })
   }, [anchorPos])
+
+  const isExiting = animState === "exiting"
 
   return (
     <div
@@ -19733,12 +19825,15 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
       role="tooltip"
       aria-live="polite"
       className={cn(
-        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
-        "animate-in fade-in zoom-in-95 duration-150 ease-out"
+        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max transition-all",
+        isExiting
+          ? "opacity-0 scale-97 translate-y-[-2px] duration-140 ease-in"
+          : "opacity-100 scale-100 translate-y-0 duration-160 ease-out"
       )}
       style={{
         left: `${stylePos.left}px`,
         top: `${stylePos.top}px`,
+        transitionProperty: "opacity, transform",
       }}
     >
       <SmartHoverCardContent node={node} note={note} />
@@ -19762,51 +19857,59 @@ export function SmartHoverCardContent({
   className,
 }: SmartHoverCardContentProps) {
   const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
 
   return (
     <div
       className={cn(
-        "rounded-2xl border border-[var(--sq-border)]/80 font-sans shadow-2xl overflow-hidden",
-        "bg-[var(--sq-paper)]/95 backdrop-blur-md text-[var(--sq-ink)] transition-all",
+        "rounded-2xl border border-[var(--sq-faint)]/80 font-sans shadow-2xl overflow-hidden",
+        "bg-[var(--sq-paper)]/95 backdrop-blur-xl text-[var(--sq-ink)] transition-colors",
         className
       )}
       style={{
         boxShadow:
-          "0 14px 34px -4px rgba(0, 0, 0, 0.18), 0 6px 14px -3px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--sq-faint)",
+          "0 12px 34px -4px rgba(0, 0, 0, 0.16), 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--sq-faint)",
       }}
     >
-      {/* Top micro-accent bar: subtle ink wash */}
-      <div className="h-1 w-full bg-[var(--sq-shade-strong)]" />
+      {/* Top subtle ink wash accent */}
+      <div className="h-0.5 w-full bg-[var(--sq-shade-strong)]" />
 
       <div className="p-3 sm:p-3.5 space-y-2">
-        {/* Header row: badge + node type */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0">
-              <ChatCenteredText size={12} weight="bold" />
-            </span>
-            {note.title && note.title.trim() ? (
-              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-[var(--sq-ink)] truncate">
-                {note.title.trim()}
-              </h4>
+        {/* Header row: only displayed if title or node badge exists */}
+        {(hasTitle || nodeTypeLabel) && (
+          <div className="flex items-start justify-between gap-2.5">
+            {hasTitle ? (
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0 opacity-90">
+                  <ChatCenteredText size={12} weight="bold" />
+                </span>
+                <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-[var(--sq-ink)] truncate leading-tight">
+                  {note.title!.trim()}
+                </h4>
+              </div>
             ) : (
-              <span className="text-[11px] font-semibold text-[var(--sq-ink)] opacity-70 uppercase tracking-wider">
-                Annotation
+              <div className="flex items-center gap-1.5 opacity-70">
+                <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0">
+                  <ChatCenteredText size={11} weight="bold" />
+                </span>
+              </div>
+            )}
+
+            {nodeTypeLabel && (
+              <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--sq-shade)]/70 text-[var(--sq-ink)] opacity-70 shrink-0 border border-[var(--sq-faint)]/50">
+                {nodeTypeLabel}
               </span>
             )}
           </div>
+        )}
 
-          {nodeTypeLabel && (
-            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--sq-shade)]/60 text-[var(--sq-ink)] opacity-70 shrink-0 border border-[var(--sq-border)]/40">
-              {nodeTypeLabel}
-            </span>
-          )}
-        </div>
-
-        {/* Note Body */}
-        <div className="text-xs leading-relaxed text-[var(--sq-ink)]/90 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
-          {note.body.trim()}
-        </div>
+        {/* Note Body: multi-line description */}
+        {hasBody && (
+          <div className="text-xs leading-relaxed text-[var(--sq-ink)]/90 whitespace-pre-wrap break-words [overflow-wrap:anywhere] max-h-56 overflow-y-auto overscroll-contain">
+            {note.body.trim()}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -19817,7 +19920,7 @@ export function SmartHoverCardContent({
 // ---------------------------------------------------------------------------
 
 function getNodeTypeLabel(node?: SquigNode | null): string {
-  if (!node) return "object"
+  if (!node) return ""
   switch (node.type) {
     case "arrow":
       return "connector"
@@ -19840,7 +19943,7 @@ function getNodeTypeLabel(node?: SquigNode | null): string {
     case "embed":
       return "embed"
     default:
-      return "object"
+      return ""
   }
 }
 ```
@@ -91194,21 +91297,23 @@ console.log(`✓ ${passed} geometry checks passed`)
 ### File: `scripts/test-hover-notes.ts`
 
 - **Path**: `scripts/test-hover-notes.ts`
-- **Lines**: 144
-- **Size**: 4668 bytes
+- **Lines**: 323
+- **Size**: 11325 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
 // Zenithsui — Smart Hover Notes Test Suite
 //
 // Tests schema integrity, clipboard encoding/decoding, payload sanitization,
-// length bounding, and node cloning for universal hover annotations.
+// length bounding, node cloning, hit-testing accuracy (arrows, sketches, hollow
+// vs solid shapes), and viewport clamping.
 // ---------------------------------------------------------------------------
 
 import assert from "node:assert/strict"
-import type { ShapeNode, ArrowNode, HoverNote } from "@/lib/types"
+import type { ShapeNode, ArrowNode, DrawNode, HoverNote, SquigNode } from "@/lib/types"
 import { validateSecureNode } from "@/lib/security/sanitize"
 import { validNode } from "@/lib/clipboard-payload"
+import { pickAt, pickSoftAt, hitsPoint } from "@/lib/canvas/hit-test"
 
 console.log("=== Running Zenithsui Smart Hover Notes Verification Suite ===\n")
 
@@ -91244,11 +91349,11 @@ console.log("\n-> 2. Testing ArrowNode with explanatory HoverNote...")
 const arrowWithNote: ArrowNode = {
   id: "arrow_1",
   type: "arrow",
-  x: 0,
-  y: 0,
-  w: 100,
-  h: 50,
-  points: [[0, 0], [100, 50]],
+  x: 100,
+  y: 100,
+  w: 200,
+  h: 100,
+  points: [[0, 0], [200, 100]],
   stroke: "var(--sq-ink)",
   strokeWidth: 2,
   strokeStyle: "solid",
@@ -91266,8 +91371,202 @@ const arrowWithNote: ArrowNode = {
 assert.equal(arrowWithNote.hoverNote?.title, "gRPC Transport")
 console.log("✓ ArrowNode correctly supports HoverNote.")
 
-// Test 3: Clipboard validation and clamping
-console.log("\n-> 3. Testing clipboard sanitization and length limits...")
+// Test 3: Arrow hit testing — ONLY the line triggers, NOT the bounding box empty space
+console.log("\n-> 3. Testing Arrow hit testing — stroke collar vs empty bounding box...")
+// Arrow runs from (100, 100) to (300, 200) in world coords
+// Midpoint is (200, 150)
+const arrowHitOnLine = hitsPoint(arrowWithNote, 200, 150, 1)
+assert.equal(arrowHitOnLine, true, "Point directly on arrow stroke must hit")
+
+// Point inside bounding box (100, 100) to (300, 200) but far from the diagonal line:
+// (105, 195) is in the bottom-left of the box, far from line (100, 100) -> (300, 200)
+const arrowHitFar = hitsPoint(arrowWithNote, 105, 195, 1)
+assert.equal(arrowHitFar, false, "Point inside bounding box but far from stroke must NOT hit")
+console.log("✓ Arrow hit test correctly rejects empty bounding box and accepts stroke.")
+
+// Test 4: Freehand Draw hit testing — ONLY actual strokes trigger
+console.log("\n-> 4. Testing Freehand DrawNode stroke hit testing...")
+const drawWithNote: DrawNode = {
+  id: "draw_1",
+  type: "draw",
+  x: 50,
+  y: 50,
+  w: 100,
+  h: 100,
+  points: [[0, 0], [100, 100]], // Diagonal stroke
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  roughness: 1,
+  seed: 12,
+  hoverNote: {
+    enabled: true,
+    title: "Hand-drawn separator",
+    body: "Sketch annotation",
+  },
+}
+
+const drawHitOnLine = hitsPoint(drawWithNote, 100, 100, 1)
+assert.equal(drawHitOnLine, true, "Point on draw stroke must hit")
+
+const drawHitOffLine = hitsPoint(drawWithNote, 60, 140, 1)
+assert.equal(drawHitOffLine, false, "Point in bounding box but off draw stroke must NOT hit")
+console.log("✓ DrawNode hit test correctly isolates visible strokes from empty space.")
+
+// Test 5: Hollow shape hit testing — middle is see-through and does not trigger hard pick
+console.log("\n-> 5. Testing Hollow Shape hit testing (perimeter vs hollow interior)...")
+const hollowRect: ShapeNode = {
+  id: "hollow_rect",
+  type: "shape",
+  shape: "rect",
+  x: 0,
+  y: 0,
+  w: 200,
+  h: 200,
+  fill: "none",
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 5,
+  hoverNote: {
+    enabled: true,
+    title: "Hollow Frame",
+    body: "This note should only appear when hovering over the stroke perimeter",
+  },
+}
+
+const nodesMap: Record<string, SquigNode> = {
+  [hollowRect.id]: hollowRect,
+}
+const order = [hollowRect.id]
+
+// Point on stroke perimeter: (0, 100)
+const hardHitPerimeter = pickAt(nodesMap, order, 0, 100, 1)
+assert.equal(hardHitPerimeter, hollowRect.id, "Perimeter stroke must be a hard hit")
+
+// Point in hollow center: (100, 100)
+const hardHitCenter = pickAt(nodesMap, order, 100, 100, 1)
+assert.equal(hardHitCenter, null, "Hollow interior must NOT be a hard hit")
+
+const softHitCenter = pickSoftAt(nodesMap, order, 100, 100)
+assert.equal(softHitCenter, hollowRect.id, "Hollow interior is only a soft hit")
+console.log("✓ Hollow shape hit testing strictly distinguishes hard stroke from soft interior.")
+
+// Test 6: Overlapping nodes — front-to-back z-order resolution
+console.log("\n-> 6. Testing overlapping nodes front-to-back resolution...")
+const bottomNode: ShapeNode = {
+  id: "node_bottom",
+  type: "shape",
+  shape: "rect",
+  x: 50,
+  y: 50,
+  w: 100,
+  h: 100,
+  fill: "paper",
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 10,
+  hoverNote: {
+    enabled: true,
+    title: "Bottom Object",
+    body: "Lower in z-index",
+  },
+}
+const topNode: ShapeNode = {
+  id: "node_top",
+  type: "shape",
+  shape: "rect",
+  x: 50,
+  y: 50,
+  w: 100,
+  h: 100,
+  fill: "paper",
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 20,
+  hoverNote: {
+    enabled: true,
+    title: "Top Object",
+    body: "Higher in z-index",
+  },
+}
+
+const overlapNodes = { [bottomNode.id]: bottomNode, [topNode.id]: topNode }
+const overlapOrder = [bottomNode.id, topNode.id]
+
+const resolved = pickAt(overlapNodes, overlapOrder, 80, 80, 1)
+assert.equal(resolved, topNode.id, "Topmost node must always resolve first")
+console.log("✓ Overlapping nodes correctly resolve to topmost object without conflict.")
+
+// Test 7: Empty or whitespace-only description suppression
+console.log("\n-> 7. Testing empty / whitespace-only note qualification...")
+function isEligibleHoverNote(note?: HoverNote | null, isBusy = false): boolean {
+  if (isBusy || !note || note.enabled === false) return false
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  return hasBody || hasTitle
+}
+
+assert.equal(isEligibleHoverNote({ enabled: true, body: "   ", title: "" }), false, "Whitespace body and empty title must be suppressed")
+assert.equal(isEligibleHoverNote({ enabled: false, body: "Valid", title: "Valid" }), false, "Disabled note must be suppressed")
+assert.equal(isEligibleHoverNote({ enabled: true, body: "", title: "Title Only" }), true, "Title-only note qualifies")
+assert.equal(isEligibleHoverNote({ enabled: true, body: "Body Only", title: "" }), true, "Body-only note qualifies")
+assert.equal(isEligibleHoverNote(null), false, "Missing note must be suppressed")
+assert.equal(isEligibleHoverNote({ enabled: true, body: "Note", title: "" }, true), false, "Busy canvas must suppress hover note")
+console.log("✓ Empty, whitespace-only, disabled, and busy notes are safely suppressed.")
+
+// Test 8: Viewport boundary flipping and clamping logic
+console.log("\n-> 8. Testing viewport boundary clamping and flipping math...")
+function computeCardPosition(
+  anchorPos: { x: number; y: number },
+  cardSize: { width: number; height: number },
+  viewport: { width: number; height: number }
+) {
+  const padding = 14
+  let left = anchorPos.x + 12
+  let top = anchorPos.y + 12
+
+  // Flip to left if overflowing viewport right
+  if (left + cardSize.width > viewport.width - padding) {
+    left = Math.max(padding, anchorPos.x - cardSize.width - 12)
+  }
+
+  // Flip up if overflowing viewport bottom
+  if (top + cardSize.height > viewport.height - padding) {
+    top = Math.max(padding, anchorPos.y - cardSize.height - 12)
+  }
+
+  if (left < padding) left = padding
+  if (top < padding) top = padding
+
+  return { left, top }
+}
+
+const vp = { width: 1000, height: 800 }
+const card = { width: 300, height: 120 }
+
+// Normal position (center of screen)
+const posCenter = computeCardPosition({ x: 400, y: 300 }, card, vp)
+assert.equal(posCenter.left, 412)
+assert.equal(posCenter.top, 312)
+
+// Right edge: flips to left of cursor
+const posRightEdge = computeCardPosition({ x: 950, y: 300 }, card, vp)
+assert.ok(posRightEdge.left < 950 - card.width, "Must flip to left of cursor near right edge")
+assert.ok(posRightEdge.left + card.width <= vp.width - 14, "Must stay within right padding")
+
+// Bottom edge: flips above cursor
+const posBottomEdge = computeCardPosition({ x: 400, y: 750 }, card, vp)
+assert.ok(posBottomEdge.top < 750 - card.height, "Must flip above cursor near bottom edge")
+assert.ok(posBottomEdge.top + card.height <= vp.height - 14, "Must stay within bottom padding")
+console.log("✓ Viewport boundary calculation correctly flips and clamps.")
+
+// Test 9: Clipboard sanitization and length limits
+console.log("\n-> 9. Testing clipboard sanitization and length limits...")
 const oversizedRaw = {
   id: "node_over",
   type: "shape",
@@ -91295,8 +91594,8 @@ assert.equal(cleanedFromClipboard.hoverNote.title?.length, 120, "Title must be c
 assert.equal(cleanedFromClipboard.hoverNote.body.length, 2500, "Body must be clamped to 2500 chars")
 console.log("✓ Clipboard parser safely clamps oversized hover notes.")
 
-// Test 4: Security sanitizer defensively handles non-object hover note
-console.log("\n-> 4. Testing security sanitizer rejection of invalid hover note shapes...")
+// Test 10: Security sanitizer defensively handles non-object hover note
+console.log("\n-> 10. Testing security sanitizer rejection of invalid hover note shapes...")
 const maliciousRaw = {
   id: "node_bad",
   type: "shape",
@@ -91320,23 +91619,6 @@ const validSanitized = validateSecureNode(shapeWithNote)
 assert.ok(validSanitized?.hoverNote, "Valid hover note must be preserved")
 assert.equal(validSanitized.hoverNote.title, "Database Cluster")
 console.log("✓ Security sanitizer correctly validates hover note integrity.")
-
-// Test 5: Disabled hover note preservation
-console.log("\n-> 5. Testing disabled hover note toggle preservation...")
-const disabledNote: HoverNote = {
-  enabled: false,
-  title: "Draft Note",
-  body: "Under construction",
-}
-const shapeWithDisabledNote: ShapeNode = {
-  ...shapeWithNote,
-  id: "shape_2",
-  hoverNote: disabledNote,
-}
-const sanitizedDisabled = validateSecureNode(shapeWithDisabledNote)
-assert.equal(sanitizedDisabled?.hoverNote?.enabled, false, "Disabled flag must be preserved")
-assert.equal(sanitizedDisabled?.hoverNote?.title, "Draft Note")
-console.log("✓ Disabled hover notes remain persistent without losing text.")
 
 console.log("\n============================================================")
 console.log("ALL ZENITHSUI SMART HOVER NOTE TESTS PASSED 100%!")

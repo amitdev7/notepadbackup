@@ -1446,6 +1446,11 @@ export function Canvas() {
   // hover feedback + placement ghost, throttled to one pass per frame
   const onPointerMoveLocal = useCallback(
     (e: React.PointerEvent) => {
+      // Touch devices do not trigger desktop mouse hover
+      if (e.pointerType === "touch") {
+        if (hover) setHover(null)
+        return
+      }
       const s = st()
       pointerWorld.current = toWorld(e)
       // the ghost is driven at the window level instead — see below
@@ -2072,9 +2077,9 @@ export function Canvas() {
         readOnly={isViewer}
       />
 
-      {/* Smart Hover Notes: Universal floating explanatory notes */}
+      {/* Smart Hover Notes: Universal floating explanatory notes (hard hit only) */}
       <SmartHoverNote
-        targetNode={hover ? nodes[hover.id] : null}
+        targetNode={hover && !hover.soft ? nodes[hover.id] : null}
         pointerPos={pointerClientPos}
         isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
       />
