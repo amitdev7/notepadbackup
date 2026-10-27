@@ -166,54 +166,7 @@ export function CanvasContextMenu() {
             : []),
         ]
         : []),
-      ...(one
-        ? one.hoverNote
-          ? [
-              {
-                label: "Edit Hover Note…",
-                hint: "H",
-                icon: ChatCenteredText,
-                run: () => {
-                  st().setSelection([one.id])
-                  st().setQuickNoteNodeId(one.id)
-                },
-              } as Entry,
-              {
-                label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
-                icon: ChatCenteredText,
-                run: () => {
-                  st().updateNode(one.id, {
-                    hoverNote: {
-                      ...one.hoverNote!,
-                      enabled: !one.hoverNote!.enabled,
-                    },
-                  })
-                },
-              } as Entry,
-              {
-                label: "Remove Hover Note",
-                icon: TrashIcon,
-                danger: true,
-                run: () => {
-                  st().updateNode(one.id, {
-                    hoverNote: undefined,
-                  })
-                },
-              } as Entry,
-            ]
-          : [
-              {
-                label: "Add Hover Note…",
-                hint: "H",
-                icon: ChatCenteredText,
-                run: () => {
-                  st().setSelection([one.id])
-                  st().setQuickNoteNodeId(one.id)
-                },
-              } as Entry,
-            ]
-        : []),
-      { separator: true },
+
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },
       { label: "Bring forward", hint: kbd("mod+]"), icon: ArrowUpIcon, run: () => st().bringForward(targets) },
       { label: "Send backward", hint: kbd("mod+["), icon: ArrowDownIcon, run: () => st().sendBackward(targets) },

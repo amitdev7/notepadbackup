@@ -21,7 +21,6 @@ import { AlignRow } from "@/components/chrome/align-row"
 import { TextAlignMenu, TextStyleToggles } from "@/components/chrome/text-controls"
 import { Segmented, type SegmentOption } from "@/components/ui/segmented"
 import { Panel } from "@/components/ui/panel"
-import { Cloud } from "@phosphor-icons/react"
 
 /** Fill tones, as chips — the same four the inspector offers, drawn smaller. */
 const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = (
@@ -123,9 +122,8 @@ export function ContextRow({
   const showFill = shapes.length === selectedNodes.length && shapes.length > 0
   const showHead = arrows.length === selectedNodes.length && arrows.length > 0
   const showText = texts.length === selectedNodes.length && texts.length > 0
-  const showNote = Boolean(single)
 
-  if (!quick.length && !showFill && !showHead && !showText && !multi && !showNote) return null
+  if (!quick.length && !showFill && !showHead && !showText && !multi) return null
 
   const patch = (make: (n: SquigNode) => Partial<SquigNode> | null, checkpoint = true) => {
     const patches: Record<string, Partial<SquigNode>> = {}
@@ -193,21 +191,6 @@ export function ContextRow({
             onChange={(on) => patch((n) => (n.type === "arrow" ? ({ head: on } as Partial<SquigNode>) : null))}
           />
         </div>
-      )}
-
-      {showNote && single && (
-        <>
-          {(multi || quick.length > 0 || showFill || showHead || showText) && <span className="h-4 w-px bg-border" />}
-          <button
-            type="button"
-            onClick={() => st().setQuickNoteNodeId(single.id)}
-            className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/60 transition-colors cursor-pointer select-none"
-            title="Add or edit hover note (Shortcut: H)"
-          >
-            <Cloud size={14} weight="fill" className="text-sky-500 shrink-0" />
-            <span>{single.hoverNote?.body?.trim() ? "Note" : "Add Note"}</span>
-          </button>
-        </>
       )}
     </Panel>
   )
