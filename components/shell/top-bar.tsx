@@ -15,7 +15,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { useSyncStore } from "@/lib/sync/engine"
-import { PencilSimple, Check, Notebook } from "@phosphor-icons/react"
+import { PencilSimple, Check } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -68,10 +68,6 @@ export function TopBar() {
     <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
       <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-all duration-200 gpu-accelerated select-none shadow-xl">
-        {/* Document Icon Badge */}
-        <div className="flex items-center justify-center size-5 sm:size-6 rounded-full bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 shrink-0 border border-blue-500/20 shadow-xs">
-          <Notebook size={12} weight="duotone" />
-        </div>
         {isEditingTitle ? (
           <input
             ref={inputRef}

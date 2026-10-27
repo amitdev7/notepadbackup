@@ -16,6 +16,7 @@
 
 import { useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { cn } from "@/lib/utils"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
@@ -849,6 +850,77 @@ function HoverNoteSection({
               className="w-full px-2.5 py-1.5 text-xs rounded border border-border/80 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-y"
             />
           </div>
+
+          {/* Aesthetic Theme */}
+          <div className="flex flex-col gap-1">
+            <label className="text-micro text-muted-foreground font-medium">Theme</label>
+            <div className="grid grid-cols-2 gap-1">
+              {[
+                { id: "clouds", label: "Clouds ☁️" },
+                { id: "macos", label: "macOS 🍏" },
+                { id: "ios", label: "iOS Glass 📱" },
+                { id: "minimalist", label: "Clean 📄" },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    patch((n) => ({
+                      hoverNote: {
+                        ...(n.hoverNote || { enabled: true, body: "" }),
+                        theme: t.id,
+                      },
+                    }))
+                  }}
+                  className={cn(
+                    "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
+                    (note.theme || "clouds") === t.id
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cloud Weather Accent if clouds theme */}
+          {(note.theme || "clouds") === "clouds" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
+              <div className="flex items-center gap-1 flex-wrap">
+                {[
+                  { id: "sun", label: "Sun ☀️" },
+                  { id: "rain", label: "Rain 🌧️" },
+                  { id: "lightning", label: "Thunder ⚡" },
+                  { id: "wind", label: "Breeze ❄️" },
+                  { id: "classic", label: "Pure ☁️" },
+                ].map((cs) => (
+                  <button
+                    key={cs.id}
+                    type="button"
+                    onClick={() => {
+                      patch((n) => ({
+                        hoverNote: {
+                          ...(n.hoverNote || { enabled: true, body: "" }),
+                          cloudStyle: cs.id,
+                        },
+                      }))
+                    }}
+                    className={cn(
+                      "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
+                      (note.cloudStyle || "sun") === cs.id
+                        ? "bg-sky-500 text-white border-sky-400 font-semibold"
+                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                    )}
+                  >
+                    {cs.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Live Preview Card */}
           {(note.title?.trim() || note.body?.trim()) && (

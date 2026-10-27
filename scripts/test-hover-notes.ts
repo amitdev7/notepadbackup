@@ -139,6 +139,28 @@ assert.equal(sanitizedDisabled?.hoverNote?.enabled, false, "Disabled flag must b
 assert.equal(sanitizedDisabled?.hoverNote?.title, "Draft Note")
 console.log("✓ Disabled hover notes remain persistent without losing text.")
 
+// Test 5b: Cloud theme and cloudStyle preservation
+console.log("\n-> 5b. Testing theme and cloudStyle preservation...")
+const cloudNoteNode: ShapeNode = {
+  ...shapeWithNote,
+  id: "shape_cloud",
+  hoverNote: {
+    enabled: true,
+    title: "Celestial Architecture",
+    body: "Frosted 3D Cloud Note",
+    theme: "clouds",
+    cloudStyle: "rain",
+  },
+}
+const sanitizedCloud = validateSecureNode(cloudNoteNode)
+assert.equal(sanitizedCloud?.hoverNote?.theme, "clouds", "theme must be preserved")
+assert.equal(sanitizedCloud?.hoverNote?.cloudStyle, "rain", "cloudStyle must be preserved")
+
+const clipboardCloud = validNode(cloudNoteNode)
+assert.equal(clipboardCloud?.hoverNote?.theme, "clouds", "theme must be preserved in clipboard")
+assert.equal(clipboardCloud?.hoverNote?.cloudStyle, "rain", "cloudStyle must be preserved in clipboard")
+console.log("✓ theme and cloudStyle correctly preserved across sanitizers and clipboard.")
+
 // Test 6: pickHoverTarget verifies area and stroke hover detection for arrows and drawings
 console.log("\n-> 6. Testing pickHoverTarget for area-based and stroke-based hover note activation...")
 const testArrow: ArrowNode = {

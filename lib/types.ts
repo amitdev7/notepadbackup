@@ -53,6 +53,7 @@ export interface HoverNote {
   title?: string
   body: string
   theme?: string
+  cloudStyle?: string
   createdAt?: string
   updatedAt?: string
 }

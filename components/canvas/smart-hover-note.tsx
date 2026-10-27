@@ -204,8 +204,12 @@ export function SmartHoverCardContent({
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
   const theme = note.theme || "clouds"
 
-  // Theme-specific visual tokens
-  const isClouds = theme === "clouds"
+  // When theme is clouds (default), render the 3D frosted glass cloud matching user reference
+  if (theme === "clouds") {
+    return <Frosted3DCloud note={note} node={node} className={className} />
+  }
+
+  // Alternate visual themes: macOS, iOS, Minimalist
   const isMac = theme === "macos"
   const isIos = theme === "ios"
   const isMinimal = theme === "minimalist"
@@ -214,11 +218,6 @@ export function SmartHoverCardContent({
     <div
       className={cn(
         "rounded-3xl font-sans overflow-hidden transition-all",
-        isClouds && [
-          "border border-sky-200/70 dark:border-sky-500/40",
-          "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)]",
-          "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
-        ],
         isMac && [
           "border border-black/10 dark:border-white/15",
           "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
@@ -237,19 +236,14 @@ export function SmartHoverCardContent({
         className
       )}
       style={{
-        boxShadow: isClouds
-          ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
-          : isIos
-            ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-            : isMac
-              ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
-              : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
+        boxShadow: isIos
+          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+          : isMac
+            ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+            : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
       {/* Top Accent Gradient Bar */}
-      {isClouds && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
-      )}
       {isMac && (
         <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
       )}
@@ -258,21 +252,18 @@ export function SmartHoverCardContent({
       )}
 
       <div className="p-3.5 sm:p-4 space-y-2.5">
-        {/* Header row: Cloud/Theme icon + Title / Annotation + Node Type Badge */}
+        {/* Header row: Icon + Title / Annotation + Node Type Badge */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <span
               className={cn(
                 "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
-                isClouds && "bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border-sky-400/25",
                 isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
                 isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
                 isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700"
               )}
             >
-              {isClouds ? (
-                <Cloud size={15} weight="fill" />
-              ) : isMac ? (
+              {isMac ? (
                 <Sparkle size={15} weight="fill" />
               ) : isIos ? (
                 <ChatCenteredText size={15} weight="fill" />
@@ -289,7 +280,6 @@ export function SmartHoverCardContent({
               <span
                 className={cn(
                   "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
-                  isClouds && "text-sky-800 dark:text-sky-200",
                   isIos && "text-cyan-200"
                 )}
               >
@@ -302,7 +292,6 @@ export function SmartHoverCardContent({
             <span
               className={cn(
                 "text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0",
-                isClouds && "bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/60",
                 isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
                 isIos && "bg-white/10 text-cyan-200 border-white/15",
                 isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700"
@@ -322,6 +311,204 @@ export function SmartHoverCardContent({
             )}
           >
             {note.body.trim()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// 3D Frosted Glass Cloud (Apple VisionOS / macOS Sequoia Aesthetic)
+// Direct fidelity implementation of user reference cloud image
+// ---------------------------------------------------------------------------
+
+export function Frosted3DCloud({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const text = note.body ? note.body.trim() : ""
+  const cloudStyle = note.cloudStyle || "sun"
+  const isSun = cloudStyle === "sun"
+  const isRain = cloudStyle === "rain"
+  const isLightning = cloudStyle === "lightning"
+  const isWind = cloudStyle === "wind"
+
+  return (
+    <div
+      className={cn(
+        "relative select-none font-sans filter drop-shadow-[0_20px_35px_rgba(56,189,248,0.30)] drop-shadow-[0_8px_18px_rgba(15,23,42,0.12)] transition-transform duration-200",
+        className
+      )}
+      style={{
+        minWidth: "210px",
+        maxWidth: "340px",
+      }}
+    >
+      {/* 1. Weather Accents behind / underneath cloud (matching user reference image) */}
+      {/* Sun Accent (default, matching bottom-left of reference image) */}
+      {isSun && (
+        <div
+          className="absolute -top-3.5 right-[26%] size-11 rounded-full z-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 35% 30%, #FFE066 0%, #F59E0B 52%, #EA580C 100%)",
+            boxShadow: "0 0 22px 5px rgba(245, 158, 11, 0.55), inset -2px -2px 4px rgba(0,0,0,0.18)",
+          }}
+        />
+      )}
+
+      {/* Rain Droplets (matching top-right of reference image) */}
+      {isRain && (
+        <div className="absolute -bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-0 pointer-events-none">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="w-1.5 rounded-full bg-gradient-to-b from-sky-400 via-cyan-400 to-sky-300 shadow-[0_2px_8px_rgba(56,189,248,0.4)]"
+              style={{
+                height: i % 2 === 0 ? "17px" : "12px",
+                opacity: 0.85,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Lightning Bolt (matching top-left of reference image) */}
+      {isLightning && (
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+          <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
+            <path
+              d="M14 0L2 15H12L9 28L22 11H12L14 0Z"
+              fill="#06B6D4"
+              filter="drop-shadow(0 0 8px rgba(6,182,212,0.65))"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* Wind / Breeze Snowflake (matching bottom-right of reference image) */}
+      {isWind && (
+        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+          <svg width="28" height="20" viewBox="0 0 28 20" fill="none">
+            <path
+              d="M14 20V8M14 8L7 15M14 8L21 15M14 8L9 2M14 8L19 2"
+              stroke="#38BDF8"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="drop-shadow(0 0 6px rgba(56,189,248,0.5))"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* 2. Frosted Glass Cloud SVG Body */}
+      <svg
+        className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+        viewBox="0 0 280 144"
+        preserveAspectRatio="none"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          {/* Light Mode Milky Frosted Gradient */}
+          <linearGradient id="cloudMilkyGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.97" />
+            <stop offset="60%" stopColor="#F8FAFC" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#EFF6FF" stopOpacity="0.88" />
+          </linearGradient>
+
+          {/* Dark Mode Moonlight Twilight Gradient */}
+          <linearGradient id="cloudDarkGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#1E293B" stopOpacity="0.95" />
+            <stop offset="60%" stopColor="#1E293B" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#0F172A" stopOpacity="0.96" />
+          </linearGradient>
+
+          {/* Specular Rim Light */}
+          <linearGradient id="cloudRimLight" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.3" />
+          </linearGradient>
+          <linearGradient id="cloudRimDark" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.1" />
+          </linearGradient>
+
+          {/* Subsurface Sun Scattering Glow */}
+          <radialGradient id="sunTranslucency" cx="68%" cy="16%" r="35%">
+            <stop offset="0%" stopColor="#F97316" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="#FB923C" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* Fluffy Cloud Perimeter Path */}
+        <path
+          d="
+            M 34 136
+            H 246
+            C 264 136 276 124 276 106
+            C 276 88 266 76 250 72
+            C 250 36 222 10 186 10
+            C 160 10 138 24 130 46
+            C 120 32 104 24 86 24
+            C 54 24 30 48 28 80
+            C 14 84 4 96 4 112
+            C 4 126 18 136 34 136
+            Z
+          "
+          className="fill-[url(#cloudMilkyGlass)] dark:fill-[url(#cloudDarkGlass)] stroke-[url(#cloudRimLight)] dark:stroke-[url(#cloudRimDark)]"
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+        />
+
+        {/* Subsurface Sun Glow through translucent glass */}
+        {isSun && (
+          <path
+            d="
+              M 34 136
+              H 246
+              C 264 136 276 124 276 106
+              C 276 88 266 76 250 72
+              C 250 36 222 10 186 10
+              C 160 10 138 24 130 46
+              C 120 32 104 24 86 24
+              C 54 24 30 48 28 80
+              C 14 84 4 96 4 112
+              C 4 126 18 136 34 136
+              Z
+            "
+            fill="url(#sunTranslucency)"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+      </svg>
+
+      {/* 3. Text Inside the Cloud Body */}
+      <div className="relative z-20 pt-10 pb-6 px-7 sm:px-8 text-center flex flex-col items-center justify-center">
+        {hasTitle && (
+          <div className="text-[12px] sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-1 leading-snug break-words">
+            {note.title!.trim()}
+          </div>
+        )}
+
+        <div className="text-xs sm:text-[14px] font-semibold leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words max-h-48 overflow-y-auto scrollbar-thin">
+          {text}
+        </div>
+
+        {nodeTypeLabel && (
+          <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider font-bold bg-sky-500/12 dark:bg-sky-400/15 text-sky-700 dark:text-sky-300 border border-sky-400/25 shadow-2xs">
+            {nodeTypeLabel}
           </div>
         )}
       </div>

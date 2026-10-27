@@ -1171,7 +1171,7 @@ Run all tests via: `pnpm test`.
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
 | `lib/store.ts` | 1594 | 56575 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 310 | 9257 | Core types.ts module | `types` |
+| `lib/types.ts` | 311 | 9279 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
@@ -1206,8 +1206,8 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 282 | 11198 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
-| `components/canvas/smart-hover-note.tsx` | 363 | 12510 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/quick-note-dialog.tsx` | 320 | 13104 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/smart-hover-note.tsx` | 550 | 19446 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1228,7 +1228,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/files-popover.tsx` | 344 | 14456 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 1049 | 39865 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1243,7 +1243,7 @@ Run all tests via: `pnpm test`.
 | `components/shell/bottom-dock.tsx` | 628 | 26063 | Core bottom-dock.tsx module | `bottom-dock` |
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
-| `components/shell/top-bar.tsx` | 166 | 7052 | Core top-bar.tsx module | `top-bar` |
+| `components/shell/top-bar.tsx` | 162 | 6739 | Core top-bar.tsx module | `top-bar` |
 | `components/ui/badge.tsx` | 57 | 1729 | Core badge.tsx module | `badge` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
 | `components/ui/card.tsx` | 93 | 1834 | Core card.tsx module | `card` |
@@ -1326,7 +1326,7 @@ Run all tests via: `pnpm test`.
 | `app/api/share/route.ts` | 93 | 3053 | Core route.ts module | `route` |
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
-| `lib/clipboard-payload.ts` | 223 | 8246 | Core clipboard-payload.ts module | `clipboard-payload` |
+| `lib/clipboard-payload.ts` | 225 | 8455 | Core clipboard-payload.ts module | `clipboard-payload` |
 | `lib/clipboard.ts` | 630 | 22277 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 383 | 14667 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 64 | 2348 | Core file-io.ts module | `file-io` |
@@ -1334,7 +1334,7 @@ Run all tests via: `pnpm test`.
 | `lib/storage/db.ts` | 109 | 3237 | Core db.ts module | `db` |
 | `lib/storage/documents.ts` | 139 | 3955 | Core documents.ts module | `documents` |
 | `lib/storage/migration.ts` | 69 | 2268 | Core migration.ts module | `migration` |
-| `lib/security/sanitize.ts` | 686 | 22168 | Core sanitize.ts module | `sanitize` |
+| `lib/security/sanitize.ts` | 688 | 22377 | Core sanitize.ts module | `sanitize` |
 | `lib/security/share-crypto.ts` | 472 | 14363 | Core share-crypto.ts module | `share-crypto` |
 | `lib/security/share-session.ts` | 573 | 17080 | Core share-session.ts module | `share-session` |
 | `lib/library/AUTHORING.md` | 185 | 8220 | Core AUTHORING.md module | `AUTHORING` |
@@ -1409,7 +1409,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
 | `scripts/test-functional-calendar.ts` | 449 | 18468 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
-| `scripts/test-hover-notes.ts` | 183 | 6097 | Core test-hover-notes.ts module | `test-hover-notes` |
+| `scripts/test-hover-notes.ts` | 205 | 7030 | Core test-hover-notes.ts module | `test-hover-notes` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -8514,8 +8514,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 310
-- **Size**: 9257 bytes
+- **Lines**: 311
+- **Size**: 9279 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -8573,6 +8573,7 @@ export interface HoverNote {
   title?: string
   body: string
   theme?: string
+  cloudStyle?: string
   createdAt?: string
   updatedAt?: string
 }
@@ -19823,8 +19824,8 @@ export function PerfHud({
 ### File: `components/canvas/quick-note-dialog.tsx`
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
-- **Lines**: 282
-- **Size**: 11198 bytes
+- **Lines**: 320
+- **Size**: 13104 bytes
 
 ```tsx
 "use client"
@@ -19864,6 +19865,14 @@ const THEME_OPTIONS = [
   { id: "minimalist", label: "Clean 📄" },
 ]
 
+const CLOUD_STYLE_OPTIONS = [
+  { id: "sun", label: "Sun ☀️", desc: "Golden sun with warm subsurface glow" },
+  { id: "rain", label: "Rain 🌧️", desc: "Cyan droplets below" },
+  { id: "lightning", label: "Thunder ⚡", desc: "Cyan lightning bolt below" },
+  { id: "wind", label: "Breeze ❄️", desc: "Cyan frosted wind below" },
+  { id: "classic", label: "Pure ☁️", desc: "Clean cumulus cloud" },
+]
+
 export function QuickNoteDialog({
   node,
   isOpen,
@@ -19875,6 +19884,7 @@ export function QuickNoteDialog({
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
   const [theme, setTheme] = useState("clouds")
+  const [cloudStyle, setCloudStyle] = useState("sun")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -19887,6 +19897,7 @@ export function QuickNoteDialog({
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
     setTheme(existing?.theme || "clouds")
+    setCloudStyle(existing?.cloudStyle || "sun")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -19919,6 +19930,7 @@ export function QuickNoteDialog({
       body: trimmedBody,
       enabled: true,
       theme,
+      cloudStyle: theme === "clouds" ? cloudStyle : undefined,
       createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -20047,6 +20059,33 @@ export function QuickNoteDialog({
             </div>
           </div>
 
+          {/* Cloud Weather Accent (Only visible when Clouds theme is active) */}
+          {theme === "clouds" && (
+            <div className="space-y-1.5 pt-0.5">
+              <label className="text-[10px] font-semibold text-sky-600 dark:text-sky-400 uppercase tracking-wider block">
+                Cloud Weather Style
+              </label>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {CLOUD_STYLE_OPTIONS.map((cs) => (
+                  <button
+                    key={cs.id}
+                    type="button"
+                    onClick={() => setCloudStyle(cs.id)}
+                    className={cn(
+                      "px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border select-none",
+                      cloudStyle === cs.id
+                        ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white border-sky-400/40 shadow-xs scale-102"
+                        : "bg-sky-50/80 hover:bg-sky-100/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-sky-800 dark:text-sky-200 border-sky-200/50 dark:border-sky-800/50"
+                    )}
+                    title={cs.desc}
+                  >
+                    {cs.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Quick template starters */}
           <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mr-0.5">Quick add:</span>
@@ -20115,8 +20154,8 @@ export function QuickNoteDialog({
 ### File: `components/canvas/smart-hover-note.tsx`
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 363
-- **Size**: 12510 bytes
+- **Lines**: 550
+- **Size**: 19446 bytes
 
 ```tsx
 "use client"
@@ -20325,8 +20364,12 @@ export function SmartHoverCardContent({
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
   const theme = note.theme || "clouds"
 
-  // Theme-specific visual tokens
-  const isClouds = theme === "clouds"
+  // When theme is clouds (default), render the 3D frosted glass cloud matching user reference
+  if (theme === "clouds") {
+    return <Frosted3DCloud note={note} node={node} className={className} />
+  }
+
+  // Alternate visual themes: macOS, iOS, Minimalist
   const isMac = theme === "macos"
   const isIos = theme === "ios"
   const isMinimal = theme === "minimalist"
@@ -20335,11 +20378,6 @@ export function SmartHoverCardContent({
     <div
       className={cn(
         "rounded-3xl font-sans overflow-hidden transition-all",
-        isClouds && [
-          "border border-sky-200/70 dark:border-sky-500/40",
-          "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)]",
-          "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
-        ],
         isMac && [
           "border border-black/10 dark:border-white/15",
           "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
@@ -20358,19 +20396,14 @@ export function SmartHoverCardContent({
         className
       )}
       style={{
-        boxShadow: isClouds
-          ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
-          : isIos
-            ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-            : isMac
-              ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
-              : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
+        boxShadow: isIos
+          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+          : isMac
+            ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+            : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
       {/* Top Accent Gradient Bar */}
-      {isClouds && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
-      )}
       {isMac && (
         <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
       )}
@@ -20379,21 +20412,18 @@ export function SmartHoverCardContent({
       )}
 
       <div className="p-3.5 sm:p-4 space-y-2.5">
-        {/* Header row: Cloud/Theme icon + Title / Annotation + Node Type Badge */}
+        {/* Header row: Icon + Title / Annotation + Node Type Badge */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <span
               className={cn(
                 "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
-                isClouds && "bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border-sky-400/25",
                 isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
                 isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
                 isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700"
               )}
             >
-              {isClouds ? (
-                <Cloud size={15} weight="fill" />
-              ) : isMac ? (
+              {isMac ? (
                 <Sparkle size={15} weight="fill" />
               ) : isIos ? (
                 <ChatCenteredText size={15} weight="fill" />
@@ -20410,7 +20440,6 @@ export function SmartHoverCardContent({
               <span
                 className={cn(
                   "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
-                  isClouds && "text-sky-800 dark:text-sky-200",
                   isIos && "text-cyan-200"
                 )}
               >
@@ -20423,7 +20452,6 @@ export function SmartHoverCardContent({
             <span
               className={cn(
                 "text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0",
-                isClouds && "bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/60",
                 isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
                 isIos && "bg-white/10 text-cyan-200 border-white/15",
                 isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700"
@@ -20443,6 +20471,204 @@ export function SmartHoverCardContent({
             )}
           >
             {note.body.trim()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// 3D Frosted Glass Cloud (Apple VisionOS / macOS Sequoia Aesthetic)
+// Direct fidelity implementation of user reference cloud image
+// ---------------------------------------------------------------------------
+
+export function Frosted3DCloud({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const text = note.body ? note.body.trim() : ""
+  const cloudStyle = note.cloudStyle || "sun"
+  const isSun = cloudStyle === "sun"
+  const isRain = cloudStyle === "rain"
+  const isLightning = cloudStyle === "lightning"
+  const isWind = cloudStyle === "wind"
+
+  return (
+    <div
+      className={cn(
+        "relative select-none font-sans filter drop-shadow-[0_20px_35px_rgba(56,189,248,0.30)] drop-shadow-[0_8px_18px_rgba(15,23,42,0.12)] transition-transform duration-200",
+        className
+      )}
+      style={{
+        minWidth: "210px",
+        maxWidth: "340px",
+      }}
+    >
+      {/* 1. Weather Accents behind / underneath cloud (matching user reference image) */}
+      {/* Sun Accent (default, matching bottom-left of reference image) */}
+      {isSun && (
+        <div
+          className="absolute -top-3.5 right-[26%] size-11 rounded-full z-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 35% 30%, #FFE066 0%, #F59E0B 52%, #EA580C 100%)",
+            boxShadow: "0 0 22px 5px rgba(245, 158, 11, 0.55), inset -2px -2px 4px rgba(0,0,0,0.18)",
+          }}
+        />
+      )}
+
+      {/* Rain Droplets (matching top-right of reference image) */}
+      {isRain && (
+        <div className="absolute -bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-0 pointer-events-none">
+          {[0, 1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="w-1.5 rounded-full bg-gradient-to-b from-sky-400 via-cyan-400 to-sky-300 shadow-[0_2px_8px_rgba(56,189,248,0.4)]"
+              style={{
+                height: i % 2 === 0 ? "17px" : "12px",
+                opacity: 0.85,
+              }}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Lightning Bolt (matching top-left of reference image) */}
+      {isLightning && (
+        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+          <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
+            <path
+              d="M14 0L2 15H12L9 28L22 11H12L14 0Z"
+              fill="#06B6D4"
+              filter="drop-shadow(0 0 8px rgba(6,182,212,0.65))"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* Wind / Breeze Snowflake (matching bottom-right of reference image) */}
+      {isWind && (
+        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-0 pointer-events-none">
+          <svg width="28" height="20" viewBox="0 0 28 20" fill="none">
+            <path
+              d="M14 20V8M14 8L7 15M14 8L21 15M14 8L9 2M14 8L19 2"
+              stroke="#38BDF8"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="drop-shadow(0 0 6px rgba(56,189,248,0.5))"
+            />
+          </svg>
+        </div>
+      )}
+
+      {/* 2. Frosted Glass Cloud SVG Body */}
+      <svg
+        className="absolute inset-0 w-full h-full z-10 pointer-events-none"
+        viewBox="0 0 280 144"
+        preserveAspectRatio="none"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          {/* Light Mode Milky Frosted Gradient */}
+          <linearGradient id="cloudMilkyGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.97" />
+            <stop offset="60%" stopColor="#F8FAFC" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#EFF6FF" stopOpacity="0.88" />
+          </linearGradient>
+
+          {/* Dark Mode Moonlight Twilight Gradient */}
+          <linearGradient id="cloudDarkGlass" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#1E293B" stopOpacity="0.95" />
+            <stop offset="60%" stopColor="#1E293B" stopOpacity="0.92" />
+            <stop offset="100%" stopColor="#0F172A" stopOpacity="0.96" />
+          </linearGradient>
+
+          {/* Specular Rim Light */}
+          <linearGradient id="cloudRimLight" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.3" />
+          </linearGradient>
+          <linearGradient id="cloudRimDark" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.1" />
+          </linearGradient>
+
+          {/* Subsurface Sun Scattering Glow */}
+          <radialGradient id="sunTranslucency" cx="68%" cy="16%" r="35%">
+            <stop offset="0%" stopColor="#F97316" stopOpacity="0.35" />
+            <stop offset="50%" stopColor="#FB923C" stopOpacity="0.12" />
+            <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+
+        {/* Fluffy Cloud Perimeter Path */}
+        <path
+          d="
+            M 34 136
+            H 246
+            C 264 136 276 124 276 106
+            C 276 88 266 76 250 72
+            C 250 36 222 10 186 10
+            C 160 10 138 24 130 46
+            C 120 32 104 24 86 24
+            C 54 24 30 48 28 80
+            C 14 84 4 96 4 112
+            C 4 126 18 136 34 136
+            Z
+          "
+          className="fill-[url(#cloudMilkyGlass)] dark:fill-[url(#cloudDarkGlass)] stroke-[url(#cloudRimLight)] dark:stroke-[url(#cloudRimDark)]"
+          strokeWidth="1.5"
+          vectorEffect="non-scaling-stroke"
+        />
+
+        {/* Subsurface Sun Glow through translucent glass */}
+        {isSun && (
+          <path
+            d="
+              M 34 136
+              H 246
+              C 264 136 276 124 276 106
+              C 276 88 266 76 250 72
+              C 250 36 222 10 186 10
+              C 160 10 138 24 130 46
+              C 120 32 104 24 86 24
+              C 54 24 30 48 28 80
+              C 14 84 4 96 4 112
+              C 4 126 18 136 34 136
+              Z
+            "
+            fill="url(#sunTranslucency)"
+            vectorEffect="non-scaling-stroke"
+          />
+        )}
+      </svg>
+
+      {/* 3. Text Inside the Cloud Body */}
+      <div className="relative z-20 pt-10 pb-6 px-7 sm:px-8 text-center flex flex-col items-center justify-center">
+        {hasTitle && (
+          <div className="text-[12px] sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-1 leading-snug break-words">
+            {note.title!.trim()}
+          </div>
+        )}
+
+        <div className="text-xs sm:text-[14px] font-semibold leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words max-h-48 overflow-y-auto scrollbar-thin">
+          {text}
+        </div>
+
+        {nodeTypeLabel && (
+          <div className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-mono uppercase tracking-wider font-bold bg-sky-500/12 dark:bg-sky-400/15 text-sky-700 dark:text-sky-300 border border-sky-400/25 shadow-2xs">
+            {nodeTypeLabel}
           </div>
         )}
       </div>
@@ -26000,8 +26226,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 977
-- **Size**: 36810 bytes
+- **Lines**: 1049
+- **Size**: 39865 bytes
 
 ```tsx
 "use client"
@@ -26022,6 +26248,7 @@ export function InkPicker() {
 
 import { useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { cn } from "@/lib/utils"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode } from "@/lib/types"
 import { normalizeFill } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
@@ -26855,6 +27082,77 @@ function HoverNoteSection({
               className="w-full px-2.5 py-1.5 text-xs rounded border border-border/80 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-y"
             />
           </div>
+
+          {/* Aesthetic Theme */}
+          <div className="flex flex-col gap-1">
+            <label className="text-micro text-muted-foreground font-medium">Theme</label>
+            <div className="grid grid-cols-2 gap-1">
+              {[
+                { id: "clouds", label: "Clouds ☁️" },
+                { id: "macos", label: "macOS 🍏" },
+                { id: "ios", label: "iOS Glass 📱" },
+                { id: "minimalist", label: "Clean 📄" },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => {
+                    patch((n) => ({
+                      hoverNote: {
+                        ...(n.hoverNote || { enabled: true, body: "" }),
+                        theme: t.id,
+                      },
+                    }))
+                  }}
+                  className={cn(
+                    "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
+                    (note.theme || "clouds") === t.id
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Cloud Weather Accent if clouds theme */}
+          {(note.theme || "clouds") === "clouds" && (
+            <div className="flex flex-col gap-1">
+              <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
+              <div className="flex items-center gap-1 flex-wrap">
+                {[
+                  { id: "sun", label: "Sun ☀️" },
+                  { id: "rain", label: "Rain 🌧️" },
+                  { id: "lightning", label: "Thunder ⚡" },
+                  { id: "wind", label: "Breeze ❄️" },
+                  { id: "classic", label: "Pure ☁️" },
+                ].map((cs) => (
+                  <button
+                    key={cs.id}
+                    type="button"
+                    onClick={() => {
+                      patch((n) => ({
+                        hoverNote: {
+                          ...(n.hoverNote || { enabled: true, body: "" }),
+                          cloudStyle: cs.id,
+                        },
+                      }))
+                    }}
+                    className={cn(
+                      "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
+                      (note.cloudStyle || "sun") === cs.id
+                        ? "bg-sky-500 text-white border-sky-400 font-semibold"
+                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                    )}
+                  >
+                    {cs.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Live Preview Card */}
           {(note.title?.trim() || note.body?.trim()) && (
@@ -33079,8 +33377,8 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 ### File: `components/shell/top-bar.tsx`
 
 - **Path**: `components/shell/top-bar.tsx`
-- **Lines**: 166
-- **Size**: 7052 bytes
+- **Lines**: 162
+- **Size**: 6739 bytes
 
 ```tsx
 "use client"
@@ -33100,7 +33398,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { useSyncStore } from "@/lib/sync/engine"
-import { PencilSimple, Check, Notebook } from "@phosphor-icons/react"
+import { PencilSimple, Check } from "@phosphor-icons/react"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
@@ -33153,10 +33451,6 @@ export function TopBar() {
     <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
       <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-all duration-200 gpu-accelerated select-none shadow-xl">
-        {/* Document Icon Badge */}
-        <div className="flex items-center justify-center size-5 sm:size-6 rounded-full bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 shrink-0 border border-blue-500/20 shadow-xs">
-          <Notebook size={12} weight="duotone" />
-        </div>
         {isEditingTitle ? (
           <input
             ref={inputRef}
@@ -48640,8 +48934,8 @@ export const config = {
 ### File: `lib/clipboard-payload.ts`
 
 - **Path**: `lib/clipboard-payload.ts`
-- **Lines**: 223
-- **Size**: 8246 bytes
+- **Lines**: 225
+- **Size**: 8455 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -48844,6 +49138,8 @@ export function validNode(v: unknown): SquigNode | null {
           enabled: candidate.enabled,
           title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
           body: candidate.body.slice(0, 2500),
+          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 30) : undefined,
+          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 30) : undefined,
         }
       }
     }
@@ -50570,8 +50866,8 @@ export async function migrateLocalStorageToIndexedDB(): Promise<{
 ### File: `lib/security/sanitize.ts`
 
 - **Path**: `lib/security/sanitize.ts`
-- **Lines**: 686
-- **Size**: 22168 bytes
+- **Lines**: 688
+- **Size**: 22377 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -50933,6 +51229,8 @@ export function validateSecureNode(v: unknown): SquigNode | null {
           enabled: candidate.enabled,
           title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
           body: candidate.body.slice(0, 2500),
+          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 30) : undefined,
+          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 30) : undefined,
         }
       }
     }
@@ -92016,8 +92314,8 @@ console.log(`✓ ${passed} geometry checks passed`)
 ### File: `scripts/test-hover-notes.ts`
 
 - **Path**: `scripts/test-hover-notes.ts`
-- **Lines**: 183
-- **Size**: 6097 bytes
+- **Lines**: 205
+- **Size**: 7030 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -92160,6 +92458,28 @@ const sanitizedDisabled = validateSecureNode(shapeWithDisabledNote)
 assert.equal(sanitizedDisabled?.hoverNote?.enabled, false, "Disabled flag must be preserved")
 assert.equal(sanitizedDisabled?.hoverNote?.title, "Draft Note")
 console.log("✓ Disabled hover notes remain persistent without losing text.")
+
+// Test 5b: Cloud theme and cloudStyle preservation
+console.log("\n-> 5b. Testing theme and cloudStyle preservation...")
+const cloudNoteNode: ShapeNode = {
+  ...shapeWithNote,
+  id: "shape_cloud",
+  hoverNote: {
+    enabled: true,
+    title: "Celestial Architecture",
+    body: "Frosted 3D Cloud Note",
+    theme: "clouds",
+    cloudStyle: "rain",
+  },
+}
+const sanitizedCloud = validateSecureNode(cloudNoteNode)
+assert.equal(sanitizedCloud?.hoverNote?.theme, "clouds", "theme must be preserved")
+assert.equal(sanitizedCloud?.hoverNote?.cloudStyle, "rain", "cloudStyle must be preserved")
+
+const clipboardCloud = validNode(cloudNoteNode)
+assert.equal(clipboardCloud?.hoverNote?.theme, "clouds", "theme must be preserved in clipboard")
+assert.equal(clipboardCloud?.hoverNote?.cloudStyle, "rain", "cloudStyle must be preserved in clipboard")
+console.log("✓ theme and cloudStyle correctly preserved across sanitizers and clipboard.")
 
 // Test 6: pickHoverTarget verifies area and stroke hover detection for arrows and drawings
 console.log("\n-> 6. Testing pickHoverTarget for area-based and stroke-based hover note activation...")
