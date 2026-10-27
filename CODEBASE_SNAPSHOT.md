@@ -1130,7 +1130,7 @@ Run all tests via: `pnpm test`.
 | `.env.local` | 30 | 1420 | Core .env.local module | `.env` |
 | `.gitignore` | 57 | 837 | Core .gitignore module | `` |
 | `.npmrc` | 15 | 825 | Core .npmrc module | `` |
-| `.vercelignore` | 14 | 208 | Core .vercelignore module | `` |
+| `.vercelignore` | 17 | 257 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
@@ -1226,7 +1226,7 @@ Run all tests via: `pnpm test`.
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
 | `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 341 | 14352 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/files-popover.tsx` | 344 | 14456 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
@@ -1708,8 +1708,8 @@ verify-deps-before-run=install
 ### File: `.vercelignore`
 
 - **Path**: `.vercelignore`
-- **Lines**: 14
-- **Size**: 208 bytes
+- **Lines**: 17
+- **Size**: 257 bytes
 
 ```
 # Vercel Deployment Ignore File
@@ -1725,6 +1725,9 @@ scratch/
 *.log
 .git/
 .agents/
+.gemini/
+.system_generated/
+CODEBASE_SNAPSHOT.md
 ```
 
 ---
@@ -25553,8 +25556,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 341
-- **Size**: 14352 bytes
+- **Lines**: 344
+- **Size**: 14456 bytes
 
 ```tsx
 "use client"
@@ -25570,7 +25573,7 @@ function pasteAt(sx: number, sy: number) {
 // 5. Shows real-time save / Wi-Fi sync status
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { relativeTime, readFile, saveFile, type FileMeta, type StoredDoc } from "@/lib/files"
@@ -25590,6 +25593,15 @@ import {
   X,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+
+function duplicateStoredDoc(stored: StoredDoc, name: string): StoredDoc {
+  return {
+    ...stored,
+    id: `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`,
+    name: `${name} (Copy)`,
+    updatedAt: Date.now(),
+  }
+}
 
 export function FilesPopover() {
   const [isOpen, setIsOpen] = useState(false)
@@ -25652,20 +25664,14 @@ export function FilesPopover() {
     }
   }
 
-  const handleDuplicateFile = (e: React.MouseEvent, file: FileMeta) => {
+  const handleDuplicateFile = useCallback((e: React.MouseEvent, file: FileMeta) => {
     e.stopPropagation()
     const stored = readFile(file.id)
     if (!stored) return
-    const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
-    const copyDoc: StoredDoc = {
-      ...stored,
-      id: newId,
-      name: `${file.name} (Copy)`,
-      updatedAt: Date.now(),
-    }
+    const copyDoc = duplicateStoredDoc(stored, file.name)
     const newFiles = saveFile(copyDoc)
     useSquig.setState({ files: newFiles })
-  }
+  }, [])
 
   const filteredFiles = useMemo(() => {
     if (!fileSearch.trim()) return files

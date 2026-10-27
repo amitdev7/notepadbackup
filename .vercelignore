@@ -11,3 +11,6 @@ scratch/
 *.log
 .git/
 .agents/
+.gemini/
+.system_generated/
+CODEBASE_SNAPSHOT.md

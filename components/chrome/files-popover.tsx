@@ -11,7 +11,7 @@
 // 5. Shows real-time save / Wi-Fi sync status
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { relativeTime, readFile, saveFile, type FileMeta, type StoredDoc } from "@/lib/files"
@@ -31,6 +31,15 @@ import {
   X,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+
+function duplicateStoredDoc(stored: StoredDoc, name: string): StoredDoc {
+  return {
+    ...stored,
+    id: `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`,
+    name: `${name} (Copy)`,
+    updatedAt: Date.now(),
+  }
+}
 
 export function FilesPopover() {
   const [isOpen, setIsOpen] = useState(false)
@@ -93,20 +102,14 @@ export function FilesPopover() {
     }
   }
 
-  const handleDuplicateFile = (e: React.MouseEvent, file: FileMeta) => {
+  const handleDuplicateFile = useCallback((e: React.MouseEvent, file: FileMeta) => {
     e.stopPropagation()
     const stored = readFile(file.id)
     if (!stored) return
-    const newId = `doc_${Math.random().toString(36).slice(2, 9)}_${Date.now()}`
-    const copyDoc: StoredDoc = {
-      ...stored,
-      id: newId,
-      name: `${file.name} (Copy)`,
-      updatedAt: Date.now(),
-    }
+    const copyDoc = duplicateStoredDoc(stored, file.name)
     const newFiles = saveFile(copyDoc)
     useSquig.setState({ files: newFiles })
-  }
+  }, [])
 
   const filteredFiles = useMemo(() => {
     if (!fileSearch.trim()) return files
