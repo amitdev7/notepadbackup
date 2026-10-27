@@ -192,7 +192,7 @@ export function CalendarEventEditor({
 
   const modalElement = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none animate-in fade-in duration-150"
       onClick={onClose}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
@@ -206,28 +206,32 @@ export function CalendarEventEditor({
         aria-modal="true"
         aria-labelledby="calendar-editor-title"
         className={cn(
-          "w-full max-w-md rounded-lg p-5 flex flex-col gap-4 text-left shadow-xl transition-all",
-          "bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)]"
+          "w-full max-w-md rounded-3xl p-5 flex flex-col gap-4 text-left transition-all overflow-hidden",
+          "bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-[var(--sq-ink)] border border-white/60 dark:border-white/10",
+          "shadow-[0_24px_55px_-10px_rgba(0,0,0,0.32),0_8px_24px_-4px_rgba(0,0,0,0.12)] ring-1 ring-black/5 dark:ring-white/10 animate-popover-enter font-sans"
         )}
-        style={{
-          boxShadow: "4px 4px 0px var(--sq-ink)",
-        }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Top accent line */}
+        <div className="h-1.5 -mx-5 -mt-5 mb-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-400" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-3">
+        <div className="flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800/60 pb-3">
           <div className="flex items-center gap-2">
-            <CalendarBlank size={18} weight="bold" />
-            <h2 id="calendar-editor-title" className="text-base font-semibold">
+            <span className="size-7 rounded-full flex items-center justify-center bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              <CalendarBlank size={15} weight="bold" />
+            </span>
+            <h2 id="calendar-editor-title" className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-100">
               {event ? "Edit Event" : "Create New Event"}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
+            className="size-7 rounded-full flex items-center justify-center bg-stone-100/80 hover:bg-stone-200/90 dark:bg-stone-800/80 dark:hover:bg-stone-700/90 text-stone-500 dark:text-stone-300 transition-all tactile-press shrink-0 cursor-pointer border border-stone-200/50 dark:border-stone-700/50 shadow-2xs"
+            title="Close (Esc)"
           >
-            <X size={16} />
+            <X size={14} weight="bold" />
           </button>
         </div>
 
@@ -483,7 +487,7 @@ export function CalendarEventEditor({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-[var(--sq-border)]">
+          <div className="flex items-center justify-between pt-3 border-t border-stone-200/60 dark:border-stone-800/60">
             <div>
               {event && onDelete && (
                 <button
@@ -492,10 +496,10 @@ export function CalendarEventEditor({
                     onDelete(event.id)
                     onClose()
                   }}
-                  className="px-2 py-1 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1 font-medium cursor-pointer transition-colors"
+                  className="px-3 py-1.5 text-xs rounded-xl text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 flex items-center gap-1.5 font-semibold cursor-pointer transition-all tactile-press shadow-2xs"
                   title="Delete Event"
                 >
-                  <Trash size={14} />
+                  <Trash size={14} weight="bold" />
                   <span>Delete</span>
                 </button>
               )}
@@ -505,13 +509,13 @@ export function CalendarEventEditor({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 text-xs rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)] transition-colors font-medium"
+                className="px-3.5 py-1.5 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700/80 bg-stone-100/60 hover:bg-stone-200/70 dark:bg-stone-800/60 dark:hover:bg-stone-700/70 transition-all font-medium text-stone-700 dark:text-stone-300 tactile-press shadow-2xs cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 text-xs rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-semibold hover:opacity-90 transition-opacity"
+                className="px-4 py-1.5 text-xs rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-md shadow-blue-500/25 transition-all tactile-press cursor-pointer"
               >
                 {event ? "Save Changes" : "Create Event"}
               </button>

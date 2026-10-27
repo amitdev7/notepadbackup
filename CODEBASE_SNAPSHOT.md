@@ -1353,8 +1353,8 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 460 | 15502 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 328 | 12652 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 324 | 11599 | Core calendar-event-card.tsx module | `calendar-event-card` |
-| `components/calendar/calendar-event-editor.tsx` | 527 | 19869 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-event-card.tsx` | 335 | 13834 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 531 | 21077 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3839 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 248 | 9266 | Core calendar-month-view.tsx module | `calendar-month-view` |
@@ -1369,7 +1369,7 @@ Run all tests via: `pnpm test`.
 | `lib/academic/export.ts` | 1510 | 51576 | Core export.ts module | `export` |
 | `lib/academic/guardian.ts` | 410 | 11515 | Core guardian.ts module | `guardian` |
 | `lib/academic/mistakes.ts` | 479 | 14296 | Core mistakes.ts module | `mistakes` |
-| `lib/academic/planner.ts` | 624 | 17748 | Core planner.ts module | `planner` |
+| `lib/academic/planner.ts` | 628 | 17884 | Core planner.ts module | `planner` |
 | `lib/academic/practice.ts` | 337 | 10306 | Core practice.ts module | `practice` |
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
@@ -63715,8 +63715,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 324
-- **Size**: 11599 bytes
+- **Lines**: 335
+- **Size**: 13834 bytes
 
 ```tsx
 "use client"
@@ -63781,13 +63781,16 @@ export function CalendarEventCard({
     setOptimisticStatus(null)
   }, [event?.id, event?.status])
 
-  // Native macOS shortcut: Delete or Backspace removes event immediately
+  // Native macOS & iOS keyboard shortcuts: Delete/Backspace removes, Escape closes
   useEffect(() => {
     if (!isOpen || !event) return
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return
-      if (e.key === "Backspace" || e.key === "Delete") {
+      if (e.key === "Escape") {
+        e.preventDefault()
+        onClose()
+      } else if (e.key === "Backspace" || e.key === "Delete") {
         e.preventDefault()
         onDelete(event.id)
         onClose()
@@ -63830,63 +63833,68 @@ export function CalendarEventCard({
 
   const cardModal = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 backdrop-blur-xs p-4 animate-in fade-in duration-150 select-none"
       onClick={onClose}
-      onKeyDown={(e) => {
-        if (e.key === "Escape") {
-          e.stopPropagation()
-          onClose()
-        }
-      }}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="calendar-card-title"
-        className="w-full max-w-sm rounded-2xl border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-2xl text-[var(--sq-ink)] overflow-hidden animate-popover-enter font-sans"
+        className={cn(
+          "w-full max-w-sm rounded-3xl border border-white/60 dark:border-white/10 overflow-hidden font-sans",
+          "bg-white/92 dark:bg-stone-900/92 backdrop-blur-2xl text-[var(--sq-ink)]",
+          "animate-popover-enter ring-1 ring-black/5 dark:ring-white/10"
+        )}
         style={{
-          boxShadow: "0 14px 40px rgba(0,0,0,0.22), 4px 4px 0px rgba(0,0,0,0.06)",
+          boxShadow:
+            "0 24px 55px -10px rgba(0,0,0,0.32), 0 8px 24px -4px rgba(0,0,0,0.12), inset 0 1px 1px rgba(255,255,255,0.85)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Color Strip Header Accent */}
         <div
-          className="h-2 w-full"
-          style={{ backgroundColor: colorPreset.hex }}
+          className="h-1.5 w-full bg-gradient-to-r"
+          style={{
+            backgroundColor: colorPreset.hex,
+            backgroundImage: `linear-gradient(90deg, ${colorPreset.hex}, ${colorPreset.border || colorPreset.hex})`,
+          }}
         />
+        {/* Specular rim reflection hairline */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-white/70 dark:via-white/20 to-transparent" />
 
         {/* Header with Title and Close Button */}
-        <div className="p-4 pb-2 flex items-start justify-between gap-3">
+        <div className="p-4 pb-2.5 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <h3
               id="calendar-card-title"
               className={cn(
-                "text-base font-bold text-[var(--sq-ink)] leading-snug break-words",
+                "text-base font-bold text-stone-900 dark:text-stone-100 leading-snug break-words tracking-tight",
                 isCompleted && "line-through opacity-60"
               )}
             >
               {event.title}
             </h3>
-            <p className="text-xs text-[var(--sq-ink)] opacity-60 mt-0.5">
+            <p className="text-xs text-stone-500 dark:text-stone-400 font-medium mt-0.5">
               {dateLabel} · {timeLabel}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] opacity-60 hover:opacity-100 transition-colors shrink-0 cursor-pointer"
-            title="Close"
+            className="size-7 rounded-full flex items-center justify-center bg-stone-100/80 hover:bg-stone-200/90 dark:bg-stone-800/80 dark:hover:bg-stone-700/90 text-stone-500 dark:text-stone-300 transition-all tactile-press shrink-0 cursor-pointer border border-stone-200/50 dark:border-stone-700/50 shadow-2xs"
+            title="Close (Esc)"
+            aria-label="Close"
           >
-            <X size={16} />
+            <X size={14} weight="bold" />
           </button>
         </div>
 
         {/* Content & Metadata Fields */}
-        <div className="p-4 pt-1 space-y-3 text-xs border-b border-[var(--sq-border)]">
+        <div className="px-4 pb-3 pt-1 space-y-2.5 text-xs">
           {/* Category / Type & Priority Badges */}
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <span
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold text-[11px]"
+              className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold text-[11px] shadow-2xs backdrop-blur-xs"
               style={{
                 backgroundColor: colorPreset.bg,
                 color: colorPreset.text,
@@ -63900,10 +63908,10 @@ export function CalendarEventCard({
             {event.priority && event.priority !== "Medium" && (
               <span
                 className={cn(
-                  "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider",
+                  "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-2xs",
                   event.priority === "High"
-                    ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
-                    : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"
+                    ? "bg-red-500/15 text-red-700 dark:text-red-300 border border-red-500/30"
+                    : "bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30"
                 )}
               >
                 {event.priority} Priority
@@ -63911,8 +63919,8 @@ export function CalendarEventCard({
             )}
 
             {event.recurrence && event.recurrence !== "none" && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[var(--sq-ink)] opacity-70">
-                <ArrowsClockwise size={12} />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800/80 text-[11px] font-medium text-stone-600 dark:text-stone-300 border border-stone-200/60 dark:border-stone-700/60">
+                <ArrowsClockwise size={12} weight="bold" />
                 <span className="capitalize">{event.recurrence}</span>
               </span>
             )}
@@ -63920,24 +63928,24 @@ export function CalendarEventCard({
 
           {/* Location */}
           {event.location && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-              <MapPin size={14} className="shrink-0 opacity-70" />
+            <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300 font-medium">
+              <MapPin size={14} className="shrink-0 text-stone-400 dark:text-stone-500" weight="duotone" />
               <span className="truncate">{event.location}</span>
             </div>
           )}
 
           {/* Academic Subject */}
           {event.subjectName && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-              <CalendarBlank size={14} className="shrink-0 opacity-70" />
+            <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300 font-medium">
+              <CalendarBlank size={14} className="shrink-0 text-stone-400 dark:text-stone-500" weight="duotone" />
               <span>Subject: {event.subjectName}</span>
             </div>
           )}
 
           {/* Reminder */}
           {typeof event.reminderMinutes === "number" && (
-            <div className="flex items-center gap-2 text-[var(--sq-ink)] opacity-80">
-              <Bell size={14} className="shrink-0 opacity-70" />
+            <div className="flex items-center gap-2 text-stone-700 dark:text-stone-300 font-medium">
+              <Bell size={14} className="shrink-0 text-stone-400 dark:text-stone-500" weight="duotone" />
               <span>
                 Reminder: {event.reminderMinutes === 0 ? "At event start" : `${event.reminderMinutes}m before`}
               </span>
@@ -63946,15 +63954,15 @@ export function CalendarEventCard({
 
           {/* Description / Notes */}
           {event.description && (
-            <div className="mt-2 p-2.5 rounded-lg bg-[var(--sq-shade)]/30 border border-[var(--sq-border)] text-[var(--sq-ink)] whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
+            <div className="mt-2 p-3 rounded-2xl bg-stone-100/70 dark:bg-stone-800/50 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-200 whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto scrollbar-thin text-xs shadow-inner">
               {event.description}
             </div>
           )}
         </div>
 
         {/* Quick Actions Footer Toolbar */}
-        <div className="p-3 bg-[var(--sq-paper)] flex items-center justify-between gap-1 select-none">
-          <div className="flex items-center gap-1">
+        <div className="p-3 bg-stone-50/80 dark:bg-stone-950/40 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between gap-2 select-none">
+          <div className="flex items-center gap-1.5">
             {/* Toggle Completion */}
             <button
               type="button"
@@ -63965,13 +63973,13 @@ export function CalendarEventCard({
                 onToggleComplete(event.id)
               }}
               className={cn(
-                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer",
+                "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all tactile-press cursor-pointer border shadow-2xs",
                 isCompleted
-                  ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
-                  : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+                  ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30"
+                  : "bg-white/90 dark:bg-stone-800/90 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-200 border-stone-200/70 dark:border-stone-700/70"
               )}
             >
-              <CheckCircle size={15} weight={isCompleted ? "fill" : "bold"} />
+              <CheckCircle size={15} weight={isCompleted ? "fill" : "bold"} className={isCompleted ? "text-emerald-600 dark:text-emerald-400" : "text-stone-400"} />
               <span>{isCompleted ? "Done" : "Complete"}</span>
             </button>
 
@@ -63983,10 +63991,11 @@ export function CalendarEventCard({
                 e.preventDefault()
                 onEdit(event)
               }}
-              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              className="size-8 rounded-xl flex items-center justify-center bg-white/90 dark:bg-stone-800/90 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 border border-stone-200/70 dark:border-stone-700/70 transition-all tactile-press cursor-pointer shadow-2xs"
               title="Edit event"
+              aria-label="Edit event"
             >
-              <PencilSimple size={16} />
+              <PencilSimple size={15} weight="bold" />
             </button>
 
             {/* Duplicate */}
@@ -63998,10 +64007,11 @@ export function CalendarEventCard({
                 onDuplicate(event)
                 onClose()
               }}
-              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              className="size-8 rounded-xl flex items-center justify-center bg-white/90 dark:bg-stone-800/90 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 border border-stone-200/70 dark:border-stone-700/70 transition-all tactile-press cursor-pointer shadow-2xs"
               title="Duplicate event"
+              aria-label="Duplicate event"
             >
-              <Copy size={16} />
+              <Copy size={15} weight="bold" />
             </button>
 
             {/* Export single .ics */}
@@ -64012,10 +64022,11 @@ export function CalendarEventCard({
                 e.preventDefault()
                 handleExportSingle()
               }}
-              className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+              className="size-8 rounded-xl flex items-center justify-center bg-white/90 dark:bg-stone-800/90 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-300 border border-stone-200/70 dark:border-stone-700/70 transition-all tactile-press cursor-pointer shadow-2xs"
               title="Export to .ics file"
+              aria-label="Export to .ics file"
             >
-              <DownloadSimple size={16} />
+              <DownloadSimple size={15} weight="bold" />
             </button>
           </div>
 
@@ -64028,11 +64039,11 @@ export function CalendarEventCard({
               onDelete(event.id)
               onClose()
             }}
-            className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+            className="size-8 rounded-xl flex items-center justify-center bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 transition-all tactile-press cursor-pointer shadow-2xs"
             title="Delete event (Delete/Backspace)"
             aria-label="Delete event"
           >
-            <Trash size={16} />
+            <Trash size={15} weight="bold" />
           </button>
         </div>
       </div>
@@ -64049,8 +64060,8 @@ export function CalendarEventCard({
 ### File: `components/calendar/calendar-event-editor.tsx`
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
-- **Lines**: 527
-- **Size**: 19869 bytes
+- **Lines**: 531
+- **Size**: 21077 bytes
 
 ```tsx
 "use client"
@@ -64247,7 +64258,7 @@ export function CalendarEventEditor({
 
   const modalElement = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs select-none animate-in fade-in duration-150"
       onClick={onClose}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
@@ -64261,28 +64272,32 @@ export function CalendarEventEditor({
         aria-modal="true"
         aria-labelledby="calendar-editor-title"
         className={cn(
-          "w-full max-w-md rounded-lg p-5 flex flex-col gap-4 text-left shadow-xl transition-all",
-          "bg-[var(--sq-paper)] text-[var(--sq-ink)] border-2 border-[var(--sq-ink)]"
+          "w-full max-w-md rounded-3xl p-5 flex flex-col gap-4 text-left transition-all overflow-hidden",
+          "bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl text-[var(--sq-ink)] border border-white/60 dark:border-white/10",
+          "shadow-[0_24px_55px_-10px_rgba(0,0,0,0.32),0_8px_24px_-4px_rgba(0,0,0,0.12)] ring-1 ring-black/5 dark:ring-white/10 animate-popover-enter font-sans"
         )}
-        style={{
-          boxShadow: "4px 4px 0px var(--sq-ink)",
-        }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Top accent line */}
+        <div className="h-1.5 -mx-5 -mt-5 mb-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-400" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[var(--sq-border)] pb-3">
+        <div className="flex items-center justify-between border-b border-stone-200/60 dark:border-stone-800/60 pb-3">
           <div className="flex items-center gap-2">
-            <CalendarBlank size={18} weight="bold" />
-            <h2 id="calendar-editor-title" className="text-base font-semibold">
+            <span className="size-7 rounded-full flex items-center justify-center bg-blue-500/10 dark:bg-blue-400/15 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+              <CalendarBlank size={15} weight="bold" />
+            </span>
+            <h2 id="calendar-editor-title" className="text-sm font-bold tracking-tight text-stone-900 dark:text-stone-100">
               {event ? "Edit Event" : "Create New Event"}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded hover:bg-[var(--sq-shade)] transition-colors"
+            className="size-7 rounded-full flex items-center justify-center bg-stone-100/80 hover:bg-stone-200/90 dark:bg-stone-800/80 dark:hover:bg-stone-700/90 text-stone-500 dark:text-stone-300 transition-all tactile-press shrink-0 cursor-pointer border border-stone-200/50 dark:border-stone-700/50 shadow-2xs"
+            title="Close (Esc)"
           >
-            <X size={16} />
+            <X size={14} weight="bold" />
           </button>
         </div>
 
@@ -64538,7 +64553,7 @@ export function CalendarEventEditor({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between pt-2 border-t border-[var(--sq-border)]">
+          <div className="flex items-center justify-between pt-3 border-t border-stone-200/60 dark:border-stone-800/60">
             <div>
               {event && onDelete && (
                 <button
@@ -64547,10 +64562,10 @@ export function CalendarEventEditor({
                     onDelete(event.id)
                     onClose()
                   }}
-                  className="px-2 py-1 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1 font-medium cursor-pointer transition-colors"
+                  className="px-3 py-1.5 text-xs rounded-xl text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/25 flex items-center gap-1.5 font-semibold cursor-pointer transition-all tactile-press shadow-2xs"
                   title="Delete Event"
                 >
-                  <Trash size={14} />
+                  <Trash size={14} weight="bold" />
                   <span>Delete</span>
                 </button>
               )}
@@ -64560,13 +64575,13 @@ export function CalendarEventEditor({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 text-xs rounded border border-[var(--sq-border)] hover:bg-[var(--sq-shade)] transition-colors font-medium"
+                className="px-3.5 py-1.5 text-xs rounded-xl border border-stone-200/80 dark:border-stone-700/80 bg-stone-100/60 hover:bg-stone-200/70 dark:bg-stone-800/60 dark:hover:bg-stone-700/70 transition-all font-medium text-stone-700 dark:text-stone-300 tactile-press shadow-2xs cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 text-xs rounded bg-[var(--sq-ink)] text-[var(--sq-paper)] font-semibold hover:opacity-90 transition-opacity"
+                className="px-4 py-1.5 text-xs rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold shadow-md shadow-blue-500/25 transition-all tactile-press cursor-pointer"
               >
                 {event ? "Save Changes" : "Create Event"}
               </button>
@@ -71556,8 +71571,8 @@ export function resetAcademicStores(): void {
 ### File: `lib/academic/planner.ts`
 
 - **Path**: `lib/academic/planner.ts`
-- **Lines**: 624
-- **Size**: 17748 bytes
+- **Lines**: 628
+- **Size**: 17884 bytes
 
 ```tsx
 export type TaskStatus =
@@ -71860,7 +71875,11 @@ export function updateTaskStatus(
 
 export function deleteTask(id: string): boolean {
   ensureInitialized()
-  const existed = studyTasksStore.delete(id)
+  const baseId = id ? id.replace(/_rec_.*$/, "") : id
+  let existed = studyTasksStore.delete(id)
+  if (baseId !== id && studyTasksStore.delete(baseId)) {
+    existed = true
+  }
   if (existed) {
     saveToStorage()
   }

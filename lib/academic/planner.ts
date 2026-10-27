@@ -298,7 +298,11 @@ export function updateTaskStatus(
 
 export function deleteTask(id: string): boolean {
   ensureInitialized()
-  const existed = studyTasksStore.delete(id)
+  const baseId = id ? id.replace(/_rec_.*$/, "") : id
+  let existed = studyTasksStore.delete(id)
+  if (baseId !== id && studyTasksStore.delete(baseId)) {
+    existed = true
+  }
   if (existed) {
     saveToStorage()
   }
