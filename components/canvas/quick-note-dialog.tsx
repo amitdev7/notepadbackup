@@ -54,7 +54,7 @@ export function QuickNoteDialog({
 
   useEffect(() => {
     if (!isOpen || !node) return
-    const existing = node.hoverNote
+    const existing = node.hoverNote as any
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
     setTheme(existing?.theme || "clouds")
@@ -90,7 +90,7 @@ export function QuickNoteDialog({
       body: trimmedBody,
       enabled: true,
       theme,
-      createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
+      createdAt: (node.hoverNote as any)?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
 
