@@ -48,6 +48,12 @@ export function normalizeFill(v: unknown): FillTone {
   return "none"
 }
 
+export interface HoverNote {
+  enabled: boolean
+  title?: string
+  body: string
+}
+
 export interface BaseNode {
   id: string
   x: number
@@ -71,6 +77,8 @@ export interface BaseNode {
   opacity?: number
   /** Optional custom stroke or text color overriding default theme ink */
   color?: string
+  /** Smart Hover Note annotation metadata revealed on pointer hover */
+  hoverNote?: HoverNote
 }
 
 export interface ComponentNode extends BaseNode {

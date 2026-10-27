@@ -437,12 +437,15 @@ function loadInitialState() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
+      const hasCleared = Boolean(parsed.hasClearedInitialActivities || (Array.isArray(parsed.activities) && parsed.activities.length === 0))
       return {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities || Array.isArray(parsed.activities)),
-        activities: Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES,
+        hasClearedInitialActivities: hasCleared,
+        activities: hasCleared
+          ? (Array.isArray(parsed.activities) ? parsed.activities : [])
+          : (Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES),
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }

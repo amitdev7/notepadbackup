@@ -184,6 +184,25 @@ export function validNode(v: unknown): SquigNode | null {
     if (out.sizeBytes !== undefined && !(num(out.sizeBytes) && out.sizeBytes >= 0)) delete out.sizeBytes
   }
 
+  // Validate and sanitize optional Smart Hover Note metadata
+  if (out.hoverNote !== undefined) {
+    const hn = out.hoverNote as unknown
+    if (!hn || typeof hn !== "object") {
+      delete out.hoverNote
+    } else {
+      const candidate = hn as Record<string, unknown>
+      if (typeof candidate.enabled !== "boolean" || typeof candidate.body !== "string") {
+        delete out.hoverNote
+      } else {
+        out.hoverNote = {
+          enabled: candidate.enabled,
+          title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
+          body: candidate.body.slice(0, 2500),
+        }
+      }
+    }
+  }
+
   return out
 }
 

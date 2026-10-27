@@ -48,6 +48,7 @@ import { PerfHud } from "./perf-hud"
 import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
+import { SmartHoverNote } from "./smart-hover-note"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -212,6 +213,7 @@ export function Canvas() {
   /** soft: the pointer is over a hollow shape's middle — a click would select
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
+  const [pointerClientPos, setPointerClientPos] = useState<{ x: number; y: number } | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
@@ -1454,6 +1456,7 @@ export function Canvas() {
       }
       if (hoverRafRef.current !== null) return
       const { clientX, clientY } = e
+      setPointerClientPos({ x: clientX, y: clientY })
       hoverRafRef.current = requestAnimationFrame(() => {
         hoverRafRef.current = null
         // the same predicate the click uses — an affordance drawn from
@@ -1468,7 +1471,10 @@ export function Canvas() {
     [st, toWorld, hover, isSpacebarHeld]
   )
 
-  const onPointerLeave = useCallback(() => setHover(null), [])
+  const onPointerLeave = useCallback(() => {
+    setHover(null)
+    setPointerClientPos(null)
+  }, [])
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -2064,6 +2070,13 @@ export function Canvas() {
         editing={!!editingId}
         gestureKind={gestureKind}
         readOnly={isViewer}
+      />
+
+      {/* Smart Hover Notes: Universal floating explanatory notes */}
+      <SmartHoverNote
+        targetNode={hover ? nodes[hover.id] : null}
+        pointerPos={pointerClientPos}
+        isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
       />
 
       {/* smart guides */}

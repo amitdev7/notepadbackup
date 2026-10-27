@@ -50,15 +50,10 @@ export function CalendarEventCard({
   onDelete,
 }: CalendarEventCardProps) {
   const [mounted, setMounted] = useState(false)
-  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    setConfirmingDelete(false)
-  }, [event?.id, isOpen])
 
   // Native macOS shortcut: Delete or Backspace removes event immediately
   useEffect(() => {
@@ -104,7 +99,7 @@ export function CalendarEventCard({
   const handleExportSingle = () => {
     const icsString = exportToIcs([event], `Zenithsui – ${event.title}`)
     const filename = `${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`
-    downloadIcsFile(icsString, filename)
+    downloadIcsFile(filename, icsString)
   }
 
   const cardModal = (
@@ -239,7 +234,6 @@ export function CalendarEventCard({
               type="button"
               onClick={() => {
                 onToggleComplete(event.id)
-                onClose()
               }}
               className={cn(
                 "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
@@ -257,7 +251,6 @@ export function CalendarEventCard({
               type="button"
               onClick={() => {
                 onEdit(event)
-                onClose()
               }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
               title="Edit event"
@@ -289,41 +282,19 @@ export function CalendarEventCard({
             </button>
           </div>
 
-          {/* Delete Action with Inline Confirmation */}
-          {confirmingDelete ? (
-            <div className="flex items-center gap-1.5 animate-in fade-in duration-100">
-              <span className="text-[11px] font-semibold text-red-600 dark:text-red-400">
-                Delete?
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(event.id)
-                  onClose()
-                }}
-                className="px-2 py-1 rounded bg-red-600 text-white text-[11px] font-semibold hover:bg-red-700 transition-colors cursor-pointer shadow-xs"
-              >
-                Yes
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmingDelete(false)}
-                className="px-2 py-1 rounded border border-[var(--sq-border)] text-[11px] font-semibold hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setConfirmingDelete(true)}
-              className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-              title="Delete event (Delete/Backspace)"
-              aria-label="Delete event"
-            >
-              <Trash size={16} />
-            </button>
-          )}
+          {/* Delete Action (1-Click Instant Delete matching macOS Calendar) */}
+          <button
+            type="button"
+            onClick={() => {
+              onDelete(event.id)
+              onClose()
+            }}
+            className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+            title="Delete event (Delete/Backspace)"
+            aria-label="Delete event"
+          >
+            <Trash size={16} />
+          </button>
         </div>
       </div>
     </div>

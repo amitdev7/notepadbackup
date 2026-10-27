@@ -343,6 +343,25 @@ export function validateSecureNode(v: unknown): SquigNode | null {
     sanitized.fill = normalizeFill((n as unknown as ShapeNode).fill)
   }
 
+  // Validate and sanitize optional Smart Hover Note metadata
+  if (sanitized.hoverNote !== undefined) {
+    const hn = sanitized.hoverNote as unknown
+    if (!hn || typeof hn !== "object") {
+      delete sanitized.hoverNote
+    } else {
+      const candidate = hn as Record<string, unknown>
+      if (typeof candidate.enabled !== "boolean" || typeof candidate.body !== "string") {
+        delete sanitized.hoverNote
+      } else {
+        sanitized.hoverNote = {
+          enabled: candidate.enabled,
+          title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
+          body: candidate.body.slice(0, 2500),
+        }
+      }
+    }
+  }
+
   return sanitized
 }
 

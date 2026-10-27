@@ -52,6 +52,7 @@ import {
   Sparkle as SparkleIcon,
   Eye,
   LockSimple as LockSimpleIcon,
+  ChatCenteredText,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 import { downloadDocument } from "@/lib/storage/document-assets"
@@ -164,6 +165,49 @@ export function CanvasContextMenu() {
             ]
             : []),
         ]
+        : []),
+      ...(one
+        ? one.hoverNote
+          ? [
+              {
+                label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      ...one.hoverNote!,
+                      enabled: !one.hoverNote!.enabled,
+                    },
+                  })
+                },
+              } as Entry,
+              {
+                label: "Remove Hover Note",
+                icon: TrashIcon,
+                danger: true,
+                run: () => {
+                  st().updateNode(one.id, {
+                    hoverNote: undefined,
+                  })
+                },
+              } as Entry,
+            ]
+          : [
+              {
+                label: "Add Hover Note…",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().setSelection([one.id])
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      enabled: true,
+                      title: "",
+                      body: "",
+                    },
+                  })
+                },
+              } as Entry,
+            ]
         : []),
       { separator: true },
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },

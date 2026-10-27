@@ -1136,7 +1136,7 @@ Run all tests via: `pnpm test`.
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 52 | 1820 | Core next.config.ts module | `next.config` |
-| `package.json` | 57 | 4574 | Core package.json module | `package` |
+| `package.json` | 57 | 4676 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
@@ -1171,7 +1171,7 @@ Run all tests via: `pnpm test`.
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
 | `lib/store.ts` | 1590 | 57996 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 299 | 9019 | Core types.ts module | `types` |
+| `lib/types.ts` | 307 | 9198 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
@@ -1197,7 +1197,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2295 | 84804 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 2308 | 85341 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25333 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
@@ -1206,6 +1206,7 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
+| `components/canvas/smart-hover-note.tsx` | 285 | 8885 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1223,10 +1224,10 @@ Run all tests via: `pnpm test`.
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 303 | 11938 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/context-menu.tsx` | 347 | 13263 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/files-popover.tsx` | 299 | 12678 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 775 | 29538 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15788 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1324,7 +1325,7 @@ Run all tests via: `pnpm test`.
 | `app/api/share/route.ts` | 93 | 3053 | Core route.ts module | `route` |
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
-| `lib/clipboard-payload.ts` | 204 | 7600 | Core clipboard-payload.ts module | `clipboard-payload` |
+| `lib/clipboard-payload.ts` | 223 | 8246 | Core clipboard-payload.ts module | `clipboard-payload` |
 | `lib/clipboard.ts` | 630 | 22277 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 383 | 14667 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 64 | 2348 | Core file-io.ts module | `file-io` |
@@ -1332,7 +1333,7 @@ Run all tests via: `pnpm test`.
 | `lib/storage/db.ts` | 109 | 3237 | Core db.ts module | `db` |
 | `lib/storage/documents.ts` | 131 | 3845 | Core documents.ts module | `documents` |
 | `lib/storage/migration.ts` | 69 | 2268 | Core migration.ts module | `migration` |
-| `lib/security/sanitize.ts` | 667 | 21492 | Core sanitize.ts module | `sanitize` |
+| `lib/security/sanitize.ts` | 686 | 22168 | Core sanitize.ts module | `sanitize` |
 | `lib/security/share-crypto.ts` | 472 | 14363 | Core share-crypto.ts module | `share-crypto` |
 | `lib/security/share-session.ts` | 573 | 17080 | Core share-session.ts module | `share-session` |
 | `lib/library/AUTHORING.md` | 185 | 8220 | Core AUTHORING.md module | `AUTHORING` |
@@ -1351,13 +1352,13 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 460 | 15502 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 328 | 12652 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 335 | 12088 | Core calendar-event-card.tsx module | `calendar-event-card` |
-| `components/calendar/calendar-event-editor.tsx` | 546 | 21182 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
-| `components/calendar/calendar-event-pill.tsx` | 108 | 3930 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
+| `components/calendar/calendar-event-card.tsx` | 306 | 10898 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 527 | 19869 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-event-pill.tsx` | 108 | 3839 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 248 | 9266 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 214 | 6828 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
-| `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
+| `components/calendar/calendar-month-year-picker.tsx` | 214 | 6615 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-reminder-toast.tsx` | 143 | 4746 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
 | `components/calendar/calendar-week-view.tsx` | 399 | 14911 | Core calendar-week-view.tsx module | `calendar-week-view` |
 | `components/calendar/functional-calendar.tsx` | 621 | 21570 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
@@ -1372,7 +1373,7 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 920 | 31195 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 923 | 31364 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
@@ -1407,6 +1408,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-document-switching-race.ts` | 62 | 2324 | Core test-document-switching-race.ts module | `test-document-switching-race` |
 | `scripts/test-functional-calendar.ts` | 449 | 18468 | Core test-functional-calendar.ts module | `test-functional-calendar` |
 | `scripts/test-geometry.ts` | 389 | 15589 | Core test-geometry.ts module | `test-geometry` |
+| `scripts/test-hover-notes.ts` | 144 | 4668 | Core test-hover-notes.ts module | `test-hover-notes` |
 | `scripts/test-lan.ts` | 82 | 2788 | Core test-lan.ts module | `test-lan` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -1981,7 +1983,7 @@ export default nextConfig;
 
 - **Path**: `package.json`
 - **Lines**: 57
-- **Size**: 4574 bytes
+- **Size**: 4676 bytes
 
 ```json
 {
@@ -1999,7 +2001,7 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts"
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-hover-notes.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -8460,8 +8462,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 299
-- **Size**: 9019 bytes
+- **Lines**: 307
+- **Size**: 9198 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -8514,6 +8516,12 @@ export function normalizeFill(v: unknown): FillTone {
   return "none"
 }
 
+export interface HoverNote {
+  enabled: boolean
+  title?: string
+  body: string
+}
+
 export interface BaseNode {
   id: string
   x: number
@@ -8537,6 +8545,8 @@ export interface BaseNode {
   opacity?: number
   /** Optional custom stroke or text color overriding default theme ink */
   color?: string
+  /** Smart Hover Note annotation metadata revealed on pointer hover */
+  hoverNote?: HoverNote
 }
 
 export interface ComponentNode extends BaseNode {
@@ -13958,8 +13968,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2295
-- **Size**: 84804 bytes
+- **Lines**: 2308
+- **Size**: 85341 bytes
 
 ```tsx
 "use client"
@@ -14012,6 +14022,7 @@ import { PerfHud } from "./perf-hud"
 import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
+import { SmartHoverNote } from "./smart-hover-note"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -14176,6 +14187,7 @@ export function Canvas() {
   /** soft: the pointer is over a hollow shape's middle — a click would select
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
+  const [pointerClientPos, setPointerClientPos] = useState<{ x: number; y: number } | null>(null)
   const [altHeld, setAltHeld] = useState(false)
   const [gestureKind, setGestureKind] = useState<Gesture["kind"] | null>(null)
   const viewerDoc = useSquig((s) => s.viewerDoc)
@@ -15418,6 +15430,7 @@ export function Canvas() {
       }
       if (hoverRafRef.current !== null) return
       const { clientX, clientY } = e
+      setPointerClientPos({ x: clientX, y: clientY })
       hoverRafRef.current = requestAnimationFrame(() => {
         hoverRafRef.current = null
         // the same predicate the click uses — an affordance drawn from
@@ -15432,7 +15445,10 @@ export function Canvas() {
     [st, toWorld, hover, isSpacebarHeld]
   )
 
-  const onPointerLeave = useCallback(() => setHover(null), [])
+  const onPointerLeave = useCallback(() => {
+    setHover(null)
+    setPointerClientPos(null)
+  }, [])
 
   const onDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -16028,6 +16044,13 @@ export function Canvas() {
         editing={!!editingId}
         gestureKind={gestureKind}
         readOnly={isViewer}
+      />
+
+      {/* Smart Hover Notes: Universal floating explanatory notes */}
+      <SmartHoverNote
+        targetNode={hover ? nodes[hover.id] : null}
+        pointerPos={pointerClientPos}
+        isBusy={Boolean(gestureKind || isSpacebarHeld || tool !== "select" || editingId || placing)}
       />
 
       {/* smart guides */}
@@ -19524,6 +19547,301 @@ export function PerfHud({
       </div>
     </div>
   )
+}
+```
+
+---
+
+### File: `components/canvas/smart-hover-note.tsx`
+
+- **Path**: `components/canvas/smart-hover-note.tsx`
+- **Lines**: 285
+- **Size**: 8885 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Smart Hover Notes — Premium macOS/iOS-Inspired Hover Annotation
+//
+// Displays elegant floating metadata beside the cursor when hovering over
+// any annotated canvas object (Arrow, Shape, Draw, Text, Component, etc.).
+//
+// Features:
+// 1. Theme-aware glassmorphism adapting to all Zenithsui ink and paper palettes.
+// 2. High-DPI viewport boundary collision clamping & automatic flipping.
+// 3. Isolated React portal rendering immune to canvas pan/zoom transforms.
+// 4. Accessible tooltip ARIA semantics with reduced-motion support.
+// 5. Shared live preview rendering for inspector and context controls.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
+import type { HoverNote, SquigNode } from "@/lib/types"
+import { ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export interface SmartHoverNoteProps {
+  /** Target node currently under the pointer */
+  targetNode: SquigNode | null
+  /** Current client pointer coordinates */
+  pointerPos: { x: number; y: number } | null
+  /** Whether a gesture or canvas tool is busy (suppresses hover notes) */
+  isBusy?: boolean
+  /** Delay in milliseconds before revealing note (default: 350ms) */
+  delayMs?: number
+}
+
+/**
+ * Universal floating Smart Hover Note portal.
+ */
+export function SmartHoverNote({
+  targetNode,
+  pointerPos,
+  isBusy = false,
+  delayMs = 350,
+}: SmartHoverNoteProps) {
+  const [mounted, setMounted] = useState(false)
+  const [visible, setVisible] = useState(false)
+  const [activeNode, setActiveNode] = useState<SquigNode | null>(null)
+  const [activePos, setActivePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const currentTargetIdRef = useRef<string | null>(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Check if target node qualifies for hover note display
+  const note = targetNode?.hoverNote
+  const hasValidNote = Boolean(
+    targetNode &&
+    note &&
+    note.enabled &&
+    note.body &&
+    note.body.trim().length > 0 &&
+    !isBusy
+  )
+
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+
+    if (!hasValidNote || !targetNode || !pointerPos) {
+      setVisible(false)
+      currentTargetIdRef.current = null
+      return
+    }
+
+    const nodeId = targetNode.id
+
+    // If mouse is moving within the SAME already visible node, update position smoothly
+    if (visible && currentTargetIdRef.current === nodeId) {
+      setActivePos(pointerPos)
+      return
+    }
+
+    // New node hover session: start hover delay timer
+    currentTargetIdRef.current = nodeId
+    timerRef.current = setTimeout(() => {
+      setActiveNode(targetNode)
+      setActivePos(pointerPos)
+      setVisible(true)
+    }, delayMs)
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = null
+      }
+    }
+  }, [hasValidNote, targetNode, pointerPos, isBusy, delayMs, visible])
+
+  // Dismiss on Escape key or window blur
+  useEffect(() => {
+    if (!visible) return
+    const handleDismiss = () => setVisible(false)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") handleDismiss()
+    })
+    window.addEventListener("blur", handleDismiss)
+    window.addEventListener("wheel", handleDismiss, { passive: true })
+    return () => {
+      window.removeEventListener("blur", handleDismiss)
+      window.removeEventListener("wheel", handleDismiss)
+    }
+  }, [visible])
+
+  if (!mounted || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
+    return null
+  }
+
+  return createPortal(
+    <FloatingHoverCard
+      node={activeNode}
+      note={activeNode.hoverNote}
+      anchorPos={activePos}
+    />,
+    document.body
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Floating Note Card with Boundary Clamping & Theme Glassmorphism
+// ---------------------------------------------------------------------------
+
+interface FloatingHoverCardProps {
+  node: SquigNode
+  note: HoverNote
+  anchorPos: { x: number; y: number }
+}
+
+function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 14, top: anchorPos.y + 14 })
+
+  useEffect(() => {
+    const el = cardRef.current
+    if (!el) return
+
+    const rect = el.getBoundingClientRect()
+    const padding = 16
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+
+    let left = anchorPos.x + 14
+    let top = anchorPos.y + 14
+
+    // Flip to left if overflowing viewport right
+    if (left + rect.width > vw - padding) {
+      left = Math.max(padding, anchorPos.x - rect.width - 14)
+    }
+
+    // Flip up if overflowing viewport bottom
+    if (top + rect.height > vh - padding) {
+      top = Math.max(padding, anchorPos.y - rect.height - 14)
+    }
+
+    setStylePos({ left, top })
+  }, [anchorPos])
+
+  return (
+    <div
+      ref={cardRef}
+      role="tooltip"
+      aria-live="polite"
+      className={cn(
+        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
+        "animate-in fade-in zoom-in-95 duration-150 ease-out"
+      )}
+      style={{
+        left: `${stylePos.left}px`,
+        top: `${stylePos.top}px`,
+      }}
+    >
+      <SmartHoverCardContent node={node} note={note} />
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Shared Smart Hover Card Presentation (Visual Surface)
+// ---------------------------------------------------------------------------
+
+export interface SmartHoverCardContentProps {
+  node?: SquigNode | null
+  note: HoverNote
+  className?: string
+}
+
+export function SmartHoverCardContent({
+  node,
+  note,
+  className,
+}: SmartHoverCardContentProps) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+
+  return (
+    <div
+      className={cn(
+        "rounded-2xl border border-[var(--sq-border)]/80 font-sans shadow-2xl overflow-hidden",
+        "bg-[var(--sq-paper)]/95 backdrop-blur-md text-[var(--sq-ink)] transition-all",
+        className
+      )}
+      style={{
+        boxShadow:
+          "0 14px 34px -4px rgba(0, 0, 0, 0.18), 0 6px 14px -3px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--sq-faint)",
+      }}
+    >
+      {/* Top micro-accent bar: subtle ink wash */}
+      <div className="h-1 w-full bg-[var(--sq-shade-strong)]" />
+
+      <div className="p-3 sm:p-3.5 space-y-2">
+        {/* Header row: badge + node type */}
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="p-1 rounded-md bg-[var(--sq-shade)] text-[var(--sq-ink)] shrink-0">
+              <ChatCenteredText size={12} weight="bold" />
+            </span>
+            {note.title && note.title.trim() ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-[var(--sq-ink)] truncate">
+                {note.title.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-semibold text-[var(--sq-ink)] opacity-70 uppercase tracking-wider">
+                Annotation
+              </span>
+            )}
+          </div>
+
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-[var(--sq-shade)]/60 text-[var(--sq-ink)] opacity-70 shrink-0 border border-[var(--sq-border)]/40">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Note Body */}
+        <div className="text-xs leading-relaxed text-[var(--sq-ink)]/90 whitespace-pre-wrap break-words max-h-48 overflow-y-auto">
+          {note.body.trim()}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Helper: Readable Node Type Badge
+// ---------------------------------------------------------------------------
+
+function getNodeTypeLabel(node?: SquigNode | null): string {
+  if (!node) return "object"
+  switch (node.type) {
+    case "arrow":
+      return "connector"
+    case "draw":
+      return "sketch"
+    case "shape":
+      return node.shape || "shape"
+    case "component":
+      return node.kind || "component"
+    case "text":
+      return "text"
+    case "image":
+      return "image"
+    case "document":
+      return node.extension?.toUpperCase() || "document"
+    case "sticky":
+      return "sticky"
+    case "frame":
+      return "frame"
+    case "embed":
+      return "embed"
+    default:
+      return "object"
+  }
 }
 ```
 
@@ -24239,8 +24557,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 303
-- **Size**: 11938 bytes
+- **Lines**: 347
+- **Size**: 13263 bytes
 
 ```tsx
 "use client"
@@ -24297,6 +24615,7 @@ import {
   Sparkle as SparkleIcon,
   Eye,
   LockSimple as LockSimpleIcon,
+  ChatCenteredText,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 import { downloadDocument } from "@/lib/storage/document-assets"
@@ -24409,6 +24728,49 @@ export function CanvasContextMenu() {
             ]
             : []),
         ]
+        : []),
+      ...(one
+        ? one.hoverNote
+          ? [
+              {
+                label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      ...one.hoverNote!,
+                      enabled: !one.hoverNote!.enabled,
+                    },
+                  })
+                },
+              } as Entry,
+              {
+                label: "Remove Hover Note",
+                icon: TrashIcon,
+                danger: true,
+                run: () => {
+                  st().updateNode(one.id, {
+                    hoverNote: undefined,
+                  })
+                },
+              } as Entry,
+            ]
+          : [
+              {
+                label: "Add Hover Note…",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().setSelection([one.id])
+                  st().updateNode(one.id, {
+                    hoverNote: {
+                      enabled: true,
+                      title: "",
+                      body: "",
+                    },
+                  })
+                },
+              } as Entry,
+            ]
         : []),
       { separator: true },
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },
@@ -24951,8 +25313,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 775
-- **Size**: 29538 bytes
+- **Lines**: 977
+- **Size**: 36810 bytes
 
 ```tsx
 "use client"
@@ -25002,7 +25364,9 @@ import {
   SquaresFour,
   Lock,
   LockOpen,
+  ChatCenteredText,
 } from "@phosphor-icons/react"
+import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
 import { bgOf, paletteOf, PAPER_SHADES, type FontMode, type PaperShade } from "@/lib/theme"
@@ -25525,6 +25889,9 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
 
       {/* --- contextual: document ---------------------------------------- */}
       {documents.length > 0 && <DocumentSection documents={documents} />}
+
+      {/* --- universal: hover notes (applicable to any selected node) --- */}
+      <HoverNoteSection selected={selected} patch={patch} />
     </>
   )
 }
@@ -25678,6 +26045,203 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
           </Button>
         </div>
       )}
+    </PanelSection>
+  )
+}
+
+function HoverNoteSection({
+  selected,
+  patch,
+}: {
+  selected: SquigNode[]
+  patch: (fn: (n: SquigNode) => Partial<SquigNode> | null) => void
+}) {
+  if (selected.length === 0) return null
+
+  // Single selection
+  if (selected.length === 1) {
+    const node = selected[0]
+    const note = node.hoverNote
+
+    if (!note) {
+      return (
+        <PanelSection id="hover-note" title="Hover Note">
+          <div className="flex flex-col gap-2">
+            <p className="text-micro text-muted-foreground leading-relaxed">
+              Attach an explanatory floating annotation to this object. Appears when hovering over the object.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                patch(() => ({
+                  hoverNote: {
+                    enabled: true,
+                    title: "",
+                    body: "",
+                  },
+                }))
+              }}
+              className="flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-border/80 bg-background/80 hover:bg-muted transition-colors cursor-pointer"
+            >
+              <ChatCenteredText size={14} weight="bold" />
+              <span>Add Hover Note</span>
+            </button>
+          </div>
+        </PanelSection>
+      )
+    }
+
+    const isEnabled = note.enabled !== false
+
+    return (
+      <PanelSection
+        id="hover-note"
+        title="Hover Note"
+        right={
+          <div className="flex items-center gap-1.5 pr-2">
+            <Switch
+              checked={isEnabled}
+              onCheckedChange={(checked) => {
+                patch(() => ({
+                  hoverNote: {
+                    ...note,
+                    enabled: checked,
+                  },
+                }))
+              }}
+              title={isEnabled ? "Hover Note active" : "Hover Note disabled"}
+            />
+          </div>
+        }
+      >
+        <div className="flex flex-col gap-2.5">
+          {/* Note Title */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <label className="text-micro text-muted-foreground font-medium">Title (optional)</label>
+              <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+                {(note.title || "").length}/120
+              </span>
+            </div>
+            <input
+              type="text"
+              value={note.title || ""}
+              maxLength={120}
+              placeholder="e.g. Authentication Flow"
+              onChange={(e) => {
+                const val = e.target.value
+                patch((n) => ({
+                  hoverNote: {
+                    ...(n.hoverNote || { enabled: true, body: "" }),
+                    title: val,
+                  },
+                }))
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              className="w-full px-2.5 py-1 text-xs rounded border border-border/80 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            />
+          </div>
+
+          {/* Note Body */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center justify-between">
+              <label className="text-micro text-muted-foreground font-medium">Note Body</label>
+              <span className="text-[10px] text-muted-foreground/60 tabular-nums">
+                {(note.body || "").length}/2000
+              </span>
+            </div>
+            <textarea
+              rows={3}
+              value={note.body || ""}
+              maxLength={2000}
+              placeholder="Explain this component, formula, diagram step, or connection..."
+              onChange={(e) => {
+                const val = e.target.value
+                patch((n) => ({
+                  hoverNote: {
+                    ...(n.hoverNote || { enabled: true, title: "" }),
+                    body: val,
+                  },
+                }))
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              className="w-full px-2.5 py-1.5 text-xs rounded border border-border/80 bg-background text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-y"
+            />
+          </div>
+
+          {/* Live Preview Card */}
+          {(note.title?.trim() || note.body?.trim()) && (
+            <div className="mt-1 flex flex-col gap-1">
+              <span className="text-[10px] font-semibold tracking-wider uppercase text-muted-foreground/70">
+                Live Preview
+              </span>
+              <div className="rounded-xl border border-border/70 overflow-hidden shadow-xs">
+                <SmartHoverCardContent note={note} node={node} />
+              </div>
+            </div>
+          )}
+
+          {/* Remove Note Button */}
+          <div className="pt-1 flex items-center justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                patch(() => ({
+                  hoverNote: undefined,
+                }))
+              }}
+              className="flex items-center gap-1 text-[11px] text-red-600 hover:text-red-700 transition-colors cursor-pointer"
+            >
+              <TrashIcon size={12} />
+              <span>Remove Note</span>
+            </button>
+          </div>
+        </div>
+      </PanelSection>
+    )
+  }
+
+  // Multi selection
+  const withNotes = selected.filter((n) => n.hoverNote)
+  if (withNotes.length === 0) return null
+
+  return (
+    <PanelSection id="hover-note" title="Hover Notes" count={withNotes.length}>
+      <div className="flex flex-col gap-2">
+        <p className="text-micro text-muted-foreground">
+          {withNotes.length} of {selected.length} selected items have hover notes attached.
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              patch((n) => (n.hoverNote ? { hoverNote: { ...n.hoverNote, enabled: true } } : null))
+            }}
+            className="flex-1 px-2 py-1 text-xs rounded border border-border/80 hover:bg-muted text-foreground cursor-pointer"
+          >
+            Enable All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              patch((n) => (n.hoverNote ? { hoverNote: { ...n.hoverNote, enabled: false } } : null))
+            }}
+            className="flex-1 px-2 py-1 text-xs rounded border border-border/80 hover:bg-muted text-foreground cursor-pointer"
+          >
+            Disable All
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              patch(() => ({ hoverNote: undefined }))
+            }}
+            className="p-1 text-red-600 hover:bg-red-500/10 rounded cursor-pointer"
+            title="Remove all notes on selection"
+          >
+            <TrashIcon size={14} />
+          </button>
+        </div>
+      </div>
     </PanelSection>
   )
 }
@@ -47385,8 +47949,8 @@ export const config = {
 ### File: `lib/clipboard-payload.ts`
 
 - **Path**: `lib/clipboard-payload.ts`
-- **Lines**: 204
-- **Size**: 7600 bytes
+- **Lines**: 223
+- **Size**: 8246 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -47573,6 +48137,25 @@ export function validNode(v: unknown): SquigNode | null {
     if (out.pageCount !== undefined && !(num(out.pageCount) && out.pageCount >= 1)) delete out.pageCount
     if (out.currentPage !== undefined && !(num(out.currentPage) && out.currentPage >= 1)) delete out.currentPage
     if (out.sizeBytes !== undefined && !(num(out.sizeBytes) && out.sizeBytes >= 0)) delete out.sizeBytes
+  }
+
+  // Validate and sanitize optional Smart Hover Note metadata
+  if (out.hoverNote !== undefined) {
+    const hn = out.hoverNote as unknown
+    if (!hn || typeof hn !== "object") {
+      delete out.hoverNote
+    } else {
+      const candidate = hn as Record<string, unknown>
+      if (typeof candidate.enabled !== "boolean" || typeof candidate.body !== "string") {
+        delete out.hoverNote
+      } else {
+        out.hoverNote = {
+          enabled: candidate.enabled,
+          title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
+          body: candidate.body.slice(0, 2500),
+        }
+      }
+    }
   }
 
   return out
@@ -49288,8 +49871,8 @@ export async function migrateLocalStorageToIndexedDB(): Promise<{
 ### File: `lib/security/sanitize.ts`
 
 - **Path**: `lib/security/sanitize.ts`
-- **Lines**: 667
-- **Size**: 21492 bytes
+- **Lines**: 686
+- **Size**: 22168 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -49635,6 +50218,25 @@ export function validateSecureNode(v: unknown): SquigNode | null {
 
   if (sanitized.type === "shape") {
     sanitized.fill = normalizeFill((n as unknown as ShapeNode).fill)
+  }
+
+  // Validate and sanitize optional Smart Hover Note metadata
+  if (sanitized.hoverNote !== undefined) {
+    const hn = sanitized.hoverNote as unknown
+    if (!hn || typeof hn !== "object") {
+      delete sanitized.hoverNote
+    } else {
+      const candidate = hn as Record<string, unknown>
+      if (typeof candidate.enabled !== "boolean" || typeof candidate.body !== "string") {
+        delete sanitized.hoverNote
+      } else {
+        sanitized.hoverNote = {
+          enabled: candidate.enabled,
+          title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
+          body: candidate.body.slice(0, 2500),
+        }
+      }
+    }
   }
 
   return sanitized
@@ -62420,8 +63022,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 335
-- **Size**: 12088 bytes
+- **Lines**: 306
+- **Size**: 10898 bytes
 
 ```tsx
 "use client"
@@ -62476,15 +63078,10 @@ export function CalendarEventCard({
   onDelete,
 }: CalendarEventCardProps) {
   const [mounted, setMounted] = useState(false)
-  const [confirmingDelete, setConfirmingDelete] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    setConfirmingDelete(false)
-  }, [event?.id, isOpen])
 
   // Native macOS shortcut: Delete or Backspace removes event immediately
   useEffect(() => {
@@ -62530,7 +63127,7 @@ export function CalendarEventCard({
   const handleExportSingle = () => {
     const icsString = exportToIcs([event], `Zenithsui – ${event.title}`)
     const filename = `${event.title.toLowerCase().replace(/[^a-z0-9]/g, "_")}.ics`
-    downloadIcsFile(icsString, filename)
+    downloadIcsFile(filename, icsString)
   }
 
   const cardModal = (
@@ -62665,7 +63262,6 @@ export function CalendarEventCard({
               type="button"
               onClick={() => {
                 onToggleComplete(event.id)
-                onClose()
               }}
               className={cn(
                 "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
@@ -62683,7 +63279,6 @@ export function CalendarEventCard({
               type="button"
               onClick={() => {
                 onEdit(event)
-                onClose()
               }}
               className="p-1.5 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
               title="Edit event"
@@ -62715,41 +63310,19 @@ export function CalendarEventCard({
             </button>
           </div>
 
-          {/* Delete Action with Inline Confirmation */}
-          {confirmingDelete ? (
-            <div className="flex items-center gap-1.5 animate-in fade-in duration-100">
-              <span className="text-[11px] font-semibold text-red-600 dark:text-red-400">
-                Delete?
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  onDelete(event.id)
-                  onClose()
-                }}
-                className="px-2 py-1 rounded bg-red-600 text-white text-[11px] font-semibold hover:bg-red-700 transition-colors cursor-pointer shadow-xs"
-              >
-                Yes
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmingDelete(false)}
-                className="px-2 py-1 rounded border border-[var(--sq-border)] text-[11px] font-semibold hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
-              >
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setConfirmingDelete(true)}
-              className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
-              title="Delete event (Delete/Backspace)"
-              aria-label="Delete event"
-            >
-              <Trash size={16} />
-            </button>
-          )}
+          {/* Delete Action (1-Click Instant Delete matching macOS Calendar) */}
+          <button
+            type="button"
+            onClick={() => {
+              onDelete(event.id)
+              onClose()
+            }}
+            className="p-1.5 rounded hover:bg-red-50 text-red-600 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+            title="Delete event (Delete/Backspace)"
+            aria-label="Delete event"
+          >
+            <Trash size={16} />
+          </button>
         </div>
       </div>
     </div>
@@ -62765,8 +63338,8 @@ export function CalendarEventCard({
 ### File: `components/calendar/calendar-event-editor.tsx`
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
-- **Lines**: 546
-- **Size**: 21182 bytes
+- **Lines**: 527
+- **Size**: 19869 bytes
 
 ```tsx
 "use client"
@@ -63257,37 +63830,18 @@ export function CalendarEventEditor({
           <div className="flex items-center justify-between pt-2 border-t border-[var(--sq-border)]">
             <div>
               {event && onDelete && (
-                confirmDelete ? (
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onDelete(event.id)
-                        onClose()
-                      }}
-                      className="px-2 py-1 text-xs rounded bg-red-600 text-white font-medium hover:bg-red-700"
-                    >
-                      Confirm Delete
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(false)}
-                      className="px-2 py-1 text-xs rounded border hover:bg-[var(--sq-shade)]"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                    className="p-1.5 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1"
-                    title="Delete Event"
-                  >
-                    <Trash size={14} />
-                    <span>Delete</span>
-                  </button>
-                )
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDelete(event.id)
+                    onClose()
+                  }}
+                  className="px-2 py-1 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1 font-medium cursor-pointer transition-colors"
+                  title="Delete Event"
+                >
+                  <Trash size={14} />
+                  <span>Delete</span>
+                </button>
               )}
             </div>
 
@@ -63322,7 +63876,7 @@ export function CalendarEventEditor({
 
 - **Path**: `components/calendar/calendar-event-pill.tsx`
 - **Lines**: 108
-- **Size**: 3930 bytes
+- **Size**: 3839 bytes
 
 ```tsx
 "use client"
@@ -64047,7 +64601,7 @@ export function CalendarMonthView({
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
 - **Lines**: 214
-- **Size**: 6828 bytes
+- **Size**: 6615 bytes
 
 ```tsx
 "use client"
@@ -64271,7 +64825,7 @@ export function CalendarMonthYearPicker({
 
 - **Path**: `components/calendar/calendar-reminder-toast.tsx`
 - **Lines**: 143
-- **Size**: 4888 bytes
+- **Size**: 4746 bytes
 
 ```tsx
 "use client"
@@ -73015,8 +73569,8 @@ export function computeGapAnalysis(
 ### File: `lib/academic/student-store.ts`
 
 - **Path**: `lib/academic/student-store.ts`
-- **Lines**: 920
-- **Size**: 31195 bytes
+- **Lines**: 923
+- **Size**: 31364 bytes
 
 ```tsx
 "use client"
@@ -73458,12 +74012,15 @@ function loadInitialState() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw)
+      const hasCleared = Boolean(parsed.hasClearedInitialActivities || (Array.isArray(parsed.activities) && parsed.activities.length === 0))
       return {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities || Array.isArray(parsed.activities)),
-        activities: Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES,
+        hasClearedInitialActivities: hasCleared,
+        activities: hasCleared
+          ? (Array.isArray(parsed.activities) ? parsed.activities : [])
+          : (Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES),
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }
@@ -90630,6 +91187,160 @@ if (failures.length) {
   process.exit(1)
 }
 console.log(`✓ ${passed} geometry checks passed`)
+```
+
+---
+
+### File: `scripts/test-hover-notes.ts`
+
+- **Path**: `scripts/test-hover-notes.ts`
+- **Lines**: 144
+- **Size**: 4668 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui — Smart Hover Notes Test Suite
+//
+// Tests schema integrity, clipboard encoding/decoding, payload sanitization,
+// length bounding, and node cloning for universal hover annotations.
+// ---------------------------------------------------------------------------
+
+import assert from "node:assert/strict"
+import type { ShapeNode, ArrowNode, HoverNote } from "@/lib/types"
+import { validateSecureNode } from "@/lib/security/sanitize"
+import { validNode } from "@/lib/clipboard-payload"
+
+console.log("=== Running Zenithsui Smart Hover Notes Verification Suite ===\n")
+
+// Test 1: Node creation with hover note
+console.log("-> 1. Testing node schema with HoverNote...")
+const shapeWithNote: ShapeNode = {
+  id: "shape_1",
+  type: "shape",
+  shape: "rect",
+  x: 100,
+  y: 100,
+  w: 200,
+  h: 150,
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 42,
+  hoverNote: {
+    enabled: true,
+    title: "Database Cluster",
+    body: "PostgreSQL master node with read-replicas in eu-central-1",
+  },
+}
+
+assert.equal(shapeWithNote.hoverNote?.enabled, true)
+assert.equal(shapeWithNote.hoverNote?.title, "Database Cluster")
+assert.ok(shapeWithNote.hoverNote?.body.includes("PostgreSQL"))
+console.log("✓ Node schema correctly holds HoverNote.")
+
+// Test 2: Arrow node with connection explanation
+console.log("\n-> 2. Testing ArrowNode with explanatory HoverNote...")
+const arrowWithNote: ArrowNode = {
+  id: "arrow_1",
+  type: "arrow",
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 50,
+  points: [[0, 0], [100, 50]],
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 99,
+  startHead: "none",
+  endHead: "arrow",
+  hoverNote: {
+    enabled: true,
+    title: "gRPC Transport",
+    body: "Bidirectional streaming channel with TLS termination",
+  },
+}
+
+assert.equal(arrowWithNote.hoverNote?.title, "gRPC Transport")
+console.log("✓ ArrowNode correctly supports HoverNote.")
+
+// Test 3: Clipboard validation and clamping
+console.log("\n-> 3. Testing clipboard sanitization and length limits...")
+const oversizedRaw = {
+  id: "node_over",
+  type: "shape",
+  shape: "rect",
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 100,
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 1,
+  hoverNote: {
+    enabled: true,
+    title: "A".repeat(300), // exceeds 120 limit
+    body: "B".repeat(5000), // exceeds 2500 limit
+  },
+}
+
+const cleanedFromClipboard = validNode(oversizedRaw)
+assert.ok(cleanedFromClipboard, "Node should be valid")
+assert.ok(cleanedFromClipboard.hoverNote, "Hover note must be preserved")
+assert.equal(cleanedFromClipboard.hoverNote.title?.length, 120, "Title must be clamped to 120 chars")
+assert.equal(cleanedFromClipboard.hoverNote.body.length, 2500, "Body must be clamped to 2500 chars")
+console.log("✓ Clipboard parser safely clamps oversized hover notes.")
+
+// Test 4: Security sanitizer defensively handles non-object hover note
+console.log("\n-> 4. Testing security sanitizer rejection of invalid hover note shapes...")
+const maliciousRaw = {
+  id: "node_bad",
+  type: "shape",
+  shape: "rect",
+  x: 0,
+  y: 0,
+  w: 100,
+  h: 100,
+  stroke: "var(--sq-ink)",
+  strokeWidth: 2,
+  strokeStyle: "solid",
+  roughness: 1,
+  seed: 1,
+  hoverNote: "malicious_string_not_object" as unknown as HoverNote,
+}
+
+const sanitized = validateSecureNode(maliciousRaw)
+assert.equal(sanitized?.hoverNote, undefined, "Non-object hover note must be stripped")
+
+const validSanitized = validateSecureNode(shapeWithNote)
+assert.ok(validSanitized?.hoverNote, "Valid hover note must be preserved")
+assert.equal(validSanitized.hoverNote.title, "Database Cluster")
+console.log("✓ Security sanitizer correctly validates hover note integrity.")
+
+// Test 5: Disabled hover note preservation
+console.log("\n-> 5. Testing disabled hover note toggle preservation...")
+const disabledNote: HoverNote = {
+  enabled: false,
+  title: "Draft Note",
+  body: "Under construction",
+}
+const shapeWithDisabledNote: ShapeNode = {
+  ...shapeWithNote,
+  id: "shape_2",
+  hoverNote: disabledNote,
+}
+const sanitizedDisabled = validateSecureNode(shapeWithDisabledNote)
+assert.equal(sanitizedDisabled?.hoverNote?.enabled, false, "Disabled flag must be preserved")
+assert.equal(sanitizedDisabled?.hoverNote?.title, "Draft Note")
+console.log("✓ Disabled hover notes remain persistent without losing text.")
+
+console.log("\n============================================================")
+console.log("ALL ZENITHSUI SMART HOVER NOTE TESTS PASSED 100%!")
+console.log("============================================================")
 ```
 
 ---

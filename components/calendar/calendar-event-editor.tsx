@@ -486,37 +486,18 @@ export function CalendarEventEditor({
           <div className="flex items-center justify-between pt-2 border-t border-[var(--sq-border)]">
             <div>
               {event && onDelete && (
-                confirmDelete ? (
-                  <div className="flex items-center gap-1.5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onDelete(event.id)
-                        onClose()
-                      }}
-                      className="px-2 py-1 text-xs rounded bg-red-600 text-white font-medium hover:bg-red-700"
-                    >
-                      Confirm Delete
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDelete(false)}
-                      className="px-2 py-1 text-xs rounded border hover:bg-[var(--sq-shade)]"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setConfirmDelete(true)}
-                    className="p-1.5 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1"
-                    title="Delete Event"
-                  >
-                    <Trash size={14} />
-                    <span>Delete</span>
-                  </button>
-                )
+                <button
+                  type="button"
+                  onClick={() => {
+                    onDelete(event.id)
+                    onClose()
+                  }}
+                  className="px-2 py-1 text-xs rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-1 font-medium cursor-pointer transition-colors"
+                  title="Delete Event"
+                >
+                  <Trash size={14} />
+                  <span>Delete</span>
+                </button>
               )}
             </div>
 
