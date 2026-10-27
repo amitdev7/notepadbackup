@@ -441,8 +441,8 @@ function loadInitialState() {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities),
-        activities: parsed.hasClearedInitialActivities ? (parsed.activities ?? []) : (parsed.activities ?? INITIAL_ACTIVITIES),
+        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities || Array.isArray(parsed.activities)),
+        activities: Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES,
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }
@@ -674,10 +674,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
       const status: GoalStatus = isCompleted
         ? "completed"
         : isPast
-        ? "overdue"
-        : isToday
-        ? "due_today"
-        : "upcoming"
+          ? "overdue"
+          : isToday
+            ? "due_today"
+            : "upcoming"
 
       // Check if goal for chapter already exists
       const existing = get().goals.find((g) => g.chapterId === chapterId && g.status !== "cancelled")
@@ -687,12 +687,12 @@ export const useStudentStore = create<StudentState>((set, get) => {
           goals: state.goals.map((g) =>
             g.id === existing.id
               ? {
-                  ...g,
-                  targetDate,
-                  notes: notes !== undefined ? notes : g.notes,
-                  status,
-                  updatedAt: new Date().toISOString(),
-                }
+                ...g,
+                targetDate,
+                notes: notes !== undefined ? notes : g.notes,
+                status,
+                updatedAt: new Date().toISOString(),
+              }
               : g
           ),
         }))
@@ -725,10 +725,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
           const status: GoalStatus = isCompleted
             ? "completed"
             : isPast
-            ? "overdue"
-            : isToday
-            ? "due_today"
-            : "upcoming"
+              ? "overdue"
+              : isToday
+                ? "due_today"
+                : "upcoming"
 
           return {
             ...g,
@@ -795,7 +795,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     deleteActivity: (id) => {
       const nextActs = get().activities.filter((a) => a.id !== id)
-      set({ activities: nextActs, hasClearedInitialActivities: nextActs.length === 0 ? true : get().hasClearedInitialActivities })
+      set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },
 
@@ -894,13 +894,13 @@ export const useStudentStore = create<StudentState>((set, get) => {
         materials: state.materials.map((m) =>
           m.id === id
             ? {
-                ...m,
-                subjectId: newSubjectId,
-                subjectName: sub?.name || "Subject",
-                chapterId: newChapterId,
-                chapterName: chap?.name || "Chapter",
-                updatedAt: new Date().toISOString(),
-              }
+              ...m,
+              subjectId: newSubjectId,
+              subjectName: sub?.name || "Subject",
+              chapterId: newChapterId,
+              chapterName: chap?.name || "Chapter",
+              updatedAt: new Date().toISOString(),
+            }
             : m
         ),
       }))

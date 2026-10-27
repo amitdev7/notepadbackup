@@ -203,8 +203,8 @@ export function CalendarWeekView({
                     d.isToday
                       ? "bg-[var(--sq-ink)] text-[var(--sq-paper)]"
                       : isSelected
-                      ? "underline"
-                      : "text-[var(--sq-ink)]"
+                        ? "underline"
+                        : "text-[var(--sq-ink)]"
                   )}
                 >
                   {d.dayNumber}
@@ -232,6 +232,7 @@ export function CalendarWeekView({
                     isMonthView
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 ))}
               </div>

@@ -549,6 +549,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
           hiddenCategories={hiddenCategories}
           onToggleCategory={handleToggleCategory}
           weekStartsOn={weekStartsOn}
+          onDeleteEvent={handleDeleteEvent}
         />
       </div>
 

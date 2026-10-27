@@ -24,7 +24,7 @@ import {
 import { computeDayEventPositions } from "@/lib/calendar/layout"
 import type { CalendarEvent, PositionedEvent } from "@/lib/calendar/types"
 import { CalendarEventPill } from "./calendar-event-pill"
-import { Plus, Clock, MapPin, Check } from "@phosphor-icons/react"
+import { Plus, Clock, MapPin, Check, X } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface CalendarDayViewProps {
@@ -210,6 +210,19 @@ export function CalendarDayView({
                 <span className={cn("truncate", ev.status === "completed" && "line-through opacity-50")}>
                   {ev.title}
                 </span>
+                {onDeleteEvent && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDeleteEvent(ev.id)
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 transition-all cursor-pointer ml-auto"
+                    title={`Delete "${ev.title}"`}
+                  >
+                    <X size={11} weight="bold" />
+                  </button>
+                )}
               </div>
             ))}
           </div>

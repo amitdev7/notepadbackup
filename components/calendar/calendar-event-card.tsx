@@ -331,3 +331,4 @@ export function CalendarEventCard({
 
   return createPortal(cardModal, document.body)
 }
+

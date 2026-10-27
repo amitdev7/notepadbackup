@@ -45,6 +45,7 @@ interface CalendarAgendaDrawerProps {
   hiddenCategories: Set<string>
   onToggleCategory: (category: string) => void
   weekStartsOn: WeekStartsOn
+  onDeleteEvent?: (id: string) => void
 }
 
 export function CalendarAgendaDrawer({
@@ -59,6 +60,7 @@ export function CalendarAgendaDrawer({
   hiddenCategories,
   onToggleCategory,
   weekStartsOn,
+  onDeleteEvent,
 }: CalendarAgendaDrawerProps) {
   const todayIso = useMemo(() => getTodayIso(), [])
   const { year: curYear, month: curMonth } = useMemo(
@@ -200,11 +202,11 @@ export function CalendarAgendaDrawer({
           <div className="grid grid-cols-7 text-center text-[10px] font-semibold opacity-60 mb-1">
             {weekStartsOn === "monday"
               ? ["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-                  <div key={i}>{d}</div>
-                ))
+                <div key={i}>{d}</div>
+              ))
               : ["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                  <div key={i}>{d}</div>
-                ))}
+                <div key={i}>{d}</div>
+              ))}
           </div>
 
           {/* Day Grid */}
@@ -309,6 +311,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -342,6 +345,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -361,6 +365,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -376,10 +381,12 @@ function AgendaItem({
   event,
   onClick,
   onToggleComplete,
+  onDelete,
 }: {
   event: CalendarEvent
   onClick: () => void
   onToggleComplete: () => void
+  onDelete?: () => void
 }) {
   const isCompleted = event.status === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
@@ -388,7 +395,7 @@ function AgendaItem({
     <div
       onClick={onClick}
       className={cn(
-        "p-2 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)] flex items-start gap-2 cursor-pointer transition-all",
+        "group p-2 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)] flex items-start gap-2 cursor-pointer transition-all",
         isCompleted && "opacity-60 bg-[var(--sq-shade)]/30"
       )}
       style={{
@@ -433,6 +440,20 @@ function AgendaItem({
           )}
         </div>
       </div>
+
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 transition-all cursor-pointer shrink-0 ml-1"
+          title={`Delete "${event.title}"`}
+        >
+          <X size={12} weight="bold" />
+        </button>
+      )}
     </div>
   )
 }

@@ -1166,7 +1166,7 @@ Run all tests via: `pnpm test`.
 | `lib/auth-store.ts` | 176 | 4794 | Core auth-store.ts module | `auth-store` |
 | `lib/design-tokens.ts` | 162 | 6197 | Core design-tokens.ts module | `design-tokens` |
 | `lib/selection.ts` | 197 | 7467 | Core selection.ts module | `selection` |
-| `lib/shell-store.ts` | 615 | 17458 | Core shell-store.ts module | `shell-store` |
+| `lib/shell-store.ts` | 615 | 18072 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 166 | 5302 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
 | `lib/store.ts` | 1590 | 57996 | Core store.ts module | `store` |
@@ -1238,17 +1238,17 @@ Run all tests via: `pnpm test`.
 | `components/dialogs/chart-dialog.tsx` | 235 | 9640 | Core chart-dialog.tsx module | `chart-dialog` |
 | `components/dialogs/mermaid-dialog.tsx` | 191 | 9066 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
 | `components/dialogs/stats-dialog.tsx` | 113 | 5473 | Core stats-dialog.tsx module | `stats-dialog` |
-| `components/shell/bottom-dock.tsx` | 628 | 25756 | Core bottom-dock.tsx module | `bottom-dock` |
+| `components/shell/bottom-dock.tsx` | 628 | 26383 | Core bottom-dock.tsx module | `bottom-dock` |
 | `components/shell/page-popover.tsx` | 316 | 13013 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 2967 | 138465 | Core settings-dialog.tsx module | `settings-dialog` |
-| `components/shell/top-bar.tsx` | 162 | 6457 | Core top-bar.tsx module | `top-bar` |
+| `components/shell/top-bar.tsx` | 162 | 6618 | Core top-bar.tsx module | `top-bar` |
 | `components/ui/badge.tsx` | 57 | 1729 | Core badge.tsx module | `badge` |
 | `components/ui/button.tsx` | 72 | 3445 | Core button.tsx module | `button` |
 | `components/ui/card.tsx` | 93 | 1834 | Core card.tsx module | `card` |
 | `components/ui/checkbox.tsx` | 60 | 2034 | Core checkbox.tsx module | `checkbox` |
 | `components/ui/dropdown-menu.tsx` | 140 | 4512 | Core dropdown-menu.tsx module | `dropdown-menu` |
 | `components/ui/input.tsx` | 20 | 990 | Core input.tsx module | `input` |
-| `components/ui/panel.tsx` | 245 | 8378 | Core panel.tsx module | `panel` |
+| `components/ui/panel.tsx` | 245 | 8622 | Core panel.tsx module | `panel` |
 | `components/ui/scroll-area.tsx` | 57 | 2228 | Core scroll-area.tsx module | `scroll-area` |
 | `components/ui/segmented.tsx` | 223 | 7289 | Core segmented.tsx module | `segmented` |
 | `components/ui/select.tsx` | 117 | 4464 | Core select.tsx module | `select` |
@@ -1306,7 +1306,7 @@ Run all tests via: `pnpm test`.
 | `lib/cloud/storage.ts` | 33 | 921 | Core storage.ts module | `storage` |
 | `lib/cloud/trash.ts` | 417 | 11375 | Core trash.ts module | `trash` |
 | `lib/cloud/versions.ts` | 86 | 2735 | Core versions.ts module | `versions` |
-| `app/api/assets/proxy/route.ts` | 207 | 6488 | Core route.ts module | `route` |
+| `app/api/assets/proxy/route.ts` | 207 | 6694 | Core route.ts module | `route` |
 | `app/api/assets/signed-upload-url/route.ts` | 189 | 6518 | Core route.ts module | `route` |
 | `app/api/auth/callback/route.ts` | 42 | 1355 | Core route.ts module | `route` |
 | `app/api/blob/upload/route.ts` | 144 | 5154 | Core route.ts module | `route` |
@@ -1348,18 +1348,18 @@ Run all tests via: `pnpm test`.
 | `lib/library/defs-study.ts` | 1127 | 50077 | Core defs-study.ts module | `defs-study` |
 | `lib/library/defs-templates.ts` | 350 | 14756 | Core defs-templates.ts module | `defs-templates` |
 | `lib/library/registry.ts` | 216 | 6639 | Core registry.ts module | `registry` |
-| `components/calendar/calendar-agenda-drawer.tsx` | 439 | 15166 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
+| `components/calendar/calendar-agenda-drawer.tsx` | 460 | 15502 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
-| `components/calendar/calendar-day-view.tsx` | 315 | 12088 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 334 | 12087 | Core calendar-event-card.tsx module | `calendar-event-card` |
-| `components/calendar/calendar-event-editor.tsx` | 546 | 20637 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
+| `components/calendar/calendar-day-view.tsx` | 328 | 12652 | Core calendar-day-view.tsx module | `calendar-day-view` |
+| `components/calendar/calendar-event-card.tsx` | 335 | 12088 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-editor.tsx` | 546 | 21182 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3930 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
 | `components/calendar/calendar-month-view.tsx` | 248 | 9266 | Core calendar-month-view.tsx module | `calendar-month-view` |
-| `components/calendar/calendar-month-year-picker.tsx` | 214 | 6615 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
+| `components/calendar/calendar-month-year-picker.tsx` | 214 | 6828 | Core calendar-month-year-picker.tsx module | `calendar-month-year-picker` |
 | `components/calendar/calendar-reminder-toast.tsx` | 143 | 4888 | Core calendar-reminder-toast.tsx module | `calendar-reminder-toast` |
-| `components/calendar/calendar-week-view.tsx` | 398 | 14847 | Core calendar-week-view.tsx module | `calendar-week-view` |
-| `components/calendar/functional-calendar.tsx` | 620 | 21526 | Core functional-calendar.tsx module | `functional-calendar` |
+| `components/calendar/calendar-week-view.tsx` | 399 | 14911 | Core calendar-week-view.tsx module | `calendar-week-view` |
+| `components/calendar/functional-calendar.tsx` | 621 | 21570 | Core functional-calendar.tsx module | `functional-calendar` |
 | `lib/academic/analytics.ts` | 737 | 18883 | Core analytics.ts module | `analytics` |
 | `lib/academic/announcements.ts` | 326 | 10058 | Core announcements.ts module | `announcements` |
 | `lib/academic/assignments.ts` | 860 | 23538 | Core assignments.ts module | `assignments` |
@@ -1372,7 +1372,7 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 920 | 32173 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 920 | 31195 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
@@ -1390,7 +1390,7 @@ Run all tests via: `pnpm test`.
 | `scripts/gateway.mjs` | 144 | 5163 | Core gateway.mjs module | `gateway` |
 | `scripts/gen-doodle.mjs` | 104 | 3386 | Core gen-doodle.mjs module | `gen-doodle` |
 | `scripts/gen-icons.mjs` | 67 | 3093 | Core gen-icons.mjs module | `gen-icons` |
-| `scripts/generate-snapshot.mjs` | 1493 | 94169 | Core generate-snapshot.mjs module | `generate-snapshot` |
+| `scripts/generate-snapshot.mjs` | 1493 | 95661 | Core generate-snapshot.mjs module | `generate-snapshot` |
 | `scripts/loader-hooks.mjs` | 41 | 1605 | Core loader-hooks.mjs module | `loader-hooks` |
 | `scripts/register-loader.mjs` | 3 | 87 | Core register-loader.mjs module | `register-loader` |
 | `scripts/test-academic-analytics.ts` | 278 | 11928 | Core test-academic-analytics.ts module | `test-academic-analytics` |
@@ -5487,7 +5487,7 @@ export function unionBounds(nodes: readonly SquigNode[]): Bounds | null {
 
 - **Path**: `lib/shell-store.ts`
 - **Lines**: 615
-- **Size**: 17458 bytes
+- **Size**: 18072 bytes
 
 ```tsx
 "use client"
@@ -27888,7 +27888,7 @@ export function StatsDialog() {
 
 - **Path**: `components/shell/bottom-dock.tsx`
 - **Lines**: 628
-- **Size**: 25756 bytes
+- **Size**: 26383 bytes
 
 ```tsx
 "use client"
@@ -31829,7 +31829,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
 - **Path**: `components/shell/top-bar.tsx`
 - **Lines**: 162
-- **Size**: 6457 bytes
+- **Size**: 6618 bytes
 
 ```tsx
 "use client"
@@ -32507,7 +32507,7 @@ export { Input }
 
 - **Path**: `components/ui/panel.tsx`
 - **Lines**: 245
-- **Size**: 8378 bytes
+- **Size**: 8622 bytes
 
 ```tsx
 "use client"
@@ -45572,7 +45572,7 @@ export async function restoreVersionSnapshot(
 
 - **Path**: `app/api/assets/proxy/route.ts`
 - **Lines**: 207
-- **Size**: 6488 bytes
+- **Size**: 6694 bytes
 
 ```tsx
 import { NextResponse, type NextRequest } from "next/server"
@@ -61314,8 +61314,8 @@ export function groupUnifiedDefs(defs: ComponentDef[]): { group: string; defs: C
 ### File: `components/calendar/calendar-agenda-drawer.tsx`
 
 - **Path**: `components/calendar/calendar-agenda-drawer.tsx`
-- **Lines**: 439
-- **Size**: 15166 bytes
+- **Lines**: 460
+- **Size**: 15502 bytes
 
 ```tsx
 "use client"
@@ -61365,6 +61365,7 @@ interface CalendarAgendaDrawerProps {
   hiddenCategories: Set<string>
   onToggleCategory: (category: string) => void
   weekStartsOn: WeekStartsOn
+  onDeleteEvent?: (id: string) => void
 }
 
 export function CalendarAgendaDrawer({
@@ -61379,6 +61380,7 @@ export function CalendarAgendaDrawer({
   hiddenCategories,
   onToggleCategory,
   weekStartsOn,
+  onDeleteEvent,
 }: CalendarAgendaDrawerProps) {
   const todayIso = useMemo(() => getTodayIso(), [])
   const { year: curYear, month: curMonth } = useMemo(
@@ -61520,11 +61522,11 @@ export function CalendarAgendaDrawer({
           <div className="grid grid-cols-7 text-center text-[10px] font-semibold opacity-60 mb-1">
             {weekStartsOn === "monday"
               ? ["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
-                  <div key={i}>{d}</div>
-                ))
+                <div key={i}>{d}</div>
+              ))
               : ["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                  <div key={i}>{d}</div>
-                ))}
+                <div key={i}>{d}</div>
+              ))}
           </div>
 
           {/* Day Grid */}
@@ -61629,6 +61631,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -61662,6 +61665,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -61681,6 +61685,7 @@ export function CalendarAgendaDrawer({
                     event={ev}
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={onDeleteEvent ? () => onDeleteEvent(ev.id) : undefined}
                   />
                 ))}
               </div>
@@ -61696,10 +61701,12 @@ function AgendaItem({
   event,
   onClick,
   onToggleComplete,
+  onDelete,
 }: {
   event: CalendarEvent
   onClick: () => void
   onToggleComplete: () => void
+  onDelete?: () => void
 }) {
   const isCompleted = event.status === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
@@ -61708,7 +61715,7 @@ function AgendaItem({
     <div
       onClick={onClick}
       className={cn(
-        "p-2 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)] flex items-start gap-2 cursor-pointer transition-all",
+        "group p-2 rounded border border-[var(--sq-border)] bg-[var(--sq-paper)] hover:border-[var(--sq-ink)] flex items-start gap-2 cursor-pointer transition-all",
         isCompleted && "opacity-60 bg-[var(--sq-shade)]/30"
       )}
       style={{
@@ -61753,6 +61760,20 @@ function AgendaItem({
           )}
         </div>
       </div>
+
+      {onDelete && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation()
+            onDelete()
+          }}
+          className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 transition-all cursor-pointer shrink-0 ml-1"
+          title={`Delete "${event.title}"`}
+        >
+          <X size={12} weight="bold" />
+        </button>
+      )}
     </div>
   )
 }
@@ -62061,8 +62082,8 @@ export function CalendarAgendaView({
 ### File: `components/calendar/calendar-day-view.tsx`
 
 - **Path**: `components/calendar/calendar-day-view.tsx`
-- **Lines**: 315
-- **Size**: 12088 bytes
+- **Lines**: 328
+- **Size**: 12652 bytes
 
 ```tsx
 "use client"
@@ -62091,7 +62112,7 @@ import {
 import { computeDayEventPositions } from "@/lib/calendar/layout"
 import type { CalendarEvent, PositionedEvent } from "@/lib/calendar/types"
 import { CalendarEventPill } from "./calendar-event-pill"
-import { Plus, Clock, MapPin, Check } from "@phosphor-icons/react"
+import { Plus, Clock, MapPin, Check, X } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 interface CalendarDayViewProps {
@@ -62277,6 +62298,19 @@ export function CalendarDayView({
                 <span className={cn("truncate", ev.status === "completed" && "line-through opacity-50")}>
                   {ev.title}
                 </span>
+                {onDeleteEvent && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDeleteEvent(ev.id)
+                    }}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-500/20 text-red-600 transition-all cursor-pointer ml-auto"
+                    title={`Delete "${ev.title}"`}
+                  >
+                    <X size={11} weight="bold" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -62386,8 +62420,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 334
-- **Size**: 12087 bytes
+- **Lines**: 335
+- **Size**: 12088 bytes
 
 ```tsx
 "use client"
@@ -62723,6 +62757,7 @@ export function CalendarEventCard({
 
   return createPortal(cardModal, document.body)
 }
+
 ```
 
 ---
@@ -62731,7 +62766,7 @@ export function CalendarEventCard({
 
 - **Path**: `components/calendar/calendar-event-editor.tsx`
 - **Lines**: 546
-- **Size**: 20637 bytes
+- **Size**: 21182 bytes
 
 ```tsx
 "use client"
@@ -64012,7 +64047,7 @@ export function CalendarMonthView({
 
 - **Path**: `components/calendar/calendar-month-year-picker.tsx`
 - **Lines**: 214
-- **Size**: 6615 bytes
+- **Size**: 6828 bytes
 
 ```tsx
 "use client"
@@ -64388,8 +64423,8 @@ export function CalendarReminderToast({
 ### File: `components/calendar/calendar-week-view.tsx`
 
 - **Path**: `components/calendar/calendar-week-view.tsx`
-- **Lines**: 398
-- **Size**: 14847 bytes
+- **Lines**: 399
+- **Size**: 14911 bytes
 
 ```tsx
 "use client"
@@ -64597,8 +64632,8 @@ export function CalendarWeekView({
                     d.isToday
                       ? "bg-[var(--sq-ink)] text-[var(--sq-paper)]"
                       : isSelected
-                      ? "underline"
-                      : "text-[var(--sq-ink)]"
+                        ? "underline"
+                        : "text-[var(--sq-ink)]"
                   )}
                 >
                   {d.dayNumber}
@@ -64626,6 +64661,7 @@ export function CalendarWeekView({
                     isMonthView
                     onClick={() => onEventClick(ev)}
                     onToggleComplete={() => onToggleComplete(ev.id)}
+                    onDelete={() => onDeleteEvent?.(ev.id)}
                   />
                 ))}
               </div>
@@ -64796,8 +64832,8 @@ export function CalendarWeekView({
 ### File: `components/calendar/functional-calendar.tsx`
 
 - **Path**: `components/calendar/functional-calendar.tsx`
-- **Lines**: 620
-- **Size**: 21526 bytes
+- **Lines**: 621
+- **Size**: 21570 bytes
 
 ```tsx
 "use client"
@@ -65351,6 +65387,7 @@ export function FunctionalCalendar({ node, selected, zoom: _zoom }: FunctionalCa
           hiddenCategories={hiddenCategories}
           onToggleCategory={handleToggleCategory}
           weekStartsOn={weekStartsOn}
+          onDeleteEvent={handleDeleteEvent}
         />
       </div>
 
@@ -72979,7 +73016,7 @@ export function computeGapAnalysis(
 
 - **Path**: `lib/academic/student-store.ts`
 - **Lines**: 920
-- **Size**: 32173 bytes
+- **Size**: 31195 bytes
 
 ```tsx
 "use client"
@@ -73425,8 +73462,8 @@ function loadInitialState() {
         subjects: parsed.subjects ?? INITIAL_SUBJECTS,
         chapters: parsed.chapters ?? INITIAL_CHAPTERS,
         goals: parsed.goals ?? INITIAL_GOALS,
-        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities),
-        activities: parsed.hasClearedInitialActivities ? (parsed.activities ?? []) : (parsed.activities ?? INITIAL_ACTIVITIES),
+        hasClearedInitialActivities: Boolean(parsed.hasClearedInitialActivities || Array.isArray(parsed.activities)),
+        activities: Array.isArray(parsed.activities) ? parsed.activities : INITIAL_ACTIVITIES,
         materials: parsed.materials ?? INITIAL_MATERIALS,
         weeklyTargetHours: parsed.weeklyTargetHours ?? 28,
       }
@@ -73658,10 +73695,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
       const status: GoalStatus = isCompleted
         ? "completed"
         : isPast
-        ? "overdue"
-        : isToday
-        ? "due_today"
-        : "upcoming"
+          ? "overdue"
+          : isToday
+            ? "due_today"
+            : "upcoming"
 
       // Check if goal for chapter already exists
       const existing = get().goals.find((g) => g.chapterId === chapterId && g.status !== "cancelled")
@@ -73671,12 +73708,12 @@ export const useStudentStore = create<StudentState>((set, get) => {
           goals: state.goals.map((g) =>
             g.id === existing.id
               ? {
-                  ...g,
-                  targetDate,
-                  notes: notes !== undefined ? notes : g.notes,
-                  status,
-                  updatedAt: new Date().toISOString(),
-                }
+                ...g,
+                targetDate,
+                notes: notes !== undefined ? notes : g.notes,
+                status,
+                updatedAt: new Date().toISOString(),
+              }
               : g
           ),
         }))
@@ -73709,10 +73746,10 @@ export const useStudentStore = create<StudentState>((set, get) => {
           const status: GoalStatus = isCompleted
             ? "completed"
             : isPast
-            ? "overdue"
-            : isToday
-            ? "due_today"
-            : "upcoming"
+              ? "overdue"
+              : isToday
+                ? "due_today"
+                : "upcoming"
 
           return {
             ...g,
@@ -73779,7 +73816,7 @@ export const useStudentStore = create<StudentState>((set, get) => {
 
     deleteActivity: (id) => {
       const nextActs = get().activities.filter((a) => a.id !== id)
-      set({ activities: nextActs, hasClearedInitialActivities: nextActs.length === 0 ? true : get().hasClearedInitialActivities })
+      set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },
 
@@ -73878,13 +73915,13 @@ export const useStudentStore = create<StudentState>((set, get) => {
         materials: state.materials.map((m) =>
           m.id === id
             ? {
-                ...m,
-                subjectId: newSubjectId,
-                subjectName: sub?.name || "Subject",
-                chapterId: newChapterId,
-                chapterName: chap?.name || "Chapter",
-                updatedAt: new Date().toISOString(),
-              }
+              ...m,
+              subjectId: newSubjectId,
+              subjectName: sub?.name || "Subject",
+              chapterId: newChapterId,
+              chapterName: chap?.name || "Chapter",
+              updatedAt: new Date().toISOString(),
+            }
             : m
         ),
       }))
@@ -85978,7 +86015,7 @@ if (missing.length) console.log(`missing (skipped): ${missing.join(" ")}`)
 
 - **Path**: `scripts/generate-snapshot.mjs`
 - **Lines**: 1493
-- **Size**: 94169 bytes
+- **Size**: 95661 bytes
 
 ```javascript
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from "node:fs"
