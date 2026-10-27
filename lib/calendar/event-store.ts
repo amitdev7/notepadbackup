@@ -309,7 +309,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   } catch {}
 
   notifyCalendarEventChange()
-  return null
+  return getCalendarEventById(baseId) || getCalendarEventById(id) || null
 }
 
 /**
@@ -391,11 +391,26 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
 export function toggleCalendarEventComplete(id: string): void {
   const baseId = normalizeEventId(id)
   useStudentStore.getState().toggleActivityComplete(baseId)
+  if (baseId !== id) {
+    useStudentStore.getState().toggleActivityComplete(id)
+  }
   const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) {
     updateTask(baseId, {
       status: act.status === "completed" ? "completed" : "pending",
     })
+    if (baseId !== id) {
+      updateTask(id, {
+        status: act.status === "completed" ? "completed" : "pending",
+      })
+    }
+  } else {
+    const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
+    if (task) {
+      updateTask(task.id, {
+        status: task.status === "completed" ? "pending" : "completed",
+      })
+    }
   }
   notifyCalendarEventChange()
 }

@@ -240,6 +240,18 @@ export function Canvas() {
     return () => window.removeEventListener("resize", updateSize)
   }, [])
 
+  // Global listener to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  useEffect(() => {
+    const handleOpenQuickNote = (e: CustomEvent<string>) => {
+      const nodeId = e.detail
+      if (!nodeId) return
+      const n = useSquig.getState().nodes[nodeId]
+      if (n) setQuickNoteNode(n)
+    }
+    window.addEventListener("open-quick-note" as any, handleOpenQuickNote)
+    return () => window.removeEventListener("open-quick-note" as any, handleOpenQuickNote)
+  }, [])
+
   // Viewport culling calculation
   const visibleOrder = useMemo(() => {
     if (!perfSettings?.viewportCulling || perfSettings.cullingBuffer === "off") {
@@ -1829,7 +1841,29 @@ export function Canvas() {
           break
         }
         case "v": s.setTool("select"); break
-        case "h": s.setTool("hand"); break
+        case "h": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+              break
+            }
+          }
+          s.setTool("hand")
+          break
+        }
+        case "n": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+              break
+            }
+          }
+          break
+        }
         case "e": s.setTool("eraser"); break
         case "k": s.setTool("laser"); break
         case "s": s.setTool("sticky"); break
@@ -1843,16 +1877,6 @@ export function Canvas() {
         case "a": s.setArrowHead(true); s.setTool("arrow"); break
         case "c": s.setPanel("components"); break
         case "b": s.setPanel("blocks"); break
-        case "h": {
-          if (s.selection.length === 1 && !s.editingId) {
-            const selNode = s.nodes[s.selection[0]]
-            if (selNode) {
-              e.preventDefault()
-              setQuickNoteNode(selNode)
-            }
-          }
-          break
-        }
         case "ArrowLeft":
         case "ArrowRight":
         case "ArrowUp":

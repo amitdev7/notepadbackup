@@ -13,6 +13,7 @@
 
 import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { relativeTime, type FileMeta } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
 import {
@@ -38,6 +39,7 @@ export function FilesPopover() {
 
   const docId = useSquig((s) => s.docId)
   const files = useSquig((s) => s.files)
+  const wifiAutoSync = useShellStore((s) => s.preferences.wifiAutoSync)
 
   // Close when clicking outside or pressing Escape
   useEffect(() => {
@@ -285,10 +287,17 @@ export function FilesPopover() {
 
           {/* Wi-Fi & Auto-Save Status Footer */}
           <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
-            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
-              <span>Same Wi-Fi Sync Active</span>
-            </span>
+            {wifiAutoSync ? (
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
+                <span>Same Wi-Fi Sync Active</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-stone-500 dark:text-stone-400 font-medium">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span>Local Storage Active</span>
+              </span>
+            )}
             <span className="font-mono">Auto-saving</span>
           </div>
         </div>

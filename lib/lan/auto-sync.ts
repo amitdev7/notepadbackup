@@ -12,6 +12,7 @@
 
 import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import type { SquigNode } from "@/lib/types"
@@ -35,14 +36,24 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let isApplyingRemoteUpdate = false
 
 export function useWifiAutoSync() {
+  const isEnabled = useShellStore((s) => s.preferences.wifiAutoSync)
   const docId = useSquig((s) => s.docId)
   const fileName = useSquig((s) => s.fileName)
   const nodes = useSquig((s) => s.nodes)
   const order = useSquig((s) => s.order)
   const versionRef = useRef(1)
 
-  // 1. Initial network discovery & room joining
+  // 1. Initial network discovery & room joining (requires explicit user consent)
   useEffect(() => {
+    if (!isEnabled) {
+      if (activeChannel && isSupabaseConfigured()) {
+        const supabase = getSupabaseBrowserClient()
+        supabase.removeChannel(activeChannel)
+        activeChannel = null
+      }
+      return
+    }
+
     let isCancelled = false
 
     async function initWifiDiscovery() {
@@ -130,11 +141,11 @@ export function useWifiAutoSync() {
         activeChannel = null
       }
     }
-  }, [])
+  }, [isEnabled])
 
   // 2. Broadcast local changes to same Wi-Fi devices (debounced)
   useEffect(() => {
-    if (isApplyingRemoteUpdate) return
+    if (!isEnabled || isApplyingRemoteUpdate) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 

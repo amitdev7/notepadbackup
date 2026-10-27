@@ -1177,7 +1177,7 @@ Run all tests via: `pnpm test`.
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
 | `lib/canvas/duplicate.ts` | 43 | 1693 | Core duplicate.ts module | `duplicate` |
 | `lib/canvas/edit-target.ts` | 180 | 6655 | Core edit-target.ts module | `edit-target` |
-| `lib/canvas/hit-test.ts` | 401 | 13529 | Core hit-test.ts module | `hit-test` |
+| `lib/canvas/hit-test.ts` | 421 | 14251 | Core hit-test.ts module | `hit-test` |
 | `lib/canvas/keyboard-owner.ts` | 38 | 1867 | Core keyboard-owner.ts module | `keyboard-owner` |
 | `lib/canvas/snap-engine.ts` | 775 | 23634 | Core snap-engine.ts module | `snap-engine` |
 | `lib/canvas/stroke-smoothing.ts` | 109 | 3536 | Core stroke-smoothing.ts module | `stroke-smoothing` |
@@ -1197,7 +1197,7 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2365 | 87952 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 2389 | 88778 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25333 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
@@ -1225,8 +1225,8 @@ Run all tests via: `pnpm test`.
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 347 | 13263 | Core context-menu.tsx module | `context-menu` |
-| `components/chrome/files-popover.tsx` | 299 | 12678 | Core files-popover.tsx module | `files-popover` |
+| `components/chrome/context-menu.tsx` | 349 | 13451 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/files-popover.tsx` | 308 | 12823 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 449 | 18238 | Core library-panel.tsx module | `library-panel` |
@@ -1263,7 +1263,7 @@ Run all tests via: `pnpm test`.
 | `app/lan/view/[sessionId]/page.tsx` | 20 | 482 | Core page.tsx module | `page` |
 | `components/chrome/wifi-device-panel.tsx` | 91 | 3590 | Core wifi-device-panel.tsx module | `wifi-device-panel` |
 | `components/chrome/wifi-publish-dialog.tsx` | 251 | 7808 | Core wifi-publish-dialog.tsx module | `wifi-publish-dialog` |
-| `lib/lan/auto-sync.ts` | 188 | 6108 | Core auto-sync.ts module | `auto-sync` |
+| `lib/lan/auto-sync.ts` | 199 | 6513 | Core auto-sync.ts module | `auto-sync` |
 | `lib/lan/classroom-transport.ts` | 519 | 14986 | Core classroom-transport.ts module | `classroom-transport` |
 | `lib/lan/discovery.ts` | 54 | 1477 | Core discovery.ts module | `discovery` |
 | `lib/lan/identity.ts` | 100 | 3107 | Core identity.ts module | `identity` |
@@ -1374,12 +1374,12 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 923 | 31364 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 925 | 31566 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
 | `lib/calendar/date-utils.ts` | 276 | 8155 | Core date-utils.ts module | `date-utils` |
-| `lib/calendar/event-store.ts` | 564 | 18211 | Core event-store.ts module | `event-store` |
+| `lib/calendar/event-store.ts` | 579 | 18705 | Core event-store.ts module | `event-store` |
 | `lib/calendar/ics.ts` | 312 | 9196 | Core ics.ts module | `ics` |
 | `lib/calendar/layout.ts` | 201 | 6672 | Core layout.ts module | `layout` |
 | `lib/calendar/types.ts` | 146 | 3283 | Core types.ts module | `types` |
@@ -9997,8 +9997,8 @@ export function editTarget(node: SquigNode): EditTarget | null {
 ### File: `lib/canvas/hit-test.ts`
 
 - **Path**: `lib/canvas/hit-test.ts`
-- **Lines**: 401
-- **Size**: 13529 bytes
+- **Lines**: 421
+- **Size**: 14251 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -10354,7 +10354,7 @@ export function pickInRect(
 /**
  * Resolves the topmost node eligible for a Smart Hover Note under a world point.
  * Prioritizes direct stroke hits, followed by the object's visual bounding area
- * (allowing users to hover over an arrow's, drawing's, or frame's bounding area).
+ * (allowing users to hover anywhere over an arrow's, drawing's, or frame's bounding area).
  * Walks front-to-back to preserve z-index ordering.
  */
 export function pickHoverTarget(
@@ -10390,15 +10390,35 @@ export function pickHoverTarget(
       note.enabled !== false &&
       ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
     ) {
-      const b = boxOf(n)
-      const pad = 4
-      if (x >= b.x - pad && x <= b.x + b.w + pad && y >= b.y - pad && y <= b.y + b.h + pad) {
+      if (pointInNodeBoundingArea(n, x, y, 4)) {
         return n
       }
     }
   }
 
   return null
+}
+
+function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): boolean {
+  let px = x
+  let py = y
+  const rotation = "rotation" in n && typeof (n as { rotation?: number }).rotation === "number" ? (n as { rotation: number }).rotation : 0
+  if (rotation) {
+    const cx = n.x + n.w / 2
+    const cy = n.y + n.h / 2
+    const rad = (-rotation * Math.PI) / 180
+    const cos = Math.cos(rad)
+    const sin = Math.sin(rad)
+    const dx = x - cx
+    const dy = y - cy
+    px = cx + dx * cos - dy * sin
+    py = cy + dx * sin + dy * cos
+  }
+  const left = Math.min(n.x, n.x + n.w)
+  const right = Math.max(n.x, n.x + n.w)
+  const top = Math.min(n.y, n.y + n.h)
+  const bottom = Math.max(n.y, n.y + n.h)
+  return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
 }
 
 ```
@@ -14023,8 +14043,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2365
-- **Size**: 87952 bytes
+- **Lines**: 2389
+- **Size**: 88778 bytes
 
 ```tsx
 "use client"
@@ -14267,6 +14287,18 @@ export function Canvas() {
     updateSize()
     window.addEventListener("resize", updateSize)
     return () => window.removeEventListener("resize", updateSize)
+  }, [])
+
+  // Global listener to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  useEffect(() => {
+    const handleOpenQuickNote = (e: CustomEvent<string>) => {
+      const nodeId = e.detail
+      if (!nodeId) return
+      const n = useSquig.getState().nodes[nodeId]
+      if (n) setQuickNoteNode(n)
+    }
+    window.addEventListener("open-quick-note" as any, handleOpenQuickNote)
+    return () => window.removeEventListener("open-quick-note" as any, handleOpenQuickNote)
   }, [])
 
   // Viewport culling calculation
@@ -15858,7 +15890,29 @@ export function Canvas() {
           break
         }
         case "v": s.setTool("select"); break
-        case "h": s.setTool("hand"); break
+        case "h": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+              break
+            }
+          }
+          s.setTool("hand")
+          break
+        }
+        case "n": {
+          if (s.selection.length === 1 && !s.editingId) {
+            const selNode = s.nodes[s.selection[0]]
+            if (selNode) {
+              e.preventDefault()
+              setQuickNoteNode(selNode)
+              break
+            }
+          }
+          break
+        }
         case "e": s.setTool("eraser"); break
         case "k": s.setTool("laser"); break
         case "s": s.setTool("sticky"); break
@@ -15872,16 +15926,6 @@ export function Canvas() {
         case "a": s.setArrowHead(true); s.setTool("arrow"); break
         case "c": s.setPanel("components"); break
         case "b": s.setPanel("blocks"); break
-        case "h": {
-          if (s.selection.length === 1 && !s.editingId) {
-            const selNode = s.nodes[s.selection[0]]
-            if (selNode) {
-              e.preventDefault()
-              setQuickNoteNode(selNode)
-            }
-          }
-          break
-        }
         case "ArrowLeft":
         case "ArrowRight":
         case "ArrowUp":
@@ -24932,8 +24976,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 347
-- **Size**: 13263 bytes
+- **Lines**: 349
+- **Size**: 13451 bytes
 
 ```tsx
 "use client"
@@ -25108,6 +25152,14 @@ export function CanvasContextMenu() {
         ? one.hoverNote
           ? [
               {
+                label: "Edit Hover Note…",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().setSelection([one.id])
+                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
+                },
+              } as Entry,
+              {
                 label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
                 icon: ChatCenteredText,
                 run: () => {
@@ -25136,13 +25188,7 @@ export function CanvasContextMenu() {
                 icon: ChatCenteredText,
                 run: () => {
                   st().setSelection([one.id])
-                  st().updateNode(one.id, {
-                    hoverNote: {
-                      enabled: true,
-                      title: "",
-                      body: "",
-                    },
-                  })
+                  window.dispatchEvent(new CustomEvent("open-quick-note", { detail: one.id }))
                 },
               } as Entry,
             ]
@@ -25289,8 +25335,8 @@ function pasteAt(sx: number, sy: number) {
 ### File: `components/chrome/files-popover.tsx`
 
 - **Path**: `components/chrome/files-popover.tsx`
-- **Lines**: 299
-- **Size**: 12678 bytes
+- **Lines**: 308
+- **Size**: 12823 bytes
 
 ```tsx
 "use client"
@@ -25308,6 +25354,7 @@ function pasteAt(sx: number, sy: number) {
 
 import { useState, useRef, useEffect, useMemo } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { relativeTime, type FileMeta } from "@/lib/files"
 import { exportDoc, importDoc, exportExcalidrawDoc } from "@/lib/file-io"
 import {
@@ -25333,6 +25380,7 @@ export function FilesPopover() {
 
   const docId = useSquig((s) => s.docId)
   const files = useSquig((s) => s.files)
+  const wifiAutoSync = useShellStore((s) => s.preferences.wifiAutoSync)
 
   // Close when clicking outside or pressing Escape
   useEffect(() => {
@@ -25580,10 +25628,17 @@ export function FilesPopover() {
 
           {/* Wi-Fi & Auto-Save Status Footer */}
           <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
-            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
-              <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
-              <span>Same Wi-Fi Sync Active</span>
-            </span>
+            {wifiAutoSync ? (
+              <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
+                <span>Same Wi-Fi Sync Active</span>
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-stone-500 dark:text-stone-400 font-medium">
+                <span className="size-1.5 rounded-full bg-emerald-500" />
+                <span>Local Storage Active</span>
+              </span>
+            )}
             <span className="font-mono">Auto-saving</span>
           </div>
         </div>
@@ -35055,8 +35110,8 @@ export function WifiPublishDialog() {
 ### File: `lib/lan/auto-sync.ts`
 
 - **Path**: `lib/lan/auto-sync.ts`
-- **Lines**: 188
-- **Size**: 6108 bytes
+- **Lines**: 199
+- **Size**: 6513 bytes
 
 ```tsx
 "use client"
@@ -35073,6 +35128,7 @@ export function WifiPublishDialog() {
 
 import { useEffect, useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 import type { SquigNode } from "@/lib/types"
@@ -35096,14 +35152,24 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let isApplyingRemoteUpdate = false
 
 export function useWifiAutoSync() {
+  const isEnabled = useShellStore((s) => s.preferences.wifiAutoSync)
   const docId = useSquig((s) => s.docId)
   const fileName = useSquig((s) => s.fileName)
   const nodes = useSquig((s) => s.nodes)
   const order = useSquig((s) => s.order)
   const versionRef = useRef(1)
 
-  // 1. Initial network discovery & room joining
+  // 1. Initial network discovery & room joining (requires explicit user consent)
   useEffect(() => {
+    if (!isEnabled) {
+      if (activeChannel && isSupabaseConfigured()) {
+        const supabase = getSupabaseBrowserClient()
+        supabase.removeChannel(activeChannel)
+        activeChannel = null
+      }
+      return
+    }
+
     let isCancelled = false
 
     async function initWifiDiscovery() {
@@ -35191,11 +35257,11 @@ export function useWifiAutoSync() {
         activeChannel = null
       }
     }
-  }, [])
+  }, [isEnabled])
 
   // 2. Broadcast local changes to same Wi-Fi devices (debounced)
   useEffect(() => {
-    if (isApplyingRemoteUpdate) return
+    if (!isEnabled || isApplyingRemoteUpdate) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 
@@ -73956,8 +74022,8 @@ export function computeGapAnalysis(
 ### File: `lib/academic/student-store.ts`
 
 - **Path**: `lib/academic/student-store.ts`
-- **Lines**: 923
-- **Size**: 31364 bytes
+- **Lines**: 925
+- **Size**: 31566 bytes
 
 ```tsx
 "use client"
@@ -74742,10 +74808,11 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     toggleActivityComplete: (id) => {
+      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
       const today = getFormattedDate(0)
       set((state) => ({
         activities: state.activities.map((a) => {
-          if (a.id !== id) return a
+          if (a.id !== id && a.id !== baseId) return a
           const nextStatus = a.status === "completed" ? "pending" : "completed"
           return {
             ...a,
@@ -74759,7 +74826,8 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      const nextActs = get().activities.filter((a) => a.id !== id)
+      const baseId = id.includes("_rec_") ? id.slice(0, id.indexOf("_rec_")) : id
+      const nextActs = get().activities.filter((a) => a.id !== id && a.id !== baseId)
       set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },
@@ -76842,8 +76910,8 @@ export function isDateInRange(targetDate: string, startDate: string, endDate?: s
 ### File: `lib/calendar/event-store.ts`
 
 - **Path**: `lib/calendar/event-store.ts`
-- **Lines**: 564
-- **Size**: 18211 bytes
+- **Lines**: 579
+- **Size**: 18705 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -77157,7 +77225,7 @@ export function updateCalendarEvent(id: string, updates: UpdateCalendarEventInpu
   } catch {}
 
   notifyCalendarEventChange()
-  return null
+  return getCalendarEventById(baseId) || getCalendarEventById(id) || null
 }
 
 /**
@@ -77239,11 +77307,26 @@ export function resizeCalendarEvent(id: string, newEndTime: string): void {
 export function toggleCalendarEventComplete(id: string): void {
   const baseId = normalizeEventId(id)
   useStudentStore.getState().toggleActivityComplete(baseId)
+  if (baseId !== id) {
+    useStudentStore.getState().toggleActivityComplete(id)
+  }
   const act = useStudentStore.getState().activities.find((a) => a.id === baseId || a.id === id)
   if (act) {
     updateTask(baseId, {
       status: act.status === "completed" ? "completed" : "pending",
     })
+    if (baseId !== id) {
+      updateTask(id, {
+        status: act.status === "completed" ? "completed" : "pending",
+      })
+    }
+  } else {
+    const task = getAllTasks().find((t) => t.id === baseId || t.id === id)
+    if (task) {
+      updateTask(task.id, {
+        status: task.status === "completed" ? "pending" : "completed",
+      })
+    }
   }
   notifyCalendarEventChange()
 }

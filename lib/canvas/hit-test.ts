@@ -351,7 +351,7 @@ export function pickInRect(
 /**
  * Resolves the topmost node eligible for a Smart Hover Note under a world point.
  * Prioritizes direct stroke hits, followed by the object's visual bounding area
- * (allowing users to hover over an arrow's, drawing's, or frame's bounding area).
+ * (allowing users to hover anywhere over an arrow's, drawing's, or frame's bounding area).
  * Walks front-to-back to preserve z-index ordering.
  */
 export function pickHoverTarget(
@@ -387,14 +387,34 @@ export function pickHoverTarget(
       note.enabled !== false &&
       ((note.body && note.body.trim().length > 0) || (note.title && note.title.trim().length > 0))
     ) {
-      const b = boxOf(n)
-      const pad = 4
-      if (x >= b.x - pad && x <= b.x + b.w + pad && y >= b.y - pad && y <= b.y + b.h + pad) {
+      if (pointInNodeBoundingArea(n, x, y, 4)) {
         return n
       }
     }
   }
 
   return null
+}
+
+function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): boolean {
+  let px = x
+  let py = y
+  const rotation = "rotation" in n && typeof (n as { rotation?: number }).rotation === "number" ? (n as { rotation: number }).rotation : 0
+  if (rotation) {
+    const cx = n.x + n.w / 2
+    const cy = n.y + n.h / 2
+    const rad = (-rotation * Math.PI) / 180
+    const cos = Math.cos(rad)
+    const sin = Math.sin(rad)
+    const dx = x - cx
+    const dy = y - cy
+    px = cx + dx * cos - dy * sin
+    py = cy + dx * sin + dy * cos
+  }
+  const left = Math.min(n.x, n.x + n.w)
+  const right = Math.max(n.x, n.x + n.w)
+  const top = Math.min(n.y, n.y + n.h)
+  const bottom = Math.max(n.y, n.y + n.h)
+  return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
 }
 
