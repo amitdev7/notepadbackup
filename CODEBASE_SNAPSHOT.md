@@ -1130,7 +1130,7 @@ Run all tests via: `pnpm test`.
 | `.env.local` | 30 | 1420 | Core .env.local module | `.env` |
 | `.gitignore` | 57 | 837 | Core .gitignore module | `` |
 | `.npmrc` | 15 | 825 | Core .npmrc module | `` |
-| `.vercelignore` | 17 | 257 | Core .vercelignore module | `` |
+| `.vercelignore` | 27 | 376 | Core .vercelignore module | `` |
 | `README.md` | 77 | 3663 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 39 | 935 | Core eslint.config.mjs module | `eslint.config` |
@@ -1141,7 +1141,7 @@ Run all tests via: `pnpm test`.
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
 | `tsconfig.json` | 56 | 1049 | Core tsconfig.json module | `tsconfig` |
-| `vercel.json` | 6 | 171 | Core vercel.json module | `vercel` |
+| `vercel.json` | 7 | 150 | Core vercel.json module | `vercel` |
 | `vitest.config.mts` | 101 | 3063 | Core vitest.config.mts module | `vitest.config` |
 | `app/cursors.css` | 134 | 4635 | Core cursors.css module | `cursors` |
 | `app/dashboard/page.tsx` | 818 | 38129 | Core page.tsx module | `page` |
@@ -1206,7 +1206,7 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 283 | 11275 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/quick-note-dialog.tsx` | 282 | 11198 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
 | `components/canvas/smart-hover-note.tsx` | 702 | 24365 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
@@ -1708,23 +1708,33 @@ verify-deps-before-run=install
 ### File: `.vercelignore`
 
 - **Path**: `.vercelignore`
-- **Lines**: 17
-- **Size**: 257 bytes
+- **Lines**: 27
+- **Size**: 376 bytes
 
 ```
 # Vercel Deployment Ignore File
-# Exclude massive reference archives, docs, and local test artifacts to keep builds lightning-fast
+# Exclude massive reference archives, docs, tests, and non-production folders to keep builds lightning-fast
 
 sources/
 mouse/
 scripts/
 docs/
 scratch/
+files/
+zenithsui-app/
+packages/
+examples/
+firebase-project/
+supabase/
 *.zip
 *.tar.gz
 *.log
 .git/
 .agents/
+.claude/
+.codesandbox/
+.husky/
+.vscode/
 .gemini/
 .system_generated/
 CODEBASE_SNAPSHOT.md
@@ -2333,15 +2343,15 @@ console.error = (...args) => {
 ### File: `vercel.json`
 
 - **Path**: `vercel.json`
-- **Lines**: 6
-- **Size**: 171 bytes
+- **Lines**: 7
+- **Size**: 150 bytes
 
 ```json
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "pnpm run build",
-  "installCommand": "pnpm install --frozen-lockfile"
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install"
 }
 ```
 
@@ -19824,8 +19834,8 @@ export function PerfHud({
 ### File: `components/canvas/quick-note-dialog.tsx`
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
-- **Lines**: 283
-- **Size**: 11275 bytes
+- **Lines**: 282
+- **Size**: 11198 bytes
 
 ```tsx
 "use client"
@@ -19859,8 +19869,7 @@ const NOTE_TEMPLATES = [
 ]
 
 const THEME_OPTIONS = [
-  { id: "wordcloud", label: "Word Cloud (Only Text) ☁️" },
-  { id: "frosted", label: "3D Frosted Cloud ⛅" },
+  { id: "clouds", label: "Clouds ☁️" },
   { id: "macos", label: "macOS 🍏" },
   { id: "ios", label: "iOS Glass 📱" },
   { id: "minimalist", label: "Clean 📄" },
@@ -19876,7 +19885,7 @@ export function QuickNoteDialog({
   const [mounted, setMounted] = useState(false)
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
-  const [theme, setTheme] = useState("wordcloud")
+  const [theme, setTheme] = useState("clouds")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -19888,7 +19897,7 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
-    setTheme(existing?.theme || "wordcloud")
+    setTheme(existing?.theme || "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
