@@ -202,43 +202,112 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
+  const theme = note.theme || "clouds"
+
+  // Theme-specific visual tokens
+  const isClouds = theme === "clouds"
+  const isMac = theme === "macos"
+  const isIos = theme === "ios"
+  const isMinimal = theme === "minimalist"
 
   return (
     <div
       className={cn(
-        "rounded-3xl border border-sky-200/60 dark:border-sky-500/40 font-sans overflow-hidden",
-        "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)] transition-all",
-        "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
+        "rounded-3xl font-sans overflow-hidden transition-all",
+        isClouds && [
+          "border border-sky-200/70 dark:border-sky-500/40",
+          "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)]",
+          "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
+        ],
+        isMac && [
+          "border border-black/10 dark:border-white/15",
+          "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
+          "shadow-2xl ring-1 ring-black/5 dark:ring-white/10",
+        ],
+        isIos && [
+          "border border-white/20",
+          "bg-stone-950/92 backdrop-blur-3xl text-white",
+          "shadow-2xl ring-1 ring-white/15",
+        ],
+        isMinimal && [
+          "border border-stone-300 dark:border-stone-700",
+          "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100",
+          "shadow-xl",
+        ],
         className
       )}
       style={{
-        boxShadow:
-          "0 20px 48px -10px rgba(56, 189, 248, 0.32), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.7)",
+        boxShadow: isClouds
+          ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
+          : isIos
+          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+          : isMac
+          ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+          : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
-      {/* Top dreamy celestial cloud accent gradient */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
+      {/* Top Accent Gradient Bar */}
+      {isClouds && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
+      )}
+      {isMac && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
+      )}
+      {isIos && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 opacity-95" />
+      )}
 
       <div className="p-3.5 sm:p-4 space-y-2.5">
-        {/* Header row: Cloud icon + Title / Annotation + Node Type Badge */}
+        {/* Header row: Cloud/Theme icon + Title / Annotation + Node Type Badge */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="p-1.5 rounded-xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0 border border-sky-400/25 shadow-xs flex items-center justify-center">
-              <Cloud size={15} weight="fill" />
+            <span
+              className={cn(
+                "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
+                isClouds && "bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border-sky-400/25",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700"
+              )}
+            >
+              {isClouds ? (
+                <Cloud size={15} weight="fill" />
+              ) : isMac ? (
+                <Sparkle size={15} weight="fill" />
+              ) : isIos ? (
+                <ChatCenteredText size={15} weight="fill" />
+              ) : (
+                <Tag size={15} weight="bold" />
+              )}
             </span>
+
             {hasTitle ? (
-              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate leading-snug">
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug">
                 {note.title!.trim()}
               </h4>
             ) : (
-              <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-200 uppercase tracking-wider flex items-center gap-1">
+              <span
+                className={cn(
+                  "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
+                  isClouds && "text-sky-800 dark:text-sky-200",
+                  isIos && "text-cyan-200"
+                )}
+              >
                 Note
               </span>
             )}
           </div>
 
           {nodeTypeLabel && (
-            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/60 shadow-2xs shrink-0">
+            <span
+              className={cn(
+                "text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0",
+                isClouds && "bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/60",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isIos && "bg-white/10 text-cyan-200 border-white/15",
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700"
+              )}
+            >
               {nodeTypeLabel}
             </span>
           )}
@@ -246,7 +315,12 @@ export function SmartHoverCardContent({
 
         {/* Note Body */}
         {hasBody && (
-          <div className="text-xs leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1">
+          <div
+            className={cn(
+              "text-xs leading-relaxed whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1",
+              isIos ? "text-stone-200" : "text-slate-700 dark:text-slate-200"
+            )}
+          >
             {note.body.trim()}
           </div>
         )}

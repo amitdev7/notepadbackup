@@ -116,6 +116,7 @@ interface SquigState {
    *  rather than on the next click */
   placingDrag: boolean
   editingId: string | null
+  quickNoteNodeId: string | null
   contextRow: boolean
   /* --- the look, kept flat so a control can subscribe to just its own knob.
      It belongs to the open document: every setter writes it back to the file,
@@ -175,6 +176,7 @@ interface SquigState {
   setPanel: (p: PanelKind) => void
   setPlacing: (kind: string | null, opts?: { drag?: boolean }) => void
   setEditing: (id: string | null) => void
+  setQuickNoteNodeId: (id: string | null) => void
   setContextRow: (on: boolean) => void
   setTheme: (t: ThemeName) => void
   setFont: (f: FontMode) => void
@@ -573,6 +575,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   placing: null,
   placingDrag: false,
   editingId: null,
+  quickNoteNodeId: null,
   contextRow: false,
   ...DEFAULT_LOOK,
   showPage: true,
@@ -676,6 +679,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   setPanel: (p) => set((st) => ({ panel: st.panel === p ? null : p, placing: null, placingDrag: false })),
   setPlacing: (kind, opts) => set({ placing: kind, placingDrag: kind !== null && opts?.drag === true }),
   setEditing: (id) => set({ editingId: id }),
+  setQuickNoteNodeId: (id) => set({ quickNoteNodeId: id }),
   setContextRow: (on) => {
     set({ contextRow: on })
     scheduleSave(get)

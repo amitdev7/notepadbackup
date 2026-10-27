@@ -50,10 +50,15 @@ export function CalendarEventCard({
   onDelete,
 }: CalendarEventCardProps) {
   const [mounted, setMounted] = useState(false)
+  const [optimisticStatus, setOptimisticStatus] = useState<"pending" | "completed" | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    setOptimisticStatus(null)
+  }, [event?.id, event?.status])
 
   // Native macOS shortcut: Delete or Backspace removes event immediately
   useEffect(() => {
@@ -73,7 +78,7 @@ export function CalendarEventCard({
 
   if (!isOpen || !event || !mounted || typeof document === "undefined") return null
 
-  const isCompleted = event.status === "completed"
+  const isCompleted = (optimisticStatus ?? event.status) === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
 
   // Formatted date string
@@ -235,10 +240,11 @@ export function CalendarEventCard({
               onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault()
+                setOptimisticStatus(isCompleted ? "pending" : "completed")
                 onToggleComplete(event.id)
               }}
               className={cn(
-                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
+                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer",
                 isCompleted
                   ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
                   : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"

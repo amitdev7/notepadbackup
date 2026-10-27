@@ -51,6 +51,7 @@ import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
 import { QuickNoteDialog } from "./quick-note-dialog"
 import { Cloud } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -240,7 +241,19 @@ export function Canvas() {
     return () => window.removeEventListener("resize", updateSize)
   }, [])
 
-  // Global listener to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  // Global listener & store subscription to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  const storeQuickNoteId = useSquig((s) => s.quickNoteNodeId)
+  const setQuickNoteNodeId = useSquig((s) => s.setQuickNoteNodeId)
+
+  useEffect(() => {
+    if (storeQuickNoteId) {
+      const n = nodes[storeQuickNoteId]
+      if (n) setQuickNoteNode(n)
+    } else {
+      setQuickNoteNode(null)
+    }
+  }, [storeQuickNoteId, nodes])
+
   useEffect(() => {
     const handleOpenQuickNote = (e: CustomEvent<string>) => {
       const nodeId = e.detail
@@ -1436,7 +1449,13 @@ export function Canvas() {
         s.setViewerDoc(n as DocumentNode)
         return
       }
-      if (hasEditableText(n)) s.setEditing(hitId)
+      if (hasEditableText(n)) {
+        s.setEditing(hitId)
+      } else {
+        // Double-clicking non-text canvas objects (arrows, doodles, frames, images) opens hover note editor
+        setQuickNoteNode(n)
+        s.setQuickNoteNodeId(hitId)
+      }
     },
     [st, pick, toWorld, isViewer]
   )
@@ -2128,12 +2147,19 @@ export function Canvas() {
       <QuickNoteDialog
         node={quickNoteNode}
         isOpen={Boolean(quickNoteNode)}
-        onClose={() => setQuickNoteNode(null)}
+        onClose={() => {
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
+        }}
         onSave={(nodeId, note) => {
           st().updateNodes({ [nodeId]: { hoverNote: note } })
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
         }}
         onDeleteNote={(nodeId) => {
           st().updateNodes({ [nodeId]: { hoverNote: undefined } })
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
         }}
       />
 
@@ -2321,7 +2347,12 @@ function SelectionOverlay({
 
           {/* Floating Quick Note Pill on selection bounding box */}
           {selectedNodes.length === 1 && !readOnly && onOpenQuickNote && (
-            <div className="pointer-events-auto absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+            <div
+              className={cn(
+                "pointer-events-auto absolute left-1/2 -translate-x-1/2 z-20 transition-all",
+                top > 48 ? "-top-9" : "-bottom-9"
+              )}
+            >
               <button
                 type="button"
                 onClick={(e) => {
@@ -2329,12 +2360,24 @@ function SelectionOverlay({
                   e.preventDefault()
                   onOpenQuickNote(selectedNodes[0])
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shadow-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-sky-400/50 text-sky-700 dark:text-sky-300 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap select-none"
-                title="Add or edit hover note (Shortcut: H)"
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold select-none cursor-pointer whitespace-nowrap",
+                  "backdrop-blur-2xl transition-all duration-150 transform hover:scale-105 active:scale-95",
+                  "border border-sky-300/70 dark:border-sky-400/50 shadow-lg",
+                  "bg-white/95 dark:bg-slate-900/95 text-sky-800 dark:text-sky-200"
+                )}
+                style={{
+                  boxShadow:
+                    "0 10px 24px -4px rgba(56, 189, 248, 0.35), 0 2px 6px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+                }}
+                title="Add or edit hover note (Shortcut: H or N, or Double Click)"
               >
-                <Cloud size={13} weight="fill" className="text-sky-500 shrink-0" />
+                <Cloud size={14} weight="fill" className="text-sky-500 shrink-0" />
                 <span>
                   {selectedNodes[0].hoverNote?.body?.trim() ? "Edit Note" : "Add Note"}
+                </span>
+                <span className="text-[9px] font-mono opacity-60 ml-0.5 px-1 py-0.2 rounded bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300">
+                  H
                 </span>
               </button>
             </div>

@@ -28,6 +28,13 @@ const NOTE_TEMPLATES = [
   { label: "Next Step", text: "Next action: " },
 ]
 
+const THEME_OPTIONS = [
+  { id: "clouds", label: "Clouds ☁️" },
+  { id: "macos", label: "macOS 🍏" },
+  { id: "ios", label: "iOS Glass 📱" },
+  { id: "minimalist", label: "Clean 📄" },
+]
+
 export function QuickNoteDialog({
   node,
   isOpen,
@@ -38,6 +45,7 @@ export function QuickNoteDialog({
   const [mounted, setMounted] = useState(false)
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
+  const [theme, setTheme] = useState("clouds")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -49,6 +57,7 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
+    setTheme(existing?.theme || "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -80,7 +89,7 @@ export function QuickNoteDialog({
       title: trimmedTitle || undefined,
       body: trimmedBody,
       enabled: true,
-      theme: "clouds",
+      theme,
       createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -183,6 +192,30 @@ export function QuickNoteDialog({
               placeholder="Write the note shown when someone hovers over this element..."
               className="w-full px-3 py-2 rounded-xl border border-sky-200/70 dark:border-sky-800/70 bg-white dark:bg-slate-800/90 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-sky-400/40 focus:border-sky-400 transition-all resize-none shadow-2xs leading-relaxed"
             />
+          </div>
+
+          {/* Visual Theme Selector */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+              Hover Card Aesthetic
+            </label>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {THEME_OPTIONS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTheme(t.id)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border select-none",
+                    theme === t.id
+                      ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white border-sky-400/40 shadow-xs scale-102"
+                      : "bg-slate-100/80 hover:bg-slate-200/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-300 border-transparent"
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Quick template starters */}

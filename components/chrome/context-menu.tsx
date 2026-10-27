@@ -170,6 +170,15 @@ export function CanvasContextMenu() {
         ? one.hoverNote
           ? [
               {
+                label: "Edit Hover Note…",
+                hint: "H",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().setSelection([one.id])
+                  st().setQuickNoteNodeId(one.id)
+                },
+              } as Entry,
+              {
                 label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
                 icon: ChatCenteredText,
                 run: () => {
@@ -195,16 +204,11 @@ export function CanvasContextMenu() {
           : [
               {
                 label: "Add Hover Note…",
+                hint: "H",
                 icon: ChatCenteredText,
                 run: () => {
                   st().setSelection([one.id])
-                  st().updateNode(one.id, {
-                    hoverNote: {
-                      enabled: true,
-                      title: "",
-                      body: "",
-                    },
-                  })
+                  st().setQuickNoteNodeId(one.id)
                 },
               } as Entry,
             ]

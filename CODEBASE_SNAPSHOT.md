@@ -1169,7 +1169,7 @@ Run all tests via: `pnpm test`.
 | `lib/shell-store.ts` | 615 | 18072 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 166 | 5302 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
-| `lib/store.ts` | 1590 | 57996 | Core store.ts module | `store` |
+| `lib/store.ts` | 1594 | 56575 | Core store.ts module | `store` |
 | `lib/theme.ts` | 305 | 9354 | Core theme.ts module | `theme` |
 | `lib/types.ts` | 310 | 9257 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
@@ -1177,7 +1177,7 @@ Run all tests via: `pnpm test`.
 | `lib/canvas/arrow-binding.ts` | 267 | 7137 | Core arrow-binding.ts module | `arrow-binding` |
 | `lib/canvas/duplicate.ts` | 43 | 1693 | Core duplicate.ts module | `duplicate` |
 | `lib/canvas/edit-target.ts` | 180 | 6655 | Core edit-target.ts module | `edit-target` |
-| `lib/canvas/hit-test.ts` | 420 | 14250 | Core hit-test.ts module | `hit-test` |
+| `lib/canvas/hit-test.ts` | 421 | 14296 | Core hit-test.ts module | `hit-test` |
 | `lib/canvas/keyboard-owner.ts` | 38 | 1867 | Core keyboard-owner.ts module | `keyboard-owner` |
 | `lib/canvas/snap-engine.ts` | 775 | 23634 | Core snap-engine.ts module | `snap-engine` |
 | `lib/canvas/stroke-smoothing.ts` | 109 | 3536 | Core stroke-smoothing.ts module | `stroke-smoothing` |
@@ -1197,8 +1197,8 @@ Run all tests via: `pnpm test`.
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
 | `components/canvas/canvas-search.tsx` | 255 | 8562 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8102 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2389 | 88778 | Core canvas.tsx module | `canvas` |
-| `components/canvas/context-row.tsx` | 197 | 8197 | Core context-row.tsx module | `context-row` |
+| `components/canvas/canvas.tsx` | 2432 | 90264 | Core canvas.tsx module | `canvas` |
+| `components/canvas/context-row.tsx` | 215 | 9110 | Core context-row.tsx module | `context-row` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25333 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
 | `components/canvas/empty-canvas.tsx` | 86 | 2889 | Core empty-canvas.tsx module | `empty-canvas` |
@@ -1206,8 +1206,8 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 249 | 9796 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
-| `components/canvas/smart-hover-note.tsx` | 289 | 9606 | Core smart-hover-note.tsx module | `smart-hover-note` |
+| `components/canvas/quick-note-dialog.tsx` | 282 | 11198 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/smart-hover-note.tsx` | 363 | 12498 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
 | `lib/canvas-core/charts.ts` | 644 | 15924 | Core charts.ts module | `charts` |
@@ -1225,7 +1225,7 @@ Run all tests via: `pnpm test`.
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 429 | 23599 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 347 | 13263 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/context-menu.tsx` | 351 | 13415 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/files-popover.tsx` | 339 | 14122 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3058 | Core ink-picker.tsx module | `ink-picker` |
 | `components/chrome/inspector.tsx` | 977 | 36810 | Core inspector.tsx module | `inspector` |
@@ -1353,7 +1353,7 @@ Run all tests via: `pnpm test`.
 | `components/calendar/calendar-agenda-drawer.tsx` | 460 | 15502 | Core calendar-agenda-drawer.tsx module | `calendar-agenda-drawer` |
 | `components/calendar/calendar-agenda-view.tsx` | 288 | 12176 | Core calendar-agenda-view.tsx module | `calendar-agenda-view` |
 | `components/calendar/calendar-day-view.tsx` | 328 | 12652 | Core calendar-day-view.tsx module | `calendar-day-view` |
-| `components/calendar/calendar-event-card.tsx` | 318 | 11308 | Core calendar-event-card.tsx module | `calendar-event-card` |
+| `components/calendar/calendar-event-card.tsx` | 324 | 11599 | Core calendar-event-card.tsx module | `calendar-event-card` |
 | `components/calendar/calendar-event-editor.tsx` | 527 | 19869 | Core calendar-event-editor.tsx module | `calendar-event-editor` |
 | `components/calendar/calendar-event-pill.tsx` | 108 | 3839 | Core calendar-event-pill.tsx module | `calendar-event-pill` |
 | `components/calendar/calendar-header.tsx` | 339 | 12753 | Core calendar-header.tsx module | `calendar-header` |
@@ -1374,7 +1374,7 @@ Run all tests via: `pnpm test`.
 | `lib/academic/recommender.ts` | 371 | 10017 | Core recommender.ts module | `recommender` |
 | `lib/academic/revision.ts` | 233 | 5895 | Core revision.ts module | `revision` |
 | `lib/academic/scoring.ts` | 1109 | 34124 | Core scoring.ts module | `scoring` |
-| `lib/academic/student-store.ts` | 923 | 31364 | Core student-store.ts module | `student-store` |
+| `lib/academic/student-store.ts` | 926 | 31583 | Core student-store.ts module | `student-store` |
 | `lib/academic/syllabus.ts` | 830 | 25236 | Core syllabus.ts module | `syllabus` |
 | `lib/academic/tests.ts` | 533 | 15269 | Core tests.ts module | `tests` |
 | `lib/academic/types.ts` | 274 | 6033 | Core types.ts module | `types` |
@@ -6548,8 +6548,8 @@ export function generateUniqueSlug(
 ### File: `lib/store.ts`
 
 - **Path**: `lib/store.ts`
-- **Lines**: 1590
-- **Size**: 57996 bytes
+- **Lines**: 1594
+- **Size**: 56575 bytes
 
 ```tsx
 "use client"
@@ -6670,6 +6670,7 @@ interface SquigState {
    *  rather than on the next click */
   placingDrag: boolean
   editingId: string | null
+  quickNoteNodeId: string | null
   contextRow: boolean
   /* --- the look, kept flat so a control can subscribe to just its own knob.
      It belongs to the open document: every setter writes it back to the file,
@@ -6729,6 +6730,7 @@ interface SquigState {
   setPanel: (p: PanelKind) => void
   setPlacing: (kind: string | null, opts?: { drag?: boolean }) => void
   setEditing: (id: string | null) => void
+  setQuickNoteNodeId: (id: string | null) => void
   setContextRow: (on: boolean) => void
   setTheme: (t: ThemeName) => void
   setFont: (f: FontMode) => void
@@ -7127,6 +7129,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   placing: null,
   placingDrag: false,
   editingId: null,
+  quickNoteNodeId: null,
   contextRow: false,
   ...DEFAULT_LOOK,
   showPage: true,
@@ -7230,6 +7233,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   setPanel: (p) => set((st) => ({ panel: st.panel === p ? null : p, placing: null, placingDrag: false })),
   setPlacing: (kind, opts) => set({ placing: kind, placingDrag: kind !== null && opts?.drag === true }),
   setEditing: (id) => set({ editingId: id }),
+  setQuickNoteNodeId: (id) => set({ quickNoteNodeId: id }),
   setContextRow: (on) => {
     set({ contextRow: on })
     scheduleSave(get)
@@ -9997,8 +10001,8 @@ export function editTarget(node: SquigNode): EditTarget | null {
 ### File: `lib/canvas/hit-test.ts`
 
 - **Path**: `lib/canvas/hit-test.ts`
-- **Lines**: 420
-- **Size**: 14250 bytes
+- **Lines**: 421
+- **Size**: 14296 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -10399,7 +10403,7 @@ export function pickHoverTarget(
   return null
 }
 
-function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): boolean {
+function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 6): boolean {
   let px = x
   let py = y
   const rotation = "rotation" in n && typeof (n as { rotation?: number }).rotation === "number" ? (n as { rotation: number }).rotation : 0
@@ -10418,7 +10422,8 @@ function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): b
   const right = Math.max(n.x, n.x + n.w)
   const top = Math.min(n.y, n.y + n.h)
   const bottom = Math.max(n.y, n.y + n.h)
-  return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
+  const effPad = Math.max(pad, 8)
+  return px >= left - effPad && px <= right + effPad && py >= top - effPad && py <= bottom + effPad
 }
 ```
 
@@ -14042,8 +14047,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2389
-- **Size**: 88778 bytes
+- **Lines**: 2432
+- **Size**: 90264 bytes
 
 ```tsx
 "use client"
@@ -14099,6 +14104,7 @@ import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
 import { QuickNoteDialog } from "./quick-note-dialog"
 import { Cloud } from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -14288,7 +14294,19 @@ export function Canvas() {
     return () => window.removeEventListener("resize", updateSize)
   }, [])
 
-  // Global listener to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  // Global listener & store subscription to trigger Quick Note dialog for any node (from Context Menu, Selection Pill, Inspector, etc.)
+  const storeQuickNoteId = useSquig((s) => s.quickNoteNodeId)
+  const setQuickNoteNodeId = useSquig((s) => s.setQuickNoteNodeId)
+
+  useEffect(() => {
+    if (storeQuickNoteId) {
+      const n = nodes[storeQuickNoteId]
+      if (n) setQuickNoteNode(n)
+    } else {
+      setQuickNoteNode(null)
+    }
+  }, [storeQuickNoteId, nodes])
+
   useEffect(() => {
     const handleOpenQuickNote = (e: CustomEvent<string>) => {
       const nodeId = e.detail
@@ -15484,7 +15502,13 @@ export function Canvas() {
         s.setViewerDoc(n as DocumentNode)
         return
       }
-      if (hasEditableText(n)) s.setEditing(hitId)
+      if (hasEditableText(n)) {
+        s.setEditing(hitId)
+      } else {
+        // Double-clicking non-text canvas objects (arrows, doodles, frames, images) opens hover note editor
+        setQuickNoteNode(n)
+        s.setQuickNoteNodeId(hitId)
+      }
     },
     [st, pick, toWorld, isViewer]
   )
@@ -16176,12 +16200,19 @@ export function Canvas() {
       <QuickNoteDialog
         node={quickNoteNode}
         isOpen={Boolean(quickNoteNode)}
-        onClose={() => setQuickNoteNode(null)}
+        onClose={() => {
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
+        }}
         onSave={(nodeId, note) => {
           st().updateNodes({ [nodeId]: { hoverNote: note } })
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
         }}
         onDeleteNote={(nodeId) => {
           st().updateNodes({ [nodeId]: { hoverNote: undefined } })
+          setQuickNoteNode(null)
+          setQuickNoteNodeId(null)
         }}
       />
 
@@ -16369,7 +16400,12 @@ function SelectionOverlay({
 
           {/* Floating Quick Note Pill on selection bounding box */}
           {selectedNodes.length === 1 && !readOnly && onOpenQuickNote && (
-            <div className="pointer-events-auto absolute -top-8 left-1/2 -translate-x-1/2 z-20">
+            <div
+              className={cn(
+                "pointer-events-auto absolute left-1/2 -translate-x-1/2 z-20 transition-all",
+                top > 48 ? "-top-9" : "-bottom-9"
+              )}
+            >
               <button
                 type="button"
                 onClick={(e) => {
@@ -16377,12 +16413,24 @@ function SelectionOverlay({
                   e.preventDefault()
                   onOpenQuickNote(selectedNodes[0])
                 }}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold shadow-md bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-sky-400/50 text-sky-700 dark:text-sky-300 hover:scale-105 active:scale-95 transition-all cursor-pointer whitespace-nowrap select-none"
-                title="Add or edit hover note (Shortcut: H)"
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold select-none cursor-pointer whitespace-nowrap",
+                  "backdrop-blur-2xl transition-all duration-150 transform hover:scale-105 active:scale-95",
+                  "border border-sky-300/70 dark:border-sky-400/50 shadow-lg",
+                  "bg-white/95 dark:bg-slate-900/95 text-sky-800 dark:text-sky-200"
+                )}
+                style={{
+                  boxShadow:
+                    "0 10px 24px -4px rgba(56, 189, 248, 0.35), 0 2px 6px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+                }}
+                title="Add or edit hover note (Shortcut: H or N, or Double Click)"
               >
-                <Cloud size={13} weight="fill" className="text-sky-500 shrink-0" />
+                <Cloud size={14} weight="fill" className="text-sky-500 shrink-0" />
                 <span>
                   {selectedNodes[0].hoverNote?.body?.trim() ? "Edit Note" : "Add Note"}
+                </span>
+                <span className="text-[9px] font-mono opacity-60 ml-0.5 px-1 py-0.2 rounded bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300">
+                  H
                 </span>
               </button>
             </div>
@@ -16441,8 +16489,8 @@ function SelectionOverlay({
 ### File: `components/canvas/context-row.tsx`
 
 - **Path**: `components/canvas/context-row.tsx`
-- **Lines**: 197
-- **Size**: 8197 bytes
+- **Lines**: 215
+- **Size**: 9110 bytes
 
 ```tsx
 "use client"
@@ -16468,6 +16516,7 @@ import { AlignRow } from "@/components/chrome/align-row"
 import { TextAlignMenu, TextStyleToggles } from "@/components/chrome/text-controls"
 import { Segmented, type SegmentOption } from "@/components/ui/segmented"
 import { Panel } from "@/components/ui/panel"
+import { Cloud } from "@phosphor-icons/react"
 
 /** Fill tones, as chips — the same four the inspector offers, drawn smaller. */
 const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = (
@@ -16565,11 +16614,13 @@ export function ContextRow({
       : []
 
   const multi = selectedNodes.length > 1
+  const single = selectedNodes.length === 1 ? selectedNodes[0] : null
   const showFill = shapes.length === selectedNodes.length && shapes.length > 0
   const showHead = arrows.length === selectedNodes.length && arrows.length > 0
   const showText = texts.length === selectedNodes.length && texts.length > 0
+  const showNote = Boolean(single)
 
-  if (!quick.length && !showFill && !showHead && !showText && !multi) return null
+  if (!quick.length && !showFill && !showHead && !showText && !multi && !showNote) return null
 
   const patch = (make: (n: SquigNode) => Partial<SquigNode> | null, checkpoint = true) => {
     const patches: Record<string, Partial<SquigNode>> = {}
@@ -16637,6 +16688,21 @@ export function ContextRow({
             onChange={(on) => patch((n) => (n.type === "arrow" ? ({ head: on } as Partial<SquigNode>) : null))}
           />
         </div>
+      )}
+
+      {showNote && single && (
+        <>
+          {(multi || quick.length > 0 || showFill || showHead || showText) && <span className="h-4 w-px bg-border" />}
+          <button
+            type="button"
+            onClick={() => st().setQuickNoteNodeId(single.id)}
+            className="flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-50 dark:hover:bg-sky-950/60 transition-colors cursor-pointer select-none"
+            title="Add or edit hover note (Shortcut: H)"
+          >
+            <Cloud size={14} weight="fill" className="text-sky-500 shrink-0" />
+            <span>{single.hoverNote?.body?.trim() ? "Note" : "Add Note"}</span>
+          </button>
+        </>
       )}
     </Panel>
   )
@@ -19710,8 +19776,8 @@ export function PerfHud({
 ### File: `components/canvas/quick-note-dialog.tsx`
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
-- **Lines**: 249
-- **Size**: 9796 bytes
+- **Lines**: 282
+- **Size**: 11198 bytes
 
 ```tsx
 "use client"
@@ -19744,6 +19810,13 @@ const NOTE_TEMPLATES = [
   { label: "Next Step", text: "Next action: " },
 ]
 
+const THEME_OPTIONS = [
+  { id: "clouds", label: "Clouds ☁️" },
+  { id: "macos", label: "macOS 🍏" },
+  { id: "ios", label: "iOS Glass 📱" },
+  { id: "minimalist", label: "Clean 📄" },
+]
+
 export function QuickNoteDialog({
   node,
   isOpen,
@@ -19754,6 +19827,7 @@ export function QuickNoteDialog({
   const [mounted, setMounted] = useState(false)
   const [title, setTitle] = useState("")
   const [body, setBody] = useState("")
+  const [theme, setTheme] = useState("clouds")
   const bodyInputRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
@@ -19765,6 +19839,7 @@ export function QuickNoteDialog({
     const existing = node.hoverNote
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
+    setTheme(existing?.theme || "clouds")
 
     const t = setTimeout(() => {
       bodyInputRef.current?.focus()
@@ -19796,7 +19871,7 @@ export function QuickNoteDialog({
       title: trimmedTitle || undefined,
       body: trimmedBody,
       enabled: true,
-      theme: "clouds",
+      theme,
       createdAt: node.hoverNote?.createdAt || new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     }
@@ -19901,6 +19976,30 @@ export function QuickNoteDialog({
             />
           </div>
 
+          {/* Visual Theme Selector */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+              Hover Card Aesthetic
+            </label>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {THEME_OPTIONS.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setTheme(t.id)}
+                  className={cn(
+                    "px-2.5 py-1 rounded-xl text-xs font-semibold transition-all cursor-pointer border select-none",
+                    theme === t.id
+                      ? "bg-gradient-to-r from-sky-500 to-indigo-600 text-white border-sky-400/40 shadow-xs scale-102"
+                      : "bg-slate-100/80 hover:bg-slate-200/80 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 text-slate-700 dark:text-slate-300 border-transparent"
+                  )}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Quick template starters */}
           <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium mr-0.5">Quick add:</span>
@@ -19969,8 +20068,8 @@ export function QuickNoteDialog({
 ### File: `components/canvas/smart-hover-note.tsx`
 
 - **Path**: `components/canvas/smart-hover-note.tsx`
-- **Lines**: 289
-- **Size**: 9606 bytes
+- **Lines**: 363
+- **Size**: 12498 bytes
 
 ```tsx
 "use client"
@@ -20177,43 +20276,112 @@ export function SmartHoverCardContent({
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
+  const theme = note.theme || "clouds"
+
+  // Theme-specific visual tokens
+  const isClouds = theme === "clouds"
+  const isMac = theme === "macos"
+  const isIos = theme === "ios"
+  const isMinimal = theme === "minimalist"
 
   return (
     <div
       className={cn(
-        "rounded-3xl border border-sky-200/60 dark:border-sky-500/40 font-sans overflow-hidden",
-        "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)] transition-all",
-        "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
+        "rounded-3xl font-sans overflow-hidden transition-all",
+        isClouds && [
+          "border border-sky-200/70 dark:border-sky-500/40",
+          "bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl text-[var(--sq-ink)]",
+          "shadow-2xl ring-1 ring-sky-400/20 dark:ring-sky-400/10",
+        ],
+        isMac && [
+          "border border-black/10 dark:border-white/15",
+          "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
+          "shadow-2xl ring-1 ring-black/5 dark:ring-white/10",
+        ],
+        isIos && [
+          "border border-white/20",
+          "bg-stone-950/92 backdrop-blur-3xl text-white",
+          "shadow-2xl ring-1 ring-white/15",
+        ],
+        isMinimal && [
+          "border border-stone-300 dark:border-stone-700",
+          "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100",
+          "shadow-xl",
+        ],
         className
       )}
       style={{
-        boxShadow:
-          "0 20px 48px -10px rgba(56, 189, 248, 0.32), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.7)",
+        boxShadow: isClouds
+          ? "0 22px 50px -10px rgba(56, 189, 248, 0.35), 0 8px 24px -4px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.8)"
+          : isIos
+          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+          : isMac
+          ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
+          : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
       }}
     >
-      {/* Top dreamy celestial cloud accent gradient */}
-      <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
+      {/* Top Accent Gradient Bar */}
+      {isClouds && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-indigo-300 to-purple-400 opacity-90" />
+      )}
+      {isMac && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
+      )}
+      {isIos && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 opacity-95" />
+      )}
 
       <div className="p-3.5 sm:p-4 space-y-2.5">
-        {/* Header row: Cloud icon + Title / Annotation + Node Type Badge */}
+        {/* Header row: Cloud/Theme icon + Title / Annotation + Node Type Badge */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span className="p-1.5 rounded-xl bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 shrink-0 border border-sky-400/25 shadow-xs flex items-center justify-center">
-              <Cloud size={15} weight="fill" />
+            <span
+              className={cn(
+                "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
+                isClouds && "bg-sky-500/15 dark:bg-sky-400/20 text-sky-600 dark:text-sky-300 border-sky-400/25",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700"
+              )}
+            >
+              {isClouds ? (
+                <Cloud size={15} weight="fill" />
+              ) : isMac ? (
+                <Sparkle size={15} weight="fill" />
+              ) : isIos ? (
+                <ChatCenteredText size={15} weight="fill" />
+              ) : (
+                <Tag size={15} weight="bold" />
+              )}
             </span>
+
             {hasTitle ? (
-              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 truncate leading-snug">
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug">
                 {note.title!.trim()}
               </h4>
             ) : (
-              <span className="text-[11px] font-semibold text-sky-800 dark:text-sky-200 uppercase tracking-wider flex items-center gap-1">
+              <span
+                className={cn(
+                  "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
+                  isClouds && "text-sky-800 dark:text-sky-200",
+                  isIos && "text-cyan-200"
+                )}
+              >
                 Note
               </span>
             )}
           </div>
 
           {nodeTypeLabel && (
-            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-200/60 dark:border-sky-800/60 shadow-2xs shrink-0">
+            <span
+              className={cn(
+                "text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0",
+                isClouds && "bg-sky-100/70 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200/60 dark:border-sky-800/60",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isIos && "bg-white/10 text-cyan-200 border-white/15",
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700"
+              )}
+            >
               {nodeTypeLabel}
             </span>
           )}
@@ -20221,7 +20389,12 @@ export function SmartHoverCardContent({
 
         {/* Note Body */}
         {hasBody && (
-          <div className="text-xs leading-relaxed text-slate-700 dark:text-slate-200 whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1">
+          <div
+            className={cn(
+              "text-xs leading-relaxed whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1",
+              isIos ? "text-stone-200" : "text-slate-700 dark:text-slate-200"
+            )}
+          >
             {note.body.trim()}
           </div>
         )}
@@ -24975,8 +25148,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 347
-- **Size**: 13263 bytes
+- **Lines**: 351
+- **Size**: 13415 bytes
 
 ```tsx
 "use client"
@@ -25151,6 +25324,15 @@ export function CanvasContextMenu() {
         ? one.hoverNote
           ? [
               {
+                label: "Edit Hover Note…",
+                hint: "H",
+                icon: ChatCenteredText,
+                run: () => {
+                  st().setSelection([one.id])
+                  st().setQuickNoteNodeId(one.id)
+                },
+              } as Entry,
+              {
                 label: one.hoverNote.enabled !== false ? "Disable Hover Note" : "Enable Hover Note",
                 icon: ChatCenteredText,
                 run: () => {
@@ -25176,16 +25358,11 @@ export function CanvasContextMenu() {
           : [
               {
                 label: "Add Hover Note…",
+                hint: "H",
                 icon: ChatCenteredText,
                 run: () => {
                   st().setSelection([one.id])
-                  st().updateNode(one.id, {
-                    hoverNote: {
-                      enabled: true,
-                      title: "",
-                      body: "",
-                    },
-                  })
+                  st().setQuickNoteNodeId(one.id)
                 },
               } as Entry,
             ]
@@ -63488,8 +63665,8 @@ export function CalendarDayView({
 ### File: `components/calendar/calendar-event-card.tsx`
 
 - **Path**: `components/calendar/calendar-event-card.tsx`
-- **Lines**: 318
-- **Size**: 11308 bytes
+- **Lines**: 324
+- **Size**: 11599 bytes
 
 ```tsx
 "use client"
@@ -63544,10 +63721,15 @@ export function CalendarEventCard({
   onDelete,
 }: CalendarEventCardProps) {
   const [mounted, setMounted] = useState(false)
+  const [optimisticStatus, setOptimisticStatus] = useState<"pending" | "completed" | null>(null)
 
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    setOptimisticStatus(null)
+  }, [event?.id, event?.status])
 
   // Native macOS shortcut: Delete or Backspace removes event immediately
   useEffect(() => {
@@ -63567,7 +63749,7 @@ export function CalendarEventCard({
 
   if (!isOpen || !event || !mounted || typeof document === "undefined") return null
 
-  const isCompleted = event.status === "completed"
+  const isCompleted = (optimisticStatus ?? event.status) === "completed"
   const colorPreset = CALENDAR_COLORS.find((c) => c.id === event.color) || CALENDAR_COLORS[0]
 
   // Formatted date string
@@ -63729,10 +63911,11 @@ export function CalendarEventCard({
               onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault()
+                setOptimisticStatus(isCompleted ? "pending" : "completed")
                 onToggleComplete(event.id)
               }}
               className={cn(
-                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer",
+                "px-2.5 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer",
                 isCompleted
                   ? "bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:bg-emerald-950 dark:text-emerald-300"
                   : "hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
@@ -74047,8 +74230,8 @@ export function computeGapAnalysis(
 ### File: `lib/academic/student-store.ts`
 
 - **Path**: `lib/academic/student-store.ts`
-- **Lines**: 923
-- **Size**: 31364 bytes
+- **Lines**: 926
+- **Size**: 31583 bytes
 
 ```tsx
 "use client"
@@ -74824,19 +75007,21 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     updateActivity: (id, updates) => {
+      const base = id ? id.replace(/_rec_.*$/, "") : id
       set((state) => ({
         activities: state.activities.map((a) =>
-          a.id === id ? { ...a, ...updates, updatedAt: new Date().toISOString() } : a
+          a.id === id || a.id === base ? { ...a, ...updates, updatedAt: new Date().toISOString() } : a
         ),
       }))
       persistState(get())
     },
 
     toggleActivityComplete: (id) => {
+      const base = id ? id.replace(/_rec_.*$/, "") : id
       const today = getFormattedDate(0)
       set((state) => ({
         activities: state.activities.map((a) => {
-          if (a.id !== id) return a
+          if (a.id !== id && a.id !== base) return a
           const nextStatus = a.status === "completed" ? "pending" : "completed"
           return {
             ...a,
@@ -74850,7 +75035,8 @@ export const useStudentStore = create<StudentState>((set, get) => {
     },
 
     deleteActivity: (id) => {
-      const nextActs = get().activities.filter((a) => a.id !== id)
+      const base = id ? id.replace(/_rec_.*$/, "") : id
+      const nextActs = get().activities.filter((a) => a.id !== id && a.id !== base)
       set({ activities: nextActs, hasClearedInitialActivities: true })
       persistState(get())
     },

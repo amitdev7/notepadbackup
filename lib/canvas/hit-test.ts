@@ -396,7 +396,7 @@ export function pickHoverTarget(
   return null
 }
 
-function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): boolean {
+function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 6): boolean {
   let px = x
   let py = y
   const rotation = "rotation" in n && typeof (n as { rotation?: number }).rotation === "number" ? (n as { rotation: number }).rotation : 0
@@ -415,5 +415,6 @@ function pointInNodeBoundingArea(n: SquigNode, x: number, y: number, pad = 4): b
   const right = Math.max(n.x, n.x + n.w)
   const top = Math.min(n.y, n.y + n.h)
   const bottom = Math.max(n.y, n.y + n.h)
-  return px >= left - pad && px <= right + pad && py >= top - pad && py <= bottom + pad
+  const effPad = Math.max(pad, 8)
+  return px >= left - effPad && px <= right + effPad && py >= top - effPad && py <= bottom + effPad
 }
