@@ -357,8 +357,6 @@ export function validateSecureNode(v: unknown): SquigNode | null {
           enabled: candidate.enabled,
           title: typeof candidate.title === "string" ? candidate.title.slice(0, 120) : undefined,
           body: candidate.body.slice(0, 2500),
-          theme: typeof candidate.theme === "string" ? candidate.theme.slice(0, 30) : undefined,
-          cloudStyle: typeof candidate.cloudStyle === "string" ? candidate.cloudStyle.slice(0, 30) : undefined,
         }
       }
     }

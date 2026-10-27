@@ -52,10 +52,6 @@ export interface HoverNote {
   enabled: boolean
   title?: string
   body: string
-  theme?: string
-  cloudStyle?: string
-  createdAt?: string
-  updatedAt?: string
 }
 
 export interface BaseNode {
