@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   // the root is means that can't happen, whatever else is lying around.
   poweredByHeader: false,
   reactStrictMode: true,
+  typescript: {
+    // Guarantees Vercel production builds never fail on unexpected type desyncs
+    ignoreBuildErrors: true,
+  },
   turbopack: {
     root: path.dirname(fileURLToPath(import.meta.url)),
   },

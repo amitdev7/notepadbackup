@@ -1206,7 +1206,7 @@ Run all tests via: `pnpm test`.
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17783 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
 | `components/canvas/perf-hud.tsx` | 237 | 9697 | Core perf-hud.tsx module | `perf-hud` |
-| `components/canvas/quick-note-dialog.tsx` | 282 | 11214 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
+| `components/canvas/quick-note-dialog.tsx` | 282 | 11275 | Core quick-note-dialog.tsx module | `quick-note-dialog` |
 | `components/canvas/smart-hover-note.tsx` | 705 | 24593 | Core smart-hover-note.tsx module | `smart-hover-note` |
 | `components/canvas/text-edit-overlay.tsx` | 217 | 8660 | Core text-edit-overlay.tsx module | `text-edit-overlay` |
 | `components/canvas/tool-properties-panel.tsx` | 668 | 28895 | Core tool-properties-panel.tsx module | `tool-properties-panel` |
@@ -19830,7 +19830,7 @@ export function PerfHud({
 
 - **Path**: `components/canvas/quick-note-dialog.tsx`
 - **Lines**: 282
-- **Size**: 11214 bytes
+- **Size**: 11275 bytes
 
 ```tsx
 "use client"
@@ -19889,7 +19889,7 @@ export function QuickNoteDialog({
 
   useEffect(() => {
     if (!isOpen || !node) return
-    const existing = node.hoverNote as any
+    const existing = node.hoverNote as (HoverNote & { theme?: string; createdAt?: string }) | undefined
     setTitle(existing?.title || "")
     setBody(existing?.body || "")
     setTheme(existing?.theme || "clouds")
