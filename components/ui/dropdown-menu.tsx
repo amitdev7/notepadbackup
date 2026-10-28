@@ -7,15 +7,14 @@ import { cn } from "@/lib/utils"
 import { CaretRightIcon } from "@phosphor-icons/react"
 
 const POPUP =
-  "min-w-52 origin-(--transform-origin) rounded-chrome-lg bg-popover p-1.5 text-popover-foreground shadow-popup ring-1 ring-foreground/10 outline-none transition-[transform,opacity] duration-100 data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0"
+  "min-w-52 origin-(--transform-origin) rounded-2xl apple-glass-panel p-1.5 text-stone-900 dark:text-stone-100 shadow-2xl ring-1 ring-black/5 dark:ring-white/10 outline-none transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 font-sans"
 
 /**
- * A menu row is a place to land, not a line of text — it gets a real height and
- * real side padding, and the highlight is a soft pill inset from the popup edge
- * rather than a full-bleed band.
+ * A menu row in Apple macOS style:
+ * Comfortable hit target, rounded squircle hover highlight, crisp typography.
  */
 const ITEM =
-  "relative flex h-ctl-lg cursor-default items-center gap-2.5 rounded-chrome-sm px-2.5 text-row outline-none select-none data-highlighted:bg-accent data-highlighted:text-accent-foreground data-disabled:pointer-events-none data-disabled:opacity-50"
+  "relative flex h-8 cursor-pointer items-center gap-2 rounded-xl px-2.5 text-xs font-medium outline-none select-none transition-colors duration-100 data-highlighted:bg-[#007AFF] data-highlighted:text-white data-disabled:pointer-events-none data-disabled:opacity-40"
 
 function DropdownMenu(props: React.ComponentProps<typeof Menu.Root>) {
   return <Menu.Root data-slot="dropdown-menu" {...props} />

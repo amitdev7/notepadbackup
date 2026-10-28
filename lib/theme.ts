@@ -37,6 +37,18 @@ export interface Palette {
 }
 
 export const THEMES = {
+  apple: {
+    label: "Apple Cupertino",
+    bg: "#F5F5F7",
+    paper: "#FFFFFF",
+    ink: "#1D1D1F",
+    muted: "#86868B",
+    faint: "#D2D2D7",
+    shade: "#E8E8ED",
+    shadeStrong: "#D2D2D7",
+    grid: "#E5E5EA",
+    select: "#007AFF",
+  },
   "internet-blue": {
     label: "Internet blue",
     bg: "#FBFAF5",

@@ -7,30 +7,30 @@ import { useRender } from "@base-ui/react/use-render"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center font-sans rounded-chrome-sm border border-transparent bg-clip-padding text-row font-medium whitespace-nowrap transition-all outline-none select-none cursor-pointer focus-visible:border-[var(--sq-ink)] focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/25 active:not-aria-[haspopup]:translate-y-px active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center font-sans rounded-xl border border-transparent bg-clip-padding text-xs font-semibold whitespace-nowrap transition-all duration-150 outline-none select-none cursor-pointer focus-visible:ring-2 focus-visible:ring-blue-500/50 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
+        default: "bg-[#007AFF] hover:bg-[#0071E3] active:bg-[#0062C4] text-white shadow-xs font-semibold",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-stone-200/80 dark:border-white/10 bg-white/70 dark:bg-stone-800/70 hover:bg-stone-100 dark:hover:bg-stone-700/80 text-stone-800 dark:text-stone-100 backdrop-blur-md shadow-2xs",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-stone-100/90 dark:bg-stone-800/80 text-stone-800 dark:text-stone-100 hover:bg-stone-200/80 dark:hover:bg-stone-700/80 border border-stone-200/40 dark:border-white/5",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "text-stone-700 dark:text-stone-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-white",
         destructive:
-          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-[#FF3B30]/12 text-[#FF3B30] hover:bg-[#FF3B30]/20 active:bg-[#FF3B30]/30 border border-[#FF3B30]/20 font-semibold",
+        link: "text-[#007AFF] underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-ctl gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        xs: "h-ctl-sm gap-1 px-2 text-label has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3",
-        sm: "h-ctl gap-1 px-2.5 text-label has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&_svg:not([class*='size-'])]:size-3.5",
-        lg: "h-ctl-lg gap-1.5 px-3 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2",
-        icon: "size-ctl",
-        "icon-xs": "size-ctl-sm [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-ctl",
-        "icon-lg": "size-ctl-lg",
+        default: "h-8 gap-1.5 px-3",
+        xs: "h-6 gap-1 px-2 text-[11px] [&_svg:not([class*='size-'])]:size-3",
+        sm: "h-7 gap-1 px-2.5 text-xs [&_svg:not([class*='size-'])]:size-3.5",
+        lg: "h-9 gap-2 px-4 text-sm [&_svg:not([class*='size-'])]:size-4.5",
+        icon: "size-8",
+        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "size-7 [&_svg:not([class*='size-'])]:size-3.5",
+        "icon-lg": "size-9 [&_svg:not([class*='size-'])]:size-4.5",
       },
     },
     defaultVariants: {

@@ -29,18 +29,19 @@ import type { Shared } from "@/lib/selection"
  * tint rather than a fill, because a row of four saturated segments would
  * out-shout the wireframe they're describing.
  */
-const PRESSED = "bg-[var(--sq-ink)]/12 text-[var(--sq-ink)] ring-1 ring-inset ring-[var(--sq-ink)]/25"
-const UNPRESSED = "text-muted-foreground hover:bg-accent hover:text-foreground"
+const PRESSED =
+  "bg-white dark:bg-[#3a3a3c] text-stone-900 dark:text-white shadow-[0_1px_3px_rgba(0,0,0,0.1),0_1px_2px_rgba(0,0,0,0.06)] font-semibold"
+const UNPRESSED = "text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200"
 
 const SEGMENT =
-  "flex h-ctl-sm min-w-0 flex-1 items-center justify-center gap-1 rounded-chrome-xs px-1.5 text-label transition-colors outline-none select-none focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/40 disabled:pointer-events-none disabled:opacity-40"
+  "flex h-7 min-w-0 flex-1 items-center justify-center gap-1 rounded-lg px-2 text-xs transition-all duration-150 outline-none select-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:pointer-events-none disabled:opacity-40 active:scale-[0.98]"
 
 /** The sunken rail segments sit in. Shared so every track is the same track. */
-const TRACK = "flex w-full min-w-0 items-center gap-0.5 rounded-chrome-md border bg-muted/40 p-[3px]"
+const TRACK = "flex w-full min-w-0 items-center gap-0.5 rounded-xl bg-stone-200/60 dark:bg-stone-800/60 p-1 border border-stone-200/40 dark:border-white/5"
 
 /** A standalone toggle's own metrics — a square you press, with no rail. */
 const ICON_TOGGLE =
-  "flex size-ctl shrink-0 items-center justify-center rounded-chrome-sm text-label transition-colors outline-none focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/40 disabled:pointer-events-none disabled:opacity-35"
+  "flex size-8 shrink-0 items-center justify-center rounded-xl text-xs transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 disabled:pointer-events-none disabled:opacity-35 hover:bg-stone-100 dark:hover:bg-stone-800 active:scale-[0.94]"
 
 export interface SegmentOption<T extends string> {
   value: T

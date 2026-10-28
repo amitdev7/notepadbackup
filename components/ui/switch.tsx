@@ -17,14 +17,13 @@ function Switch({
       data-slot="switch"
       data-size={size}
       className={cn(
-        "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent bg-input transition-colors outline-none",
-        // a switch is a small target; let the press land a little outside it
+        "peer group/switch relative inline-flex shrink-0 items-center rounded-full border border-transparent transition-colors duration-200 outline-none cursor-pointer",
+        "bg-[#e9e9ea] dark:bg-[#39393d]",
         "after:absolute after:-inset-x-3 after:-inset-y-2",
-        "focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/40",
-        // on = the live theme's ink, so the chrome moves with the drawing
-        "data-checked:bg-[var(--sq-ink)]",
+        "focus-visible:ring-2 focus-visible:ring-blue-500/50",
+        "data-checked:bg-[#34c759]",
         "data-disabled:cursor-not-allowed data-disabled:opacity-50",
-        "data-[size=default]:h-[18.4px] data-[size=default]:w-[32px] data-[size=sm]:h-[14px] data-[size=sm]:w-[24px]",
+        "data-[size=default]:h-[22px] data-[size=default]:w-[38px] data-[size=sm]:h-[16px] data-[size=sm]:w-[28px]",
         className
       )}
       {...props}
@@ -32,9 +31,9 @@ function Switch({
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "pointer-events-none block rounded-full bg-background shadow-sm ring-0 transition-transform",
-          "group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3",
-          "data-unchecked:translate-x-0 data-checked:translate-x-[calc(100%-2px)]"
+          "pointer-events-none block rounded-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.2),0_0_1px_rgba(0,0,0,0.1)] ring-0 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)]",
+          "group-data-[size=default]/switch:size-[18px] group-data-[size=sm]/switch:size-[12px]",
+          "data-unchecked:translate-x-[2px] data-checked:translate-x-[18px] group-data-[size=sm]/switch:data-checked:translate-x-[14px]"
         )}
       />
     </SwitchPrimitive.Root>

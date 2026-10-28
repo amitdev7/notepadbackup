@@ -31,8 +31,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: "Cascadia", var(--font-geist-mono);
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", var(--font-sans), system-ui, sans-serif;
+  --font-mono: "SF Mono", Menlo, Monaco, "Cascadia", var(--font-geist-mono), monospace;
   --font-heading: var(--font-sans);
   --font-sketch: "Virgil", var(--font-sketch), "Patrick Hand", "Comic Sans MS", cursive;
   --font-serif: var(--font-serif), "Source Serif 4", ui-serif, Georgia, serif;
@@ -84,51 +84,41 @@
    `rounded-lg`s, four heights and six type sizes, none of them agreeing.
    --------------------------------------------------------------------------- */
 @theme {
-  /* Radius. Crisp rather than pill — the controls shouldn't be rounder than
-     the boxes people draw with them. Each step is the radius of the thing that
-     CONTAINS the step below it, so a segment nests inside a track cleanly. */
-  --radius-chrome-xs: 3px;
+  /* Apple HIG squircle radius scale */
+  --radius-chrome-xs: 6px;
   /* a segment inside a track */
-  --radius-chrome-sm: 5px;
+  --radius-chrome-sm: 8px;
   /* fields, toggles, buttons, menu rows */
-  --radius-chrome-md: 7px;
+  --radius-chrome-md: 12px;
   /* tracks, select popups */
-  --radius-chrome-lg: 10px;
+  --radius-chrome-lg: 16px;
   /* floating panels and menus */
+  --radius-chrome-xl: 20px;
+  /* dialogs and sheets */
 
-  /* Control height. `sm` is only for controls nested inside another control. */
-  --spacing-ctl-sm: 26px;
+  /* Control height. Apple HIG standard targets (28pt/32pt/36pt) */
+  --spacing-ctl-sm: 28px;
   --spacing-ctl: 32px;
-  --spacing-ctl-lg: 36px;
+  --spacing-ctl-lg: 38px;
 
-  /* Chrome type. Four sizes and that is the whole scale: a hint, a
-     label-or-value, a row of running text, a dialog heading. Canvas text is a
-     separate world — it uses --sq-font and is not governed here. The wordmark
-     is deliberately outside it too; it is brand, not a control.
-
-     These read a step larger than the numbers suggest, because Geist has a
-     tall x-height — 11px here sits where 12px would in most faces. Judge the
-     panel by eye rather than by the number, and if you retune one of these,
-     retune it against the others rather than nudging a component. */
+  /* Chrome type. Apple SF Pro scale */
   --text-micro: 10px;
-  /* kbd chips, counts, the axis letter in a field */
-  --text-label: 11px;
-  /* panel labels, values, panel copy */
+  /* kbd chips, counts, axis letters */
+  --text-label: 11.5px;
+  /* panel labels, values, secondary copy */
   --text-row: 13px;
-  /* menu rows, palette rows, a panel's own title */
+  /* menu rows, palette rows, section titles */
   --text-title: 15px;
-  /* dialog headings and the ⌘K hero input */
+  /* dialog headings and command hero input */
 
-  /* Layout rhythm. The panel gutter, the gap between rows, and the seam every
-     label stops at so controls line up down one edge. */
+  /* Layout rhythm */
   --spacing-gutter: 14px;
   --spacing-row: 10px;
-  --spacing-label: 60px;
+  --spacing-label: 64px;
 
-  /* Depth. Two elevations only: a panel resting on the canvas, and a popup
-     floating over a panel. */
-  --shadow-panel: 0 1px 2px rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(0 0 0 / 0.12);
-  --shadow-popup: 0 1px 2px rgb(0 0 0 / 0.04), 0 10px 32px -8px rgb(0 0 0 / 0.18);
+  /* Apple Liquid Glass Elevations */
+  --shadow-panel: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 8px 32px -4px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.04);
+  --shadow-popup: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 16px 44px -8px rgba(0, 0, 0, 0.18), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* zenithsui canvas theme — overwritten at runtime by lib/theme.ts.
@@ -214,9 +204,9 @@
   --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  /* Elevation for dark mode */
-  --shadow-panel: 0 1px 3px rgb(0 0 0 / 0.5), 0 10px 30px -5px rgb(0 0 0 / 0.7);
-  --shadow-popup: 0 1px 3px rgb(0 0 0 / 0.5), 0 16px 40px -5px rgb(0 0 0 / 0.8);
+  /* Apple Liquid Glass elevation for dark mode */
+  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.10), 0 16px 40px -6px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.45);
+  --shadow-popup: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 24px 56px -10px rgba(0, 0, 0, 0.8), 0 6px 18px rgba(0, 0, 0, 0.5);
   color-scheme: dark;
 }
 
@@ -543,37 +533,37 @@
   transform: scale(0.94);
 }
 
-/* ── Apple Glass & Translucent Material Surfaces (macOS Sequoia / iOS 26) ── */
+/* ── Apple Liquid Glass & Material Surfaces (HIG Compliant) ── */
 .apple-glass-pill {
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.12), 0 2px 8px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
 }
 
 .dark .apple-glass-pill {
-  background: rgba(24, 24, 28, 0.82);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  background: rgba(26, 26, 30, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.6), 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 14px 36px -6px rgba(0, 0, 0, 0.7), 0 2px 10px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
 }
 
 .apple-glass-panel {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.14), 0 4px 16px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.14), 0 4px 16px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
 }
 
 .dark .apple-glass-panel {
-  background: rgba(22, 22, 26, 0.92);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  background: rgba(24, 24, 28, 0.88);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.7), 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 56px -12px rgba(0, 0, 0, 0.75), 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
 }
 
 /* ── macOS Dock Magnification Engine ── */
@@ -591,8 +581,8 @@
   width: 4px;
   height: 4px;
   border-radius: 9999px;
-  background-color: var(--color-primary, #2563eb);
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.7), 0 0 2px rgba(255, 255, 255, 0.6);
+  background-color: #007AFF;
+  box-shadow: 0 0 8px rgba(0, 122, 255, 0.85), 0 0 2px rgba(255, 255, 255, 0.8);
 }
 
 /* ── Accessibility & Reduced Motion Support ── */

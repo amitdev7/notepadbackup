@@ -156,8 +156,8 @@ function MagnifiedDockItem({
               "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
               "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
               active
-                ? "bg-gradient-to-b from-blue-500/15 to-blue-600/25 text-blue-600 dark:text-blue-400 font-semibold shadow-xs border border-blue-400/30 dark:border-blue-500/30"
-                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-200/50 dark:hover:bg-stone-800/60 border border-transparent",
+                ? "bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-semibold shadow-xs border border-[#007AFF]/30"
+                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent",
               className
             )}
           >
@@ -171,7 +171,7 @@ function MagnifiedDockItem({
       <TooltipContent
         side="top"
         sideOffset={10}
-        className="px-2 py-1 text-xs font-sans rounded-lg shadow-lg border border-stone-200/60 dark:border-white/10 bg-stone-900/90 dark:bg-stone-900/95 text-white backdrop-blur-md z-50 pointer-events-none"
+        className="px-2.5 py-1 text-xs font-sans rounded-xl shadow-2xl border border-white/10 bg-[#1d1d1f]/95 text-white backdrop-blur-xl z-50 pointer-events-none"
       >
         <span className="font-medium">{title}</span>
         {shortcut && (

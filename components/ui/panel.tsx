@@ -37,7 +37,7 @@ export function Panel({
     <div
       data-zenithsui-chrome
       className={cn(
-        "flex flex-col overflow-hidden rounded-2xl border border-black/8 dark:border-white/10 bg-white/90 dark:bg-stone-900/90 backdrop-blur-2xl shadow-2xl ring-1 ring-black/5 dark:ring-white/5 transition-all duration-200",
+        "flex flex-col overflow-hidden rounded-2xl apple-glass-panel transition-all duration-200 select-none",
         className
       )}
       // a press on chrome is never a press on the canvas
@@ -64,22 +64,22 @@ export function PanelHeader({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-between gap-2 border-b border-border/70 px-gutter py-3",
+        "flex shrink-0 items-center justify-between gap-2 border-b border-black/[0.06] dark:border-white/[0.08] px-gutter py-2.5",
         className
       )}
     >
       <div className="min-w-0">
-        <h2 className="truncate text-row leading-tight font-medium">{title}</h2>
-        {subtitle && <p className="mt-1 truncate text-label leading-tight text-muted-foreground">{subtitle}</p>}
+        <h2 className="truncate text-row leading-tight font-semibold tracking-tight text-stone-900 dark:text-stone-100">{title}</h2>
+        {subtitle && <p className="mt-0.5 truncate text-[11px] leading-tight text-stone-500 dark:text-stone-400 font-normal">{subtitle}</p>}
       </div>
-      {right && <div className="flex shrink-0 items-center gap-0.5">{right}</div>}
+      {right && <div className="flex shrink-0 items-center gap-1">{right}</div>}
     </div>
   )
 }
 
 export function PanelFooter({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <div className={cn("flex shrink-0 items-center gap-2 border-t border-border/70 p-3", className)}>{children}</div>
+    <div className={cn("flex shrink-0 items-center gap-2 border-t border-black/[0.06] dark:border-white/[0.08] p-3", className)}>{children}</div>
   )
 }
 
@@ -143,19 +143,19 @@ export function PanelSection({
     <Collapsible.Root
       open={open}
       onOpenChange={() => toggleSection(id)}
-      className={cn("border-b border-border/60 last:border-b-0", className)}
+      className={cn("border-b border-black/[0.05] dark:border-white/[0.06] last:border-b-0", className)}
     >
       <div className="flex items-center gap-1 pr-3">
         {/* The title carries real weight and sits in the foreground colour, so
             the eye lands on "Fill" before it lands on "Tone". A panel where the
             headings are as quiet as the labels has no hierarchy at all — it
             just has rows. */}
-        <Collapsible.Trigger className="group flex min-w-0 flex-1 items-center gap-1.5 px-gutter pt-gutter pb-2 text-left outline-none">
-          <span className="truncate text-label font-medium text-foreground">{title}</span>
-          {count !== undefined && <span className="text-micro text-muted-foreground tabular-nums">({count})</span>}
+        <Collapsible.Trigger className="group flex min-w-0 flex-1 items-center gap-1.5 px-gutter pt-gutter pb-2 text-left outline-none cursor-pointer">
+          <span className="truncate text-[12px] font-semibold text-stone-700 dark:text-stone-200 tracking-tight">{title}</span>
+          {count !== undefined && <span className="text-micro text-stone-400 dark:text-stone-500 tabular-nums">({count})</span>}
           <CaretRightIcon
             weight="bold"
-            className="ml-auto size-2.5 shrink-0 text-muted-foreground/60 transition-transform duration-150 group-data-[open]:rotate-90"
+            className="ml-auto size-2.5 shrink-0 text-stone-400 dark:text-stone-500 transition-transform duration-200 ease-out group-data-[open]:rotate-90"
           />
         </Collapsible.Trigger>
         {right}
@@ -163,7 +163,7 @@ export function PanelSection({
       {/* Base UI measures the panel and publishes its height as a custom
           property; the transition is ours to write. overflow-hidden matters —
           without it the rows spill out of the box while it collapses. */}
-      <Collapsible.Panel className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-150 ease-[cubic-bezier(0.32,0.72,0,1)] data-starting-style:h-0 data-ending-style:h-0">
+      <Collapsible.Panel className="h-(--collapsible-panel-height) overflow-hidden transition-[height] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] data-starting-style:h-0 data-ending-style:h-0">
         <div className="flex flex-col gap-row px-gutter pt-0.5 pb-4">{children}</div>
       </Collapsible.Panel>
     </Collapsible.Root>

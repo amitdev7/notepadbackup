@@ -176,7 +176,7 @@ export function FilesPopover() {
             <button
               type="button"
               onClick={handleCreateNew}
-              className="tactile-btn flex items-center gap-1 px-2.5 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-medium text-[11px] shadow-xs cursor-pointer"
+              className="tactile-btn flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#007AFF] hover:bg-[#0071E3] active:bg-[#0062C4] text-white font-semibold text-xs shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
               <span>New Canvas</span>
@@ -192,7 +192,7 @@ export function FilesPopover() {
                 value={fileSearch}
                 onChange={(e) => setFileSearch(e.target.value)}
                 placeholder="Search canvases…"
-                className="w-full pl-7 pr-6 py-1 rounded-lg text-xs bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+                className="w-full pl-7 pr-6 py-1.5 rounded-xl text-xs bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#007AFF]/40"
               />
               {fileSearch && (
                 <button
@@ -224,13 +224,13 @@ export function FilesPopover() {
                     className={cn(
                       "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer select-none transition-all duration-150 hover:translate-x-0.5",
                       isCurrent
-                        ? "bg-blue-50 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 shadow-2xs font-semibold"
+                        ? "bg-[#007AFF]/12 dark:bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] shadow-2xs font-semibold"
                         : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-800 dark:text-stone-200"
                     )}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {isCurrent ? (
-                        <Check size={13} weight="bold" className="text-blue-600 dark:text-blue-400 shrink-0" />
+                        <Check size={13} weight="bold" className="text-[#007AFF] dark:text-[#0A84FF] shrink-0" />
                       ) : (
                         <div className="size-1.5 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0 ml-1" />
                       )}

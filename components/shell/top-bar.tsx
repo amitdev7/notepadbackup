@@ -83,13 +83,13 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-white/80 dark:bg-black/50 backdrop-blur-md ring-2 ring-blue-500/50 border border-blue-400/60 rounded-lg px-2 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
+            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-white/90 dark:bg-black/60 backdrop-blur-md ring-2 ring-[#007AFF]/50 border border-[#007AFF]/60 rounded-xl px-2.5 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingTitle(true)}
-            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white transition-colors truncate cursor-pointer outline-none"
+            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200 hover:text-black dark:hover:text-white transition-colors truncate cursor-pointer outline-none"
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
@@ -122,23 +122,23 @@ export function TopBar() {
         >
           {syncStatus === "syncing" ? (
             <>
-              <span className="size-1.5 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.85)]" aria-hidden="true" />
-              <span className="hidden sm:inline text-blue-600 dark:text-blue-400">syncing</span>
+              <span className="size-1.5 rounded-full bg-[#007AFF] animate-pulse shadow-[0_0_8px_rgba(0,122,255,0.85)]" aria-hidden="true" />
+              <span className="hidden sm:inline text-[#007AFF] dark:text-[#0A84FF]">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
             <>
-              <span className="size-1.5 rounded-full bg-amber-500" aria-hidden="true" />
-              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">conflict</span>
+              <span className="size-1.5 rounded-full bg-[#FF9500]" aria-hidden="true" />
+              <span className="text-[#FF9500] dark:text-[#FF9F0A] hidden sm:inline">conflict</span>
             </>
           ) : syncStatus === "error" ? (
             <>
-              <span className="size-1.5 rounded-full bg-red-500" aria-hidden="true" />
-              <span className="text-red-500 hidden sm:inline">save error</span>
+              <span className="size-1.5 rounded-full bg-[#FF3B30]" aria-hidden="true" />
+              <span className="text-[#FF3B30] hidden sm:inline">save error</span>
             </>
           ) : justSaved ? (
             <>
-              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] transition-all" aria-hidden="true" />
-              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline flex items-center gap-0.5">
+              <span className="size-1.5 rounded-full bg-[#34C759] shadow-[0_0_8px_rgba(52,199,89,0.85)] transition-all" aria-hidden="true" />
+              <span className="text-[#34C759] dark:text-[#30D158] hidden sm:inline flex items-center gap-0.5">
                 <Check size={10} weight="bold" /> saved
               </span>
             </>
