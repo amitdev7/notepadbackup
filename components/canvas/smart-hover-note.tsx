@@ -139,8 +139,11 @@ interface FloatingHoverCardProps {
 
 function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [stylePos, setStylePos] = useState({ left: anchorPos.x + 18, top: anchorPos.y + 18 })
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
+  const [layoutState, setLayoutState] = useState(() => ({
+    left: anchorPos.x + 18,
+    top: anchorPos.y + 18,
+    mouseOffset: { x: 0, y: 0 },
+  }))
 
   useEffect(() => {
     const el = cardRef.current
@@ -164,15 +167,18 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
       top = Math.max(padding, anchorPos.y - rect.height - 18)
     }
 
-    setStylePos({ left, top })
-
     // Compute relative mouse offset (-1 to 1) for 3D tilt & parallax
     const centerX = left + rect.width / 2
     const centerY = top + rect.height / 2
     const normX = Math.max(-1, Math.min(1, (anchorPos.x - centerX) / (rect.width / 2 || 1)))
     const normY = Math.max(-1, Math.min(1, (anchorPos.y - centerY) / (rect.height / 2 || 1)))
-    setMouseOffset({ x: normX, y: normY })
-  }, [anchorPos])
+
+    setLayoutState({
+      left,
+      top,
+      mouseOffset: { x: normX, y: normY },
+    })
+  }, [anchorPos.x, anchorPos.y])
 
   return (
     <div
@@ -184,13 +190,13 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
         "animate-in fade-in zoom-in-95 duration-150 ease-out"
       )}
       style={{
-        left: `${stylePos.left}px`,
-        top: `${stylePos.top}px`,
+        left: `${layoutState.left}px`,
+        top: `${layoutState.top}px`,
         transition: "left 0.08s ease-out, top 0.08s ease-out",
         willChange: "left, top",
       }}
     >
-      <SmartHoverCardContent node={node} note={note} mouseOffset={mouseOffset} />
+      <SmartHoverCardContent node={node} note={note} mouseOffset={layoutState.mouseOffset} />
     </div>
   )
 }
@@ -546,6 +552,8 @@ export function Frosted3DCloud({
         transform: `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${floatX}px, ${floatY}px, 0)`,
         transformStyle: "preserve-3d",
         transition: "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
+        willChange: "transform",
+        backfaceVisibility: "hidden",
       }}
     >
       {/* 1. Weather Accents behind / underneath cloud (matching user reference image) */}

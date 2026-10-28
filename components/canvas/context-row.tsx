@@ -8,7 +8,7 @@
 // quick controls the whole selection has in common.
 // ---------------------------------------------------------------------------
 
-import { useCallback, useState } from "react"
+import { useCallback, useState, memo } from "react"
 
 import { useSquig } from "@/lib/store"
 import type { SquigNode, Viewport, ComponentNode, ShapeNode, ArrowNode, TextNode, FillTone } from "@/lib/types"
@@ -44,7 +44,7 @@ const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = (
 /** how many knobs fit before the row stops being a "quick" anything */
 const MAX_QUICK = 3
 
-export function ContextRow({
+export const ContextRow = memo(function ContextRow({
   selectedNodes,
   viewport,
   busy = false,
@@ -194,4 +194,4 @@ export function ContextRow({
       )}
     </Panel>
   )
-}
+})

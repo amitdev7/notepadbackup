@@ -15,7 +15,7 @@
 //   · Escape reverts to the gesture's checkpoint instead of leaving half a move
 // ---------------------------------------------------------------------------
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react"
 
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
@@ -1455,13 +1455,13 @@ export function Canvas() {
       // the ghost is driven at the window level instead — see below
       if (s.placing) return
       if (gestureRef.current || s.tool !== "select" || isSpacebarHeld || s.editingId) {
-        if (hover) setHover(null)
-        if (hoverNoteTarget) setHoverNoteTarget(null)
+        setHover((prev) => (prev ? null : prev))
+        setHoverNoteTarget((prev) => (prev ? null : prev))
+        setPointerClientPos((prev) => (prev ? null : prev))
         return
       }
       if (hoverRafRef.current !== null) return
       const { clientX, clientY } = e
-      setPointerClientPos({ x: clientX, y: clientY })
       hoverRafRef.current = requestAnimationFrame(() => {
         hoverRafRef.current = null
         // the same predicate the click uses — an affordance drawn from
@@ -1470,20 +1470,39 @@ export function Canvas() {
         const [wx, wy] = toWorld({ clientX, clientY })
         const hard = pickAt(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
         const id = hard ?? pickSoftAt(cur.nodes, cur.order, wx, wy)
-        setHover(id ? { id, soft: !hard } : null)
+
+        setHover((prev) => {
+          if (!id) return prev ? null : prev
+          if (prev && prev.id === id && prev.soft === !hard) return prev
+          return { id, soft: !hard }
+        })
 
         // Universal Hover Notes: hit test exact stroke or visual bounding area (arrows, sketches, frames, etc.)
         const noteTarget = pickHoverTarget(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
-        setHoverNoteTarget(noteTarget)
+        setHoverNoteTarget((prev) => {
+          if (!noteTarget) return prev ? null : prev
+          if (prev?.id === noteTarget.id && prev?.hoverNote === noteTarget.hoverNote) return prev
+          return noteTarget
+        })
+
+        // Only update client cursor position if an active hover note target exists, avoiding 144Hz full-canvas re-renders
+        if (noteTarget) {
+          setPointerClientPos((prev) => {
+            if (prev && Math.abs(prev.x - clientX) < 2 && Math.abs(prev.y - clientY) < 2) return prev
+            return { x: clientX, y: clientY }
+          })
+        } else {
+          setPointerClientPos((prev) => (prev ? null : prev))
+        }
       })
     },
-    [st, toWorld, hover, hoverNoteTarget, isSpacebarHeld]
+    [st, toWorld, isSpacebarHeld]
   )
 
   const onPointerLeave = useCallback(() => {
-    setHover(null)
-    setHoverNoteTarget(null)
-    setPointerClientPos(null)
+    setHover((prev) => (prev ? null : prev))
+    setHoverNoteTarget((prev) => (prev ? null : prev))
+    setPointerClientPos((prev) => (prev ? null : prev))
   }, [])
 
   const onDragOver = useCallback((e: React.DragEvent) => {
@@ -2196,7 +2215,7 @@ function handleHitBox(hd: Handle, w: number, h: number, padX: number, padY: numb
   return { left: hx + dx, top: hy + dy, width, height, dotLeft: -dx - r, dotTop: -dy - r }
 }
 
-function SelectionOverlay({
+const SelectionOverlay = memo(function SelectionOverlay({
   selectedNodes,
   viewport,
   onStartResize,
@@ -2316,4 +2335,4 @@ function SelectionOverlay({
       )}
     </>
   )
-}
+})

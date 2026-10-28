@@ -12,7 +12,7 @@
 //    compact drawer sheet on mobile viewports (<640px).
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, memo } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
@@ -99,59 +99,29 @@ interface MagnifiedItemProps {
   title: string
   shortcut?: string
   ariaLabel: string
-  mouseX: number | null
-  reducedMotion: boolean
   className?: string
   showIndicatorDot?: boolean
 }
 
-function MagnifiedDockItem({
+const MagnifiedDockItem = memo(function MagnifiedDockItem({
   children,
   active,
   onClick,
   title,
   shortcut,
   ariaLabel,
-  mouseX,
-  reducedMotion,
   className,
   showIndicatorDot = false,
 }: MagnifiedItemProps) {
-  const itemRef = useRef<HTMLButtonElement | null>(null)
-  const [scale, setScale] = useState(1)
-
-  useEffect(() => {
-    if (reducedMotion || mouseX === null || !itemRef.current) {
-      setScale(1)
-      return
-    }
-    const rect = itemRef.current.getBoundingClientRect()
-    const itemCenter = rect.left + rect.width / 2
-    const distance = Math.abs(mouseX - itemCenter)
-    const maxDist = 80
-
-    if (distance < maxDist) {
-      const cosine = Math.cos((distance / maxDist) * (Math.PI / 2))
-      const factor = cosine * cosine
-      setScale(1 + factor * 0.28)
-    } else {
-      setScale(1)
-    }
-  }, [mouseX, reducedMotion])
-
   return (
     <Tooltip>
       <TooltipTrigger
         render={
           <button
-            ref={itemRef}
             type="button"
             onClick={onClick}
             aria-label={ariaLabel}
             aria-pressed={active}
-            style={{
-              transform: `scale(${scale})`,
-            }}
             className={cn(
               "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
               "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
@@ -182,7 +152,7 @@ function MagnifiedDockItem({
       </TooltipContent>
     </Tooltip>
   )
-}
+})
 
 // ── BottomDock ────────────────────────────────────────────────────────────────
 
@@ -217,17 +187,48 @@ export function BottomDock() {
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const settingsOpen = useShellStore((s) => s.settingsOpen)
 
-  // Cursor proximity tracking for macOS magnification
-  const [mouseX, setMouseX] = useState<number | null>(null)
+  // Cursor proximity tracking for macOS magnification via direct DOM manipulation (0 React re-renders)
+  const dockNavRef = useRef<HTMLElement | null>(null)
+  const dockRafRef = useRef<number | null>(null)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
-    if (e.pointerType === "touch") return
-    setMouseX(e.clientX)
-  }, [])
+    if (e.pointerType === "touch" || reducedMotion) return
+    const clientX = e.clientX
+    if (dockRafRef.current !== null) return
+    dockRafRef.current = requestAnimationFrame(() => {
+      dockRafRef.current = null
+      const nav = dockNavRef.current
+      if (!nav) return
+      const items = nav.querySelectorAll<HTMLElement>(".dock-magnify-item")
+      const maxDist = 80
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i]
+        const rect = item.getBoundingClientRect()
+        const itemCenter = rect.left + rect.width / 2
+        const distance = Math.abs(clientX - itemCenter)
+        if (distance < maxDist) {
+          const cosine = Math.cos((distance / maxDist) * (Math.PI / 2))
+          const scale = 1 + cosine * cosine * 0.28
+          item.style.transform = `scale(${scale})`
+        } else if (item.style.transform) {
+          item.style.transform = ""
+        }
+      }
+    })
+  }, [reducedMotion])
 
   const handlePointerLeave = useCallback(() => {
-    setMouseX(null)
+    if (dockRafRef.current !== null) {
+      cancelAnimationFrame(dockRafRef.current)
+      dockRafRef.current = null
+    }
+    const nav = dockNavRef.current
+    if (!nav) return
+    const items = nav.querySelectorAll<HTMLElement>(".dock-magnify-item")
+    for (let i = 0; i < items.length; i++) {
+      items[i].style.transform = ""
+    }
   }, [])
 
   const handleToolClick = (t: ToolDef) => {
@@ -314,6 +315,7 @@ export function BottomDock() {
 
       {/* ── Main macOS Floating Dock ── */}
       <nav
+        ref={dockNavRef}
         aria-label="Main dock"
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
@@ -450,8 +452,6 @@ export function BottomDock() {
                   title={t.label}
                   shortcut={t.shortcut}
                   ariaLabel={t.label}
-                  mouseX={mouseX}
-                  reducedMotion={reducedMotion}
                   showIndicatorDot={true}
                 >
                   <Icon size={16} weight={active ? "bold" : "regular"} aria-hidden="true" />
@@ -515,8 +515,6 @@ export function BottomDock() {
                 title="Find in Canvas"
                 shortcut="⌘F"
                 ariaLabel="Find in canvas (⌘F)"
-                mouseX={mouseX}
-                reducedMotion={reducedMotion}
               >
                 <MagnifyingGlass size={16} aria-hidden="true" />
               </MagnifiedDockItem>
@@ -529,8 +527,6 @@ export function BottomDock() {
                 title="Canvas Statistics"
                 shortcut="⌘/"
                 ariaLabel="Canvas Statistics (⌘/)"
-                mouseX={mouseX}
-                reducedMotion={reducedMotion}
               >
                 <ChartBar size={16} aria-hidden="true" />
               </MagnifiedDockItem>
@@ -543,8 +539,6 @@ export function BottomDock() {
                 title="Page & Canvas"
                 ariaLabel="Page settings"
                 active={pagePopoverOpen}
-                mouseX={mouseX}
-                reducedMotion={reducedMotion}
                 showIndicatorDot={true}
               >
                 <File size={16} aria-hidden="true" />
@@ -558,8 +552,6 @@ export function BottomDock() {
                 title="Settings"
                 ariaLabel="Settings"
                 active={settingsOpen}
-                mouseX={mouseX}
-                reducedMotion={reducedMotion}
                 showIndicatorDot={true}
               >
                 <Gear size={16} aria-hidden="true" />
@@ -581,8 +573,6 @@ export function BottomDock() {
               title="Zoom Out"
               shortcut="-"
               ariaLabel="Zoom out"
-              mouseX={mouseX}
-              reducedMotion={reducedMotion}
             >
               <Minus size={13} aria-hidden="true" />
             </MagnifiedDockItem>
@@ -614,8 +604,6 @@ export function BottomDock() {
               title="Zoom In"
               shortcut="+"
               ariaLabel="Zoom in"
-              mouseX={mouseX}
-              reducedMotion={reducedMotion}
             >
               <Plus size={13} aria-hidden="true" />
             </MagnifiedDockItem>
