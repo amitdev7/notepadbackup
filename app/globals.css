@@ -426,6 +426,88 @@
   }
 }
 
+/* ── Golden Gate OS 27 Animation Keyframes ── */
+@keyframes genie-in {
+  0% {
+    opacity: 0;
+    transform: translateY(60px) scaleX(0.2) scaleY(0.1);
+    filter: blur(30px) saturate(200%) brightness(1.2);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleX(1) scaleY(1);
+    filter: blur(0px) saturate(100%) brightness(1);
+  }
+}
+
+@keyframes genie-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scaleX(1) scaleY(1);
+    filter: blur(0px) saturate(100%) brightness(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(60px) scaleX(0.2) scaleY(0.1);
+    filter: blur(30px) saturate(200%) brightness(1.5);
+  }
+}
+
+@keyframes dock-launch-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(8deg); }
+}
+
+@keyframes toast-spring-in {
+  0% {
+    opacity: 0;
+    transform: translate(80px, -20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes island-expand {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes v-stretch {
+  0% { transform: scaleY(1) skewX(0deg); }
+  100% { transform: scaleY(1.3) skewX(2deg); }
+}
+
+@keyframes h-glitch {
+  0% { transform: translateX(0); filter: hue-rotate(0deg); }
+  25% { transform: translateX(-12px) skewX(6deg); filter: hue-rotate(90deg); }
+  50% { transform: translateX(12px) skewX(-6deg); filter: hue-rotate(180deg); }
+  75% { transform: translateX(-6px); filter: hue-rotate(270deg); }
+  100% { transform: translateX(0); filter: hue-rotate(360deg); }
+}
+
 /* ── Animation Utility Classes ── */
 .animate-dock-enter {
   animation: dock-slide-up 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -478,6 +560,75 @@
 
 .animate-pulse-subtle {
   animation: subtle-pulse 2s ease-in-out infinite;
+}
+
+/* ── Golden Gate OS 27 Utilities ── */
+.animate-genie-in {
+  animation: genie-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-genie-out {
+  animation: genie-out 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-dock-bounce {
+  animation: dock-launch-bounce 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-bell-ring {
+  animation: bell-ring 800ms ease-in-out;
+}
+
+.animate-toast-spring {
+  animation: toast-spring-in 400ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-island-morph {
+  animation: island-expand 350ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vertical-stretch {
+  animation: v-stretch 150ms infinite alternate ease-in-out;
+}
+
+.horizontal-glitch {
+  animation: h-glitch 250ms infinite steps(2, start);
+}
+
+/* Liquid Glass 2.0 Material System */
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.glass-dark {
+  background: rgba(18, 18, 22, 0.72);
+  backdrop-filter: blur(32px) saturate(190%);
+  -webkit-backdrop-filter: blur(32px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.mac-shadow {
+  box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.18), 0 4px 16px -2px rgba(0, 0, 0, 0.08), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+}
+
+.dark .mac-shadow {
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.55), 0 6px 20px -4px rgba(0, 0, 0, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+.hugeicon-golden-gate {
+  transition: filter 220ms ease, transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hugeicon-golden-gate:hover {
+  filter: drop-shadow(0 0 12px rgba(0, 122, 255, 0.65));
+  transform: translateY(-2px);
+}
+
+.viscous-slider {
+  transition: all 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Tactile Interactive Utilities ── */
@@ -540,9 +691,6 @@
   -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
-  isolation: isolate;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
 }
 
 .dark .apple-glass-pill {
@@ -559,9 +707,6 @@
   -webkit-backdrop-filter: blur(32px) saturate(190%);
   border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 20px 48px -10px rgba(0, 0, 0, 0.14), 0 4px 16px -2px rgba(0, 0, 0, 0.06), inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
-  isolation: isolate;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
 }
 
 .dark .apple-glass-panel {

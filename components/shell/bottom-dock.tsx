@@ -123,7 +123,7 @@ const MagnifiedDockItem = memo(function MagnifiedDockItem({
             aria-label={ariaLabel}
             aria-pressed={active}
             className={cn(
-              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
+              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none hugeicon-golden-gate",
               "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
               active
                 ? "bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-semibold shadow-xs border border-[#007AFF]/30"
