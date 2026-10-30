@@ -59,6 +59,7 @@ export function TopBarClock({
 
   const [mounted, setMounted] = useState(false)
   const [now, setNow] = useState<Date>(() => new Date())
+  const [detectedTz, setDetectedTz] = useState<string>(() => detectBrowserTimezone())
   const [calibration, setCalibration] = useState<TimeCalibration | null>(() => getCachedCalibration())
   const [geoInfo, setGeoInfo] = useState<GeoLocationInfo | null>(() => getCachedLocation())
   const [isRefreshingGeo, setIsRefreshingGeo] = useState(false)
@@ -70,8 +71,8 @@ export function TopBarClock({
     if (!clockPrefs.autoTimezone && clockPrefs.manualTimezone) {
       return clockPrefs.manualTimezone
     }
-    return detectBrowserTimezone()
-  }, [clockPrefs.autoTimezone, clockPrefs.manualTimezone])
+    return detectedTz || detectBrowserTimezone()
+  }, [clockPrefs.autoTimezone, clockPrefs.manualTimezone, detectedTz])
 
   // Compute live time snapshot
   const snapshot: TimeSnapshot = useMemo(() => {
@@ -96,11 +97,13 @@ export function TopBarClock({
     // Immediate tick upon visibility or window focus
     const handleResume = () => {
       setNow(new Date())
+      setDetectedTz(detectBrowserTimezone())
     }
 
     // Timezone change listener (re-detect if user changes OS timezone)
     const handleTimezoneChange = () => {
       setNow(new Date())
+      setDetectedTz(detectBrowserTimezone())
     }
 
     window.addEventListener("focus", handleResume)

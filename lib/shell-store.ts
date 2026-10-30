@@ -1,7 +1,7 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Shell Store â€” Zustand store for UI navigation state and application preferences.
+// Shell Store — Zustand store for UI navigation state and application preferences.
 // Decoupled from canvas document undo/redo history.
 // Local-first persistence via localStorage with SSR safety.
 // ---------------------------------------------------------------------------

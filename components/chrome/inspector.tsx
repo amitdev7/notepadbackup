@@ -1,13 +1,13 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Inspector â€” the panel that edits whatever is selected.
+// Inspector — the panel that edits whatever is selected.
 //
 // It edits a *selection*, never "the selected node". One node is a selection of
 // one; anything the selection disagrees on shows a dash you can type over.
 //
-// The layout borrows a design tool's grammar â€” folding sections, one alignment
-// seam every control lands on, scrubbable numbers â€” but not a design tool's
+// The layout borrows a design tool's grammar — folding sections, one alignment
+// seam every control lands on, scrubbable numbers — but not a design tool's
 // appetite. Sections appear only when the selection has something for them to
 // edit, so a scribble shows Position, Fill and Outline and nothing else. If you
 // ever find yourself adding a section that's usually empty, it belongs
@@ -75,13 +75,13 @@ function ToneChip({ fill, slash = false }: { fill?: string; slash?: boolean }) {
 
 const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = [
   { value: "none", label: "No fill", content: <ToneChip slash /> },
-  { value: "paper", label: "Paper â€” opaque, hides what's behind", content: <ToneChip fill="var(--sq-paper)" /> },
+  { value: "paper", label: "Paper — opaque, hides what's behind", content: <ToneChip fill="var(--sq-paper)" /> },
   { value: "light", label: "Light shade", content: <ToneChip fill="var(--sq-shade)" /> },
   { value: "strong", label: "Strong shade", content: <ToneChip fill="var(--sq-shade-strong)" /> },
 ]
 
 /**
- * A sheet sample â€” the literal colour that shade puts behind the drawing,
+ * A sheet sample — the literal colour that shade puts behind the drawing,
  * filling its whole segment. Three near-whites can only be told apart at size,
  * so the swatch is the segment rather than a chip beside a word.
  */
@@ -107,7 +107,7 @@ const FONT_OPTIONS: readonly SegmentOption<FontMode>[] = [
   { value: "serif", label: "Serif", content: <FontSample family="var(--font-serif)" /> },
 ]
 
-/** "Aa" set in one face â€” a little large for the row, because two letters at
+/** "Aa" set in one face — a little large for the row, because two letters at
     11px don't carry enough of a face to tell it from its neighbour. */
 function FontSample({ family }: { family: string }) {
   return (
@@ -117,7 +117,7 @@ function FontSample({ family }: { family: string }) {
   )
 }
 
-/** A pen-weight chip â€” the actual relative widths, not three identical bars. */
+/** A pen-weight chip — the actual relative widths, not three identical bars. */
 function PenChip({ height }: { height: number }) {
   return <span className="block w-4 rounded-full bg-current" style={{ height }} />
 }
@@ -184,7 +184,7 @@ export function Inspector() {
 
 /**
  * With nothing selected the panel edits the page instead of apologising for
- * being empty. Paper and Ink belong to the document and are saved inside it â€”
+ * being empty. Paper and Ink belong to the document and are saved inside it —
  * two drawings can hold two different looks. View is the one app-level section,
  * which is why it sits apart at the bottom.
  */
@@ -198,7 +198,7 @@ function PageSettings() {
 
   const palette = paletteOf(theme)
 
-  /** Built per palette, not once at module load â€” the samples preview this
+  /** Built per palette, not once at module load — the samples preview this
       theme's actual sheet, which is the whole point of showing them. */
   const paperOptions: SegmentOption<PaperShade>[] = PAPER_SHADES.map(({ value, label }) => ({
     value,
@@ -234,7 +234,7 @@ function PageSettings() {
             onChange={(f) => st().setFont(f)}
           />
         </Row>
-        <PanelNote>saved with this drawing â€” a new file starts from whatever you set last</PanelNote>
+        <PanelNote>saved with this drawing — a new file starts from whatever you set last</PanelNote>
       </PanelSection>
 
       <PanelSection id="page-view" title="View">
@@ -252,7 +252,7 @@ function PageSettings() {
   )
 }
 
-/** Footer for the page panel â€” whole-canvas moves, not selection ones. */
+/** Footer for the page panel — whole-canvas moves, not selection ones. */
 function PageFooter() {
   const count = useSquig((s) => s.order.length)
   const st = useSquig.getState
@@ -290,7 +290,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   /**
    * Apply a patch to every node that wants one.
    *
-   * `checkpoint: false` is for controls that stream â€” a scrub takes a single
+   * `checkpoint: false` is for controls that stream — a scrub takes a single
    * checkpoint when the drag starts and then writes freely, so asking for one
    * per pixel would bury the undo stack.
    */
@@ -312,7 +312,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const texts = selected.filter((n): n is TextNode => n.type === "text")
   const documents = selected.filter((n): n is DocumentNode => n.type === "document")
   const images = selected.filter((n): n is ImageNode => n.type === "image")
-  // components draw their own strokes from authored prims â€” a pen weight set
+  // components draw their own strokes from authored prims — a pen weight set
   // here would have nothing to apply to without rewriting the whole library
   const outlined = selected.filter((n) => n.type === "shape" || n.type === "draw" || n.type === "arrow")
 
@@ -328,12 +328,12 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
       {grouped && (
         <div className="border-b border-border/60 px-gutter py-3">
           <PanelNote>
-            grouped â€” {kbd("mod+click")} to reach one piece, {kbd("mod+shift+g")} to undo the grouping.
+            grouped — {kbd("mod+click")} to reach one piece, {kbd("mod+shift+g")} to undo the grouping.
           </PanelNote>
         </div>
       )}
 
-      {/* Position & size â€” a dash means they disagree; type to make them agree.
+      {/* Position & size — a dash means they disagree; type to make them agree.
           Typing sets every node to that value (Figma does the same); scrubbing
           and arrow keys nudge each from its own, so a mixed field stays mixed. */}
       <PanelSection id="position" title="Position">
@@ -371,7 +371,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
         </div>
 
         {/* eight icons don't fit beside a label column, so alignment takes the
-            full width and flipping â€” which is always available â€” keeps the row */}
+            full width and flipping — which is always available — keeps the row */}
         {multi && (
           <StackRow label="Align">
             <AlignRow count={selected.length} className="justify-between" />
@@ -379,10 +379,10 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
         )}
 
         <Row label="Flip">
-          <IconAction label={`Flip horizontally Â· ${kbd("shift+h")}`} onClick={() => st().flipSelected("x")}>
+          <IconAction label={`Flip horizontally · ${kbd("shift+h")}`} onClick={() => st().flipSelected("x")}>
             <FlipHorizontalIcon className="size-3.5" />
           </IconAction>
-          <IconAction label={`Flip vertically Â· ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
+          <IconAction label={`Flip vertically · ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
             <FlipVerticalIcon className="size-3.5" />
           </IconAction>
         </Row>
@@ -431,14 +431,14 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
             <TextStyleToggles texts={texts} />
           </Row>
 
-          {/* A link is a value, not a mode â€” so it gets a field showing where
+          {/* A link is a value, not a mode — so it gets a field showing where
               the text actually points. Empty means it points nowhere, and
-              clearing the field is how you unlink. âŒ˜K still opens the floating
+              clearing the field is how you unlink. ⌘K still opens the floating
               editor over the canvas for the same value. */}
           <Row label="Link">
             <MixedTextField
               ariaLabel="Link"
-              placeholder="https://â€¦"
+              placeholder="https://…"
               shared={shared(texts.map((n) => n.link ?? ""))}
               onCommit={(v) => st().setLinkOnSelection(v)}
             />
@@ -855,7 +855,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           <Row label="Label">
             <MixedTextField
               ariaLabel="Arrow label"
-              placeholder="Label textâ€¦"
+              placeholder="Label text…"
               shared={shared(arrows.map((n) => n.label ?? ""))}
               onCommit={(lbl) => patch((n) => (n.type === "arrow" ? ({ label: lbl } as Partial<SquigNode>) : null))}
             />
@@ -1177,10 +1177,10 @@ function HoverNoteSection({
             <label className="text-micro text-muted-foreground font-medium">Theme</label>
             <div className="grid grid-cols-2 gap-1">
               {[
-                { id: "wordcloud", label: "Word Cloud (Text) â˜ï¸" },
-                { id: "frosted", label: "3D Frosted Cloud â›…" },
-                { id: "macos", label: "macOS Card ðŸ" },
-                { id: "ios", label: "iOS Glass ðŸ“±" },
+                { id: "wordcloud", label: "Word Cloud (Text) ☁️" },
+                { id: "frosted", label: "3D Frosted Cloud ⛅" },
+                { id: "macos", label: "macOS Card 🍏" },
+                { id: "ios", label: "iOS Glass 📱" },
               ].map((t) => {
                 const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "wordcloud"
                 return (
@@ -1215,11 +1215,11 @@ function HoverNoteSection({
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
                 {[
-                  { id: "sun", label: "Sun â˜€ï¸" },
-                  { id: "rain", label: "Rain ðŸŒ§ï¸" },
-                  { id: "lightning", label: "Thunder âš¡" },
-                  { id: "wind", label: "Breeze â„ï¸" },
-                  { id: "classic", label: "Pure â˜ï¸" },
+                  { id: "sun", label: "Sun ☀️" },
+                  { id: "rain", label: "Rain 🌧️" },
+                  { id: "lightning", label: "Thunder ⚡" },
+                  { id: "wind", label: "Breeze ❄️" },
+                  { id: "classic", label: "Pure ☁️" },
                 ].map((cs) => {
                   const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
                   return (
@@ -1366,8 +1366,8 @@ function isOutlined(n: SquigNode): boolean {
  * subtly different ones.
  */
 function resizeTo(n: SquigNode, w: number, h: number): Partial<SquigNode> {
-  // typing a width into a text layer sets the measure its words wrap to â€” the
-  // same thing dragging a side handle does â€” rather than stretching the box
+  // typing a width into a text layer sets the measure its words wrap to — the
+  // same thing dragging a side handle does — rather than stretching the box
   // around the type
   if (n.type === "text" && w !== n.w) return setTextWidth(n, w) as Partial<SquigNode>
   const from = unionBounds([n])!

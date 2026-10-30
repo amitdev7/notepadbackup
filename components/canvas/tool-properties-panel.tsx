@@ -173,7 +173,7 @@ export function ToolPropertiesPanel() {
         </button>
       </div>
 
-      {/* â”€â”€ 1. Stroke (Color) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 1. Stroke (Color) ──────────────────────────────────────────────── */}
       <div>
         <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5 flex items-center justify-between">
           <span>Stroke</span>
@@ -219,7 +219,7 @@ export function ToolPropertiesPanel() {
         </div>
       </div>
 
-      {/* â”€â”€ 2. Background (Fill Color) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 2. Background (Fill Color) ─────────────────────────────────────── */}
       {showBackground && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5 flex items-center justify-between">
@@ -282,7 +282,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* â”€â”€ 3. Fill Style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 3. Fill Style ──────────────────────────────────────────────────── */}
       {showFill && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -346,7 +346,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* â”€â”€ 4. Stroke Width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 4. Stroke Width ────────────────────────────────────────────────── */}
       {showStrokeWidth && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -387,7 +387,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* â”€â”€ 5. Pressure / Sloppiness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 5. Pressure / Sloppiness ───────────────────────────────────────── */}
       {showPressure && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -445,7 +445,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* â”€â”€ 6. Edges / Roundness (for Shapes) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 6. Edges / Roundness (for Shapes) ──────────────────────────────── */}
       {showEdges && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -495,7 +495,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* â”€â”€ 7. Stroke Style (Solid vs Dashed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 7. Stroke Style (Solid vs Dashed) ──────────────────────────────── */}
       {showStrokeStyle && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -739,7 +739,7 @@ export function ToolPropertiesPanel() {
         </>
       )}
 
-      {/* â”€â”€ 9. Opacity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── 9. Opacity ─────────────────────────────────────────────────────── */}
       <div className="pt-1 border-t border-stone-100 dark:border-stone-800/80">
         <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-2 flex items-center justify-between">
           <span>Opacity</span>

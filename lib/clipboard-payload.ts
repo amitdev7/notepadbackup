@@ -4,12 +4,12 @@
 // Two carriers go on every copy. `text/html` holds the real payload in a data
 // attribute, because a browser hands HTML back untouched and nobody has to
 // look at it. `text/plain` holds the words when there are any, so copying a
-// label out of a wireframe and pasting it into a message does what you meant â€”
+// label out of a wireframe and pasting it into a message does what you meant —
 // and the payload when there aren't, so a paste still lands as layers even
 // where the HTML got stripped on the way.
 //
 // Everything coming in is treated as a stranger: only known node types, only
-// finite geometry, only `data:image/â€¦` sources. The clipboard is one of the
+// finite geometry, only `data:image/…` sources. The clipboard is one of the
 // few places a document can arrive from somewhere that isn't this app.
 //
 // Kept free of the store and the DOM so it can be tested on its own.
@@ -37,7 +37,7 @@ export function encodeNodes(nodes: readonly SquigNode[]): string {
 export function decodeNodes(text: string | null | undefined): SquigNode[] | null {
   if (!text) return null
   const trimmed = text.trim()
-  // cheap gate first â€” most pastes are prose, and JSON.parse on a novel is not
+  // cheap gate first — most pastes are prose, and JSON.parse on a novel is not
   if (!trimmed.startsWith("{") || !trimmed.includes('"zenithsui"')) return null
   let parsed: unknown
   try {
@@ -58,8 +58,8 @@ export function payloadHtml(json: string): string {
 /**
  * Pull the payload back out of pasted HTML.
  *
- * Browsers rewrap what they hand over â€” Chrome prepends a `<meta>`, some add
- * fragment comments â€” but they leave attributes alone, so a match anywhere in
+ * Browsers rewrap what they hand over — Chrome prepends a `<meta>`, some add
+ * fragment comments — but they leave attributes alone, so a match anywhere in
  * the string is the right one. `encodeURIComponent` escapes quotes, so the
  * value can't close the attribute early.
  */
@@ -74,7 +74,7 @@ export function payloadFromHtml(html: string | null | undefined): string | null 
   }
 }
 
-/** The words in a selection, in document order â€” what `text/plain` carries. */
+/** The words in a selection, in document order — what `text/plain` carries. */
 export function wordsOf(nodes: readonly SquigNode[]): string {
   return nodes
     .filter((n): n is TextNode | DocumentNode => n.type === "text" || n.type === "document")
@@ -112,7 +112,7 @@ function validPoints(v: unknown): v is [number, number][] {
  * A node we're willing to put on the canvas, or null.
  *
  * Geometry is the part that matters: one NaN through here lands in the
- * document, gets autosaved, and wedges the file across reloads â€” the same
+ * document, gets autosaved, and wedges the file across reloads — the same
  * reason `sanitize` exists in the store.
  */
 export function validNode(v: unknown): SquigNode | null {
@@ -171,7 +171,7 @@ export function validNode(v: unknown): SquigNode | null {
   } as SquigNode
 
   if (out.type === "document") {
-    // optional references: an unsafe one is dropped, not fatal â€” the node still
+    // optional references: an unsafe one is dropped, not fatal — the node still
     // resolves its bytes through assetId
     if (out.thumbnailUrl !== undefined && !(str(out.thumbnailUrl) && /^data:image\/(png|jpeg|webp|gif);/i.test(out.thumbnailUrl))) {
       delete out.thumbnailUrl
@@ -195,12 +195,12 @@ export function validNode(v: unknown): SquigNode | null {
           delete out.border
         } else {
           out.border = {
-            enabled: candidate.enabled,
-            color: typeof candidate.color === "string" ? candidate.color.slice(0, 50) : undefined,
-            width: typeof candidate.width === "number" && Number.isFinite(candidate.width) ? Math.max(0, Math.min(64, candidate.width)) : undefined,
-            style: candidate.style === "solid" || candidate.style === "dashed" || candidate.style === "dotted" ? candidate.style : undefined,
-            opacity: typeof candidate.opacity === "number" && Number.isFinite(candidate.opacity) ? Math.max(0, Math.min(100, candidate.opacity)) : undefined,
-            radius: typeof candidate.radius === "number" && Number.isFinite(candidate.radius) ? Math.max(0, Math.min(200, candidate.radius)) : undefined,
+            enabled: Boolean(candidate.enabled),
+            color: typeof candidate.color === "string" && candidate.color.trim() ? candidate.color.slice(0, 50) : "var(--sq-ink)",
+            width: typeof candidate.width === "number" && Number.isFinite(candidate.width) ? Math.max(1, Math.min(64, candidate.width)) : 2,
+            style: candidate.style === "dashed" || candidate.style === "dotted" ? candidate.style : "solid",
+            opacity: typeof candidate.opacity === "number" && Number.isFinite(candidate.opacity) ? Math.max(0, Math.min(100, candidate.opacity)) : 100,
+            radius: typeof candidate.radius === "number" && Number.isFinite(candidate.radius) ? Math.max(0, Math.min(200, candidate.radius)) : 0,
           }
         }
       }
@@ -231,12 +231,12 @@ export function validNode(v: unknown): SquigNode | null {
   return out
 }
 
-/** "<uuid>/<sha256>/<name>" â€” never absolute, never climbing out of its folder */
+/** "<uuid>/<sha256>/<name>" — never absolute, never climbing out of its folder */
 const SAFE_STORAGE_PATH = /^[0-9a-f-]{36}\/[0-9a-f]{64}\/(?!\.{1,2}$)[^/\\]{1,200}$/i
 
 /**
  * Where a document's bytes may come from. Local content addresses, live object
- * URLs, same-origin paths and https â€” nothing that executes (javascript:,
+ * URLs, same-origin paths and https — nothing that executes (javascript:,
  * data:text/html, file:, protocol-relative "//host").
  */
 export function safeDocumentSrc(src: string): boolean {
