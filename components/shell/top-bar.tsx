@@ -30,6 +30,7 @@ export function TopBar() {
   const isViewer = effectiveRole === "viewer"
   const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
   const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
+  const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
   const toggleToolbar = useShellStore((s) => s.toggleToolbar)
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -176,8 +177,12 @@ export function TopBar() {
         <FilesPopover />
 
         {/* Real-Time Clock & Location Detection */}
-        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
-        <TopBarClock />
+        {showTimeInTopBar && (
+          <>
+            <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            <TopBarClock />
+          </>
+        )}
 
         {showToolbarViewMenu && (
           <>

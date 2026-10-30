@@ -2547,6 +2547,31 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
               <div className="flex items-center justify-between pt-2.5">
                 <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Real-Time Clock in Top Toolbar</span>
+                  <span className="text-[11px] text-stone-500">Show live time and location pill in the top navigation bar</span>
+                </div>
+                <Switch
+                  checked={prefs.clockSettings?.showInTopBar ?? true}
+                  onCheckedChange={(checked) => useShellStore.getState().updateClockPreferences({ showInTopBar: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Real-Time Clock in Bottom Dock</span>
+                  <span className="text-[11px] text-stone-500">Show live time pill in the bottom floating dock</span>
+                </div>
+                <Switch
+                  checked={prefs.clockSettings?.showInDock ?? dockControls.timeClock ?? false}
+                  onCheckedChange={(checked) => {
+                    useShellStore.getState().updateClockPreferences({ showInDock: checked })
+                    updateDockControl("timeClock", checked)
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
                   <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Context Toolbar on Selection</span>
                   <span className="text-[11px] text-stone-500">Show floating editing actions near selected items</span>
                 </div>
@@ -2641,6 +2666,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                 { key: "brandMenu", label: "Zenithsui Brand Menu", icon: Sliders },
                 { key: "zoomControls", label: "Zoom In/Out & Stepper", icon: Minus },
                 { key: "viewMenu", label: "View & Home Menu (🧭)", icon: Compass, badge: "Dock & Toolbar" },
+                { key: "timeClock", label: "Real-Time Clock (🕒)", icon: Clock, badge: "Dock & Toolbar" },
               ].map((item) => {
                 const Icon = item.icon
                 const isChecked = dockControls[item.key as keyof DockControlsVisibility]

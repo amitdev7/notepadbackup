@@ -247,6 +247,17 @@ export function TimeSettingsTab() {
 
           <div className="flex items-center justify-between pt-2.5">
             <div>
+              <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Show Clock in Bottom Dock</span>
+              <span className="text-[11px] text-stone-500">Display live real-time clock pill in the bottom floating dock</span>
+            </div>
+            <Switch
+              checked={clockPrefs.showInDock ?? false}
+              onCheckedChange={(checked) => updateClockPrefs({ showInDock: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between pt-2.5">
+            <div>
               <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">24-Hour Time Format</span>
               <span className="text-[11px] text-stone-500">Display 14:30 instead of 2:30 PM</span>
             </div>

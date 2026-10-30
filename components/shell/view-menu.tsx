@@ -62,11 +62,15 @@ export function ViewMenu({
   const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
   const showDockViewMenu = useShellStore((s) => s.preferences.showDockViewMenu ?? s.preferences.dockControls?.viewMenu ?? false)
   const showZoomControls = useShellStore((s) => s.preferences.dockControls?.zoomControls ?? true)
+  const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
+  const showDockClock = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInDock ?? s.preferences.dockControls?.timeClock ?? false))
   const toggleToolbar = useShellStore((s) => s.toggleToolbar)
   const toggleDock = useShellStore((s) => s.toggleDock)
   const toggleToolbarViewMenu = useShellStore((s) => s.toggleToolbarViewMenu)
   const toggleDockViewMenu = useShellStore((s) => s.toggleDockViewMenu)
   const toggleZoomControls = useShellStore((s) => s.toggleZoomControls)
+  const toggleTimeInTopBar = useShellStore((s) => s.toggleTimeInTopBar)
+  const toggleTimeInDock = useShellStore((s) => s.toggleTimeInDock)
 
   const zoomPercent = Math.round(viewport.zoom * 100)
   const hasHomeView = Boolean(viewState?.homeView)
@@ -306,6 +310,22 @@ export function ViewMenu({
           >
             <span className="font-medium text-xs">Zoom Stepper in Dock</span>
             {showZoomControls && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleTimeInTopBar}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Clock in Top Toolbar</span>
+            {showTimeInTopBar && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleTimeInDock}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Clock in Bottom Dock</span>
+            {showDockClock && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

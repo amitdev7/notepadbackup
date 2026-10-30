@@ -54,6 +54,7 @@ import {
   X,
 } from "@phosphor-icons/react"
 import { ViewMenu } from "@/components/shell/view-menu"
+import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
 import {
   DropdownMenu,
@@ -200,6 +201,10 @@ export function BottomDock() {
   const toggleToolbarViewMenu = useShellStore((s) => s.toggleToolbarViewMenu)
   const toggleDockViewMenu = useShellStore((s) => s.toggleDockViewMenu)
   const toggleZoomControls = useShellStore((s) => s.toggleZoomControls)
+  const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
+  const showDockClock = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInDock ?? s.preferences.dockControls?.timeClock ?? false))
+  const toggleTimeInTopBar = useShellStore((s) => s.toggleTimeInTopBar)
+  const toggleTimeInDock = useShellStore((s) => s.toggleTimeInDock)
   const dockControls = useShellStore((s) => s.preferences.dockControls)
   const animationMode = useShellStore((s) => s.preferences.animationMode)
   const reducedMotion = animationMode === "reduced"
@@ -483,6 +488,14 @@ export function BottomDock() {
                 <span className="flex-1">Zoom Stepper in Dock</span>
                 {dockControls.zoomControls && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleTimeInTopBar} className="cursor-pointer">
+                <span className="flex-1">Clock in Toolbar</span>
+                {showTimeInTopBar && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleTimeInDock} className="cursor-pointer">
+                <span className="flex-1">Clock in Dock</span>
+                {showDockClock && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
 
               {dockControls.menuGithub && (
                 <DropdownMenuItem onClick={() => window.open("https://github.com/amitdev7/notepadbackup", "_blank", "noopener,noreferrer")}>
@@ -631,8 +644,15 @@ export function BottomDock() {
         )}
 
         {/* ── Separator before Zoom & View Controls ── */}
-        {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && (dockControls.zoomControls || showDockViewMenu) && (
+        {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && (dockControls.zoomControls || showDockViewMenu || showDockClock) && (
           <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        )}
+
+        {/* ── Real-Time Clock on Dock ── */}
+        {showDockClock && (
+          <div className="flex items-center gap-0.5 shrink-0">
+            <TopBarClock variant="dock" side="top" />
+          </div>
         )}
 
         {/* ── View Menu on Dock ── */}

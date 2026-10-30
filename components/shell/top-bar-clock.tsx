@@ -37,11 +37,25 @@ import {
   Sparkle,
 } from "@phosphor-icons/react"
 
-export function TopBarClock() {
+export interface TopBarClockProps {
+  variant?: "topbar" | "dock"
+  side?: "top" | "bottom"
+  align?: "start" | "center" | "end"
+  className?: string
+}
+
+export function TopBarClock({
+  variant = "topbar",
+  side = variant === "dock" ? "top" : "bottom",
+  align = "center",
+  className,
+}: TopBarClockProps = {}) {
   const clockPrefs = useShellStore((s) => s.preferences.clockSettings)
   const updateClockPrefs = useShellStore((s) => s.updateClockPreferences)
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const setSettingsSection = useShellStore((s) => s.setSettingsSection)
+
+  const isDock = variant === "dock"
 
   const [mounted, setMounted] = useState(false)
   const [now, setNow] = useState<Date>(() => new Date())
@@ -180,16 +194,27 @@ export function TopBarClock() {
     setSettingsOpen(true)
   }, [setSettingsSection, setSettingsOpen])
 
-  if (!clockPrefs.enabled || !clockPrefs.showInTopBar) {
+  const isVisible = isDock
+    ? clockPrefs.enabled && (clockPrefs.showInDock ?? false)
+    : clockPrefs.enabled && clockPrefs.showInTopBar
+
+  if (!isVisible) {
     return null
   }
 
   // Fallback for SSR
   if (!mounted) {
     return (
-      <div className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-stone-400 select-none">
+      <div
+        className={cn(
+          isDock
+            ? "flex items-center justify-center px-2 py-1 rounded-xl text-stone-400 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
+            : "flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-stone-400 select-none",
+          className
+        )}
+      >
         <Clock size={13} className="text-stone-400" />
-        <span>--:--:--</span>
+        <span>--:--</span>
       </div>
     )
   }
@@ -203,20 +228,22 @@ export function TopBarClock() {
       <DropdownMenuTrigger
         type="button"
         className={cn(
-          "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-all duration-150 cursor-pointer select-none",
-          "hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200"
+          isDock
+            ? "relative flex items-center justify-center px-2 py-1 rounded-xl cursor-pointer select-none outline-none text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
+            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-all duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200",
+          className
         )}
         title={`${snapshot.fullDate} · ${snapshot.timezone} (${snapshot.utcOffset})`}
         aria-label={`Current time: ${snapshot.formattedTime}, ${displayLocation ? `location: ${displayLocation}` : ""}`}
       >
         <div className="flex items-center gap-1.5">
-          <Clock size={13} className="text-stone-500 dark:text-stone-400 group-hover:text-[#007AFF] transition-colors" />
+          <Clock size={13} className={cn("text-stone-500 dark:text-stone-400 group-hover:text-[#007AFF] transition-colors", isDock && "size-3.5")} />
           <span className="font-mono font-semibold text-[11px] tracking-tight">
             {snapshot.formattedTime}
           </span>
         </div>
 
-        {clockPrefs.showLocation && displayLocation && (
+        {!isDock && clockPrefs.showLocation && displayLocation && (
           <div className="hidden md:flex items-center gap-1 text-[10px] text-stone-500 dark:text-stone-400 font-sans truncate max-w-[150px]">
             <MapPin size={11} className="text-rose-500 shrink-0" />
             <span className="truncate">{cityLabel}</span>
@@ -227,9 +254,9 @@ export function TopBarClock() {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        align="center"
-        side="bottom"
-        sideOffset={10}
+        align={align}
+        side={side}
+        sideOffset={8}
         className="w-80 p-3 font-sans max-h-[88vh] overflow-y-auto space-y-3"
       >
         {/* Big Live Digital Clock Display */}
@@ -361,8 +388,27 @@ export function TopBarClock() {
           )}
         </div>
 
-        {/* Inline Quick Appearance Toggles */}
+        {/* Inline Quick Appearance & Visibility Toggles */}
         <div className="space-y-2 pt-1 border-t border-stone-200/60 dark:border-stone-800">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-stone-700 dark:text-stone-300 font-medium">Show in Top Bar</span>
+            <Switch
+              checked={clockPrefs.showInTopBar}
+              onCheckedChange={(checked) => updateClockPrefs({ showInTopBar: checked })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-stone-700 dark:text-stone-300 font-medium">Show in Bottom Dock</span>
+            <Switch
+              checked={clockPrefs.showInDock ?? false}
+              onCheckedChange={(checked) => {
+                updateClockPrefs({ showInDock: checked })
+                useShellStore.getState().updateDockControl("timeClock", checked)
+              }}
+            />
+          </div>
+
           <div className="flex items-center justify-between text-xs">
             <span className="text-stone-700 dark:text-stone-300">24-Hour Clock</span>
             <Switch

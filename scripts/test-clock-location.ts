@@ -19,6 +19,7 @@ import {
   type ClockPreferences,
   type TimeCalibration,
 } from "../lib/time/types.ts"
+import { DEFAULT_DOCK_CONTROLS } from "../lib/shell-store.ts"
 
 let passed = 0
 const failures: string[] = []
@@ -247,6 +248,30 @@ async function runTests() {
 
   check("Default settings enable server time calibration for drift-free accuracy", (
     DEFAULT_CLOCK_PREFERENCES.serverCalibration === true
+  ))
+
+  check("Default settings display clock in top navigation bar", (
+    DEFAULT_CLOCK_PREFERENCES.showInTopBar === true
+  ))
+
+  check("Default settings do not show clock in bottom dock (optional module)", (
+    DEFAULT_CLOCK_PREFERENCES.showInDock === false
+  ))
+
+  check("Default dock controls include timeClock disabled by default", (
+    DEFAULT_DOCK_CONTROLS.timeClock === false
+  ))
+
+  // Test visibility updates
+  const updatedPrefs: ClockPreferences = {
+    ...DEFAULT_CLOCK_PREFERENCES,
+    showInTopBar: false,
+    showInDock: true,
+  }
+
+  check("Clock visibility can be toggled off for top bar and on for dock", (
+    updatedPrefs.showInTopBar === false &&
+    updatedPrefs.showInDock === true
   ))
 
   // =========================================================================

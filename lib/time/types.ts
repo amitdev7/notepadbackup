@@ -5,6 +5,7 @@
 export interface ClockPreferences {
   enabled: boolean
   showInTopBar: boolean
+  showInDock?: boolean
   format24h: boolean
   showSeconds: boolean
   showDate: boolean
@@ -20,6 +21,7 @@ export interface ClockPreferences {
 export const DEFAULT_CLOCK_PREFERENCES: ClockPreferences = {
   enabled: true,
   showInTopBar: true,
+  showInDock: false,
   format24h: false,
   showSeconds: true,
   showDate: true,

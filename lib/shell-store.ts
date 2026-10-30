@@ -171,6 +171,7 @@ export interface DockControlsVisibility {
   brandMenu: boolean
   zoomControls: boolean
   viewMenu?: boolean
+  timeClock?: boolean
 
   // Brand Menu Items
   menuNewCanvas: boolean
@@ -207,6 +208,7 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
   brandMenu: true,
   zoomControls: true,
   viewMenu: false,
+  timeClock: false,
 
   menuNewCanvas: true,
   menuOpenRecent: true,
@@ -315,6 +317,9 @@ function loadInitialPreferences(): ShellPreferences {
         dockControls: {
           ...DEFAULT_DOCK_CONTROLS,
           ...(parsed.dockControls || {}),
+          timeClock: parsed.dockControls?.timeClock !== undefined
+            ? Boolean(parsed.dockControls.timeClock)
+            : Boolean(parsed.clockSettings?.showInDock ?? false),
         },
         databaseSettings: {
           ...DEFAULT_DATABASE_SETTINGS,
@@ -377,6 +382,8 @@ interface ShellState {
   toggleToolbarViewMenu: () => void
   toggleDockViewMenu: () => void
   toggleZoomControls: () => void
+  toggleTimeInTopBar: () => void
+  toggleTimeInDock: () => void
   updateLaserSettings: (updates: Partial<LaserSettings>) => void
   updateDrawSettings: (updates: Partial<DrawSettings>) => void
   updateTextSettings: (updates: Partial<TextSettings>) => void
@@ -587,10 +594,46 @@ export const useShellStore = create<ShellState>((set, get) => ({
     })
   },
 
+  toggleTimeInTopBar: () => {
+    set((state) => {
+      const current = state.preferences.clockSettings?.showInTopBar ?? true
+      const nextVal = !current
+      const nextClock = { ...state.preferences.clockSettings, showInTopBar: nextVal }
+      const next = { ...state.preferences, clockSettings: nextClock }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleTimeInDock: () => {
+    set((state) => {
+      const current = state.preferences.clockSettings?.showInDock ?? state.preferences.dockControls?.timeClock ?? false
+      const nextVal = !current
+      const nextClock = { ...state.preferences.clockSettings, showInDock: nextVal }
+      const next = {
+        ...state.preferences,
+        clockSettings: nextClock,
+        dockControls: {
+          ...state.preferences.dockControls,
+          timeClock: nextVal,
+        },
+      }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
   updateClockPreferences: (updates) => {
     set((state) => {
       const nextClock = { ...state.preferences.clockSettings, ...updates }
-      const next = { ...state.preferences, clockSettings: nextClock }
+      const next = {
+        ...state.preferences,
+        clockSettings: nextClock,
+        dockControls: {
+          ...state.preferences.dockControls,
+          ...(updates.showInDock !== undefined ? { timeClock: updates.showInDock } : {}),
+        },
+      }
       savePreferences(next)
       return { preferences: next }
     })
@@ -638,9 +681,21 @@ export const useShellStore = create<ShellState>((set, get) => ({
         ...state.preferences.dockControls,
         [key]: visible,
       }
-      const next = {
+      const next: ShellPreferences = {
         ...state.preferences,
         dockControls: nextDockControls,
+      }
+      if (key === "viewMenu") {
+        next.showDockViewMenu = visible
+      }
+      if (key === "zoomControls") {
+        next.showZoomControls = visible
+      }
+      if (key === "timeClock") {
+        next.clockSettings = {
+          ...state.preferences.clockSettings,
+          showInDock: visible,
+        }
       }
       savePreferences(next)
       return { preferences: next }
