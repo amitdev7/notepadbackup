@@ -104,8 +104,8 @@ export function ViewMenu({
             />
           )}
         </div>
-        <span className={variant === "dock" ? "hidden" : "hidden xs:inline"}>View</span>
-        <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 font-semibold">
+        <span className="sr-only">View</span>
+        <span className="text-[11px] font-mono text-stone-600 dark:text-stone-300 font-semibold tracking-tight">
           {zoomPercent}%
         </span>
         <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150" />

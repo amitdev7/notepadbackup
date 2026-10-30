@@ -518,7 +518,37 @@ export const useShellStore = create<ShellState>((set, get) => ({
 
   updatePreferences: (updates) => {
     set((state) => {
-      const next = { ...state.preferences, ...updates }
+      const next: ShellPreferences = { ...state.preferences, ...updates }
+      if (updates.showDockViewMenu !== undefined) {
+        next.dockControls = {
+          ...next.dockControls,
+          viewMenu: updates.showDockViewMenu,
+        }
+      }
+      if (updates.dockControls?.viewMenu !== undefined) {
+        next.showDockViewMenu = updates.dockControls.viewMenu
+      }
+      if (updates.showZoomControls !== undefined) {
+        next.dockControls = {
+          ...next.dockControls,
+          zoomControls: updates.showZoomControls,
+        }
+      }
+      if (updates.dockControls?.zoomControls !== undefined) {
+        next.showZoomControls = updates.dockControls.zoomControls
+      }
+      if (updates.clockSettings?.showInDock !== undefined) {
+        next.dockControls = {
+          ...next.dockControls,
+          timeClock: updates.clockSettings.showInDock,
+        }
+      }
+      if (updates.dockControls?.timeClock !== undefined) {
+        next.clockSettings = {
+          ...next.clockSettings,
+          showInDock: updates.dockControls.timeClock,
+        }
+      }
       savePreferences(next)
       if (updates.themeMode !== undefined) {
         syncThemeToDOM(updates.themeMode)
