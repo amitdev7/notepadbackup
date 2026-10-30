@@ -31,6 +31,7 @@ import {
   type StorageMode,
 } from "@/lib/shell-store"
 import { useSquig } from "@/lib/store"
+import type { CanvasOpenMode } from "@/lib/types"
 import { useAuthStore } from "@/lib/auth-store"
 import { UI_ACCENTS, COLOR_SWATCHES } from "@/lib/design-tokens"
 import { THEMES, THEME_NAMES, PAPER_SHADES, type ThemeName, type FontMode, type PaperShade } from "@/lib/theme"
@@ -1129,6 +1130,12 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const setGrid = useSquig((s) => s.setGrid)
   const contextRow = useSquig((s) => s.contextRow)
   const setContextRow = useSquig((s) => s.setContextRow)
+  const viewState = useSquig((s) => s.viewState)
+  const setOpenMode = useSquig((s) => s.setOpenMode)
+  const setHomeView = useSquig((s) => s.setHomeView)
+  const goToHomeView = useSquig((s) => s.goToHomeView)
+  const clearHomeView = useSquig((s) => s.clearHomeView)
+  const fileName = useSquig((s) => s.fileName)
 
   const user = useAuthStore((s) => s.user)
 
@@ -1187,6 +1194,135 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
             <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono text-[11px]">
               Continuous (Zero-loss)
             </span>
+          </div>
+
+          {/* Default Canvas Opening Behavior & Viewport Memory */}
+          <div className="pt-3 border-t border-stone-200/60 dark:border-stone-800/60 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="font-semibold text-stone-900 dark:text-stone-100 block">
+                  Default Canvas Opening Behavior
+                </span>
+                <span className="text-[11px] text-stone-500">
+                  Choose how this canvas opens when launching Zenithsui or reopening this document
+                </span>
+              </div>
+              <select
+                value={viewState?.openMode || "last-view"}
+                onChange={(e) => setOpenMode(e.target.value as CanvasOpenMode)}
+                aria-label="Default canvas opening behavior"
+                className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 outline-none text-xs font-medium cursor-pointer"
+              >
+                <option value="last-view">Remember Last View</option>
+                <option value="home-view">Custom Home View</option>
+                <option value="fit-content">Fit All Content</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              <div
+                onClick={() => setOpenMode("last-view")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-left cursor-pointer transition-all",
+                  (viewState?.openMode || "last-view") === "last-view"
+                    ? "bg-white dark:bg-stone-800 border-[#007AFF] shadow-xs ring-1 ring-[#007AFF]/20 text-stone-900 dark:text-stone-100"
+                    : "bg-stone-50/50 dark:bg-stone-900/40 border-stone-200/70 dark:border-stone-800/70 text-stone-500 hover:border-stone-300 dark:hover:border-stone-700"
+                )}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-xs">Remember Last View</span>
+                  {(viewState?.openMode || "last-view") === "last-view" && (
+                    <span className="size-1.5 rounded-full bg-[#007AFF]" />
+                  )}
+                </div>
+                <p className="text-[10px] leading-relaxed opacity-85">
+                  Restores the last visited viewport position and zoom level automatically.
+                </p>
+              </div>
+
+              <div
+                onClick={() => setOpenMode("home-view")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-left cursor-pointer transition-all",
+                  viewState?.openMode === "home-view"
+                    ? "bg-white dark:bg-stone-800 border-[#007AFF] shadow-xs ring-1 ring-[#007AFF]/20 text-stone-900 dark:text-stone-100"
+                    : "bg-stone-50/50 dark:bg-stone-900/40 border-stone-200/70 dark:border-stone-800/70 text-stone-500 hover:border-stone-300 dark:hover:border-stone-700"
+                )}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-xs">Custom Home View</span>
+                  {viewState?.openMode === "home-view" && (
+                    <span className="size-1.5 rounded-full bg-[#007AFF]" />
+                  )}
+                </div>
+                <p className="text-[10px] leading-relaxed opacity-85">
+                  Always opens at your manually saved Home View starting position.
+                </p>
+              </div>
+
+              <div
+                onClick={() => setOpenMode("fit-content")}
+                className={cn(
+                  "p-2.5 rounded-xl border text-left cursor-pointer transition-all",
+                  viewState?.openMode === "fit-content"
+                    ? "bg-white dark:bg-stone-800 border-[#007AFF] shadow-xs ring-1 ring-[#007AFF]/20 text-stone-900 dark:text-stone-100"
+                    : "bg-stone-50/50 dark:bg-stone-900/40 border-stone-200/70 dark:border-stone-800/70 text-stone-500 hover:border-stone-300 dark:hover:border-stone-700"
+                )}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-xs">Fit All Content</span>
+                  {viewState?.openMode === "fit-content" && (
+                    <span className="size-1.5 rounded-full bg-[#007AFF]" />
+                  )}
+                </div>
+                <p className="text-[10px] leading-relaxed opacity-85">
+                  Automatically frames all document elements within the window on open.
+                </p>
+              </div>
+            </div>
+
+            {/* Home View Controls Banner */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 p-3 rounded-xl bg-stone-100/70 dark:bg-stone-800/60 border border-stone-200/70 dark:border-stone-700/60">
+              <div className="flex items-center gap-2">
+                <span className={cn("size-2 rounded-full", viewState?.homeView ? "bg-emerald-500" : "bg-stone-400")} />
+                <span className="text-[11px] text-stone-700 dark:text-stone-300">
+                  Home View Status:{" "}
+                  <strong>
+                    {viewState?.homeView
+                      ? `Saved (${Math.round(viewState.homeView.zoom * 100)}% zoom, x:${Math.round(viewState.homeView.x)}, y:${Math.round(viewState.homeView.y)})`
+                      : "Not set yet"}
+                  </strong>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                {viewState?.homeView && (
+                  <button
+                    type="button"
+                    onClick={goToHomeView}
+                    className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-white dark:bg-stone-700 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-600 hover:bg-stone-50 transition-colors cursor-pointer"
+                  >
+                    Go to Home
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={setHomeView}
+                  className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-[#007AFF] text-white hover:bg-[#007AFF]/90 transition-colors cursor-pointer shadow-xs"
+                >
+                  {viewState?.homeView ? "Update Home to Current View" : "Set Current View as Home"}
+                </button>
+                {viewState?.homeView && (
+                  <button
+                    type="button"
+                    onClick={clearHomeView}
+                    className="px-2.5 py-1 text-[11px] font-medium rounded-lg text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  >
+                    Clear Home
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )

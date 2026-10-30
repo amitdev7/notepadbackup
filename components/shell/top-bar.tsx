@@ -14,6 +14,7 @@ import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { FilesPopover } from "@/components/chrome/files-popover"
+import { ViewMenu } from "@/components/shell/view-menu"
 import { useSyncStore } from "@/lib/sync/engine"
 import { PencilSimple, Check } from "@phosphor-icons/react"
 
@@ -149,6 +150,11 @@ export function TopBar() {
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
+
+        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+
+        {/* View Menu & Viewport Memory */}
+        <ViewMenu />
 
         {isViewer && (
           <span className="animate-badge-pop px-1.5 py-0.2 rounded-full text-[9px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider ml-1">

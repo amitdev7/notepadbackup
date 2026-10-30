@@ -2,8 +2,8 @@
 
 import { create } from "zustand"
 import { nanoid } from "nanoid"
-import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, ShapeKind, StrokeWeight, FillTone } from "./types"
-import { normalizeFill, screenToWorld, unionBox } from "./types"
+import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, CanvasOpenMode, DocumentViewState, ShapeKind, StrokeWeight, FillTone } from "./types"
+import { normalizeFill, screenToWorld, unionBox, isValidViewport, sanitizeViewState } from "./types"
 import { repeatStep, type DupTrail } from "./canvas/duplicate"
 import { getArrowPatchesForMovedNodes, cleanBindingsForDeletedNodes } from "./canvas/arrow-binding"
 import { getDef } from "./library/registry"
@@ -36,6 +36,20 @@ import {
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
 import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./canvas-core/index"
+import {
+  getViewState,
+  loadViewStateAsync,
+  saveViewState,
+  scheduleSaveViewport,
+  flushPendingViewportSave,
+  setHomeView as persistHomeView,
+  clearHomeView as persistClearHomeView,
+  setOpenMode as persistOpenMode,
+  deleteViewState,
+  resolveOpeningViewport,
+  getDefaultViewState,
+  DEFAULT_VIEWPORT,
+} from "./canvas/viewport-memory"
 
 // ---------------------------------------------------------------------------
 // Store — flat node map + z-order, selection, viewport, tool, history.
@@ -105,6 +119,7 @@ interface SquigState {
   order: string[]
   selection: string[]
   viewport: Viewport
+  viewState: DocumentViewState
   tool: Tool
   shapeKind: ShapeKind
   activeStyle: ActiveStyle
@@ -265,6 +280,12 @@ interface SquigState {
   zoomToFit: () => void
   zoomToSelection: () => void
 
+  setHomeView: () => void
+  goToHomeView: () => void
+  clearHomeView: () => void
+  setOpenMode: (mode: CanvasOpenMode) => void
+  resetViewport: () => void
+
   /** drop a library item at the middle of what the user is looking at */
   insertComponent: (kind: string) => void
   alignSelected: (edge: "left" | "hcenter" | "right" | "top" | "vcenter" | "bottom") => void
@@ -391,20 +412,18 @@ function cloneNodes(list: SquigNode[], dx: number, dy: number): SquigNode[] {
 }
 
 /** Frame a set of nodes in the window, with a margin so nothing kisses an edge. */
-function fitBox(set: (partial: { viewport: Viewport }) => void, list: SquigNode[], cap = MAX_ZOOM) {
+function fitBox(set: (partial: any) => void, list: SquigNode[], cap = MAX_ZOOM) {
   const box = unionBox(list)
   if (!box) return
-  const vw = window.innerWidth
-  const vh = window.innerHeight
+  const vw = typeof window !== "undefined" ? window.innerWidth : 1920
+  const vh = typeof window !== "undefined" ? window.innerHeight : 1080
   const bw = Math.max(box.maxX - box.minX, 1)
   const bh = Math.max(box.maxY - box.minY, 1)
   const zoom = Math.min(cap, Math.max(MIN_ZOOM, Math.min((vw - FIT_PADDING * 2) / bw, (vh - FIT_PADDING * 2) / bh)))
-  set({
-    viewport: {
-      zoom,
-      x: vw / 2 - (box.minX + bw / 2) * zoom,
-      y: vh / 2 - (box.minY + bh / 2) * zoom,
-    },
+  useSquig.getState().setViewport({
+    zoom,
+    x: vw / 2 - (box.minX + bw / 2) * zoom,
+    y: vh / 2 - (box.minY + bh / 2) * zoom,
   })
 }
 
@@ -459,6 +478,7 @@ function scheduleSave(get: () => SquigState) {
  * reason to hand it back an old one.
  */
 function flushSave(get: () => SquigState, force = false) {
+  flushPendingViewportSave()
   if (saveTimer) {
     clearTimeout(saveTimer)
     saveTimer = null
@@ -478,6 +498,7 @@ function flushSave(get: () => SquigState, force = false) {
     order: s.order,
     updatedAt: Date.now(),
     look: lookOf(s),
+    viewState: s.viewState,
   })
   useSquig.setState({ files })
 
@@ -491,6 +512,7 @@ function flushSave(get: () => SquigState, force = false) {
         nodes: s.nodes,
         order: s.order,
       },
+      viewState: s.viewState,
       baseRevision: 1,
       serverRevision: 1,
       syncStatus: "saved-locally",
@@ -547,7 +569,10 @@ let watching = false
 function watchWindow(get: () => SquigState) {
   if (watching || typeof window === "undefined") return
   watching = true
-  const save = () => flushSave(get)
+  const save = () => {
+    flushPendingViewportSave()
+    flushSave(get)
+  }
   window.addEventListener("beforeunload", save)
   window.addEventListener("pagehide", save)
   document.addEventListener("visibilitychange", () => {
@@ -566,7 +591,8 @@ export const useSquig = create<SquigState>((set, get) => ({
   nodes: {},
   order: [],
   selection: [],
-  viewport: { x: 0, y: 0, zoom: 1 },
+  viewport: DEFAULT_VIEWPORT,
+  viewState: getDefaultViewState(),
   tool: "select",
   shapeKind: "rect",
   activeStyle: DEFAULT_ACTIVE_STYLE,
@@ -709,7 +735,17 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
   setViewerDoc: (doc) => set({ viewerDoc: doc }),
   setPdfToCanvasDialog: (dialog) => set({ pdfToCanvasDialog: dialog }),
-  setViewport: (v) => set({ viewport: v }),
+  setViewport: (v) => {
+    set((s) => ({
+      viewport: v,
+      viewState: {
+        ...s.viewState,
+        lastView: v,
+        updatedAt: Date.now(),
+      },
+    }))
+    scheduleSaveViewport(get().docId, v)
+  },
   // a selection is a set, so store it in one canonical order: document order.
   // everything downstream (clipboard, duplicate, align, the type summary) then
   // behaves the same whether it was built by marquee, shift-click or ⌘A
@@ -1035,16 +1071,36 @@ export const useSquig = create<SquigState>((set, get) => ({
       if (sp !== null) initialShowPage = sp === "true"
     } catch { }
 
+    const targetDocId = doc?.id ?? nanoid(8)
+    const nodesList = clean.order.map((id) => clean.nodes[id]).filter(Boolean)
+    const vs = doc?.viewState ? sanitizeViewState(doc.viewState) : getViewState(targetDocId)
+    const resolved = resolveOpeningViewport(targetDocId, nodesList)
+
+    if (resolved.isFirstOpenFit) {
+      vs.lastView = resolved.viewport
+      saveViewState(targetDocId, vs).catch(() => {})
+    }
+
     set({
-      docId: doc?.id ?? nanoid(8),
+      docId: targetDocId,
       fileName: doc?.name ?? "untitled scribbles",
       nodes: clean.nodes,
       order: clean.order,
+      viewport: resolved.viewport,
+      viewState: vs,
       files,
       contextRow: prefs.contextRow,
       showPage: initialShowPage,
       hydrated: true,
     })
+
+    if (typeof window !== "undefined") {
+      loadViewStateAsync(targetDocId).then((loadedVs) => {
+        if (get().docId === targetDocId) {
+          set({ viewState: loadedVs })
+        }
+      }).catch(() => {})
+    }
     // the document's own look, or — for one saved before looks existed — the
     // last look this browser was set to
     wearLook(set, doc?.look ?? prefs.look)
@@ -1243,14 +1299,14 @@ export const useSquig = create<SquigState>((set, get) => ({
     const [cx, cy] = center ?? [window.innerWidth / 2, window.innerHeight / 2]
     const zoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * factor))
     const k = zoom / v.zoom
-    set({ viewport: { zoom, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k } })
+    get().setViewport({ zoom, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k })
   },
 
   zoomTo100: () => {
     const v = get().viewport
     const [cx, cy] = [window.innerWidth / 2, window.innerHeight / 2]
     const k = 1 / v.zoom
-    set({ viewport: { zoom: 1, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k } })
+    get().setViewport({ zoom: 1, x: cx - (cx - v.x) * k, y: cy - (cy - v.y) * k })
   },
 
   zoomToFit: () => {
@@ -1263,6 +1319,55 @@ export const useSquig = create<SquigState>((set, get) => ({
     const sel = selection.map((id) => nodes[id]).filter(Boolean)
     if (!sel.length) return get().zoomToFit()
     fitBox(set, sel)
+  },
+
+  setHomeView: () => {
+    const s = get()
+    const vp = s.viewport
+    persistHomeView(s.docId, vp).then((updated) => {
+      set({ viewState: updated })
+      s.setNotice("Home View saved successfully.")
+    }).catch(() => {
+      s.setNotice("Could not save Home View.")
+    })
+  },
+
+  goToHomeView: () => {
+    const s = get()
+    const home = s.viewState.homeView
+    if (home && isValidViewport(home)) {
+      s.setViewport(home)
+      s.setNotice("Returning to Home View.")
+    } else {
+      s.setNotice("No Home View saved yet.")
+    }
+  },
+
+  clearHomeView: () => {
+    const s = get()
+    persistClearHomeView(s.docId).then((updated) => {
+      set({ viewState: updated })
+      s.setNotice("Home View removed.")
+    }).catch(() => {})
+  },
+
+  setOpenMode: (mode: CanvasOpenMode) => {
+    const s = get()
+    persistOpenMode(s.docId, mode).then((updated) => {
+      set({ viewState: updated })
+      const label =
+        mode === "last-view"
+          ? "Remember Last View"
+          : mode === "home-view"
+            ? "Custom Home View"
+            : "Fit All Content"
+      s.setNotice(`Opening behavior: ${label}`)
+    }).catch(() => {})
+  },
+
+  resetViewport: () => {
+    get().setViewport(DEFAULT_VIEWPORT)
+    get().setNotice("View reset to origin (100%)")
   },
 
   insertComponent: (kind) => {
@@ -1398,15 +1503,19 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   newFile: () => {
     fileSwitchToken += 1
-    // the file you were on keeps its place in the drawer — this is a new one
+    flushPendingViewportSave()
     flushSave(get)
+    const newDocId = nanoid(8)
+    const vs = getDefaultViewState()
+    saveViewState(newDocId, vs).catch(() => {})
     set({
-      docId: nanoid(8),
+      docId: newDocId,
       fileName: "untitled scribbles",
       nodes: {},
       order: [],
       selection: [],
-      viewport: { x: 0, y: 0, zoom: 1 },
+      viewport: DEFAULT_VIEWPORT,
+      viewState: vs,
       renamingFile: false,
       linkOpen: false,
       past: [],
@@ -1418,6 +1527,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   openFile: (id) => {
     if (id === get().docId) return
     const token = ++fileSwitchToken
+    flushPendingViewportSave()
     flushSave(get)
     const doc = readFile(id)
     if (!doc) {
@@ -1427,20 +1537,36 @@ export const useSquig = create<SquigState>((set, get) => ({
             if (token !== fileSwitchToken) return // Discard stale out-of-order load
             if (stored?.doc) {
               const clean = sanitize(stored.doc.nodes, stored.doc.order)
+              const nodesList = clean.order.map((nid) => clean.nodes[nid]).filter(Boolean)
+              const vs = stored.viewState ? sanitizeViewState(stored.viewState) : getViewState(stored.id)
+              const resolved = resolveOpeningViewport(stored.id, nodesList)
+
+              if (resolved.isFirstOpenFit) {
+                vs.lastView = resolved.viewport
+                saveViewState(stored.id, vs).catch(() => {})
+              }
+
               set({
                 docId: stored.id,
                 fileName: stored.name,
                 nodes: clean.nodes,
                 order: clean.order,
                 selection: [],
-                viewport: { x: 0, y: 0, zoom: 1 },
+                viewport: resolved.viewport,
+                viewState: vs,
                 renamingFile: false,
                 linkOpen: false,
                 panel: null,
                 past: [],
                 future: [],
               })
-              if (clean.order.length) fitBox(set, clean.order.map((nid) => clean.nodes[nid]), 1)
+
+              loadViewStateAsync(stored.id).then((loadedVs) => {
+                if (token === fileSwitchToken && get().docId === stored.id) {
+                  set({ viewState: loadedVs })
+                }
+              }).catch(() => {})
+
               dirty = false
               flushSave(get)
             } else {
@@ -1458,13 +1584,23 @@ export const useSquig = create<SquigState>((set, get) => ({
       return
     }
     const clean = sanitize(doc.nodes, doc.order)
+    const nodesList = clean.order.map((nid) => clean.nodes[nid]).filter(Boolean)
+    const vs = doc.viewState ? sanitizeViewState(doc.viewState) : getViewState(doc.id)
+    const resolved = resolveOpeningViewport(doc.id, nodesList)
+
+    if (resolved.isFirstOpenFit) {
+      vs.lastView = resolved.viewport
+      saveViewState(doc.id, vs).catch(() => {})
+    }
+
     set({
       docId: doc.id,
       fileName: doc.name,
       nodes: clean.nodes,
       order: clean.order,
       selection: [],
-      viewport: { x: 0, y: 0, zoom: 1 },
+      viewport: resolved.viewport,
+      viewState: vs,
       renamingFile: false,
       linkOpen: false,
       panel: null,
@@ -1474,15 +1610,22 @@ export const useSquig = create<SquigState>((set, get) => ({
     // a drawing carries its own ink and paper; one saved before looks existed
     // keeps whatever is on screen rather than snapping to a default
     if (doc.look) wearLook(set, doc.look)
-    // frame what's there, but never past life size — 400% on one small
-    // rectangle tells you nothing about where you've landed
-    if (clean.order.length) fitBox(set, clean.order.map((nid) => clean.nodes[nid]), 1)
+
+    if (typeof window !== "undefined") {
+      loadViewStateAsync(doc.id).then((loadedVs) => {
+        if (token === fileSwitchToken && get().docId === doc.id) {
+          set({ viewState: loadedVs })
+        }
+      }).catch(() => {})
+    }
+
     // straight off the drawer, so there is nothing to write back yet
     dirty = false
     flushSave(get)
   },
 
   deleteFile: (id) => {
+    deleteViewState(id).catch(() => {})
     const files = dropFile(id)
     set({ files })
     if (typeof window !== "undefined") {
@@ -1514,8 +1657,8 @@ export const useSquig = create<SquigState>((set, get) => ({
 
   serialize: () => {
     const s = get()
-    const { fileName, nodes, order } = s
-    return JSON.stringify({ app: "zenithsui", version: 1, fileName, look: lookOf(s), nodes, order }, null, 2)
+    const { fileName, nodes, order, viewState } = s
+    return JSON.stringify({ app: "zenithsui", version: 1, fileName, look: lookOf(s), viewState, nodes, order }, null, 2)
   },
 
   serializeExcalidraw: () => {
@@ -1531,22 +1674,31 @@ export const useSquig = create<SquigState>((set, get) => ({
 
       // Support Excalidraw v2 format (.excalidraw)
       if (isExcalidrawDocument(doc)) {
+        flushPendingViewportSave()
         flushSave(get)
         const { nodes: convertedNodes, order: convertedOrder } = excalidrawToSquigNodes(doc)
         const clean = sanitize(convertedNodes, convertedOrder)
+        const newDocId = nanoid(8)
+        const nodesList = clean.order.map((id) => clean.nodes[id]).filter(Boolean)
+        const vs = getDefaultViewState()
+        const resolved = resolveOpeningViewport(newDocId, nodesList)
+        if (resolved.isFirstOpenFit) {
+          vs.lastView = resolved.viewport
+          saveViewState(newDocId, vs).catch(() => {})
+        }
         set({
-          docId: nanoid(8),
+          docId: newDocId,
           fileName: "imported sketch",
           nodes: clean.nodes,
           order: clean.order,
           selection: [],
+          viewport: resolved.viewport,
+          viewState: vs,
           renamingFile: false,
           linkOpen: false,
           past: [],
           future: [],
         })
-        if (clean.order.length) fitBox(set, clean.order.map((id) => clean.nodes[id]), 1)
-        else set({ viewport: { x: 0, y: 0, zoom: 1 } })
         scheduleSave(get)
         return true
       }
@@ -1565,14 +1717,25 @@ export const useSquig = create<SquigState>((set, get) => ({
       if (!payload.nodes || !Array.isArray(payload.order)) return false
       // an opened file joins the drawer as its own document, so importing
       // never writes over whatever was on the canvas
+      flushPendingViewportSave()
       flushSave(get)
       const clean = sanitize(payload.nodes, payload.order)
+      const newDocId = nanoid(8)
+      const nodesList = clean.order.map((id) => clean.nodes[id]).filter(Boolean)
+      const vs = payload.viewState ? sanitizeViewState(payload.viewState) : getDefaultViewState()
+      const resolved = resolveOpeningViewport(newDocId, nodesList)
+      if (resolved.isFirstOpenFit) {
+        vs.lastView = resolved.viewport
+      }
+      saveViewState(newDocId, vs).catch(() => {})
       set({
-        docId: nanoid(8),
+        docId: newDocId,
         fileName: typeof doc.name === "string" ? doc.name : (typeof payload.fileName === "string" ? payload.fileName : "imported scribbles"),
         nodes: clean.nodes,
         order: clean.order,
         selection: [],
+        viewport: resolved.viewport,
+        viewState: vs,
         renamingFile: false,
         linkOpen: false,
         past: [],
@@ -1580,10 +1743,6 @@ export const useSquig = create<SquigState>((set, get) => ({
       })
       // an import brings its author's ink and paper with it, when it has any
       if (payload.look) wearLook(set, knownLook(payload.look, lookOf(get())))
-      // an imported file was drawn wherever its author left it — go there,
-      // or the canvas looks empty when it isn't
-      if (clean.order.length) fitBox(set, clean.order.map((id) => clean.nodes[id]), 1)
-      else set({ viewport: { x: 0, y: 0, zoom: 1 } })
       scheduleSave(get)
       return true
     } catch {

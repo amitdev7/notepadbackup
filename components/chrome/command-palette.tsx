@@ -57,6 +57,8 @@ import {
   Sparkle as SparkleIcon,
   SquaresFour as SquaresFourIcon,
   LockSimple as LockSimpleIcon,
+  House as HouseIcon,
+  BookmarkSimple as BookmarkSimpleIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 
@@ -197,7 +199,10 @@ function Palette() {
       { id: "zoom-100", label: "Zoom to 100%", hint: kbd("shift+0"), section: "View", keywords: "actual size", icon: MagnifyingGlassIcon, run: () => st().zoomTo100() },
       { id: "zoom-fit", label: "Zoom to fit", hint: kbd("shift+1"), section: "View", keywords: "everything overview", icon: CornersOutIcon, run: () => st().zoomToFit() },
       { id: "zoom-sel", label: "Zoom to selection", hint: kbd("shift+2"), section: "View", icon: CornersInIcon, disabled: !hasSel, run: () => st().zoomToSelection() },
-      { id: "zoom-reset", label: "Reset view", hint: kbd("mod+0"), section: "View", keywords: "origin home", icon: CornersOutIcon, run: () => st().setViewport({ x: 0, y: 0, zoom: 1 }) },
+      { id: "zoom-reset", label: "Reset zoom (100%)", hint: kbd("mod+0"), section: "View", keywords: "origin 100", icon: CornersOutIcon, run: () => st().resetViewport() },
+      { id: "home-go", label: "Go to Home View", hint: kbd("home"), section: "View", keywords: "home view start starting viewport", icon: HouseIcon, run: () => st().goToHomeView() },
+      { id: "home-set", label: "Set current view as Home", hint: kbd("shift+home"), section: "View", keywords: "home save starting viewport", icon: BookmarkSimpleIcon, run: () => st().setHomeView() },
+      { id: "home-clear", label: "Clear Home View", section: "View", keywords: "home remove reset starting viewport", icon: TrashIcon, run: () => st().clearHomeView() },
       { id: "hide-ui", label: "Hide the interface", hint: kbd("mod+\\"), section: "View", keywords: "clean present chrome", icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
       { id: "keys", label: "Keyboard shortcuts", hint: kbd("shift+/"), section: "View", keywords: "hotkeys help cheat sheet", icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },
       { id: "canvas-stats", label: "Canvas & Element Stats…", hint: kbd("shift+alt+s"), section: "View", keywords: "metrics count vertices dimensions info inspector", icon: BoundingBoxIcon, run: () => st().setStatsOpen(!st().statsOpen) },

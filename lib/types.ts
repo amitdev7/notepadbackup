@@ -255,6 +255,69 @@ export interface Viewport {
   zoom: number
 }
 
+export type CanvasViewport = Viewport
+
+export type CanvasOpenMode =
+  | "last-view"
+  | "home-view"
+  | "fit-content"
+
+export interface DocumentViewState {
+  lastView: CanvasViewport | null
+  homeView: CanvasViewport | null
+  openMode: CanvasOpenMode
+  updatedAt: number
+}
+
+export const MIN_CANVAS_ZOOM = 0.1
+export const MAX_CANVAS_ZOOM = 4
+
+export function isValidViewport(v: unknown): v is CanvasViewport {
+  if (!v || typeof v !== "object") return false
+  const vp = v as Partial<CanvasViewport>
+  return (
+    typeof vp.x === "number" &&
+    Number.isFinite(vp.x) &&
+    typeof vp.y === "number" &&
+    Number.isFinite(vp.y) &&
+    typeof vp.zoom === "number" &&
+    Number.isFinite(vp.zoom) &&
+    vp.zoom > 0
+  )
+}
+
+export function sanitizeViewport(v: unknown, fallback?: CanvasViewport | null): CanvasViewport | null {
+  if (!isValidViewport(v)) return fallback ?? null
+  const clampedZoom = Math.min(MAX_CANVAS_ZOOM, Math.max(MIN_CANVAS_ZOOM, v.zoom))
+  return {
+    x: Number(v.x.toFixed(2)),
+    y: Number(v.y.toFixed(2)),
+    zoom: Number(clampedZoom.toFixed(4)),
+  }
+}
+
+export function sanitizeViewState(vs: unknown): DocumentViewState {
+  const defaultState: DocumentViewState = {
+    lastView: null,
+    homeView: null,
+    openMode: "last-view",
+    updatedAt: Date.now(),
+  }
+  if (!vs || typeof vs !== "object") return defaultState
+  const s = vs as Partial<DocumentViewState>
+  const openMode: CanvasOpenMode =
+    s.openMode === "home-view" || s.openMode === "fit-content" || s.openMode === "last-view"
+      ? s.openMode
+      : "last-view"
+
+  return {
+    lastView: sanitizeViewport(s.lastView),
+    homeView: sanitizeViewport(s.homeView),
+    openMode,
+    updatedAt: typeof s.updatedAt === "number" && Number.isFinite(s.updatedAt) ? s.updatedAt : Date.now(),
+  }
+}
+
 export interface SquigDoc {
   fileName: string
   nodes: Record<string, SquigNode>

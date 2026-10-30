@@ -1,5 +1,5 @@
 import { openZenithsuiDb, STORES, withTransaction } from "./db"
-import type { SquigDoc } from "../types"
+import type { SquigDoc, DocumentViewState } from "../types"
 
 export type LocalSyncStatus =
   | "local-only"
@@ -22,6 +22,7 @@ export interface StoredLocalDoc {
   updatedAt: number
   deletedAt: number | null
   syncError?: string | null
+  viewState?: DocumentViewState
 }
 
 const syncChannel =

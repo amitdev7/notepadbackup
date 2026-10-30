@@ -21,6 +21,7 @@ import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import type { SquigNode, TextNode, DocumentNode, FillTone } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
+import { flushPendingViewportSave } from "@/lib/canvas/viewport-memory"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
 import { smoothPoints, pointsToSmoothSvgPath } from "@/lib/canvas/stroke-smoothing"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
@@ -949,6 +950,10 @@ export function Canvas() {
       )
     }
 
+    if (g.kind === "pan") {
+      flushPendingViewportSave()
+    }
+
     teardownGesture()
   }, [st, stopAutoPan, teardownGesture, updateGesture])
 
@@ -1762,6 +1767,10 @@ export function Canvas() {
             e.preventDefault()
             s.zoomToSelection()
             return
+          case "Home":
+            e.preventDefault()
+            s.setHomeView()
+            return
         }
         switch (e.key.toLowerCase()) {
           case "h":
@@ -1801,6 +1810,10 @@ export function Canvas() {
       if (e.altKey) return
 
       switch (key) {
+        case "Home":
+          e.preventDefault()
+          s.goToHomeView()
+          break
         case "Backspace":
         case "Delete":
           // backspace with nothing selected would navigate back in old browsers

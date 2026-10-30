@@ -10,7 +10,8 @@
 // why Export stays one keystroke away.
 // ---------------------------------------------------------------------------
 
-import type { SquigNode } from "./types"
+import type { SquigNode, DocumentViewState } from "./types"
+import { sanitizeViewState } from "./types"
 import { DEFAULT_FONT, DEFAULT_LOOK, DEFAULT_PAPER, DEFAULT_THEME, THEMES, type FontMode, type Look, type PaperShade, type ThemeName } from "./theme"
 
 export interface FileMeta {
@@ -27,6 +28,8 @@ export interface StoredDoc {
   updatedAt: number
   /** how this drawing looks — absent on documents saved before looks existed */
   look?: Look
+  /** saved viewport memory state */
+  viewState?: DocumentViewState
 }
 
 /** Everything that belongs to the app rather than to any one document. */
@@ -101,6 +104,7 @@ export function readFile(id: string): StoredDoc | null {
     // a document written before looks existed has none; the caller keeps the
     // look already on screen rather than snapping the canvas to a default
     look: doc.look ? knownLook(doc.look, DEFAULT_LOOK) : undefined,
+    viewState: doc.viewState ? sanitizeViewState(doc.viewState) : undefined,
   }
 }
 

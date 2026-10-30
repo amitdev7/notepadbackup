@@ -280,9 +280,9 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
         }}
       >
         <div
-          className="w-full max-w-6xl h-[92vh] flex flex-col rounded-xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] mac-shadow animate-genie-in"
+          className="w-full max-w-6xl h-[92vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
           style={{
-            boxShadow: "0 20px 48px -10px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.15)",
+            boxShadow: "0 20px 40px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.15)",
           }}
           onClick={(e) => e.stopPropagation()}
         >
@@ -326,9 +326,9 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
       }}
     >
       <div
-        className="w-full max-w-5xl h-[88vh] flex flex-col rounded-xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] mac-shadow animate-genie-in"
+        className="w-full max-w-5xl h-[88vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
         style={{
-          boxShadow: "0 20px 48px -10px rgba(0,0,0,0.25), 4px 4px 0px rgba(0,0,0,0.12)",
+          boxShadow: "0 20px 40px rgba(0,0,0,0.25), 4px 4px 0px rgba(0,0,0,0.12)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
