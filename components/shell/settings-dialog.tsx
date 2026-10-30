@@ -37,6 +37,7 @@ import { UI_ACCENTS, COLOR_SWATCHES } from "@/lib/design-tokens"
 import { THEMES, THEME_NAMES, PAPER_SHADES, type ThemeName, type FontMode, type PaperShade } from "@/lib/theme"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import {
   Sliders,
   Palette,
@@ -99,6 +100,9 @@ import {
   CheckCircle,
   WarningCircle,
   Compass,
+  Clock,
+  MapPin,
+  Globe,
 } from "@phosphor-icons/react"
 
 interface SectionItem {
@@ -109,7 +113,8 @@ interface SectionItem {
 }
 
 const SECTIONS: SectionItem[] = [
-  { id: "general", label: "General", description: "Language, timezone, start page and defaults", icon: Sliders },
+  { id: "general", label: "General", description: "Language, start page and application defaults", icon: Sliders },
+  { id: "time", label: "Time & Location", description: "Real-time clock, automatic timezone, IP geolocation and calibration", icon: Clock },
   { id: "appearance", label: "Appearance & Themes", description: "Website theme modes, UI accents, density, radius and translucency", icon: Palette },
   { id: "laser", label: "Laser Pointer", description: "Laser beam color, trail lifetime, width and glow effects", icon: Flashlight },
   { id: "drawing", label: "Drawing & Inking", description: "Default stroke color, line weights, smoothing and pressure", icon: PencilLine },
@@ -3133,6 +3138,9 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
           </div>
         </div>
       )
+
+    case "time":
+      return <TimeSettingsTab />
 
     default:
       return null

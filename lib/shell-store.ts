@@ -7,9 +7,11 @@
 // ---------------------------------------------------------------------------
 
 import { create } from "zustand"
+import { type ClockPreferences, DEFAULT_CLOCK_PREFERENCES } from "@/lib/time/types"
 
 export type SettingsSectionId =
   | "general"
+  | "time"
   | "appearance"
   | "laser"
   | "drawing"
@@ -245,6 +247,7 @@ export interface ShellPreferences {
   dockControls: DockControlsVisibility
   databaseSettings: DatabaseSettings
   wifiAutoSync: boolean
+  clockSettings: ClockPreferences
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -275,6 +278,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   dockControls: DEFAULT_DOCK_CONTROLS,
   databaseSettings: DEFAULT_DATABASE_SETTINGS,
   wifiAutoSync: false,
+  clockSettings: DEFAULT_CLOCK_PREFERENCES,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -313,6 +317,10 @@ function loadInitialPreferences(): ShellPreferences {
         databaseSettings: {
           ...DEFAULT_DATABASE_SETTINGS,
           ...(parsed.databaseSettings || {}),
+        },
+        clockSettings: {
+          ...DEFAULT_CLOCK_PREFERENCES,
+          ...(parsed.clockSettings || {}),
         },
       }
     }
@@ -361,6 +369,7 @@ interface ShellState {
   setLibraryCategory: (c: string) => void
   setGlobalSearchOpen: (open: boolean) => void
   updatePreferences: (updates: Partial<ShellPreferences>) => void
+  updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   toggleToolbar: () => void
   toggleDock: () => void
   toggleToolbarViewMenu: () => void
@@ -571,6 +580,15 @@ export const useShellStore = create<ShellState>((set, get) => ({
           zoomControls: nextVal,
         },
       }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updateClockPreferences: (updates) => {
+    set((state) => {
+      const nextClock = { ...state.preferences.clockSettings, ...updates }
+      const next = { ...state.preferences, clockSettings: nextClock }
       savePreferences(next)
       return { preferences: next }
     })

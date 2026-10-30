@@ -16,6 +16,7 @@ import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { useShellStore } from "@/lib/shell-store"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { ViewMenu } from "@/components/shell/view-menu"
+import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { useSyncStore } from "@/lib/sync/engine"
 import { PencilSimple, Check } from "@phosphor-icons/react"
 
@@ -173,6 +174,10 @@ export function TopBar() {
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
+
+        {/* Real-Time Clock & Location Detection */}
+        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        <TopBarClock />
 
         {showToolbarViewMenu && (
           <>
