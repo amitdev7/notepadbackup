@@ -164,6 +164,24 @@ export interface ArrowNode extends BaseNode, Outlined {
  * needing every paste re-encoded down to a size a browser will hold; see
  * lib/clipboard.ts.
  */
+export interface ImageBorder {
+  enabled: boolean
+  color?: string
+  width?: number
+  style?: "solid" | "dashed" | "dotted"
+  opacity?: number
+  radius?: number
+}
+
+export const DEFAULT_IMAGE_BORDER: ImageBorder = {
+  enabled: false,
+  color: "var(--sq-ink)",
+  width: 2,
+  style: "solid",
+  opacity: 100,
+  radius: 0,
+}
+
 export interface ImageNode extends BaseNode {
   type: "image"
   /** data:image/… — nothing else is ever put here, or ever read back out */
@@ -173,6 +191,8 @@ export interface ImageNode extends BaseNode {
   naturalH: number
   /** the file it came from, when the clipboard said */
   name?: string
+  /** optional visual border settings — no border by default */
+  border?: ImageBorder
 }
 
 /**

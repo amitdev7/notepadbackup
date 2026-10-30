@@ -1,7 +1,7 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Inline text editing — the editor stands exactly where the words already are.
+// Inline text editing â€” the editor stands exactly where the words already are.
 //
 // Nothing moves when you start typing. The drawn run is hidden, and a bare
 // textarea takes its place on the same baseline, at the same size, weight and
@@ -9,8 +9,8 @@
 // panel, no field: a caret in the drawing, and the words you're changing.
 //
 // A double-click opens this, and so does Return on a selected layer.
-// Enter (or ⌘Enter on a multi-line text node), Escape and clicking away all
-// commit — leaving the editor never throws typed words away.
+// Enter (or âŒ˜Enter on a multi-line text node), Escape and clicking away all
+// commit â€” leaving the editor never throws typed words away.
 // ---------------------------------------------------------------------------
 
 import { useEffect, useMemo, useRef, useState } from "react"
@@ -20,12 +20,12 @@ import type { ComponentNode, SquigNode, TextNode } from "@/lib/types"
 import type { EditTarget } from "@/lib/canvas/edit-target"
 import { fontMetrics, measureLinesWidth, wrapText } from "@/lib/canvas/text-metrics"
 import { fitTextBox } from "@/lib/canvas/text-reflow"
-import { TEXT_LINE_HEIGHT, anchorFactor } from "@/lib/sketch/text-layout"
+import { TEXT_LINE_HEIGHT, anchorFactor, textAnchorX, textBaseline } from "@/lib/sketch/text-layout"
 
 /**
  * How far past the words the editor still answers to the pointer, in screen
  * px. Padding rather than margin, so a click landing there goes to the
- * textarea — which puts the caret at the nearest spot in the text instead of
+ * textarea â€” which puts the caret at the nearest spot in the text instead of
  * committing and dropping you out of the edit. Clicking just past the end of
  * a line to type from there is the single most common caret gesture, and it
  * has to keep you in.
@@ -44,7 +44,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
     const s = st()
     if (s.editingId !== node.id) return
     // an empty text node draws nothing and can never be clicked again, so it
-    // goes even when the draft is unchanged — that's the just-placed-then-
+    // goes even when the draft is unchanged â€” that's the just-placed-then-
     // dismissed case
     if (isText && !value.trim()) {
       s.removeNodes([node.id])
@@ -52,7 +52,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       return
     }
     if (value === target.value) {
-      // nothing changed — don't spend an undo step saying so
+      // nothing changed â€” don't spend an undo step saying so
       s.setEditing(null)
       return
     }
@@ -62,7 +62,9 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       if (!trimmed) {
         s.removeNodes([node.id], { checkpoint: false })
       } else {
-        s.updateNode(node.id, fitTextBox(node as TextNode, trimmed) as Partial<SquigNode>)
+        const textNode = node as TextNode
+        const activeSize = textNode.fontSize || target.fontSize
+        s.updateNode(node.id, fitTextBox(textNode, trimmed, activeSize) as Partial<SquigNode>)
       }
     } else if (target.propKey) {
       s.updateNode(node.id, {
@@ -81,7 +83,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
 
   // the press that opens the editor is still unwinding while we mount, and its
   // default action puts focus back on the canvas. Blurs before the editor has
-  // settled are that, not the user leaving — committing on one would delete a
+  // settled are that, not the user leaving â€” committing on one would delete a
   // text node the instant it was placed.
   const settled = useRef(false)
 
@@ -96,7 +98,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
 
   useEffect(() => {
     // a press anywhere else commits in the capture phase, *before* the canvas
-    // reacts — so the click that dismisses the editor also lands where it was
+    // reacts â€” so the click that dismisses the editor also lands where it was
     // aimed instead of costing a second click
     const onDown = (e: PointerEvent) => {
       if ((e.target as HTMLElement)?.closest?.("textarea") === taRef.current) return
@@ -112,7 +114,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
    * Put the textarea's first baseline on the renderer's.
    *
    * A line box centres the face's em box inside itself and sets the baseline at
-   * half-leading + ascent — so measuring the ascent off the live font is what
+   * half-leading + ascent â€” so measuring the ascent off the live font is what
    * lands the caret on the line the words were already printing on. The padding
    * is slack for ascenders, descenders and a caret at either end; the top-left
    * walks back by exactly that much, so none of it shifts anything.
@@ -122,9 +124,17 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
   // renderer will, and only the height follows the typing
   const fixed = isText && !!(node as TextNode).fixedW
 
+  // Read live text node styling so changes made during edit mode apply instantly
+  const textNode = isText ? (node as TextNode) : null
+  const currentFontSize = textNode?.fontSize || target.fontSize
+  const currentBold = textNode?.bold !== undefined ? textNode.bold : target.bold
+  const currentItalic = textNode?.italic !== undefined ? textNode.italic : target.italic
+  const currentUnderline = textNode ? (!!textNode.underline || !!textNode.link) : (target.underline)
+  const currentAlign = textNode?.align ?? target.align
+
   const box = useMemo(() => {
-    const size = target.fontSize * v.zoom
-    const style = { size, bold: target.bold, italic: target.italic }
+    const size = currentFontSize * v.zoom
+    const style = { size, bold: currentBold, italic: currentItalic }
     const lineHeight = size * TEXT_LINE_HEIGHT
     const { ascent, descent } = fontMetrics(style)
 
@@ -136,11 +146,11 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       ? node.w * v.zoom
       : measureLinesWidth(value ? value.split("\n") : [placeholder], style)
     const padY = size * 0.35
-    const anchorX = (node.x + target.x) * v.zoom + v.x
-    const baselineY = (node.y + target.baseline) * v.zoom + v.y
+    const anchorX = (node.x + (isText ? textAnchorX(currentAlign, node.w) : target.x)) * v.zoom + v.x
+    const baselineY = (node.y + (isText ? textBaseline(0, currentFontSize) : target.baseline)) * v.zoom + v.y
 
     return {
-      left: fixed ? node.x * v.zoom + v.x - CARET_PAD : anchorX - CARET_PAD - anchorFactor(target.align) * run,
+      left: fixed ? node.x * v.zoom + v.x - CARET_PAD : anchorX - CARET_PAD - anchorFactor(currentAlign) * run,
       top: baselineY - ((lineHeight - (ascent + descent)) / 2 + ascent) - padY,
       width: run + CARET_PAD * 2,
       height: lineCount * lineHeight + padY * 2,
@@ -148,7 +158,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       fontSize: size,
       lineHeight: `${lineHeight}px`,
     }
-  }, [node.x, node.y, node.w, target, value, v, placeholder, fixed])
+  }, [node.x, node.y, node.w, target, value, v, placeholder, fixed, currentFontSize, currentBold, currentItalic, currentAlign, isText])
 
   return (
     <textarea
@@ -195,10 +205,10 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
         fontSize: box.fontSize,
         lineHeight: box.lineHeight,
         fontFamily: "var(--sq-font)",
-        fontWeight: target.bold ? 700 : 400,
-        fontStyle: target.italic ? "italic" : undefined,
-        textDecoration: target.underline ? "underline" : undefined,
-        textAlign: target.align,
+        fontWeight: currentBold ? 700 : 400,
+        fontStyle: currentItalic ? "italic" : undefined,
+        textDecoration: currentUnderline ? "underline" : undefined,
+        textAlign: currentAlign,
         whiteSpace: fixed ? "pre-wrap" : "pre",
         // long words break where the canvas breaks them — mid-word, only when
         // the word alone is wider than the box; see wrapText

@@ -1,7 +1,7 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Shell Store — Zustand store for UI navigation state and application preferences.
+// Shell Store â€” Zustand store for UI navigation state and application preferences.
 // Decoupled from canvas document undo/redo history.
 // Local-first persistence via localStorage with SSR safety.
 // ---------------------------------------------------------------------------
@@ -133,6 +133,7 @@ export interface TextSettings {
   align: "left" | "center" | "right"
   bold: boolean
   italic: boolean
+  underline?: boolean
 }
 
 export const DEFAULT_TEXT_SETTINGS: TextSettings = {
@@ -143,6 +144,7 @@ export const DEFAULT_TEXT_SETTINGS: TextSettings = {
   align: "left",
   bold: false,
   italic: false,
+  underline: false,
 }
 
 export interface DockControlsVisibility {

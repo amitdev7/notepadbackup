@@ -18,7 +18,7 @@ import { renderComponent } from "@/lib/library/registry"
  * These reuse the component ladder rather than inventing a second one: `light`
  * and `strong` are the same two shades every card and button prints with, so a
  * filled scribble sits in the same tonal world as the library. `paper` is
- * genuinely opaque — it's the tone you reach for when a box has to hide what
+ * genuinely opaque â€” it's the tone you reach for when a box has to hide what
  * it overlaps rather than tint it.
  */
 const FILL_OPTS: Record<FillTone, PrimOpts | undefined> = {
@@ -75,7 +75,7 @@ export function basePrims(node: SquigNode): Prim[] {
       return [{ t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: node.roundness ? 16 : 6, o }]
     }
     case "draw":
-      // freehand is already the user's own line — barely roughen it with smooth curve fitting
+      // freehand is already the user's own line â€” barely roughen it with smooth curve fitting
       return [{ t: "poly", pts: node.points, curve: true, o: outline(node, 1.9, { roughness: 0.2 }) }]
     case "arrow": {
       const [[x1, y1], [x2, y2]] = node.points
@@ -105,16 +105,10 @@ export function basePrims(node: SquigNode): Prim[] {
       }
       return out
     }
-    // the picture itself is drawn by the renderer, which is the one thing here
-    // that isn't made of pen marks. What the hand contributes is the frame
-    // around it, so a pasted screenshot still sits on the same paper.
-    //
-    // Drawn just outside the box rather than on it: half a line sitting on the
-    // picture disappears into whatever colour it happens to land on, and a red
-    // screenshot in a red ink would come out with no frame at all.
+    // Pictures are drawn by the renderer with optional custom borders.
+    // By default, images have no permanent border, preserving the clean bitmap.
     case "image": {
-      const g = FRAME_GAP
-      return [{ t: "rect", x: -g, y: -g, w: node.w + g * 2, h: node.h + g * 2, r: 2, o: { stroke: "muted" } }]
+      return []
     }
     case "document": {
       const ext = (node.extension || node.name.split(".").pop() || "doc").toUpperCase()
@@ -130,7 +124,7 @@ export function basePrims(node: SquigNode): Prim[] {
         { t: "text", x: 8, y: 17, text: ext, size: 10, bold: true },
         { t: "line", x1: 0, y1: Math.max(26, node.h - 38), x2: node.w, y2: Math.max(26, node.h - 38), o: { stroke: "faint" } },
         { t: "text", x: 8, y: Math.max(38, node.h - 22), text: node.name, size: 11, bold: true },
-        { t: "text", x: 8, y: Math.max(48, node.h - 8), text: `${ext} · ${meta}`, size: 9 },
+        { t: "text", x: 8, y: Math.max(48, node.h - 8), text: `${ext} Â· ${meta}`, size: 9 },
       ]
     }
     case "text": {
@@ -149,7 +143,7 @@ export function basePrims(node: SquigNode): Prim[] {
         align: node.align,
         bold: node.bold,
         italic: node.italic,
-        // a link is a link because it's underlined — no blue in a wireframe
+        // a link is a link because it's underlined â€” no blue in a wireframe
         underline: node.underline || !!node.link,
         customColor: node.color,
       }))
@@ -193,7 +187,7 @@ export function basePrims(node: SquigNode): Prim[] {
 /**
  * Everything a node draws, in node-local coordinates, flips applied.
  *
- * A text layer flips for real — the words turn over. Everywhere else the words
+ * A text layer flips for real â€” the words turn over. Everywhere else the words
  * are labels on a wireframe and stay readable while the layout mirrors around
  * them; see mirrorPrims.
  */

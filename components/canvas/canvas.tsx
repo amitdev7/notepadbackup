@@ -1,18 +1,18 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// The infinite canvas — pan/zoom, marquee, drag, resize, snap, create tools.
+// The infinite canvas â€” pan/zoom, marquee, drag, resize, snap, create tools.
 //
 // Gesture rules worth knowing before editing this file:
-//   · every gesture is anchored in WORLD space, so panning or zooming mid-drag
+//   Â· every gesture is anchored in WORLD space, so panning or zooming mid-drag
 //     doesn't warp what you're doing
-//   · every frame recomputes from the gesture-start snapshot, never from live
+//   Â· every frame recomputes from the gesture-start snapshot, never from live
 //     state, so dragging out and back is lossless
-//   · modifiers are re-read continuously, so Shift/Alt can be pressed and let
+//   Â· modifiers are re-read continuously, so Shift/Alt can be pressed and let
 //     go mid-drag the way they can in Figma
-//   · the 3px threshold latches: once a gesture is a drag it stays a drag,
+//   Â· the 3px threshold latches: once a gesture is a drag it stays a drag,
 //     even if you come back to where you started
-//   · Escape reverts to the gesture's checkpoint instead of leaving half a move
+//   Â· Escape reverts to the gesture's checkpoint instead of leaving half a move
 // ---------------------------------------------------------------------------
 
 import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react"
@@ -113,7 +113,7 @@ type Gesture =
     dirty: boolean
     /** set when the press landed inside a bigger selection: a click with no
      *  drag narrows to exactly this set. Carries the set rather than the id
-     *  because ⌘-click means "just this piece" while a plain click means
+     *  because âŒ˜-click means "just this piece" while a plain click means
      *  "this piece's whole group". */
     collapseTo: string[] | null
   }
@@ -127,8 +127,8 @@ type Gesture =
     exceeded: boolean
     base: string[]
     /** the hollow shape whose middle the press landed in, if any. A press
-     *  there reads two ways — a click means "select this shape", a drag
-     *  means "marquee, it just happened to start inside" — so the candidate
+     *  there reads two ways â€” a click means "select this shape", a drag
+     *  means "marquee, it just happened to start inside" â€” so the candidate
      *  rides along and the release picks the reading. */
     softHitId: string | null
   }
@@ -177,7 +177,7 @@ export function Canvas() {
    * Double-press bookkeeping for the side handles. A DOM dblclick can't carry
    * this: the first press starts (and empties out) a resize gesture, which
    * remounts every handle, so the browser sees two different targets and
-   * delivers the dblclick to the canvas underneath — which would edit the
+   * delivers the dblclick to the canvas underneath â€” which would edit the
    * layer, or worse, plant a new one. So the second press is caught in
    * startResize, before it becomes a gesture at all.
    */
@@ -186,7 +186,7 @@ export function Canvas() {
   const autoPanRef = useRef<number | null>(null)
   const autoPanTickRef = useRef<() => void>(() => { })
   const hoverRafRef = useRef<number | null>(null)
-  /** last world position of the pointer — ⌘V pastes here */
+  /** last world position of the pointer â€” âŒ˜V pastes here */
   const pointerWorld = useRef<[number, number] | null>(null)
   const gestureRafRef = useRef<number | null>(null)
   const pendingPointRef = useRef<{ clientX: number; clientY: number } | null>(null)
@@ -202,17 +202,17 @@ export function Canvas() {
   const placingDrag = useSquig((s) => s.placingDrag)
   const editingId = useSquig((s) => s.editingId)
 
-  // where the words being edited actually sit — the editor stands there, and
+  // where the words being edited actually sit â€” the editor stands there, and
   // the renderer leaves that one run out so they don't print on top of it
   const editingNode = editingId ? nodes[editingId] : null
   const editing = useMemo(() => (editingNode ? editTarget(editingNode) : null), [editingNode])
 
-  /** marquee box in WORLD units — screen conversion happens at render time */
+  /** marquee box in WORLD units â€” screen conversion happens at render time */
   const [marquee, setMarquee] = useState<Bounds | null>(null)
   const [guides, setGuides] = useState<GuideLine[]>([])
   const [cursor, setCursor] = useState<[number, number] | null>(null)
   const [livePoints, setLivePoints] = useState<[number, number][] | null>(null)
-  /** soft: the pointer is over a hollow shape's middle — a click would select
+  /** soft: the pointer is over a hollow shape's middle â€” a click would select
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
   const [pointerClientPos, setPointerClientPos] = useState<{ x: number; y: number } | null>(null)
@@ -273,7 +273,7 @@ export function Canvas() {
   }, [order, nodes, viewport, selection, editingId, perfSettings, canvasSize])
 
   const { isSpacebarHeld } = useSpacebarPan()
-  // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
+  // âŒ˜C/âŒ˜X/âŒ˜V live on the browser's clipboard events, not in onKey below
   useClipboard(pointerWorld)
 
   const st = useSquig.getState
@@ -298,7 +298,7 @@ export function Canvas() {
       const s = st()
       const [wx, wy] = toWorld(e)
       // ink and fills first; failing that, the hollow shape the point is
-      // inside of — double-click, right-click and hover all read a point the
+      // inside of â€” double-click, right-click and hover all read a point the
       // way a completed click does
       return (
         pickAt(s.nodes, s.order, wx, wy, s.viewport.zoom) ?? pickSoftAt(s.nodes, s.order, wx, wy)
@@ -417,7 +417,7 @@ export function Canvas() {
       const [lx, ly] = toLocal({ clientX, clientY })
       const [wx, wy] = screenToWorld(v, lx, ly)
 
-      // once a press has travelled far enough it is a drag for good — measured
+      // once a press has travelled far enough it is a drag for good â€” measured
       // radially, so a diagonal wiggle isn't held to a longer leash
       if (!g.exceeded && Math.hypot(clientX - g.sx, clientY - g.sy) >= DRAG_THRESHOLD) {
         g.exceeded = true
@@ -561,7 +561,7 @@ export function Canvas() {
 
         // one text layer alone resizes like a text layer, not like a box: the
         // side handles set the measure the words wrap to, and the corners
-        // scale the type — always in proportion, because a corner-stretched
+        // scale the type â€” always in proportion, because a corner-stretched
         // glyph isn't a thing a pen does
         const soloText = g.origNodes.length === 1 && g.origNodes[0].type === "text" ? (g.origNodes[0] as TextNode) : null
         const lockAspect = mods.shift || (!!soloText && g.handle.length === 2)
@@ -587,7 +587,7 @@ export function Canvas() {
         if (soloText && (g.handle === "e" || g.handle === "w")) {
           // wrap-width drag. The clamp can refuse the last few pixels of a
           // squeeze, so the box is re-anchored on whichever edge the gesture
-          // holds still — otherwise the far edge walks as the clamp bites.
+          // holds still â€” otherwise the far edge walks as the clamp bites.
           const patch = setTextWidth(soloText, next.w)
           const w = patch.w as number
           const x = mods.alt
@@ -755,7 +755,7 @@ export function Canvas() {
       try {
         el.releasePointerCapture(g.pointerId)
       } catch {
-        // the pointer is already gone — nothing to release
+        // the pointer is already gone â€” nothing to release
       }
     }
     gestureRef.current = null
@@ -813,7 +813,7 @@ export function Canvas() {
           s.setTool("select")
         }
       } else {
-        // a tap, not a stroke — drop the checkpoint taken on pointer down so
+        // a tap, not a stroke â€” drop the checkpoint taken on pointer down so
         // it doesn't leave an undo step that undoes nothing
         s.revertToCheckpoint()
       }
@@ -821,7 +821,7 @@ export function Canvas() {
 
     if (g.kind === "create") {
       // a press with no drag at all never reached the create branch, so make
-      // the thing here — otherwise clicking with the rect tool silently does
+      // the thing here â€” otherwise clicking with the rect tool silently does
       // nothing AND drops you back to the select tool
       let id = g.id
       if (!id) {
@@ -913,18 +913,18 @@ export function Canvas() {
     }
 
     // a press that actually dragged is a resize, not the first half of a
-    // double-click — don't let the next press on that handle read as one
+    // double-click â€” don't let the next press on that handle read as one
     if (g.kind === "resize" && g.exceeded) lastHandlePress.current = null
 
     // a click with no drag inside a bigger selection narrows to what was
-    // clicked — already resolved to a group or a single piece at press time
+    // clicked â€” already resolved to a group or a single piece at press time
     if (g.kind === "move" && !g.exceeded && g.collapseTo) {
       s.setSelection(g.collapseTo)
     }
 
     // the press sat inside a hollow shape and never became a drag: it was a
-    // click on that shape all along, with the same grammar a hard click gets —
-    // groups expand, ⌘ digs into them, Shift/⌘ add or toggle off
+    // click on that shape all along, with the same grammar a hard click gets â€”
+    // groups expand, âŒ˜ digs into them, Shift/âŒ˜ add or toggle off
     if (g.kind === "marquee" && !g.exceeded && g.softHitId && s.nodes[g.softHitId]) {
       const mods = modsRef.current
       const deep = mods.toggle && !!s.nodes[g.softHitId]?.groupIds?.length
@@ -941,7 +941,7 @@ export function Canvas() {
       }
     }
 
-    // an ⌥-drag copy hands ⌘D the distance it travelled, so the next one
+    // an âŒ¥-drag copy hands âŒ˜D the distance it travelled, so the next one
     // lands the same way again. cloneIds and sourceIds share an index.
     if (g.kind === "move" && g.cloneIds) {
       s.rememberDuplicate(
@@ -985,7 +985,7 @@ export function Canvas() {
       modsRef.current = readMods(e)
       lastPointRef.current = { clientX: e.clientX, clientY: e.clientY }
       pendingPointRef.current = { clientX: e.clientX, clientY: e.clientY }
-      // the button came up somewhere we couldn't see it — keep the work
+      // the button came up somewhere we couldn't see it â€” keep the work
       if (e.buttons === 0) {
         if (gestureRafRef.current !== null) {
           cancelAnimationFrame(gestureRafRef.current)
@@ -1093,7 +1093,7 @@ export function Canvas() {
     [onPointerMove, finishGesture, cancelGesture, updateGesture]
   )
 
-  /** Double-clicking a side handle un-fixes the width — the box hugs again. */
+  /** Double-clicking a side handle un-fixes the width â€” the box hugs again. */
   const resetTextWidth = useCallback(() => {
     const s = st()
     const n = s.selection.length === 1 ? s.nodes[s.selection[0]] : null
@@ -1157,7 +1157,7 @@ export function Canvas() {
       // secondary buttons and stray extra touches never start a gesture
       if (e.button > 1 || !e.isPrimary) return
       const s = st()
-      // a press on the editor's textarea belongs to the caret — grabbing
+      // a press on the editor's textarea belongs to the caret â€” grabbing
       // focus here would blur the editor mid-click and end the edit
       if (s.editingId && (e.target as HTMLElement).closest?.("textarea")) return
       containerRef.current?.focus({ preventScroll: true })
@@ -1179,7 +1179,7 @@ export function Canvas() {
           s.setSelection([targetInteractiveId])
         }
         if (!isDragHandle) {
-          // Inner control click (buttons, dates, tabs, inputs) — do not initiate canvas marquee or pan
+          // Inner control click (buttons, dates, tabs, inputs) â€” do not initiate canvas marquee or pan
           return
         }
       }
@@ -1287,20 +1287,26 @@ export function Canvas() {
         const textPrefs = useShellStore.getState().preferences.textSettings
         const fontSize = s.activeStyle.fontSize || textPrefs?.fontSize || 18
         const customColor = s.activeStyle.strokeColor || (textPrefs?.colorMode === "custom" ? textPrefs.customColor : undefined)
+        const bold = s.activeStyle.bold ?? textPrefs?.bold ?? false
+        const italic = s.activeStyle.italic ?? textPrefs?.italic ?? false
+        const underline = s.activeStyle.underline ?? textPrefs?.underline ?? false
+        const align = s.activeStyle.textAlign || textPrefs?.align || "left"
         const h = textBlockHeight(1, fontSize)
+        const w = Math.max(24, Math.round(fontSize * 2))
         const id = s.addNode({
           type: "text",
           text: "",
           fontSize,
-          align: s.activeStyle.textAlign || textPrefs?.align || "left",
-          bold: textPrefs?.bold,
-          italic: textPrefs?.italic,
+          align,
+          bold,
+          italic,
+          underline,
           color: customColor,
           opacity: s.activeStyle.opacity,
           x: wx,
           // the click lands in the middle of the line it just started
           y: wy - h / 2,
-          w: 120,
+          w,
           h,
         } as Omit<SquigNode, "id" | "seed">)
         s.setTool("select")
@@ -1313,9 +1319,9 @@ export function Canvas() {
 
       if (hitId) {
         const grouped = !!s.nodes[hitId]?.groupIds?.length
-        // ⌘/Ctrl reaches past a group to the one thing under the cursor. With
+        // âŒ˜/Ctrl reaches past a group to the one thing under the cursor. With
         // nothing to reach past it has no such job, so outside a group it
-        // falls back to toggling — which is what a Ctrl+click is everywhere
+        // falls back to toggling â€” which is what a Ctrl+click is everywhere
         // that isn't a design tool.
         const deep = mods.toggle && grouped
         const hitSet = deep ? [hitId] : s.expandSelection([hitId])
@@ -1325,7 +1331,7 @@ export function Canvas() {
 
         if (additive) {
           if (hitSet.every((id) => sel.includes(id))) {
-            // toggling something off is the whole interaction — no drag follows
+            // toggling something off is the whole interaction â€” no drag follows
             s.setSelection(sel.filter((i) => !hitSet.includes(i)))
             return
           }
@@ -1353,14 +1359,14 @@ export function Canvas() {
         }
         if (!sourceIds.length) return
         if (sel.some((id) => s.nodes[id]?.locked)) {
-          s.setNotice("Element is locked (⌘L to unlock)")
+          s.setNotice("Element is locked (âŒ˜L to unlock)")
           return
         }
         beginGesture({ kind: "move", ...common, wx, wy, sourceIds, sourcePos, cloneIds: null, dirty: false, collapseTo }, e)
         return
       }
 
-      // no ink under the press — marquee, with the current selection as its
+      // no ink under the press â€” marquee, with the current selection as its
       // base. If the press sits inside a hollow shape, that shape rides along
       // as the thing a mere click would mean.
       const softHitId = pickSoftAt(s.nodes, s.order, wx, wy)
@@ -1371,7 +1377,7 @@ export function Canvas() {
 
   const onDoubleClick = useCallback(
     (e: React.MouseEvent) => {
-      // the tail of a handle double-press — see startResize
+      // the tail of a handle double-press â€” see startResize
       if (e.timeStamp < swallowDblClickUntil.current) {
         swallowDblClickUntil.current = 0
         return
@@ -1389,7 +1395,7 @@ export function Canvas() {
       }
       if (!hitId) {
         // double-clicking bare canvas starts typing there, the way tldraw
-        // does — a dismissed empty draft deletes itself, so a stray
+        // does â€” a dismissed empty draft deletes itself, so a stray
         // double-click costs nothing
         if (s.tool !== "select" || s.placing) return
         const [wx, wy] = toWorld(e)
@@ -1457,7 +1463,7 @@ export function Canvas() {
     (e: React.PointerEvent) => {
       const s = st()
       pointerWorld.current = toWorld(e)
-      // the ghost is driven at the window level instead — see below
+      // the ghost is driven at the window level instead â€” see below
       if (s.placing) return
       if (gestureRef.current || s.tool !== "select" || isSpacebarHeld || s.editingId) {
         setHover((prev) => (prev ? null : prev))
@@ -1469,7 +1475,7 @@ export function Canvas() {
       const { clientX, clientY } = e
       hoverRafRef.current = requestAnimationFrame(() => {
         hoverRafRef.current = null
-        // the same predicate the click uses — an affordance drawn from
+        // the same predicate the click uses â€” an affordance drawn from
         // different geometry than the hit test is just a lie
         const cur = st()
         const [wx, wy] = toWorld({ clientX, clientY })
@@ -1548,7 +1554,7 @@ export function Canvas() {
 
   /**
    * A library item dragged out of the panel lands where the pointer is released.
-   * The press began in the panel, so the canvas never sees a pointerdown for it —
+   * The press began in the panel, so the canvas never sees a pointerdown for it â€”
    * this listener is the whole gesture's ending.
    */
   useEffect(() => {
@@ -1559,7 +1565,7 @@ export function Canvas() {
       const kind = s.placing
       s.setPlacing(null)
       if (!kind || e.type !== "pointerup") return
-      // released over the rail, the panel, the context row or any other chrome —
+      // released over the rail, the panel, the context row or any other chrome â€”
       // nothing lands. The context row floats *inside* the canvas, so being
       // inside the container isn't enough on its own.
       const el = containerRef.current
@@ -1583,7 +1589,7 @@ export function Canvas() {
 
   // -- keyboard -------------------------------------------------------------
 
-  // ⌘S belongs to zenithsui wherever the cursor is — mid-word, mid-rename, palette
+  // âŒ˜S belongs to zenithsui wherever the cursor is â€” mid-word, mid-rename, palette
   // open. On the capture phase, because every field that swallows keystrokes
   // sits downstream of here, and the browser's "save page" is never the point.
   useEffect(() => {
@@ -1620,13 +1626,13 @@ export function Canvas() {
         }
         return
       }
-      // AltGr reports as ctrl+alt on several layouts — don't eat those keys
+      // AltGr reports as ctrl+alt on several layouts â€” don't eat those keys
       const mod = (e.metaKey || e.ctrlKey) && !e.altKey
       // match the letter the user actually sees on the key: `e.code` is a
       // physical position, so on AZERTY it fires the tool printed elsewhere
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key
 
-      // a gesture in flight owns the keyboard — including ⌘K, or the palette
+      // a gesture in flight owns the keyboard â€” including âŒ˜K, or the palette
       // opens over a drag that is still moving nodes underneath it, and the
       // Escape meant to close it gets eaten cancelling the drag instead
       if (gestureRef.current) {
@@ -1636,7 +1642,7 @@ export function Canvas() {
 
       if (mod && e.code === "KeyK") {
         e.preventDefault()
-        // ⌘K over text means "link this", the way it does in every editor
+        // âŒ˜K over text means "link this", the way it does in every editor
         const hasText = s.selection.some((id) => s.nodes[id]?.type === "text")
         if (hasText && !s.commandOpen) s.setLinkOpen(true)
         else s.setCommandOpen(!s.commandOpen)
@@ -1657,7 +1663,7 @@ export function Canvas() {
       if (s.shortcutsOpen && e.key !== "Escape") return
 
       if (mod) {
-        // `e.code` under a modifier: ⌥] is "‘" on a Mac, but the key under the
+        // `e.code` under a modifier: âŒ¥] is "â€˜" on a Mac, but the key under the
         // finger is still BracketRight
         switch (e.code) {
           case "KeyZ":
@@ -1680,7 +1686,7 @@ export function Canvas() {
             return
           case "KeyB":
             e.preventDefault()
-            // ⌥⌘B is Figma's detach; ⌘B is bold
+            // âŒ¥âŒ˜B is Figma's detach; âŒ˜B is bold
             if (e.altKey) s.detachSelected()
             else s.toggleTextStyle("bold")
             return
@@ -1700,8 +1706,8 @@ export function Canvas() {
             e.preventDefault()
             s.toggleTextStyle("underline")
             return
-          // ⌘⇧C is the picture, and that one is ours to intercept. Plain ⌘C
-          // is the objects, and so are ⌘X and ⌘V: they ride the browser's own
+          // âŒ˜â‡§C is the picture, and that one is ours to intercept. Plain âŒ˜C
+          // is the objects, and so are âŒ˜X and âŒ˜V: they ride the browser's own
           // copy/cut/paste events, which preventing the default here is
           // exactly what would stop from firing. See lib/canvas/use-clipboard.
           case "KeyC":
@@ -1709,7 +1715,7 @@ export function Canvas() {
             e.preventDefault()
             copyAsPngWithNotice()
             return
-          // one step on its own; all the way with ⌥ (Mac) or ⇧ (Windows)
+          // one step on its own; all the way with âŒ¥ (Mac) or â‡§ (Windows)
           case "BracketRight":
             e.preventDefault()
             if (e.altKey || e.shiftKey) s.bringToFront(s.selection)
@@ -1762,7 +1768,7 @@ export function Canvas() {
             e.preventDefault()
             return
         }
-        return // every other ⌘ combo is the browser's business
+        return // every other âŒ˜ combo is the browser's business
       }
 
       if (e.shiftKey) {
@@ -1809,7 +1815,7 @@ export function Canvas() {
         return
       }
       // `[` and `]` need Alt or AltGr on German, French, Spanish and Nordic
-      // layouts, so they have to be caught before the Alt bail below — and by
+      // layouts, so they have to be caught before the Alt bail below â€” and by
       // physical position too, since the printed character is unreachable
       if (key === "[" || e.code === "BracketLeft") {
         e.preventDefault()
@@ -1848,7 +1854,7 @@ export function Canvas() {
           }
           break
         case "Enter": {
-          // Return steps into the words of whatever is selected — the same
+          // Return steps into the words of whatever is selected â€” the same
           // edit a double-click opens, without having to aim at the glyphs.
           // Only on a lone node: with several selected there's no "the" text.
           if (e.shiftKey || s.selection.length !== 1) break
@@ -1866,7 +1872,7 @@ export function Canvas() {
         }
         case "Tab": {
           // Tab is how you move between controls. Only claim it when the
-          // canvas itself has focus — otherwise a click on the rail traps the
+          // canvas itself has focus â€” otherwise a click on the rail traps the
           // keyboard and every Tab cycles the selection instead of moving on.
           const focused = document.activeElement
           if (focused !== containerRef.current && focused !== document.body) break
@@ -1896,7 +1902,7 @@ export function Canvas() {
           if (!s.selection.length) break
           e.preventDefault()
           // coalesce a burst of nudges into one undo step, but only while it's
-          // the same selection — otherwise ⌘Z reverts a move to another object
+          // the same selection â€” otherwise âŒ˜Z reverts a move to another object
           const sig = s.selection.join(",")
           const nudge = nudgeRef.current
           // the burst also has to still be writing against its own checkpoint.
@@ -2104,7 +2110,7 @@ export function Canvas() {
         })}
       </div>
 
-      {/* hover hint — shows what a click would grab */}
+      {/* hover hint â€” shows what a click would grab */}
       {hoverNode && !editingId && !gestureKind && (
         <div
           className="pointer-events-none absolute rounded-sm"
@@ -2208,11 +2214,11 @@ const HANDLE_DOT = 10
  * How far past the selection box a handle still answers to the pointer.
  *
  * Nothing else is grabbable out there, so the handles may as well be greedy
- * in that direction — aiming at a 10px square is the whole problem.
+ * in that direction â€” aiming at a 10px square is the whole problem.
  */
 const GRAB_OUT = 8
 
-/** and how far inward, at most — see `grabPad` for why it's a maximum */
+/** and how far inward, at most â€” see `grabPad` for why it's a maximum */
 const GRAB_IN = 8
 
 /**
@@ -2268,7 +2274,7 @@ const SelectionOverlay = memo(function SelectionOverlay({
   const h = b.h * v.zoom
   const multi = selectedNodes.length > 1
 
-  // while a marquee is sweeping, the hit set is the message — a union box and
+  // while a marquee is sweeping, the hit set is the message â€” a union box and
   // handles around a set that changes every frame is just flicker
   const marqueeing = gestureKind === "marquee"
   // handles stay up through a resize: they track the box the way tldraw's do,
@@ -2280,7 +2286,7 @@ const SelectionOverlay = memo(function SelectionOverlay({
 
   // a lone text layer has no top or bottom to drag: its height is derived from
   // the wrapped lines, so the handles that would set it are corners (scale the
-  // type) and sides (set the measure) — same six tldraw offers
+  // type) and sides (set the measure) â€” same six tldraw offers
   const soloText = selectedNodes.length === 1 && selectedNodes[0].type === "text"
 
   const visible = (hd: Handle) => {
@@ -2319,12 +2325,12 @@ const SelectionOverlay = memo(function SelectionOverlay({
           {showHandles &&
             // Corners last, so they sit on top: their pads can meet a side's on
             // a tight box, and a mis-grab costs more on a corner than a side.
-            // Ordering does it — a z-index here would also lift the handles
+            // Ordering does it â€” a z-index here would also lift the handles
             // over the panels that come after the canvas.
             //
             // A lone text layer is the one exception, reversed: its box is a
             // line of type, short enough that the corner pads swallow the
-            // middle of either edge — exactly where you aim to set the wrap
+            // middle of either edge â€” exactly where you aim to set the wrap
             // width. There the sides sit on top, and the corners keep the
             // outward slop past the box that only they cover.
             HANDLES.filter(visible)

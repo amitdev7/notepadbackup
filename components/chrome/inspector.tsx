@@ -1,13 +1,13 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Inspector — the panel that edits whatever is selected.
+// Inspector â€” the panel that edits whatever is selected.
 //
 // It edits a *selection*, never "the selected node". One node is a selection of
 // one; anything the selection disagrees on shows a dash you can type over.
 //
-// The layout borrows a design tool's grammar — folding sections, one alignment
-// seam every control lands on, scrubbable numbers — but not a design tool's
+// The layout borrows a design tool's grammar â€” folding sections, one alignment
+// seam every control lands on, scrubbable numbers â€” but not a design tool's
 // appetite. Sections appear only when the selection has something for them to
 // edit, so a scribble shows Position, Fill and Outline and nothing else. If you
 // ever find yourself adding a section that's usually empty, it belongs
@@ -17,8 +17,8 @@
 import { useMemo, useRef } from "react"
 import { useSquig } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode } from "@/lib/types"
-import { normalizeFill } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder } from "@/lib/types"
+import { normalizeFill, DEFAULT_IMAGE_BORDER } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
 import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
@@ -43,6 +43,7 @@ import {
   X,
   DownloadSimple,
   ArrowsClockwise,
+  ArrowCounterClockwise,
   SquaresFour,
   Lock,
   LockOpen,
@@ -74,13 +75,13 @@ function ToneChip({ fill, slash = false }: { fill?: string; slash?: boolean }) {
 
 const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = [
   { value: "none", label: "No fill", content: <ToneChip slash /> },
-  { value: "paper", label: "Paper — opaque, hides what's behind", content: <ToneChip fill="var(--sq-paper)" /> },
+  { value: "paper", label: "Paper â€” opaque, hides what's behind", content: <ToneChip fill="var(--sq-paper)" /> },
   { value: "light", label: "Light shade", content: <ToneChip fill="var(--sq-shade)" /> },
   { value: "strong", label: "Strong shade", content: <ToneChip fill="var(--sq-shade-strong)" /> },
 ]
 
 /**
- * A sheet sample — the literal colour that shade puts behind the drawing,
+ * A sheet sample â€” the literal colour that shade puts behind the drawing,
  * filling its whole segment. Three near-whites can only be told apart at size,
  * so the swatch is the segment rather than a chip beside a word.
  */
@@ -106,7 +107,7 @@ const FONT_OPTIONS: readonly SegmentOption<FontMode>[] = [
   { value: "serif", label: "Serif", content: <FontSample family="var(--font-serif)" /> },
 ]
 
-/** "Aa" set in one face — a little large for the row, because two letters at
+/** "Aa" set in one face â€” a little large for the row, because two letters at
     11px don't carry enough of a face to tell it from its neighbour. */
 function FontSample({ family }: { family: string }) {
   return (
@@ -116,7 +117,7 @@ function FontSample({ family }: { family: string }) {
   )
 }
 
-/** A pen-weight chip — the actual relative widths, not three identical bars. */
+/** A pen-weight chip â€” the actual relative widths, not three identical bars. */
 function PenChip({ height }: { height: number }) {
   return <span className="block w-4 rounded-full bg-current" style={{ height }} />
 }
@@ -183,7 +184,7 @@ export function Inspector() {
 
 /**
  * With nothing selected the panel edits the page instead of apologising for
- * being empty. Paper and Ink belong to the document and are saved inside it —
+ * being empty. Paper and Ink belong to the document and are saved inside it â€”
  * two drawings can hold two different looks. View is the one app-level section,
  * which is why it sits apart at the bottom.
  */
@@ -197,7 +198,7 @@ function PageSettings() {
 
   const palette = paletteOf(theme)
 
-  /** Built per palette, not once at module load — the samples preview this
+  /** Built per palette, not once at module load â€” the samples preview this
       theme's actual sheet, which is the whole point of showing them. */
   const paperOptions: SegmentOption<PaperShade>[] = PAPER_SHADES.map(({ value, label }) => ({
     value,
@@ -233,7 +234,7 @@ function PageSettings() {
             onChange={(f) => st().setFont(f)}
           />
         </Row>
-        <PanelNote>saved with this drawing — a new file starts from whatever you set last</PanelNote>
+        <PanelNote>saved with this drawing â€” a new file starts from whatever you set last</PanelNote>
       </PanelSection>
 
       <PanelSection id="page-view" title="View">
@@ -251,7 +252,7 @@ function PageSettings() {
   )
 }
 
-/** Footer for the page panel — whole-canvas moves, not selection ones. */
+/** Footer for the page panel â€” whole-canvas moves, not selection ones. */
 function PageFooter() {
   const count = useSquig((s) => s.order.length)
   const st = useSquig.getState
@@ -289,7 +290,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   /**
    * Apply a patch to every node that wants one.
    *
-   * `checkpoint: false` is for controls that stream — a scrub takes a single
+   * `checkpoint: false` is for controls that stream â€” a scrub takes a single
    * checkpoint when the drag starts and then writes freely, so asking for one
    * per pixel would bury the undo stack.
    */
@@ -310,7 +311,8 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
   const documents = selected.filter((n): n is DocumentNode => n.type === "document")
-  // components draw their own strokes from authored prims — a pen weight set
+  const images = selected.filter((n): n is ImageNode => n.type === "image")
+  // components draw their own strokes from authored prims â€” a pen weight set
   // here would have nothing to apply to without rewriting the whole library
   const outlined = selected.filter((n) => n.type === "shape" || n.type === "draw" || n.type === "arrow")
 
@@ -326,12 +328,12 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
       {grouped && (
         <div className="border-b border-border/60 px-gutter py-3">
           <PanelNote>
-            grouped — {kbd("mod+click")} to reach one piece, {kbd("mod+shift+g")} to undo the grouping.
+            grouped â€” {kbd("mod+click")} to reach one piece, {kbd("mod+shift+g")} to undo the grouping.
           </PanelNote>
         </div>
       )}
 
-      {/* Position & size — a dash means they disagree; type to make them agree.
+      {/* Position & size â€” a dash means they disagree; type to make them agree.
           Typing sets every node to that value (Figma does the same); scrubbing
           and arrow keys nudge each from its own, so a mixed field stays mixed. */}
       <PanelSection id="position" title="Position">
@@ -369,7 +371,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
         </div>
 
         {/* eight icons don't fit beside a label column, so alignment takes the
-            full width and flipping — which is always available — keeps the row */}
+            full width and flipping â€” which is always available â€” keeps the row */}
         {multi && (
           <StackRow label="Align">
             <AlignRow count={selected.length} className="justify-between" />
@@ -377,10 +379,10 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
         )}
 
         <Row label="Flip">
-          <IconAction label={`Flip horizontally · ${kbd("shift+h")}`} onClick={() => st().flipSelected("x")}>
+          <IconAction label={`Flip horizontally Â· ${kbd("shift+h")}`} onClick={() => st().flipSelected("x")}>
             <FlipHorizontalIcon className="size-3.5" />
           </IconAction>
-          <IconAction label={`Flip vertically · ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
+          <IconAction label={`Flip vertically Â· ${kbd("shift+v")}`} onClick={() => st().flipSelected("y")}>
             <FlipVerticalIcon className="size-3.5" />
           </IconAction>
         </Row>
@@ -429,36 +431,355 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
             <TextStyleToggles texts={texts} />
           </Row>
 
-          {/* A link is a value, not a mode — so it gets a field showing where
+          {/* A link is a value, not a mode â€” so it gets a field showing where
               the text actually points. Empty means it points nowhere, and
-              clearing the field is how you unlink. ⌘K still opens the floating
+              clearing the field is how you unlink. âŒ˜K still opens the floating
               editor over the canvas for the same value. */}
           <Row label="Link">
             <MixedTextField
               ariaLabel="Link"
-              placeholder="https://…"
+              placeholder="https://â€¦"
               shared={shared(texts.map((n) => n.link ?? ""))}
               onCommit={(v) => st().setLinkOnSelection(v)}
             />
           </Row>
 
           <Row label="Size">
-            <MixedNumberField
-              label=""
-              min={4}
-              className="w-[78px]"
-              shared={sharedNumber(texts, (n) => (n as TextNode).fontSize)}
-              onGestureStart={startGesture}
-              onCommit={(v) =>
-                live((n) => (n.type === "text" && v > 0 ? (fitTextBox(n, n.text, v) as Partial<SquigNode>) : null))
-              }
-              onStep={(d) =>
-                live((n) =>
-                  n.type === "text" ? (fitTextBox(n, n.text, Math.max(4, n.fontSize + d)) as Partial<SquigNode>) : null
+            <div className="flex items-center gap-1.5 flex-1 justify-end">
+              <MixedNumberField
+                label=""
+                min={4}
+                max={200}
+                className="w-[64px]"
+                shared={sharedNumber(texts, (n) => (n as TextNode).fontSize)}
+                onGestureStart={startGesture}
+                onCommit={(v) =>
+                  live((n) => (n.type === "text" && v > 0 ? (fitTextBox(n, n.text, v) as Partial<SquigNode>) : null))
+                }
+                onStep={(d) =>
+                  live((n) =>
+                    n.type === "text" ? (fitTextBox(n, n.text, Math.max(4, n.fontSize + d)) as Partial<SquigNode>) : null
+                  )
+                }
+              />
+            </div>
+          </Row>
+
+          {/* Quick Font Size Presets */}
+          <div className="grid grid-cols-5 gap-1 pt-1 pb-1">
+            {[12, 14, 16, 18, 20, 24, 28, 32, 40, 48].map((sz) => {
+              const isSelected = texts.length > 0 && texts.every((n) => n.fontSize === sz)
+              return (
+                <button
+                  key={sz}
+                  type="button"
+                  onClick={() =>
+                    patch((n) => (n.type === "text" ? (fitTextBox(n, n.text, sz) as Partial<SquigNode>) : null))
+                  }
+                  className={cn(
+                    "h-6 rounded text-[11px] font-mono cursor-pointer transition-all",
+                    isSelected
+                      ? "bg-blue-600 text-white font-bold"
+                      : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+                  )}
+                >
+                  {sz}
+                </button>
+              )
+            })}
+          </div>
+
+          <Row label="Wrap">
+            <MixedSwitch
+              ariaLabel="Fixed width wrap"
+              shared={shared(texts.map((n) => !!n.fixedW))}
+              onChange={(fixed) =>
+                patch((n) =>
+                  n.type === "text"
+                    ? ({ fixedW: fixed, ...(fixed ? {} : fitTextBox(n, n.text, n.fontSize)) } as Partial<SquigNode>)
+                    : null
                 )
               }
             />
           </Row>
+        </PanelSection>
+      )}
+
+      {/* --- contextual: image border ----------------------------------- */}
+      {images.length > 0 && (
+        <PanelSection id="image-border" title="Image Border" count={partial(images.length)}>
+          <Row spread label="Border">
+            <MixedSwitch
+              ariaLabel="Image Border"
+              shared={shared(images.map((n) => !!n.border?.enabled))}
+              onChange={(on) =>
+                patch((n) =>
+                  n.type === "image"
+                    ? ({
+                        border: {
+                          ...DEFAULT_IMAGE_BORDER,
+                          ...((n as ImageNode).border ?? {}),
+                          enabled: on,
+                        },
+                      } as Partial<SquigNode>)
+                    : null
+                )
+              }
+            />
+          </Row>
+
+          {images.some((n) => n.border?.enabled) && (
+            <>
+              {/* Color Swatches & Custom Color */}
+              <StackRow label="Color">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {[
+                    { label: "Theme Ink", val: "var(--sq-ink)", bg: "var(--sq-ink)" },
+                    { label: "Black", val: "#000000", bg: "#000000" },
+                    { label: "White", val: "#FFFFFF", bg: "#FFFFFF", border: true },
+                    { label: "Gray", val: "#71717A", bg: "#71717A" },
+                    { label: "Blue", val: "#2563EB", bg: "#2563EB" },
+                    { label: "Red", val: "#DC2626", bg: "#DC2626" },
+                  ].map((swatch) => (
+                    <button
+                      key={swatch.val}
+                      type="button"
+                      onClick={() =>
+                        patch((n) =>
+                          n.type === "image"
+                            ? ({
+                                border: {
+                                  ...DEFAULT_IMAGE_BORDER,
+                                  ...((n as ImageNode).border ?? {}),
+                                  enabled: true,
+                                  color: swatch.val,
+                                },
+                              } as Partial<SquigNode>)
+                            : null
+                        )
+                      }
+                      title={swatch.label}
+                      className={cn(
+                        "size-5 rounded-full cursor-pointer transition-transform hover:scale-110",
+                        swatch.border ? "border border-stone-300 dark:border-stone-600" : ""
+                      )}
+                      style={{ background: swatch.bg }}
+                    />
+                  ))}
+                  <label className="size-5 rounded-full cursor-pointer border border-dashed border-stone-400 dark:border-stone-500 flex items-center justify-center overflow-hidden hover:scale-110 transition-transform">
+                    <input
+                      type="color"
+                      className="opacity-0 w-0 h-0 cursor-pointer"
+                      onChange={(e) => {
+                        const col = e.target.value
+                        patch((n) =>
+                          n.type === "image"
+                            ? ({
+                                border: {
+                                  ...DEFAULT_IMAGE_BORDER,
+                                  ...((n as ImageNode).border ?? {}),
+                                  enabled: true,
+                                  color: col,
+                                },
+                              } as Partial<SquigNode>)
+                            : null
+                        )
+                      }}
+                    />
+                    <span className="text-[10px] text-stone-500 font-bold">+</span>
+                  </label>
+                </div>
+              </StackRow>
+
+              {/* Thickness Presets & Scrub */}
+              <Row label="Width">
+                <div className="flex items-center gap-1 flex-1">
+                  {[1, 2, 3, 4, 6, 8].map((w) => (
+                    <button
+                      key={w}
+                      type="button"
+                      onClick={() =>
+                        patch((n) =>
+                          n.type === "image"
+                            ? ({
+                                border: {
+                                  ...DEFAULT_IMAGE_BORDER,
+                                  ...((n as ImageNode).border ?? {}),
+                                  enabled: true,
+                                  width: w,
+                                },
+                              } as Partial<SquigNode>)
+                            : null
+                        )
+                      }
+                      className={cn(
+                        "flex-1 h-6 rounded text-[11px] font-mono cursor-pointer transition-all",
+                        images.every((n) => n.border?.width === w)
+                          ? "bg-blue-600 text-white font-bold"
+                          : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+                      )}
+                    >
+                      {w}
+                    </button>
+                  ))}
+                </div>
+                <MixedNumberField
+                  label=""
+                  min={1}
+                  max={32}
+                  className="w-[52px]"
+                  shared={sharedNumber(images, (n) => (n as ImageNode).border?.width ?? 2)}
+                  onGestureStart={startGesture}
+                  onCommit={(v) =>
+                    live((n) =>
+                      n.type === "image"
+                        ? ({
+                            border: {
+                              ...DEFAULT_IMAGE_BORDER,
+                              ...((n as ImageNode).border ?? {}),
+                              enabled: true,
+                              width: Math.max(1, v),
+                            },
+                          } as Partial<SquigNode>)
+                        : null
+                    )
+                  }
+                  onStep={(d) =>
+                    live((n) =>
+                      n.type === "image"
+                        ? ({
+                            border: {
+                              ...DEFAULT_IMAGE_BORDER,
+                              ...((n as ImageNode).border ?? {}),
+                              enabled: true,
+                              width: Math.max(1, ((n as ImageNode).border?.width ?? 2) + d),
+                            },
+                          } as Partial<SquigNode>)
+                        : null
+                    )
+                  }
+                />
+              </Row>
+
+              {/* Border Style: Solid, Dashed, Dotted */}
+              <Row label="Style">
+                <Segmented
+                  ariaLabel="Border style"
+                  options={[
+                    { value: "solid", label: "Solid" },
+                    { value: "dashed", label: "Dashed" },
+                    { value: "dotted", label: "Dotted" },
+                  ]}
+                  shared={shared(images.map((n) => n.border?.style ?? "solid"))}
+                  onChange={(st) =>
+                    patch((n) =>
+                      n.type === "image"
+                        ? ({
+                            border: {
+                              ...DEFAULT_IMAGE_BORDER,
+                              ...((n as ImageNode).border ?? {}),
+                              enabled: true,
+                              style: st,
+                            },
+                          } as Partial<SquigNode>)
+                        : null
+                    )
+                  }
+                />
+              </Row>
+
+              {/* Opacity Slider */}
+              <Row label="Opacity">
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    value={images[0]?.border?.opacity ?? 100}
+                    onChange={(e) => {
+                      const op = Number(e.target.value)
+                      live((n) =>
+                        n.type === "image"
+                          ? ({
+                              border: {
+                                ...DEFAULT_IMAGE_BORDER,
+                                ...((n as ImageNode).border ?? {}),
+                                enabled: true,
+                                opacity: op,
+                              },
+                            } as Partial<SquigNode>)
+                          : null
+                      )
+                    }}
+                    className="flex-1 accent-blue-600 h-2 bg-stone-200 dark:bg-stone-700 rounded-lg cursor-pointer"
+                  />
+                  <span className="text-[11px] font-mono text-stone-500 w-8 text-right">
+                    {images[0]?.border?.opacity ?? 100}%
+                  </span>
+                </div>
+              </Row>
+
+              {/* Corner Radius Presets & Slider */}
+              <Row label="Radius">
+                <div className="flex items-center gap-1 flex-1">
+                  {[0, 4, 8, 12, 16, 24].map((r) => (
+                    <button
+                      key={r}
+                      type="button"
+                      onClick={() =>
+                        patch((n) =>
+                          n.type === "image"
+                            ? ({
+                                border: {
+                                  ...DEFAULT_IMAGE_BORDER,
+                                  ...((n as ImageNode).border ?? {}),
+                                  enabled: true,
+                                  radius: r,
+                                },
+                              } as Partial<SquigNode>)
+                            : null
+                        )
+                      }
+                      className={cn(
+                        "flex-1 h-6 rounded text-[11px] font-mono cursor-pointer transition-all",
+                        images.every((n) => (n.border?.radius ?? 0) === r)
+                          ? "bg-blue-600 text-white font-bold"
+                          : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+                      )}
+                    >
+                      {r}
+                    </button>
+                  ))}
+                </div>
+              </Row>
+
+              {/* Reset to no border default */}
+              <div className="pt-2 flex justify-end">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-[11px] text-stone-400 hover:text-stone-700 dark:hover:text-stone-200"
+                  onClick={() =>
+                    patch((n) =>
+                      n.type === "image"
+                        ? ({
+                            border: {
+                              enabled: false,
+                              width: 2,
+                              style: "solid",
+                              opacity: 100,
+                              radius: 0,
+                            },
+                          } as Partial<SquigNode>)
+                        : null
+                    )
+                  }
+                >
+                  <ArrowCounterClockwise className="size-3 mr-1" /> Reset Border
+                </Button>
+              </div>
+            </>
+          )}
         </PanelSection>
       )}
 
@@ -534,7 +855,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
           <Row label="Label">
             <MixedTextField
               ariaLabel="Arrow label"
-              placeholder="Label text…"
+              placeholder="Label textâ€¦"
               shared={shared(arrows.map((n) => n.label ?? ""))}
               onCommit={(lbl) => patch((n) => (n.type === "arrow" ? ({ label: lbl } as Partial<SquigNode>) : null))}
             />
@@ -856,10 +1177,10 @@ function HoverNoteSection({
             <label className="text-micro text-muted-foreground font-medium">Theme</label>
             <div className="grid grid-cols-2 gap-1">
               {[
-                { id: "wordcloud", label: "Word Cloud (Text) ☁️" },
-                { id: "frosted", label: "3D Frosted Cloud ⛅" },
-                { id: "macos", label: "macOS Card 🍏" },
-                { id: "ios", label: "iOS Glass 📱" },
+                { id: "wordcloud", label: "Word Cloud (Text) â˜ï¸" },
+                { id: "frosted", label: "3D Frosted Cloud â›…" },
+                { id: "macos", label: "macOS Card ðŸ" },
+                { id: "ios", label: "iOS Glass ðŸ“±" },
               ].map((t) => {
                 const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "wordcloud"
                 return (
@@ -894,11 +1215,11 @@ function HoverNoteSection({
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
                 {[
-                  { id: "sun", label: "Sun ☀️" },
-                  { id: "rain", label: "Rain 🌧️" },
-                  { id: "lightning", label: "Thunder ⚡" },
-                  { id: "wind", label: "Breeze ❄️" },
-                  { id: "classic", label: "Pure ☁️" },
+                  { id: "sun", label: "Sun â˜€ï¸" },
+                  { id: "rain", label: "Rain ðŸŒ§ï¸" },
+                  { id: "lightning", label: "Thunder âš¡" },
+                  { id: "wind", label: "Breeze â„ï¸" },
+                  { id: "classic", label: "Pure â˜ï¸" },
                 ].map((cs) => {
                   const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
                   return (
@@ -1045,8 +1366,8 @@ function isOutlined(n: SquigNode): boolean {
  * subtly different ones.
  */
 function resizeTo(n: SquigNode, w: number, h: number): Partial<SquigNode> {
-  // typing a width into a text layer sets the measure its words wrap to — the
-  // same thing dragging a side handle does — rather than stretching the box
+  // typing a width into a text layer sets the measure its words wrap to â€” the
+  // same thing dragging a side handle does â€” rather than stretching the box
   // around the type
   if (n.type === "text" && w !== n.w) return setTextWidth(n, w) as Partial<SquigNode>
   const from = unionBounds([n])!

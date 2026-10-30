@@ -1,11 +1,11 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Sketch renderers — turn prims / nodes into SVG paths.
+// Sketch renderers â€” turn prims / nodes into SVG paths.
 //
 // The look is early-web risograph: one saturated ink on warm paper, confident
-// closed lines, and flat shaded fills — two tones, no patterns — carrying the
-// printed feel. Irregularity is deliberately small — a line should read as
+// closed lines, and flat shaded fills â€” two tones, no patterns â€” carrying the
+// printed feel. Irregularity is deliberately small â€” a line should read as
 // drawn, not as a napkin, and corners must actually meet. Icons stay crisp.
 // ---------------------------------------------------------------------------
 
@@ -23,7 +23,7 @@ const gen: RoughGenerator = rough.generator()
 const SHADOW_OFFSET = 4
 
 /**
- * A shaded fill prints as one of two flat tones — never at full ink strength.
+ * A shaded fill prints as one of two flat tones â€” never at full ink strength.
  * Defs say `fillColor: "ink"` to mean "this surface is emphasised", but a
  * full-strength fill swallows any label sitting on it, so emphasis reads
  * through tone and the text keeps the darkest ink to itself.
@@ -41,7 +41,7 @@ const SHADE_FOR: Partial<Record<InkColor, keyof typeof SHADE>> = {
 }
 
 /**
- * `solid` keeps the literal colour — it exists for genuinely opaque marks
+ * `solid` keeps the literal colour â€” it exists for genuinely opaque marks
  * (menu panels on paper, a toggle knob, a status dot) where a tint would
  * either let the canvas show through or vanish at small sizes. `paper` is
  * always literal for the same reason: it is there to occlude, not to tint.
@@ -55,7 +55,7 @@ function fillPaint(o: PrimOpts): string {
 /**
  * One pen draws the whole wireframe.
  *
- * Every line prints in the same ink — a divider is not a paler blue than the
+ * Every line prints in the same ink â€” a divider is not a paler blue than the
  * border above it, it is the same pen pressed lighter. So `stroke` no longer
  * picks a colour; it picks how hard the pen presses, and the tone names it
  * inherited now read as weights. Anything that needs to recede further than
@@ -77,7 +77,7 @@ function primOptions(p: Prim, seed: number): Options {
     roughness: o?.roughness ?? HAND.roughness,
     bowing: HAND.bowing,
     stroke,
-    // an explicit strokeWidth is already a considered weight — leave it alone
+    // an explicit strokeWidth is already a considered weight â€” leave it alone
     strokeWidth: o?.strokeWidth ?? (HAND.strokeWidth * PEN[o?.stroke ?? "ink"]),
     fill: undefined,
     disableMultiStroke: true,
@@ -98,7 +98,7 @@ function ellipsePath(cx: number, cy: number, w: number, h: number): string {
   return `M${cx - rx} ${cy} a${rx} ${ry} 0 1 0 ${w} 0 a${rx} ${ry} 0 1 0 ${-w} 0 Z`
 }
 
-/** Rounded-rect as SVG path data — rough.js has no radius of its own. */
+/** Rounded-rect as SVG path data â€” rough.js has no radius of its own. */
 function roundRectPath(x: number, y: number, w: number, h: number, r: number): string {
   const rr = Math.max(0, Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2))
   if (rr < 0.5) return `M${x} ${y} L${x + w} ${y} L${x + w} ${y + h} L${x} ${y + h} Z`
@@ -139,7 +139,7 @@ function drawableToPaths(drawable: ReturnType<RoughGenerator["rectangle"]>, dash
     stroke: customStroke ?? pi.stroke,
     strokeWidth: pi.strokeWidth,
     fill: pi.fill ?? "none",
-    // only dash real strokes — dashing a fill path looks like static
+    // only dash real strokes â€” dashing a fill path looks like static
     dash: dash && pi.stroke !== "none" ? dash : undefined,
   }))
 }
@@ -193,7 +193,7 @@ export function primsToPaths(
           break
         case "path": {
           // Phosphor glyphs are filled outlines, so pen pressure has nothing to
-          // push on — an icon is simply drawn in the ink, like everything else.
+          // push on â€” an icon is simply drawn in the ink, like everything else.
           // The weight below only bites on the handful of stroke-mode paths.
           const k = p.size / p.vb
           crisp.push({
@@ -210,14 +210,14 @@ export function primsToPaths(
           break
       }
     } catch {
-      // rough.js throws on degenerate geometry mid-resize — drop that prim
+      // rough.js throws on degenerate geometry mid-resize â€” drop that prim
     }
   })
   return { paths, texts, crisp }
 }
 
 /**
- * Turn a mirrored run over about its own anchor — the flipped-text-layer case.
+ * Turn a mirrored run over about its own anchor â€” the flipped-text-layer case.
  * Scaling about the anchor rather than the origin is what keeps the words on
  * the spot they were drawn instead of throwing them off the far side of the
  * node.
@@ -236,7 +236,7 @@ export const SketchPrims = memo(function SketchPrims({
   prims: Prim[]
   seed: number
   /**
-   * A run the inline editor is standing in for — "all" while a text node is
+   * A run the inline editor is standing in for â€” "all" while a text node is
    * being edited, or the index of one label inside a component. Drawing it as
    * well would print the words twice, half a pixel apart.
    */
@@ -298,7 +298,7 @@ export const SketchPrims = memo(function SketchPrims({
 /**
  * Render a node's visual content (no hit area, no selection ring).
  *
- * Geometry is memoized on the shape-affecting fields only — NOT on x/y, which
+ * Geometry is memoized on the shape-affecting fields only â€” NOT on x/y, which
  * the parent <g transform> handles. Without that, dragging a template would
  * re-run rough.js over hundreds of prims on every pointer move.
  */
@@ -307,7 +307,7 @@ export const NodeSketch = memo(function NodeSketch({
   hiddenText,
 }: {
   node: SquigNode
-  /** see SketchPrims — the run the inline editor has taken over */
+  /** see SketchPrims â€” the run the inline editor has taken over */
   hiddenText?: "all" | number
 }) {
   const shapeKey = useMemo(() => {
@@ -328,9 +328,13 @@ export const NodeSketch = memo(function NodeSketch({
         // w and align place the anchor, so a resize or a realignment is a
         // different set of marks even when the words haven't changed
         return `t:${node.text}:${node.fontSize}:${node.w}:${node.fixedW ? 1 : 0}:${node.align ?? ""}:${flip}:${node.bold ? 1 : 0}${node.italic ? 1 : 0}${node.underline || node.link ? 1 : 0}:${customColor}`
-      case "image":
-        // the src doesn't shape a single mark — only the frame's box does
-        return `i:${node.w}:${node.h}:${flip}`
+      case "image": {
+        const b = node.border
+        const bKey = b?.enabled
+          ? `b:1:${b.color ?? ""}:${b.width ?? 1}:${b.style ?? "solid"}:${b.opacity ?? 100}:${b.radius ?? 0}`
+          : "b:0"
+        return `i:${node.w}:${node.h}:${flip}:${bKey}`
+      }
       case "document":
         return `doc:${node.name}:${node.w}:${node.h}:${flip}:${node.pageCount ?? 0}:${node.sizeBytes ?? 0}`
       case "sticky":
@@ -348,18 +352,54 @@ export const NodeSketch = memo(function NodeSketch({
   return (
     <>
       {node.type === "image" && (
-        <image
-          href={node.src}
-          x={0}
-          y={0}
-          width={node.w}
-          height={node.h}
-          // the box is the truth about how big this is — a resize that squashes
-          // it should squash the picture, the way dragging any other node does
-          preserveAspectRatio="none"
-          // a flip is a property of the node, so the pixels turn with the frame
-          transform={mirrorBox(node.w, node.h, node.flipX, node.flipY)}
-        />
+        <g transform={mirrorBox(node.w, node.h, node.flipX, node.flipY)}>
+          {node.border?.radius ? (
+            <defs>
+              <clipPath id={`clip-${node.id}`}>
+                <rect
+                  x={0}
+                  y={0}
+                  width={node.w}
+                  height={node.h}
+                  rx={node.border.radius}
+                  ry={node.border.radius}
+                />
+              </clipPath>
+            </defs>
+          ) : null}
+          <image
+            href={node.src}
+            x={0}
+            y={0}
+            width={node.w}
+            height={node.h}
+            preserveAspectRatio="none"
+            clipPath={node.border?.radius ? `url(#clip-${node.id})` : undefined}
+          />
+          {node.border?.enabled && (
+            <rect
+              x={0}
+              y={0}
+              width={node.w}
+              height={node.h}
+              rx={node.border.radius ?? 0}
+              ry={node.border.radius ?? 0}
+              fill="none"
+              stroke={node.border.color || "var(--sq-ink)"}
+              strokeWidth={node.border.width ?? 1}
+              strokeDasharray={
+                node.border.style === "dashed"
+                  ? `${Math.max(4, (node.border.width ?? 1) * 3)} ${Math.max(3, (node.border.width ?? 1) * 2)}`
+                  : node.border.style === "dotted"
+                  ? `${Math.max(1, node.border.width ?? 1)} ${Math.max(3, (node.border.width ?? 1) * 2)}`
+                  : undefined
+              }
+              strokeOpacity={node.border.opacity !== undefined ? node.border.opacity / 100 : 1}
+              strokeLinecap={node.border.style === "dotted" ? "round" : "square"}
+              pointerEvents="none"
+            />
+          )}
+        </g>
       )}
       <SketchPrims prims={prims} seed={node.seed} hiddenText={hiddenText} />
     </>
@@ -367,7 +407,7 @@ export const NodeSketch = memo(function NodeSketch({
 })
 
 /**
- * Mirror a picture about its own box — the same flip mirrorPrims gives the
+ * Mirror a picture about its own box â€” the same flip mirrorPrims gives the
  * marks, in SVG terms. Exported because the PNG export has to draw the same
  * picture the same way round, into a file rather than onto the canvas.
  */

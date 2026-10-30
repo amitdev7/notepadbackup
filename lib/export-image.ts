@@ -1,18 +1,18 @@
 "use client"
 
 // ---------------------------------------------------------------------------
-// Copy as PNG — the selection, rasterised on the spot and handed to the system
+// Copy as PNG â€” the selection, rasterised on the spot and handed to the system
 // clipboard. The one-keystroke way to get a sketch into a chat window.
 //
 // The picture is re-rendered from the same prims the canvas draws, into a
 // standalone SVG document that is then painted onto a <canvas>. Standalone is
 // the whole difficulty: an <img> loading an SVG gets none of the page around
 // it, so two things the on-screen canvas takes for granted have to be packed
-// into the file itself —
+// into the file itself â€”
 //
-//   · colours, which live in CSS custom properties, are resolved to literal
+//   Â· colours, which live in CSS custom properties, are resolved to literal
 //     hex against the current palette
-//   · the hand-lettered font, which is a same-origin woff2, is fetched and
+//   Â· the hand-lettered font, which is a same-origin woff2, is fetched and
 //     inlined as a base64 @font-face
 //
 // Miss either one and the PNG comes back black-on-nothing in Times New Roman.
@@ -26,9 +26,9 @@ import { useSquig } from "./store"
 import { paletteOf, type Palette } from "./theme"
 import type { SquigNode } from "./types"
 
-/** breathing room around the art, in world units — rough strokes overshoot */
+/** breathing room around the art, in world units â€” rough strokes overshoot */
 const PAD = 12
-/** retina by default: a wireframe pasted into a doc gets read at 1×, not 2× */
+/** retina by default: a wireframe pasted into a doc gets read at 1Ã—, not 2Ã— */
 const SCALE = 2
 /** browsers refuse canvases past ~16k; stay well under and scale down instead */
 const MAX_SIDE = 8192
@@ -51,7 +51,7 @@ function esc(s: string): string {
     .replace(/"/g, "&quot;")
 }
 
-/** `var(--sq-ink)` → `#2438FF`. Anything else passes through untouched. */
+/** `var(--sq-ink)` â†’ `#2438FF`. Anything else passes through untouched. */
 function makeResolver(p: Palette): (paint: string) => string {
   const vars: Record<string, string> = {
     "--sq-bg": p.bg,
@@ -70,7 +70,7 @@ function makeResolver(p: Palette): (paint: string) => string {
 /**
  * One node, as SVG markup.
  *
- * Deliberately a mirror of what SketchPrims renders — same paths, same
+ * Deliberately a mirror of what SketchPrims renders â€” same paths, same
  * attributes, same order. It is duplicated rather than run through
  * react-dom/server because pulling a server renderer into the client bundle to
  * print thirty lines of markup is a poor trade.
@@ -83,13 +83,34 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
   // written out itself or the PNG comes back with an empty frame where the
   // screenshot was. Its pixels are already a data URL, which is both what
   // makes the SVG standalone and what keeps the canvas untainted when this is
-  // rasterised — an external src would do neither.
+  // rasterised â€” an external src would do neither.
   if (node.type === "image") {
     const mirror = mirrorBox(node.w, node.h, node.flipX, node.flipY)
+    const clipId = `export-clip-${node.id}`
+    const radius = node.border?.radius ?? 0
+    if (radius > 0) {
+      out.push(
+        `<defs><clipPath id="${clipId}"><rect x="0" y="0" width="${node.w}" height="${node.h}" rx="${radius}" ry="${radius}"/></clipPath></defs>`
+      )
+    }
     out.push(
       `<image href="${esc(node.src)}" x="0" y="0" width="${node.w}" height="${node.h}"` +
-      ` preserveAspectRatio="none"${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
+      ` preserveAspectRatio="none"${radius > 0 ? ` clip-path="url(#${clipId})"` : ""}${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
     )
+    if (node.border?.enabled) {
+      const bColor = resolve(node.border.color || "ink")
+      const bWidth = node.border.width ?? 1
+      const bOpacity = node.border.opacity !== undefined ? node.border.opacity / 100 : 1
+      let dash = ""
+      if (node.border.style === "dashed") {
+        dash = ` stroke-dasharray="${Math.max(4, bWidth * 3)} ${Math.max(3, bWidth * 2)}"`
+      } else if (node.border.style === "dotted") {
+        dash = ` stroke-dasharray="${Math.max(1, bWidth)} ${Math.max(3, bWidth * 2)}" stroke-linecap="round"`
+      }
+      out.push(
+        `<rect x="0" y="0" width="${node.w}" height="${node.h}" rx="${radius}" ry="${radius}" fill="none" stroke="${esc(bColor)}" stroke-width="${bWidth}" stroke-opacity="${bOpacity}"${dash}${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
+      )
+    }
   }
 
   for (const p of paths) {
@@ -179,7 +200,7 @@ async function buildFontFaceCss(stack: string): Promise<string> {
     try {
       rules = sheet.cssRules
     } catch {
-      // a cross-origin stylesheet won't open — nothing we can inline from it
+      // a cross-origin stylesheet won't open â€” nothing we can inline from it
       continue
     }
     for (const rule of Array.from(rules)) {
@@ -220,7 +241,7 @@ function fontFaceCss(stack: string): Promise<string> {
 // -- rasterising -------------------------------------------------------------
 
 /**
- * A data URI rather than a blob: URL — an SVG image drawn onto a canvas has to
+ * A data URI rather than a blob: URL â€” an SVG image drawn onto a canvas has to
  * be origin-clean or `toBlob` throws, and a data URI is unambiguously so on
  * every browser.
  */
@@ -248,7 +269,7 @@ async function rasterize(svg: string, w: number, h: number): Promise<Blob> {
 
 // -- the export --------------------------------------------------------------
 
-/** What ⌘⇧C acts on: the selection, or the whole canvas when nothing is picked. */
+/** What âŒ˜â‡§C acts on: the selection, or the whole canvas when nothing is picked. */
 export function pngTargets(): { nodes: SquigNode[]; whole: boolean } {
   const { nodes, order, selection } = useSquig.getState()
   const picked = order.filter((id) => selection.includes(id)).map((id) => nodes[id]).filter(Boolean)
@@ -298,18 +319,18 @@ function downloadPng(blob: Blob) {
 }
 
 /**
- * ⌘⇧C. Not async at the top on purpose: Safari only honours a clipboard write
+ * âŒ˜â‡§C. Not async at the top on purpose: Safari only honours a clipboard write
  * that was set up inside the gesture that asked for it, so the ClipboardItem is
  * constructed synchronously around a promise of the blob rather than after
  * awaiting one. A browser that won't take an image lands on a download instead
- * — the sketch still leaves the app, just through the other door.
+ * â€” the sketch still leaves the app, just through the other door.
  */
 export function copySelectionAsPng(): Promise<CopyOutcome> {
   const { nodes, whole } = pngTargets()
   if (!nodes.length) return Promise.resolve({ status: "empty", whole })
 
   const blob = renderPng(nodes)
-  // the failure is handled below, but only after the clipboard has had its go —
+  // the failure is handled below, but only after the clipboard has had its go â€”
   // claim it now so a rejection can't be reported as unhandled in between
   blob.catch(() => { })
   const fallback = (): Promise<CopyOutcome> =>
@@ -339,7 +360,7 @@ export function copyNotice({ status, whole }: CopyOutcome): string {
     case "copied":
       return whole ? "copied the whole canvas as a PNG" : "copied as a PNG"
     case "downloaded":
-      return "this browser won't take images — saved a PNG instead"
+      return "this browser won't take images â€” saved a PNG instead"
     case "empty":
       return "nothing on the canvas to copy"
     case "failed":
@@ -347,7 +368,7 @@ export function copyNotice({ status, whole }: CopyOutcome): string {
   }
 }
 
-/** ⌘⇧C, wired to the flash — what every entry point actually calls. */
+/** âŒ˜â‡§C, wired to the flash â€” what every entry point actually calls. */
 export async function copyAsPngWithNotice(): Promise<void> {
   const s = useSquig.getState()
   const outcome = await copySelectionAsPng()

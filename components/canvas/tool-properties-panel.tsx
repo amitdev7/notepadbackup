@@ -20,6 +20,8 @@
 
 import { useRef } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
+import { fitTextBox } from "@/lib/canvas/text-reflow"
 import { cn } from "@/lib/utils"
 import {
   SlidersHorizontal,
@@ -27,8 +29,11 @@ import {
   TextAlignLeft,
   TextAlignCenter,
   TextAlignRight,
+  TextB,
+  TextItalic,
+  TextUnderline,
 } from "@phosphor-icons/react"
-import type { StrokeWeight } from "@/lib/types"
+import type { StrokeWeight, TextNode } from "@/lib/types"
 
 const STROKE_COLORS = [
   "#1e1e1e", // Charcoal / Black
@@ -168,7 +173,7 @@ export function ToolPropertiesPanel() {
         </button>
       </div>
 
-      {/* ── 1. Stroke (Color) ──────────────────────────────────────────────── */}
+      {/* â”€â”€ 1. Stroke (Color) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div>
         <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5 flex items-center justify-between">
           <span>Stroke</span>
@@ -214,7 +219,7 @@ export function ToolPropertiesPanel() {
         </div>
       </div>
 
-      {/* ── 2. Background (Fill Color) ─────────────────────────────────────── */}
+      {/* â”€â”€ 2. Background (Fill Color) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showBackground && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5 flex items-center justify-between">
@@ -277,7 +282,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 3. Fill Style ──────────────────────────────────────────────────── */}
+      {/* â”€â”€ 3. Fill Style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showFill && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -341,7 +346,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 4. Stroke Width ────────────────────────────────────────────────── */}
+      {/* â”€â”€ 4. Stroke Width â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showStrokeWidth && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -382,7 +387,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 5. Pressure / Sloppiness ───────────────────────────────────────── */}
+      {/* â”€â”€ 5. Pressure / Sloppiness â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showPressure && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -440,7 +445,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 6. Edges / Roundness (for Shapes) ──────────────────────────────── */}
+      {/* â”€â”€ 6. Edges / Roundness (for Shapes) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showEdges && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -490,7 +495,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 7. Stroke Style (Solid vs Dashed) ──────────────────────────────── */}
+      {/* â”€â”€ 7. Stroke Style (Solid vs Dashed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {showStrokeStyle && (
         <div>
           <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
@@ -540,7 +545,7 @@ export function ToolPropertiesPanel() {
         </div>
       )}
 
-      {/* ── 8. Text Options (Font, Size, Align) ────────────────────────────── */}
+      {/* ── 8. Text Options (Font, Size, Align, Styles) ────────────────────── */}
       {showTextOptions && (
         <>
           <div>
@@ -559,7 +564,10 @@ export function ToolPropertiesPanel() {
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setActiveStyle({ fontFamily: id })}
+                    onClick={() => {
+                      setActiveStyle({ fontFamily: id })
+                      useShellStore.getState().updateTextSettings({ fontFamily: id === "code" ? "mono" : id })
+                    }}
                     className={cn(
                       "px-2 py-1.5 rounded-xl text-left transition-all cursor-pointer border",
                       isSelected
@@ -576,41 +584,129 @@ export function ToolPropertiesPanel() {
           </div>
 
           <div>
-            <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-              Font size
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] font-medium text-stone-700 dark:text-stone-300">Font size</span>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="number"
+                  min={4}
+                  max={200}
+                  value={activeStyle.fontSize}
+                  onChange={(e) => {
+                    const val = Number(e.target.value)
+                    if (val >= 4 && val <= 200) {
+                      setActiveStyle({ fontSize: val })
+                      useShellStore.getState().updateTextSettings({ fontSize: val })
+                    }
+                  }}
+                  className="w-12 h-6 px-1 text-right text-xs font-mono font-semibold rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 focus:outline-blue-500"
+                />
+                <span className="text-[10px] text-stone-400 font-mono">px</span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5">
-              {[
-                { size: 14, label: "S" },
-                { size: 20, label: "M" },
-                { size: 28, label: "L" },
-                { size: 36, label: "XL" },
-              ].map(({ size, label }) => {
-                const isSelected = activeStyle.fontSize === size
+
+            {/* Quick Size Presets */}
+            <div className="grid grid-cols-6 gap-1 mb-2">
+              {[10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64].map((sz) => {
+                const isSelected = activeStyle.fontSize === sz
                 return (
                   <button
-                    key={size}
+                    key={sz}
                     type="button"
-                    onClick={() => setActiveStyle({ fontSize: size })}
+                    onClick={() => {
+                      setActiveStyle({ fontSize: sz })
+                      useShellStore.getState().updateTextSettings({ fontSize: sz })
+                    }}
                     className={cn(
-                      "flex-1 h-8 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      "h-6 rounded text-[11px] font-mono font-medium transition-all cursor-pointer",
                       isSelected
-                        ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100 ring-1 ring-blue-500/50"
-                        : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
+                        ? "bg-blue-600 text-white font-bold shadow-2xs"
+                        : "bg-stone-100/90 dark:bg-stone-800/90 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
                     )}
                   >
-                    {label}
+                    {sz}
                   </button>
                 )
               })}
             </div>
+
+            {/* Continuous Font Size Slider */}
+            <input
+              type="range"
+              min={8}
+              max={72}
+              value={activeStyle.fontSize}
+              onChange={(e) => {
+                const val = Number(e.target.value)
+                setActiveStyle({ fontSize: val })
+                useShellStore.getState().updateTextSettings({ fontSize: val })
+              }}
+              className="w-full accent-blue-600 cursor-pointer h-2 bg-stone-200 dark:bg-stone-700 rounded-lg"
+            />
           </div>
 
           <div>
             <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
-              Text alignment
+              Typography & Alignment
             </div>
             <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !activeStyle.bold
+                  setActiveStyle({ bold: next })
+                  useShellStore.getState().updateTextSettings({ bold: next })
+                }}
+                className={cn(
+                  "flex-1 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer font-bold",
+                  activeStyle.bold
+                    ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100 ring-1 ring-blue-500/50"
+                    : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
+                )}
+                title="Bold"
+                aria-label="Bold"
+              >
+                <TextB size={15} weight="bold" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !activeStyle.italic
+                  setActiveStyle({ italic: next })
+                  useShellStore.getState().updateTextSettings({ italic: next })
+                }}
+                className={cn(
+                  "flex-1 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer italic",
+                  activeStyle.italic
+                    ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100 ring-1 ring-blue-500/50"
+                    : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
+                )}
+                title="Italic"
+                aria-label="Italic"
+              >
+                <TextItalic size={15} weight="bold" />
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !activeStyle.underline
+                  setActiveStyle({ underline: next })
+                  useShellStore.getState().updateTextSettings({ underline: next })
+                }}
+                className={cn(
+                  "flex-1 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer underline",
+                  activeStyle.underline
+                    ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100 ring-1 ring-blue-500/50"
+                    : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
+                )}
+                title="Underline"
+                aria-label="Underline"
+              >
+                <TextUnderline size={15} weight="bold" />
+              </button>
+
+              <div className="w-px h-5 bg-stone-200 dark:bg-stone-700 mx-0.5" />
+
               {[
                 { id: "left" as const, icon: TextAlignLeft, label: "Left" },
                 { id: "center" as const, icon: TextAlignCenter, label: "Center" },
@@ -621,7 +717,10 @@ export function ToolPropertiesPanel() {
                   <button
                     key={id}
                     type="button"
-                    onClick={() => setActiveStyle({ textAlign: id })}
+                    onClick={() => {
+                      setActiveStyle({ textAlign: id })
+                      useShellStore.getState().updateTextSettings({ align: id })
+                    }}
                     className={cn(
                       "flex-1 h-8 rounded-lg flex items-center justify-center transition-all cursor-pointer",
                       isSelected
@@ -629,6 +728,7 @@ export function ToolPropertiesPanel() {
                         : "bg-stone-100/80 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200/80 dark:hover:bg-stone-700/80"
                     )}
                     title={label}
+                    aria-label={label}
                   >
                     <Icon size={14} weight="bold" />
                   </button>
@@ -639,7 +739,7 @@ export function ToolPropertiesPanel() {
         </>
       )}
 
-      {/* ── 9. Opacity ─────────────────────────────────────────────────────── */}
+      {/* â”€â”€ 9. Opacity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div className="pt-1 border-t border-stone-100 dark:border-stone-800/80">
         <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-2 flex items-center justify-between">
           <span>Opacity</span>

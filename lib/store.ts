@@ -4,6 +4,7 @@ import { create } from "zustand"
 import { nanoid } from "nanoid"
 import type { ComponentNode, DocumentNode, SquigNode, TextAlign, TextNode, Tool, Viewport, CanvasOpenMode, DocumentViewState, ShapeKind, StrokeWeight, FillTone } from "./types"
 import { normalizeFill, screenToWorld, unionBox, isValidViewport, sanitizeViewState } from "./types"
+import { fitTextBox } from "./canvas/text-reflow"
 import { repeatStep, type DupTrail } from "./canvas/duplicate"
 import { getArrowPatchesForMovedNodes, cleanBindingsForDeletedNodes } from "./canvas/arrow-binding"
 import { getDef } from "./library/registry"
@@ -52,15 +53,15 @@ import {
 } from "./canvas/viewport-memory"
 
 // ---------------------------------------------------------------------------
-// Store — flat node map + z-order, selection, viewport, tool, history.
+// Store â€” flat node map + z-order, selection, viewport, tool, history.
 // ---------------------------------------------------------------------------
 
 interface DocSnapshot {
   nodes: Record<string, SquigNode>
   order: string[]
-  /** selection before the edit — what undo puts you back to */
+  /** selection before the edit â€” what undo puts you back to */
   selection: string[]
-  /** selection the edit ended with — what redo puts you back to */
+  /** selection the edit ended with â€” what redo puts you back to */
   selAfter?: string[]
   /** the redo stack this checkpoint displaced, so a cancel can hand it back */
   displacedFuture?: DocSnapshot[]
@@ -81,6 +82,9 @@ export interface ActiveStyle {
   fontFamily: FontMode
   fontSize: number
   textAlign: TextAlign
+  bold?: boolean
+  italic?: boolean
+  underline?: boolean
   arrowHead: boolean
 }
 
@@ -97,6 +101,9 @@ export const DEFAULT_ACTIVE_STYLE: ActiveStyle = {
   fontFamily: "hand",
   fontSize: 20,
   textAlign: "left",
+  bold: false,
+  italic: false,
+  underline: false,
   arrowHead: true,
 }
 
@@ -108,7 +115,7 @@ export interface ContextMenuState {
 }
 
 interface SquigState {
-  /** which file in the drawer this canvas is — every doc has one */
+  /** which file in the drawer this canvas is â€” every doc has one */
   docId: string
   fileName: string
   /** the drawer, newest first; kept in state so menus re-render as it changes */
@@ -149,14 +156,14 @@ interface SquigState {
   contextMenu: ContextMenuState | null
   /** the floating file name is in its editable state */
   renamingFile: boolean
-  /** a gesture is actively changing a layer's geometry — move, resize, draw, create */
+  /** a gesture is actively changing a layer's geometry â€” move, resize, draw, create */
   transforming: boolean
-  /** the arrow tool draws a head — L is a plain line, ⇧L an arrow */
+  /** the arrow tool draws a head â€” L is a plain line, â‡§L an arrow */
   arrowHead: boolean
-  /** ⌘\ — everything but the canvas gets out of the way */
+  /** âŒ˜\ â€” everything but the canvas gets out of the way */
   uiHidden: boolean
   shortcutsOpen: boolean
-  /** ⌘K over selected text opens the link field instead of the palette */
+  /** âŒ˜K over selected text opens the link field instead of the palette */
   linkOpen: boolean
   /** Trash modal showing deleted documents */
   trashOpen: boolean
@@ -164,10 +171,10 @@ interface SquigState {
   historyOpen: boolean
   cloudDocId: string | null
   effectiveRole: "owner" | "editor" | "viewer"
-  /** private clipboard — ⌘C/⌘X/⌘V never touch the system one */
+  /** private clipboard â€” âŒ˜C/âŒ˜X/âŒ˜V never touch the system one */
   clipboard: SquigNode[]
-  /** the last copies made, and where each one started life. ⌘D reads the gap
-   *  between the two and repeats it, so an ⌥-drag (or a duplicate you then
+  /** the last copies made, and where each one started life. âŒ˜D reads the gap
+   *  between the two and repeats it, so an âŒ¥-drag (or a duplicate you then
    *  moved) becomes a step you can march across the board. */
   dupTrail: DupTrail | null
   /** a one-line flash in the corner; the id makes a repeat of the same words
@@ -231,11 +238,11 @@ interface SquigState {
   updateNode: (id: string, patch: Partial<SquigNode>, opts?: { checkpoint?: boolean }) => void
   updateNodes: (patches: Record<string, Partial<SquigNode>>, opts?: { checkpoint?: boolean }) => void
   removeNodes: (ids: string[], opts?: { checkpoint?: boolean }) => void
-  /** discard the last checkpoint and restore it — cancels an in-flight gesture */
+  /** discard the last checkpoint and restore it â€” cancels an in-flight gesture */
   revertToCheckpoint: () => void
-  /** clone the selection in place and select the clones — the alt-drag primitive */
+  /** clone the selection in place and select the clones â€” the alt-drag primitive */
   cloneSelectionInPlace: () => string[]
-  /** remember copies and their origins, so ⌘D can repeat the move that followed */
+  /** remember copies and their origins, so âŒ˜D can repeat the move that followed */
   rememberDuplicate: (ids: string[], from: DupTrail["from"]) => void
   distributeSelected: (axis: "h" | "v") => void
   selectAll: () => void
@@ -243,7 +250,7 @@ interface SquigState {
   invertSelection: () => void
   /** grow the selection to every node of the same component kind / node type */
   selectSameKind: () => void
-  /** step selection through z-order — Tab / Shift+Tab */
+  /** step selection through z-order â€” Tab / Shift+Tab */
   cycleSelection: (dir: 1 | -1) => void
   deleteSelected: () => void
   /** clone the selection and select the clones; returns the new ids */
@@ -257,10 +264,10 @@ interface SquigState {
   hydrate: () => void
   clearCanvas: () => void
 
-  /** grow a set of ids to whole groups — what a click on a member selects */
+  /** grow a set of ids to whole groups â€” what a click on a member selects */
   expandSelection: (ids: string[]) => string[]
   groupSelected: () => void
-  /** ⇧⌘G — peels one group off, or detaches instances when nothing is grouped */
+  /** â‡§âŒ˜G â€” peels one group off, or detaches instances when nothing is grouped */
   ungroupSelected: () => void
   detachSelected: () => void
   flipSelected: (axis: "x" | "y") => void
@@ -314,7 +321,7 @@ function snapshot(s: Pick<SquigState, "nodes" | "order" | "selection">): DocSnap
 /**
  * Record what the selection looks like now on the checkpoint the current edit
  * is writing against. Called after every mutation, so the last write wins and
- * the entry ends up describing the finished operation — which is what redo
+ * the entry ends up describing the finished operation â€” which is what redo
  * should restore.
  */
 function stampSelAfter(past: DocSnapshot[], selection: string[]): DocSnapshot[] {
@@ -344,7 +351,7 @@ function sanitize(
     // the way in so nothing downstream has to know the old spelling existed
     if (node.type === "shape") node.fill = normalizeFill(node.fill)
     // an imported file is a stranger's document: a picture in it carries its
-    // own pixels or it doesn't render at all — never a URL we'd go and fetch
+    // own pixels or it doesn't render at all â€” never a URL we'd go and fetch
     if (node.type === "image" && !/^data:image\//i.test(node.src ?? "")) continue
     // a document requires valid name, mimeType, and asset identity
     if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
@@ -454,7 +461,7 @@ function lookOf(s: Pick<SquigState, "theme" | "paper" | "font" | "grid">): Look 
   return { theme: s.theme, paper: s.paper, font: s.font, grid: s.grid }
 }
 
-/** Put a look on screen and in state — the one path both the panel and an
+/** Put a look on screen and in state â€” the one path both the panel and an
     opened file go through, so they can't drift apart. */
 function wearLook(set: (partial: Partial<SquigState>) => void, look: Look) {
   set(look)
@@ -471,7 +478,7 @@ function scheduleSave(get: () => SquigState) {
 
 /**
  * Write the current document to the drawer now. A blank canvas nobody has
- * touched stays out of the list — until `force`, which is a person asking.
+ * touched stays out of the list â€” until `force`, which is a person asking.
  *
  * A canvas with nothing new on it writes nothing at all: a second tab may be
  * holding a fresher copy of this same document, and an idle tab closing is no
@@ -486,7 +493,7 @@ function flushSave(get: () => SquigState, force = false) {
   const s = get()
   if (s.effectiveRole === "viewer") return
   // the look goes to prefs too, but only as the default a new file will start
-  // from — the copy that matters travels inside the document below
+  // from â€” the copy that matters travels inside the document below
   savePrefs({ look: lookOf(s), contextRow: s.contextRow, activeId: s.docId })
   if (!dirty && !force) return
   const known = s.files.some((f) => f.id === s.docId)
@@ -560,7 +567,7 @@ function flushSave(get: () => SquigState, force = false) {
 
 let watching = false
 /**
- * A tab can close inside the debounce window. Catch it on the way out — and
+ * A tab can close inside the debounce window. Catch it on the way out â€” and
  * on the way to the background, which is all iOS ever gives you.
  *
  * The same listener keeps an eye on the drawer itself, so a file made in
@@ -682,11 +689,25 @@ export const useSquig = create<SquigState>((set, get) => ({
                     : "strong"
               ; (nodePatch as any).fill = tone
           }
-          if (patch.fontSize !== undefined && n.type === "text") {
-            ; (nodePatch as any).fontSize = patch.fontSize
-          }
-          if (patch.textAlign !== undefined && n.type === "text") {
-            ; (nodePatch as any).align = patch.textAlign
+          if (n.type === "text") {
+            const textPatch: Partial<TextNode> = {}
+            if (patch.fontSize !== undefined) {
+              Object.assign(textPatch, fitTextBox(n, n.text, patch.fontSize))
+            }
+            if (patch.bold !== undefined) {
+              textPatch.bold = patch.bold
+            }
+            if (patch.italic !== undefined) {
+              textPatch.italic = patch.italic
+            }
+            if (patch.underline !== undefined) {
+              textPatch.underline = patch.underline
+            }
+            if (patch.textAlign !== undefined) {
+              textPatch.align = patch.textAlign
+              Object.assign(textPatch, fitTextBox({ ...n, align: patch.textAlign }, n.text, n.fontSize))
+            }
+            Object.assign(nodePatch, textPatch)
           }
           if (Object.keys(nodePatch).length > 0) {
             updatedNodes[id] = { ...n, ...nodePatch } as SquigNode
@@ -748,7 +769,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
   // a selection is a set, so store it in one canonical order: document order.
   // everything downstream (clipboard, duplicate, align, the type summary) then
-  // behaves the same whether it was built by marquee, shift-click or ⌘A
+  // behaves the same whether it was built by marquee, shift-click or âŒ˜A
   setSelection: (ids) => {
     set((s) => {
       const want = new Set(ids)
@@ -837,7 +858,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   checkpoint: () => {
     set((s) => {
       const kept = s.past.slice(-MAX_HISTORY + 1)
-      // only the newest checkpoint can ever be reverted — once an edit lands on
+      // only the newest checkpoint can ever be reverted â€” once an edit lands on
       // top of one, its stashed redo branch is unreachable, and holding onto it
       // would let history retain far more clones than MAX_HISTORY implies
       const top = kept[kept.length - 1]
@@ -972,7 +993,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     const src = order.filter((id) => selection.includes(id)).map((id) => nodes[id])
     if (!src.length) return []
 
-    // ⌘D on the copies you just made repeats the gap you put between them and
+    // âŒ˜D on the copies you just made repeats the gap you put between them and
     // their originals; anything else gets the polite diagonal nudge
     const step = repeatStep(dupTrail, selection, nodes) ?? { dx: offset, dy: offset }
     get().checkpoint()
@@ -981,7 +1002,7 @@ export const useSquig = create<SquigState>((set, get) => ({
       nodes: { ...s.nodes, ...Object.fromEntries(clones.map((c) => [c.id, c])) },
       order: [...s.order, ...clones.map((c) => c.id)],
       selection: clones.map((c) => c.id),
-      // where these copies came from, so the next ⌘D can measure the same way
+      // where these copies came from, so the next âŒ˜D can measure the same way
       dupTrail: {
         ids: clones.map((c) => c.id),
         from: Object.fromEntries(clones.map((c, i) => [c.id, { x: src[i].x, y: src[i].y }])),
@@ -1024,7 +1045,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     set((s) => {
       const prev = s.past[s.past.length - 1]
       // the redo entry remembers what the undone edit produced, not whatever
-      // happened to be selected at the moment ⌘Z was pressed
+      // happened to be selected at the moment âŒ˜Z was pressed
       const forward: DocSnapshot = { ...snapshot(s), selAfter: prev.selAfter ?? s.selection }
       return {
         past: s.past.slice(0, -1),
@@ -1101,7 +1122,7 @@ export const useSquig = create<SquigState>((set, get) => ({
         }
       }).catch(() => {})
     }
-    // the document's own look, or — for one saved before looks existed — the
+    // the document's own look, or â€” for one saved before looks existed â€” the
     // last look this browser was set to
     wearLook(set, doc?.look ?? prefs.look)
     // what we just read is, by definition, what the drawer already holds
@@ -1161,7 +1182,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     if (!sel.length) return
     const gids = new Set(sel.map((n) => n.groupIds?.[0]).filter(Boolean) as string[])
 
-    // nothing grouped? then ⇧⌘G means the other kind of coming apart
+    // nothing grouped? then â‡§âŒ˜G means the other kind of coming apart
     if (!gids.size) {
       get().detachSelected()
       return
@@ -1197,7 +1218,7 @@ export const useSquig = create<SquigState>((set, get) => ({
         // icons come back out of breakApart as icon components, so detaching
         // one is a no-op that would loop forever if you kept asking
         if (c.kind === "icon") continue
-        // a detached instance stays one thing you can drag — same as Figma
+        // a detached instance stays one thing you can drag â€” same as Figma
         const gid = nanoid(8)
         const pieces = breakApart(c).map((p) => ({ ...p, groupIds: [gid, ...(c.groupIds ?? [])] }))
         if (!pieces.length) continue
@@ -1245,7 +1266,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     const { selection, nodes } = get()
     const texts = selection.map((id) => nodes[id]).filter((n) => n?.type === "text") as TextNode[]
     if (!texts.length) return
-    // already unanimous — pressing the segment it's already on isn't an edit
+    // already unanimous â€” pressing the segment it's already on isn't an edit
     if (texts.every((n) => (n.align ?? "left") === align)) return
     get().checkpoint()
     get().updateNodes(Object.fromEntries(texts.map((n) => [n.id, { align } as Partial<SquigNode>])))
@@ -1448,7 +1469,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     const sel = selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[]
     if (!sel.length) return
     // a component matches on its library kind; a shape on its shape; anything
-    // else on node type — the same taxonomy the inspector's summary uses
+    // else on node type â€” the same taxonomy the inspector's summary uses
     const kinds = new Set(sel.filter((n) => n.type === "component").map((n) => (n as ComponentNode).kind))
     const shapes = new Set(sel.filter((n) => n.type === "shape").map((n) => (n as { shape: string }).shape))
     const types = new Set(sel.filter((n) => n.type !== "component" && n.type !== "shape").map((n) => n.type))
