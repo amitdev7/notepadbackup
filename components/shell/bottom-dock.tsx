@@ -16,6 +16,7 @@ import { useState, useRef, useEffect, useCallback } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
+import { kbd } from "@/lib/shortcuts"
 import type { Tool } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import {
@@ -49,8 +50,10 @@ import {
   DownloadSimple,
   SquaresFour,
   House,
+  Check,
   X,
 } from "@phosphor-icons/react"
+import { ViewMenu } from "@/components/shell/view-menu"
 import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
 import {
   DropdownMenu,
@@ -189,6 +192,14 @@ function MagnifiedDockItem({
 
 export function BottomDock() {
   const showDock = useShellStore((s) => s.preferences.showDock)
+  const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
+  const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
+  const showDockViewMenu = useShellStore((s) => s.preferences.showDockViewMenu ?? s.preferences.dockControls?.viewMenu ?? false)
+  const toggleToolbar = useShellStore((s) => s.toggleToolbar)
+  const toggleDock = useShellStore((s) => s.toggleDock)
+  const toggleToolbarViewMenu = useShellStore((s) => s.toggleToolbarViewMenu)
+  const toggleDockViewMenu = useShellStore((s) => s.toggleDockViewMenu)
+  const toggleZoomControls = useShellStore((s) => s.toggleZoomControls)
   const dockControls = useShellStore((s) => s.preferences.dockControls)
   const animationMode = useShellStore((s) => s.preferences.animationMode)
   const reducedMotion = animationMode === "reduced"
@@ -249,7 +260,24 @@ export function BottomDock() {
     return tool === t.id && panel === null
   }
 
-  if (!showDock) return null
+  if (!showDock) {
+    return (
+      <div
+        className="fixed bottom-0 inset-x-0 h-3 z-30 group flex items-center justify-center pointer-events-auto"
+        title="Hover to reveal dock (⌘⇧D)"
+      >
+        <button
+          type="button"
+          onClick={toggleDock}
+          aria-label="Show bottom dock (⌘⇧D)"
+          className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:-translate-y-2 transition-all duration-200 apple-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-stone-700 dark:text-stone-300 shadow-md cursor-pointer flex items-center gap-1.5"
+        >
+          <span>Show Dock</span>
+          <kbd className="font-mono text-[9px] text-stone-400">⌘⇧D</kbd>
+        </button>
+      </div>
+    )
+  }
 
   const visibleTools = ALL_TOOLS.filter((t) => dockControls[t.prefKey])
   const hasQuickActions =
@@ -262,7 +290,8 @@ export function BottomDock() {
     dockControls.brandMenu ||
     visibleTools.length > 0 ||
     hasQuickActions ||
-    dockControls.zoomControls
+    dockControls.zoomControls ||
+    showDockViewMenu
 
   if (!hasAnyContent) return null
 
@@ -431,6 +460,30 @@ export function BottomDock() {
               {(dockControls.menuResetView || dockControls.menuClearCanvas) &&
                 dockControls.menuGithub && <DropdownMenuSeparator />}
 
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={toggleToolbar} className="cursor-pointer">
+                <span className="flex-1">Top Toolbar</span>
+                <span className="text-[10px] text-muted-foreground mr-1.5">{kbd("mod+shift+t")}</span>
+                {showToolbar && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleDock} className="cursor-pointer">
+                <span className="flex-1">Bottom Dock</span>
+                <span className="text-[10px] text-muted-foreground mr-1.5">{kbd("mod+shift+d")}</span>
+                {showDock && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleToolbarViewMenu} className="cursor-pointer">
+                <span className="flex-1">View Menu in Toolbar</span>
+                {showToolbarViewMenu && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleDockViewMenu} className="cursor-pointer">
+                <span className="flex-1">View Menu in Dock</span>
+                {showDockViewMenu && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleZoomControls} className="cursor-pointer">
+                <span className="flex-1">Zoom Stepper in Dock</span>
+                {dockControls.zoomControls && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+              </DropdownMenuItem>
+
               {dockControls.menuGithub && (
                 <DropdownMenuItem onClick={() => window.open("https://github.com/amitdev7/notepadbackup", "_blank", "noopener,noreferrer")}>
                   <GithubLogo size={14} className="mr-2" aria-hidden="true" /> GitHub
@@ -577,9 +630,16 @@ export function BottomDock() {
           </div>
         )}
 
-        {/* ── Separator before Zoom Controls ── */}
-        {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && dockControls.zoomControls && (
+        {/* ── Separator before Zoom & View Controls ── */}
+        {(dockControls.brandMenu || visibleTools.length > 0 || hasQuickActions) && (dockControls.zoomControls || showDockViewMenu) && (
           <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        )}
+
+        {/* ── View Menu on Dock ── */}
+        {showDockViewMenu && (
+          <div className="flex items-center gap-0.5 shrink-0">
+            <ViewMenu side="top" variant="dock" />
+          </div>
         )}
 
         {/* ── Zoom Controls ── */}

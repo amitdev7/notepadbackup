@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { kbd } from "@/lib/shortcuts"
 import type { CanvasOpenMode } from "@/lib/types"
 import { areViewportsEqual } from "@/lib/canvas/viewport-memory"
@@ -32,7 +33,19 @@ import {
   ArrowClockwise,
 } from "@phosphor-icons/react"
 
-export function ViewMenu() {
+export interface ViewMenuProps {
+  side?: "top" | "bottom"
+  align?: "start" | "center" | "end"
+  variant?: "toolbar" | "dock"
+  className?: string
+}
+
+export function ViewMenu({
+  side = "bottom",
+  align = "end",
+  variant = "toolbar",
+  className,
+}: ViewMenuProps = {}) {
   const viewport = useSquig((s) => s.viewport)
   const viewState = useSquig((s) => s.viewState)
   const zoomBy = useSquig((s) => s.zoomBy)
@@ -43,6 +56,17 @@ export function ViewMenu() {
   const clearHomeView = useSquig((s) => s.clearHomeView)
   const setOpenMode = useSquig((s) => s.setOpenMode)
   const resetViewport = useSquig((s) => s.resetViewport)
+
+  const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
+  const showDock = useShellStore((s) => s.preferences.showDock ?? true)
+  const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
+  const showDockViewMenu = useShellStore((s) => s.preferences.showDockViewMenu ?? s.preferences.dockControls?.viewMenu ?? false)
+  const showZoomControls = useShellStore((s) => s.preferences.dockControls?.zoomControls ?? true)
+  const toggleToolbar = useShellStore((s) => s.toggleToolbar)
+  const toggleDock = useShellStore((s) => s.toggleDock)
+  const toggleToolbarViewMenu = useShellStore((s) => s.toggleToolbarViewMenu)
+  const toggleDockViewMenu = useShellStore((s) => s.toggleDockViewMenu)
+  const toggleZoomControls = useShellStore((s) => s.toggleZoomControls)
 
   const zoomPercent = Math.round(viewport.zoom * 100)
   const hasHomeView = Boolean(viewState?.homeView)
@@ -56,8 +80,10 @@ export function ViewMenu() {
       <DropdownMenuTrigger
         type="button"
         className={cn(
-          "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full outline-none transition-all duration-150 cursor-pointer select-none",
-          "hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200"
+          variant === "dock"
+            ? "relative flex items-center justify-center px-2 py-1 rounded-xl cursor-pointer select-none outline-none text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
+            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-full outline-none transition-all duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200",
+          className
         )}
         title="Canvas View & Viewport Memory (Home View)"
         aria-label={`View menu, current zoom ${zoomPercent}%`}
@@ -74,14 +100,14 @@ export function ViewMenu() {
             />
           )}
         </div>
-        <span className="hidden xs:inline">View</span>
+        <span className={variant === "dock" ? "hidden" : "hidden xs:inline"}>View</span>
         <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 font-semibold">
           {zoomPercent}%
         </span>
         <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150" />
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" sideOffset={8} className="w-68 p-1.5 font-sans">
+      <DropdownMenuContent side={side} align={align} sideOffset={8} className="w-68 p-1.5 font-sans max-h-[85vh] overflow-y-auto">
         {/* Status Header */}
         <div className="flex items-center justify-between px-2.5 py-2 mb-1 rounded-xl bg-stone-100/70 dark:bg-stone-800/60 border border-stone-200/50 dark:border-stone-700/50">
           <div className="flex flex-col">
@@ -227,6 +253,59 @@ export function ViewMenu() {
               </span>
             </div>
             {openMode === "fit-content" && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
+        {/* Interface Visibility */}
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Interface Visibility</DropdownMenuLabel>
+
+          <DropdownMenuItem
+            onClick={toggleToolbar}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Top Toolbar</span>
+            <div className="flex items-center gap-1.5">
+              <DropdownMenuShortcut>{kbd("mod+shift+t")}</DropdownMenuShortcut>
+              {showToolbar && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleDock}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Bottom Dock</span>
+            <div className="flex items-center gap-1.5">
+              <DropdownMenuShortcut>{kbd("mod+shift+d")}</DropdownMenuShortcut>
+              {showDock && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleToolbarViewMenu}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">View Menu in Toolbar</span>
+            {showToolbarViewMenu && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleDockViewMenu}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">View Menu in Dock</span>
+            {showDockViewMenu && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleZoomControls}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Zoom Stepper in Dock</span>
+            {showZoomControls && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

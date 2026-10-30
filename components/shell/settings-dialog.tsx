@@ -98,6 +98,7 @@ import {
   CircleNotch,
   CheckCircle,
   WarningCircle,
+  Compass,
 } from "@phosphor-icons/react"
 
 interface SectionItem {
@@ -2494,12 +2495,48 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
             <div className="space-y-2.5 divide-y divide-stone-200/60 dark:divide-stone-800/60">
               <div className="flex items-center justify-between pt-1">
                 <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Top Toolbar</span>
+                  <span className="text-[11px] text-stone-500">Display document title, cloud sync status, and file menu at the top</span>
+                </div>
+                <Switch
+                  checked={prefs.showToolbar ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showToolbar: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
                   <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Floating Bottom Dock</span>
                   <span className="text-[11px] text-stone-500">Display global navigation and tool dock on screen</span>
                 </div>
                 <Switch
-                  checked={prefs.showDock}
+                  checked={prefs.showDock ?? true}
                   onCheckedChange={(checked) => updatePrefs({ showDock: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">View Menu in Top Toolbar</span>
+                  <span className="text-[11px] text-stone-500">Show the 🧭 [zoom]% View menu pill in the top toolbar</span>
+                </div>
+                <Switch
+                  checked={prefs.showToolbarViewMenu ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showToolbarViewMenu: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">View Menu in Bottom Dock</span>
+                  <span className="text-[11px] text-stone-500">Show the 🧭 [zoom]% View menu pill in the bottom dock</span>
+                </div>
+                <Switch
+                  checked={prefs.showDockViewMenu ?? dockControls.viewMenu ?? false}
+                  onCheckedChange={(checked) => {
+                    updatePrefs({ showDockViewMenu: checked })
+                    updateDockControl("viewMenu", checked)
+                  }}
                 />
               </div>
 
@@ -2598,6 +2635,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                 { key: "actionSettings", label: "Settings Gear Button", icon: Gear },
                 { key: "brandMenu", label: "Zenithsui Brand Menu", icon: Sliders },
                 { key: "zoomControls", label: "Zoom In/Out & Stepper", icon: Minus },
+                { key: "viewMenu", label: "View & Home Menu (🧭)", icon: Compass, badge: "Dock & Toolbar" },
               ].map((item) => {
                 const Icon = item.icon
                 const isChecked = dockControls[item.key as keyof DockControlsVisibility]

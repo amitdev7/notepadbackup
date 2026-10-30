@@ -59,6 +59,8 @@ import {
   LockSimple as LockSimpleIcon,
   House as HouseIcon,
   BookmarkSimple as BookmarkSimpleIcon,
+  Eye as EyeIcon,
+  Compass as CompassIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 
@@ -204,6 +206,11 @@ function Palette() {
       { id: "home-set", label: "Set current view as Home", hint: kbd("shift+home"), section: "View", keywords: "home save starting viewport", icon: BookmarkSimpleIcon, run: () => st().setHomeView() },
       { id: "home-clear", label: "Clear Home View", section: "View", keywords: "home remove reset starting viewport", icon: TrashIcon, run: () => st().clearHomeView() },
       { id: "hide-ui", label: "Hide the interface", hint: kbd("mod+\\"), section: "View", keywords: "clean present chrome", icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
+      { id: "toggle-toolbar", label: "Toggle Top Toolbar", hint: kbd("mod+shift+t"), section: "View", keywords: "show hide toolbar topbar title header", icon: EyeIcon, run: () => useShellStore.getState().toggleToolbar() },
+      { id: "toggle-dock", label: "Toggle Bottom Dock", hint: kbd("mod+shift+d"), section: "View", keywords: "show hide dock tools bottom navigation", icon: EyeIcon, run: () => useShellStore.getState().toggleDock() },
+      { id: "toggle-toolbar-viewmenu", label: "Toggle View Menu in Toolbar", section: "View", keywords: "view zoom menu compass toolbar top", icon: CompassIcon, run: () => useShellStore.getState().toggleToolbarViewMenu() },
+      { id: "toggle-dock-viewmenu", label: "Toggle View Menu in Dock", section: "View", keywords: "view zoom menu compass dock bottom", icon: CompassIcon, run: () => useShellStore.getState().toggleDockViewMenu() },
+      { id: "toggle-dock-zoom", label: "Toggle Zoom Stepper in Dock", section: "View", keywords: "zoom in out stepper dock buttons", icon: MagnifyingGlassPlusIcon, run: () => useShellStore.getState().toggleZoomControls() },
       { id: "keys", label: "Keyboard shortcuts", hint: kbd("shift+/"), section: "View", keywords: "hotkeys help cheat sheet", icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },
       { id: "canvas-stats", label: "Canvas & Element Stats…", hint: kbd("shift+alt+s"), section: "View", keywords: "metrics count vertices dimensions info inspector", icon: BoundingBoxIcon, run: () => st().setStatsOpen(!st().statsOpen) },
 

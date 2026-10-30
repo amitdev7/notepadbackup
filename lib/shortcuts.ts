@@ -148,6 +148,8 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
       { keys: ["shift+home"], label: "Set current view as Home" },
       { keys: ["space drag"], label: "Pan" },
       { keys: ["mod+\\"], label: "Hide the interface" },
+      { keys: ["mod+shift+t"], label: "Toggle top toolbar" },
+      { keys: ["mod+shift+d"], label: "Toggle bottom dock" },
     ],
   },
   {

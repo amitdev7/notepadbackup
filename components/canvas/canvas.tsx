@@ -1740,6 +1740,20 @@ export function Canvas() {
             e.preventDefault()
             s.setUiHidden(!s.uiHidden)
             return
+          case "KeyT":
+            if (e.shiftKey) {
+              e.preventDefault()
+              useShellStore.getState().toggleToolbar()
+              return
+            }
+            break
+          case "KeyD":
+            if (e.shiftKey) {
+              e.preventDefault()
+              useShellStore.getState().toggleDock()
+              return
+            }
+            break
           // the canvas ignores these, so stop the browser navigating away
           case "ArrowLeft":
           case "ArrowRight":

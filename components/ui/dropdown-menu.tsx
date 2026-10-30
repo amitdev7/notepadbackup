@@ -28,16 +28,18 @@ function DropdownMenuContent({
   className,
   children,
   align = "start",
+  side = "bottom",
   sideOffset = 8,
   finalFocus,
   ...props
 }: React.ComponentProps<typeof Menu.Popup> & {
   align?: React.ComponentProps<typeof Menu.Positioner>["align"]
+  side?: React.ComponentProps<typeof Menu.Positioner>["side"]
   sideOffset?: number
 }) {
   return (
     <Menu.Portal>
-      <Menu.Positioner align={align} sideOffset={sideOffset} className="z-50 outline-none">
+      <Menu.Positioner align={align} side={side} sideOffset={sideOffset} className="z-50 outline-none">
         <Menu.Popup data-slot="dropdown-menu-content" finalFocus={finalFocus} className={cn(POPUP, className)} {...props}>
           {children}
         </Menu.Popup>

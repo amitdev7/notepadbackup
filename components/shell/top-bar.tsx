@@ -13,6 +13,7 @@
 import { useState, useRef, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
+import { useShellStore } from "@/lib/shell-store"
 import { FilesPopover } from "@/components/chrome/files-popover"
 import { ViewMenu } from "@/components/shell/view-menu"
 import { useSyncStore } from "@/lib/sync/engine"
@@ -26,6 +27,9 @@ export function TopBar() {
   const setFileName = useSquig((s) => s.setFileName)
   const effectiveRole = useSquig((s) => s.effectiveRole)
   const isViewer = effectiveRole === "viewer"
+  const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
+  const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
+  const toggleToolbar = useShellStore((s) => s.toggleToolbar)
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [titleDraft, setTitleDraft] = useState(fileName)
@@ -63,6 +67,25 @@ export function TopBar() {
       setTitleDraft(fileName)
     }
     setIsEditingTitle(false)
+  }
+
+  if (!showToolbar) {
+    return (
+      <div
+        className="fixed top-0 inset-x-0 h-3 z-30 group flex items-center justify-center pointer-events-auto"
+        title="Hover to reveal toolbar (⌘⇧T)"
+      >
+        <button
+          type="button"
+          onClick={toggleToolbar}
+          aria-label="Show top toolbar (⌘⇧T)"
+          className="opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-2 transition-all duration-200 apple-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-stone-700 dark:text-stone-300 shadow-md cursor-pointer flex items-center gap-1.5"
+        >
+          <span>Show Toolbar</span>
+          <kbd className="font-mono text-[9px] text-stone-400">⌘⇧T</kbd>
+        </button>
+      </div>
+    )
   }
 
   return (
@@ -151,10 +174,12 @@ export function TopBar() {
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
 
-        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
-
-        {/* View Menu & Viewport Memory */}
-        <ViewMenu />
+        {showToolbarViewMenu && (
+          <>
+            <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            <ViewMenu />
+          </>
+        )}
 
         {isViewer && (
           <span className="animate-badge-pop px-1.5 py-0.2 rounded-full text-[9px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider ml-1">

@@ -166,6 +166,7 @@ export interface DockControlsVisibility {
   // Dock Modules
   brandMenu: boolean
   zoomControls: boolean
+  viewMenu?: boolean
 
   // Brand Menu Items
   menuNewCanvas: boolean
@@ -201,6 +202,7 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
 
   brandMenu: true,
   zoomControls: true,
+  viewMenu: false,
 
   menuNewCanvas: true,
   menuOpenRecent: true,
@@ -227,7 +229,10 @@ export interface ShellPreferences {
   startPage: StartPage
   confirmDestructive: boolean
   showCanvasUI: boolean
+  showToolbar: boolean
   showDock: boolean
+  showToolbarViewMenu: boolean
+  showDockViewMenu: boolean
   showZoomControls: boolean
   showStatusIndicators: boolean
   highContrast: boolean
@@ -254,7 +259,10 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   startPage: "canvas",
   confirmDestructive: true,
   showCanvasUI: true,
+  showToolbar: true,
   showDock: true,
+  showToolbarViewMenu: true,
+  showDockViewMenu: false,
   showZoomControls: true,
   showStatusIndicators: true,
   highContrast: false,
@@ -278,6 +286,10 @@ function loadInitialPreferences(): ShellPreferences {
       return {
         ...DEFAULT_PREFERENCES,
         ...parsed,
+        showToolbar: parsed.showToolbar !== undefined ? Boolean(parsed.showToolbar) : true,
+        showDock: parsed.showDock !== undefined ? Boolean(parsed.showDock) : true,
+        showToolbarViewMenu: parsed.showToolbarViewMenu !== undefined ? Boolean(parsed.showToolbarViewMenu) : true,
+        showDockViewMenu: parsed.showDockViewMenu !== undefined ? Boolean(parsed.showDockViewMenu) : Boolean(parsed.dockControls?.viewMenu ?? false),
         laserSettings: {
           ...DEFAULT_LASER_SETTINGS,
           ...(parsed.laserSettings || {}),
@@ -349,6 +361,11 @@ interface ShellState {
   setLibraryCategory: (c: string) => void
   setGlobalSearchOpen: (open: boolean) => void
   updatePreferences: (updates: Partial<ShellPreferences>) => void
+  toggleToolbar: () => void
+  toggleDock: () => void
+  toggleToolbarViewMenu: () => void
+  toggleDockViewMenu: () => void
+  toggleZoomControls: () => void
   updateLaserSettings: (updates: Partial<LaserSettings>) => void
   updateDrawSettings: (updates: Partial<DrawSettings>) => void
   updateTextSettings: (updates: Partial<TextSettings>) => void
@@ -494,6 +511,67 @@ export const useShellStore = create<ShellState>((set, get) => ({
       if (updates.animationMode !== undefined) {
         syncMotionToDOM(updates.animationMode)
       }
+      return { preferences: next }
+    })
+  },
+
+  toggleToolbar: () => {
+    set((state) => {
+      const nextVal = !(state.preferences.showToolbar ?? true)
+      const next = { ...state.preferences, showToolbar: nextVal }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleDock: () => {
+    set((state) => {
+      const nextVal = !(state.preferences.showDock ?? true)
+      const next = { ...state.preferences, showDock: nextVal }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleToolbarViewMenu: () => {
+    set((state) => {
+      const nextVal = !(state.preferences.showToolbarViewMenu ?? true)
+      const next = { ...state.preferences, showToolbarViewMenu: nextVal }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleDockViewMenu: () => {
+    set((state) => {
+      const current = state.preferences.showDockViewMenu ?? state.preferences.dockControls?.viewMenu ?? false
+      const nextVal = !current
+      const next = {
+        ...state.preferences,
+        showDockViewMenu: nextVal,
+        dockControls: {
+          ...state.preferences.dockControls,
+          viewMenu: nextVal,
+        },
+      }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleZoomControls: () => {
+    set((state) => {
+      const current = state.preferences.dockControls?.zoomControls ?? true
+      const nextVal = !current
+      const next = {
+        ...state.preferences,
+        showZoomControls: nextVal,
+        dockControls: {
+          ...state.preferences.dockControls,
+          zoomControls: nextVal,
+        },
+      }
+      savePreferences(next)
       return { preferences: next }
     })
   },
