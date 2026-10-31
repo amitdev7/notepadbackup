@@ -1204,19 +1204,22 @@ function HoverNoteSection({
                       }))
                     }}
                     className={cn(
-                      "px-2.5 py-2 text-[11px] font-medium rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2.5 group",
+                      "relative px-3 py-2 text-[12px] font-medium rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group select-none backdrop-blur-xl",
                       isActive
-                        ? "bg-primary text-primary-foreground border-primary shadow-[0_4px_14px_rgba(0,122,255,0.25)] font-semibold"
-                        : "liquid-glass-icon bg-background/80 hover:bg-muted/80 border-border/70 text-foreground hover:border-border"
+                        ? "bg-white/20 dark:bg-white/15 text-foreground border-white/40 dark:border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_1.5px_rgba(255,255,255,0.5)] font-semibold ring-1 ring-white/20"
+                        : "bg-white/[0.04] hover:bg-white/[0.09] dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border-white/10 dark:border-white/10 text-foreground/90 hover:text-foreground hover:border-white/20 hover:shadow-md"
                     )}
                   >
                     <span className="truncate flex items-center gap-2.5">
-                      <LiquidGlassCardIcon themeId={t.id} size="sm" active={isActive} />
-                      <span className="truncate">{t.shortLabel}</span>
+                      <LiquidGlassCardIcon themeId={t.id} size="md" active={isActive} />
+                      <span className="truncate font-medium tracking-tight">{t.shortLabel}</span>
                     </span>
                     <span
-                      className="size-3 rounded-full shrink-0 border border-black/15 shadow-2xs"
-                      style={{ backgroundColor: t.previewColor }}
+                      className="relative size-3.5 rounded-full shrink-0 border border-white/30 transition-transform duration-200 group-hover:scale-110"
+                      style={{
+                        backgroundColor: t.previewColor,
+                        boxShadow: `0 0 10px ${t.previewColor}80, inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1.5px rgba(0,0,0,0.4)`,
+                      }}
                     />
                   </button>
                 )

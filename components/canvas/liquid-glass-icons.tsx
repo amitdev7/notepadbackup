@@ -3,17 +3,15 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Apple iOS & macOS Liquid Glass Icon System
 //
-// Crafts authentic physical squircle tiles with:
-// - Continuous Apple HIG squircle geometry
-// - Multi-layer liquid glass specularity & diagonal glossy light sheen
-// - 1:1 miniature representations of the 5 hardware reference designs:
-//   1. Yellow Slate: Sunny yellow bezel + obsidian black screen
-//   2. Ice Ceramic: Translucent ice-blue glass rim + frosted milky white ceramic
-//   3. Royal Slate: Royal cobalt blue bezel + obsidian black screen
-//   4. Cyan Slate: Neon electric cyan bezel + obsidian black screen
-//   5. Acrylic Glass: Transparent acrylic chassis + specular sheen + nested white card
+// 1:1 Vector Physical Card Replicas for the 5 Hardware Reference Designs:
+// 1. Yellow Slate: Sunny yellow 3D bezel + deep obsidian screen + specular sheen
+// 2. Ice Ceramic: Translucent ice-blue glass rim + frosted milky ceramic white card
+// 3. Royal Slate: Electric royal cobalt blue bezel + obsidian screen + sapphire gloss
+// 4. Cyan Slate: Neon electric cyan bezel + obsidian screen + cyan glow
+// 5. Acrylic Glass: Transparent acrylic chassis + amber wire rim + 135° diagonal reflection
 // ---------------------------------------------------------------------------
 
+import { useId } from "react"
 import { cn } from "@/lib/utils"
 
 export type CardThemeId =
@@ -37,188 +35,282 @@ export function LiquidGlassCardIcon({
   active = false,
   className,
 }: LiquidGlassCardIconProps) {
-  const sizeClasses = {
-    sm: "w-6 h-4 rounded-[6px] p-[1.5px]",
-    md: "w-8 h-5.5 rounded-[8px] p-[2px]",
-    lg: "w-11 h-7.5 rounded-[10px] p-[2.5px]",
-  }[size]
+  const uid = useId().replace(/:/g, "")
 
-  const innerSizeClasses = {
-    sm: "rounded-[4.5px]",
-    md: "rounded-[6px]",
-    lg: "rounded-[8px]",
+  const dims = {
+    sm: "w-7 h-[19px]",
+    md: "w-10 h-[27px]",
+    lg: "w-13 h-[35px]",
   }[size]
 
   switch (themeId) {
-    case "yellow-slate":
+    case "yellow-slate": {
+      const gBezel = `ys-b-${uid}`
+      const gScreen = `ys-s-${uid}`
+      const gGloss = `ys-g-${uid}`
+      const fShadow = `ys-f-${uid}`
       return (
-        <div
+        <svg
+          viewBox="0 0 44 30"
           aria-hidden="true"
           className={cn(
-            "relative shrink-0 select-none overflow-hidden transition-all duration-200",
-            sizeClasses,
-            "bg-[#FACC15] shadow-[0_2px_8px_rgba(250,204,21,0.4),0_1px_2px_rgba(0,0,0,0.12)]",
-            "border border-[#FDE047]/80",
-            active && "ring-2 ring-[#FACC15] ring-offset-1 ring-offset-background scale-105",
+            "shrink-0 select-none transition-transform duration-200 overflow-visible",
+            dims,
+            active && "scale-105",
             className
           )}
+          fill="none"
         >
-          {/* Top-left specular sheen */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-white/5 to-transparent pointer-events-none z-10" />
+          <defs>
+            <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FEF08A" />
+              <stop offset="35%" stopColor="#FACC15" />
+              <stop offset="100%" stopColor="#CA8A04" />
+            </linearGradient>
+            <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#1E2026" />
+              <stop offset="100%" stopColor="#121316" />
+            </linearGradient>
+            <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            </linearGradient>
+            <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000000" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#FACC15" floodOpacity="0.3" />
+            </filter>
+          </defs>
 
+          {/* Outer Sunny Yellow Bezel */}
+          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Top Edge Specular Rim Light */}
+          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.7)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <div
-            className={cn(
-              "w-full h-full bg-[#18191E] flex flex-col justify-center items-center px-1 relative shadow-inner overflow-hidden",
-              innerSizeClasses
-            )}
-          >
-            {/* Screen specular light bar */}
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-            <div className="w-full flex items-center justify-between gap-0.5">
-              <span className="w-1.5 h-0.5 rounded-full bg-[#FACC15]/80" />
-              <span className="size-1 rounded-full bg-[#FACC15] shadow-[0_0_3px_#FACC15]" />
-            </div>
-            <div className="w-3/4 h-0.5 rounded-full bg-white/30 mt-0.5" />
-          </div>
-        </div>
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          {/* Inset Screen Shadow */}
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
+          {/* Glass Specular Gloss Arc */}
+          <path
+            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            fill={`url(#${gGloss})`}
+          />
+        </svg>
       )
+    }
 
-    case "ice-ceramic":
+    case "ice-ceramic": {
+      const gRim = `ic-r-${uid}`
+      const gScreen = `ic-s-${uid}`
+      const gGloss = `ic-g-${uid}`
+      const fShadow = `ic-f-${uid}`
       return (
-        <div
+        <svg
+          viewBox="0 0 44 30"
           aria-hidden="true"
           className={cn(
-            "relative shrink-0 select-none overflow-hidden transition-all duration-200",
-            sizeClasses,
-            "bg-[#7DD3FC]/90 backdrop-blur-md shadow-[0_2px_8px_rgba(125,211,252,0.45),0_1px_2px_rgba(0,0,0,0.08)]",
-            "border border-[#BAE6FD]",
-            active && "ring-2 ring-[#38BDF8] ring-offset-1 ring-offset-background scale-105",
+            "shrink-0 select-none transition-transform duration-200 overflow-visible",
+            dims,
+            active && "scale-105",
             className
           )}
+          fill="none"
         >
-          {/* Specular glass reflection */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/60 via-white/10 to-transparent pointer-events-none z-10" />
+          <defs>
+            <linearGradient id={gRim} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#BAE6FD" />
+              <stop offset="45%" stopColor="#7DD3FC" />
+              <stop offset="100%" stopColor="#38BDF8" />
+            </linearGradient>
+            <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="60%" stopColor="#F8FAFC" />
+              <stop offset="100%" stopColor="#EFF6FF" />
+            </linearGradient>
+            <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
+              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.12" />
+              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            </linearGradient>
+            <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0284C7" floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.15" />
+            </filter>
+          </defs>
 
+          {/* Outer Translucent Ice Blue Glass Rim */}
+          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gRim})`} filter={`url(#${fShadow})`} />
+          {/* Top Edge Specular White Light */}
+          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.95)" strokeWidth="0.8" fill="none" />
           {/* Inner Frosted Milky Ceramic Card */}
-          <div
-            className={cn(
-              "w-full h-full bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#EFF6FF] flex flex-col justify-center items-center px-1 relative shadow-[inset_0_1px_1px_rgba(255,255,255,0.95)] overflow-hidden",
-              innerSizeClasses
-            )}
-          >
-            <div className="w-full flex items-center justify-between gap-0.5">
-              <span className="w-1.5 h-0.5 rounded-full bg-sky-400" />
-              <span className="size-1 rounded-full bg-sky-500 shadow-[0_0_3px_rgba(14,165,233,0.7)]" />
-            </div>
-            <div className="w-3/4 h-0.5 rounded-full bg-slate-300 mt-0.5" />
-          </div>
-        </div>
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          {/* Inset Rim Reflection */}
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(186,230,253,0.7)" strokeWidth="0.8" fill="none" />
+          {/* Ceramic Glass Gloss Arc */}
+          <path
+            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            fill={`url(#${gGloss})`}
+          />
+        </svg>
       )
+    }
 
-    case "royal-slate":
+    case "royal-slate": {
+      const gBezel = `rs-b-${uid}`
+      const gScreen = `rs-s-${uid}`
+      const gGloss = `rs-g-${uid}`
+      const fShadow = `rs-f-${uid}`
       return (
-        <div
+        <svg
+          viewBox="0 0 44 30"
           aria-hidden="true"
           className={cn(
-            "relative shrink-0 select-none overflow-hidden transition-all duration-200",
-            sizeClasses,
-            "bg-[#2563EB] shadow-[0_2px_8px_rgba(37,99,235,0.45),0_1px_2px_rgba(0,0,0,0.15)]",
-            "border border-[#60A5FA]/80",
-            active && "ring-2 ring-[#2563EB] ring-offset-1 ring-offset-background scale-105",
+            "shrink-0 select-none transition-transform duration-200 overflow-visible",
+            dims,
+            active && "scale-105",
             className
           )}
+          fill="none"
         >
-          {/* Specular sapphire sheen */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/45 via-white/5 to-transparent pointer-events-none z-10" />
+          <defs>
+            <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#93C5FD" />
+              <stop offset="35%" stopColor="#2563EB" />
+              <stop offset="100%" stopColor="#1E40AF" />
+            </linearGradient>
+            <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#1E2026" />
+              <stop offset="100%" stopColor="#121316" />
+            </linearGradient>
+            <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            </linearGradient>
+            <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#1D4ED8" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.35" />
+            </filter>
+          </defs>
 
+          {/* Outer Royal Cobalt Blue Bezel */}
+          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Top Edge Specular Light */}
+          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.75)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <div
-            className={cn(
-              "w-full h-full bg-[#18191E] flex flex-col justify-center items-center px-1 relative shadow-inner overflow-hidden",
-              innerSizeClasses
-            )}
-          >
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-            <div className="w-full flex items-center justify-between gap-0.5">
-              <span className="w-1.5 h-0.5 rounded-full bg-[#3B82F6]/90" />
-              <span className="size-1 rounded-full bg-[#3B82F6] shadow-[0_0_3px_#3B82F6]" />
-            </div>
-            <div className="w-3/4 h-0.5 rounded-full bg-white/30 mt-0.5" />
-          </div>
-        </div>
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          {/* Inset Screen Shadow */}
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
+          {/* Sapphire Glass Gloss Arc */}
+          <path
+            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            fill={`url(#${gGloss})`}
+          />
+        </svg>
       )
+    }
 
-    case "cyan-slate":
+    case "cyan-slate": {
+      const gBezel = `cs-b-${uid}`
+      const gScreen = `cs-s-${uid}`
+      const gGloss = `cs-g-${uid}`
+      const fShadow = `cs-f-${uid}`
       return (
-        <div
+        <svg
+          viewBox="0 0 44 30"
           aria-hidden="true"
           className={cn(
-            "relative shrink-0 select-none overflow-hidden transition-all duration-200",
-            sizeClasses,
-            "bg-[#00B4D8] shadow-[0_2px_8px_rgba(0,180,216,0.45),0_1px_2px_rgba(0,0,0,0.12)]",
-            "border border-[#90E0EF]",
-            active && "ring-2 ring-[#00B4D8] ring-offset-1 ring-offset-background scale-105",
+            "shrink-0 select-none transition-transform duration-200 overflow-visible",
+            dims,
+            active && "scale-105",
             className
           )}
+          fill="none"
         >
-          {/* Specular cyan sheen */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-white/5 to-transparent pointer-events-none z-10" />
+          <defs>
+            <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#A5F3FC" />
+              <stop offset="35%" stopColor="#00B4D8" />
+              <stop offset="100%" stopColor="#0369A1" />
+            </linearGradient>
+            <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#1E2026" />
+              <stop offset="100%" stopColor="#121316" />
+            </linearGradient>
+            <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+            </linearGradient>
+            <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#00B4D8" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.35" />
+            </filter>
+          </defs>
 
+          {/* Outer Electric Neon Cyan Bezel */}
+          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Top Edge Specular Light */}
+          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.85)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <div
-            className={cn(
-              "w-full h-full bg-[#18191E] flex flex-col justify-center items-center px-1 relative shadow-inner overflow-hidden",
-              innerSizeClasses
-            )}
-          >
-            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none" />
-            <div className="w-full flex items-center justify-between gap-0.5">
-              <span className="w-1.5 h-0.5 rounded-full bg-[#00B4D8]/90" />
-              <span className="size-1 rounded-full bg-[#00B4D8] shadow-[0_0_3px_#00B4D8]" />
-            </div>
-            <div className="w-3/4 h-0.5 rounded-full bg-white/30 mt-0.5" />
-          </div>
-        </div>
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          {/* Inset Screen Shadow */}
+          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
+          {/* Cyan Glass Gloss Arc */}
+          <path
+            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            fill={`url(#${gGloss})`}
+          />
+        </svg>
       )
+    }
 
     case "acrylic-glass":
-    default:
+    default: {
+      const gGlass = `ag-g-${uid}`
+      const gDiag = `ag-d-${uid}`
+      const fShadow = `ag-f-${uid}`
       return (
-        <div
+        <svg
+          viewBox="0 0 44 30"
           aria-hidden="true"
           className={cn(
-            "relative shrink-0 select-none overflow-hidden transition-all duration-200",
-            sizeClasses,
-            "bg-gradient-to-br from-amber-100/60 to-white/40 backdrop-blur-md",
-            "border border-[#EAB308] shadow-[0_2px_8px_rgba(234,179,8,0.35),0_1px_2px_rgba(0,0,0,0.08)]",
-            active && "ring-2 ring-[#EAB308] ring-offset-1 ring-offset-background scale-105",
+            "shrink-0 select-none transition-transform duration-200 overflow-visible",
+            dims,
+            active && "scale-105",
             className
           )}
+          fill="none"
         >
-          {/* 135deg Diagonal specular reflection */}
-          <div
-            className="absolute inset-0 pointer-events-none z-10"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 28%, transparent 28.5%)",
-            }}
-          />
+          <defs>
+            <linearGradient id={gGlass} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
+              <stop offset="50%" stopColor="#F8FAFC" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#CBD5E1" stopOpacity="0.15" />
+            </linearGradient>
+            <linearGradient id={gDiag} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
+              <stop offset="28%" stopColor="#FFFFFF" stopOpacity="0.32" />
+              <stop offset="28.5%" stopColor="#FFFFFF" stopOpacity="0" />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+            </linearGradient>
+            <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
+              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#CA8A04" floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.15" />
+            </filter>
+          </defs>
 
-          {/* Floating Nested White Card */}
-          <div
-            className={cn(
-              "w-full h-full bg-white flex flex-col justify-center items-center px-1 relative shadow-[0_1px_3px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,1)] overflow-hidden",
-              innerSizeClasses
-            )}
-          >
-            <div className="w-full flex items-center justify-between gap-0.5">
-              <span className="w-1.5 h-0.5 rounded-full bg-amber-400" />
-              <span className="size-1 rounded-full bg-amber-400 shadow-[0_0_3px_rgba(251,191,36,0.8)]" />
-            </div>
-            <div className="w-3/4 h-0.5 rounded-full bg-stone-200 mt-0.5" />
-          </div>
-        </div>
+          {/* Transparent Acrylic Glass Frame with Ambient Shadow */}
+          <rect x="2" y="2" width="40" height="26" rx="8" fill={`url(#${gGlass})`} filter={`url(#${fShadow})`} />
+          {/* Amber Yellow Wire Rim */}
+          <rect x="2" y="2" width="40" height="26" rx="8" stroke="#EAB308" strokeWidth="1.2" fill="none" />
+          {/* Nested Floating White Card */}
+          <rect x="6.5" y="5.5" width="31" height="19" rx="5" fill="#FFFFFF" />
+          <rect x="6.5" y="5.5" width="31" height="19" rx="5" stroke="rgba(0,0,0,0.08)" strokeWidth="0.6" fill="none" />
+          {/* 135° Diagonal Specular Glass Reflection Slicing Across Pane */}
+          <rect x="2" y="2" width="40" height="26" rx="8" fill={`url(#${gDiag})`} />
+        </svg>
       )
+    }
   }
 }
