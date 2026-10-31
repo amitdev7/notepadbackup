@@ -316,7 +316,7 @@ function Palette() {
         className="fixed inset-0 z-50 flex flex-col justify-end" onPointerDown={close}>
         <div className="absolute inset-0 bg-foreground/10 backdrop-blur-[2px] transition-opacity duration-200" />
         <div
-          className="animate-drawer-enter relative mx-auto flex max-h-[62vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-chrome-lg border border-b-0 border-border/80 bg-background shadow-popup"
+          className="animate-drawer-enter relative mx-auto flex max-h-[64vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl border border-b-0 sm:border-b border-border/80 apple-glass-panel shadow-2xl"
           onPointerDown={(e) => e.stopPropagation()}
         >
           <div className="relative shrink-0 border-b">
@@ -413,12 +413,15 @@ function PaletteRow({
       data-active={active}
       onMouseMove={onHover}
       onClick={onPick}
-      className={`flex h-ctl-lg w-full items-center gap-3 rounded-chrome-sm px-2.5 text-left text-row transition-all duration-100 cursor-pointer ${active ? "bg-accent text-accent-foreground translate-x-0.5" : "text-foreground hover:bg-muted/50"
-        }`}
+      className={`flex h-ctl-lg w-full items-center gap-3 rounded-xl px-3 text-left text-row transition-all duration-150 cursor-pointer ${
+        active
+          ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold shadow-2xs translate-x-1"
+          : "text-foreground hover:bg-muted/60"
+      }`}
     >
       {row.kind === "action" ? (
         <>
-          <row.action.icon className="size-4 shrink-0 text-muted-foreground" weight="regular" />
+          <row.action.icon className={`size-4 shrink-0 transition-colors ${active ? "text-[var(--ui-accent,#007AFF)]" : "text-muted-foreground"}`} weight={active ? "bold" : "regular"} />
           <span className="flex-1 truncate">{row.action.label}</span>
           {row.action.hint && <span className="pl-6 font-mono text-label text-muted-foreground">{row.action.hint}</span>}
         </>

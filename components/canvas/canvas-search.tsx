@@ -175,7 +175,7 @@ export function CanvasSearch() {
       }}
     >
       <div
-        className="w-full max-w-lg rounded-chrome-lg border border-border/80 bg-background shadow-popup overflow-hidden animate-in fade-in zoom-in-95 duration-100 flex flex-col"
+        className="w-full max-w-lg rounded-2xl border border-border/80 apple-glass-panel shadow-2xl overflow-hidden animate-scale-fade flex flex-col"
         onKeyDown={handleKeyDown}
       >
         {/* Search Input Bar */}
@@ -225,16 +225,20 @@ export function CanvasSearch() {
                   type="button"
                   onClick={() => jumpToNode(item.node)}
                   onMouseEnter={() => setActiveIndex(idx)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-chrome-sm text-left transition-colors ${isSelected ? "bg-accent text-accent-foreground" : "text-foreground hover:bg-accent/50"
-                    }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-150 cursor-pointer ${
+                    isSelected
+                      ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold shadow-2xs translate-x-0.5"
+                      : "text-foreground hover:bg-muted/50"
+                  }`}
                 >
                   <div
-                    className={`size-7 rounded flex items-center justify-center shrink-0 border ${isSelected
-                      ? "border-accent-foreground/20 bg-background/50"
-                      : "border-border/60 bg-muted/40"
-                      }`}
+                    className={`size-7 rounded-lg flex items-center justify-center shrink-0 border transition-colors ${
+                      isSelected
+                        ? "border-[var(--ui-accent,#007AFF)]/40 bg-[var(--ui-accent,#007AFF)]/10 text-[var(--ui-accent,#007AFF)]"
+                        : "border-border/60 bg-muted/40 text-foreground"
+                    }`}
                   >
-                    <Icon className="size-4 text-foreground" />
+                    <Icon className="size-4" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-medium truncate">{item.title}</div>

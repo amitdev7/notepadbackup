@@ -316,14 +316,14 @@ export function CanvasContextMenu() {
   return (
     <div
       ref={ref}
-      className="fixed z-50 min-w-52 rounded-chrome-lg border border-border/80 bg-background p-1.5 shadow-popup"
+      className="fixed z-50 min-w-56 rounded-2xl apple-glass-panel p-1.5 shadow-2xl animate-scale-fade select-none"
       style={{ left: pos.x, top: pos.y }}
       onPointerDown={(e) => e.stopPropagation()}
       onContextMenu={(e) => e.preventDefault()}
     >
       {entries.map((entry, i) =>
         "separator" in entry ? (
-          <div key={i} className="-mx-1.5 my-1.5 h-px bg-border" />
+          <div key={i} className="-mx-1.5 my-1 h-px bg-border/60" />
         ) : (
           <button
             key={i}
@@ -332,15 +332,20 @@ export function CanvasContextMenu() {
               entry.run?.()
               close()
             }}
-            className={`group flex h-ctl-lg w-full items-center gap-2.5 rounded-chrome-sm px-2.5 text-left text-row hover:bg-accent ${entry.danger ? "text-muted-foreground hover:text-destructive" : ""
+            className={`group flex h-ctl-lg w-full items-center gap-2.5 rounded-xl px-2.5 text-left text-row cursor-pointer transition-colors duration-100 ${entry.danger
+                ? "text-destructive hover:bg-destructive/10"
+                : "hover:bg-[var(--ui-accent,#007AFF)]/10 hover:text-[var(--ui-accent,#007AFF)]"
               }`}
           >
             <entry.icon
-              className={`size-4 shrink-0 ${entry.danger ? "" : "text-muted-foreground group-hover:text-foreground"}`}
+              className={`size-4 shrink-0 transition-colors ${entry.danger
+                  ? "text-destructive"
+                  : "text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)]"
+                }`}
               weight="fill"
             />
-            <span className="flex-1 truncate">{entry.label}</span>
-            {entry.hint && <span className="pl-6 font-mono text-label text-muted-foreground">{entry.hint}</span>}
+            <span className="flex-1 truncate font-medium">{entry.label}</span>
+            {entry.hint && <span className="pl-6 font-mono text-label opacity-60">{entry.hint}</span>}
           </button>
         )
       )}

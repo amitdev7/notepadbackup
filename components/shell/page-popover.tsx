@@ -94,15 +94,14 @@ export function PagePopover() {
       aria-label="Page Settings"
       className={cn(
         "fixed top-14 right-3 sm:right-6 z-50 w-[290px] max-w-[calc(100vw-1.5rem)]",
-        "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
-        "bg-white/95 dark:bg-[#1A1A1E]/95 backdrop-blur-xl shadow-xl shadow-stone-950/10 dark:shadow-black/60",
-        "text-stone-800 dark:text-stone-100 font-sans",
+        "rounded-2xl border border-border/80 apple-glass-panel shadow-2xl",
+        "text-popover-foreground font-sans",
         "animate-popover-enter select-none"
       )}
     >
       {/* ── Title Header ── */}
-      <div className="px-4 pt-3.5 pb-3 border-b border-stone-200/80 dark:border-stone-800/80">
-        <h2 className="text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
+      <div className="px-4 pt-3.5 pb-3 border-b border-border/60">
+        <h2 className="text-sm font-semibold tracking-tight text-foreground">
           Page
         </h2>
       </div>
@@ -110,14 +109,14 @@ export function PagePopover() {
       <div className="p-4 space-y-4 text-xs">
         {/* ── Section: Paper ── */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
+          <div className="flex items-center justify-between text-foreground">
             <span className="font-medium text-xs">Paper</span>
-            <CaretDown size={12} className="text-stone-400" />
+            <CaretDown size={12} className="text-muted-foreground" />
           </div>
 
           {/* Shade */}
           <div className="flex items-center justify-between gap-3">
-            <span className="text-stone-500 dark:text-stone-400 text-xs shrink-0">
+            <span className="text-muted-foreground text-xs shrink-0">
               Shade
             </span>
             <div className="flex items-center gap-2">
@@ -134,8 +133,8 @@ export function PagePopover() {
                     className={cn(
                       "tactile-press w-12 h-6.5 rounded-md transition-all border cursor-pointer hover:scale-105",
                       isSelected
-                        ? "border-stone-800 dark:border-stone-200 shadow-2xs scale-105"
-                        : "border-stone-300 dark:border-stone-700 hover:border-stone-400 dark:hover:border-stone-500"
+                        ? "border-[var(--ui-accent,#007AFF)] shadow-xs scale-105 ring-1 ring-[var(--ui-accent,#007AFF)]/30"
+                        : "border-border hover:border-muted-foreground"
                     )}
                     style={{ backgroundColor: bg }}
                   />
@@ -146,7 +145,7 @@ export function PagePopover() {
 
           {/* Dot grid */}
           <div className="flex items-center justify-between">
-            <span className="text-stone-500 dark:text-stone-400 text-xs">
+            <span className="text-muted-foreground text-xs">
               Dot grid
             </span>
             <Switch
@@ -158,36 +157,36 @@ export function PagePopover() {
         </div>
 
         {/* ── Section Divider ── */}
-        <div className="h-px bg-stone-200/80 dark:bg-stone-800/80 -mx-4" />
+        <div className="h-px bg-border/60 -mx-4" />
 
         {/* ── Section: Ink ── */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
+          <div className="flex items-center justify-between text-foreground">
             <span className="font-medium text-xs">Ink</span>
-            <CaretDown size={12} className="text-stone-400" />
+            <CaretDown size={12} className="text-muted-foreground" />
           </div>
 
           {/* Palette Dropdown */}
           <div className="flex items-center justify-between gap-3">
-            <span className="text-stone-500 dark:text-stone-400 text-xs shrink-0">
+            <span className="text-muted-foreground text-xs shrink-0">
               Palette
             </span>
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
                   "flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg w-[164px]",
-                  "border border-stone-200 dark:border-stone-700 bg-stone-50/60 dark:bg-stone-800/50",
-                  "text-xs font-medium text-stone-800 dark:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors outline-none cursor-pointer"
+                  "border border-border/80 bg-muted/40",
+                  "text-xs font-medium text-foreground hover:bg-muted/80 transition-colors outline-none cursor-pointer"
                 )}
               >
                 <div className="flex items-center gap-1.5 truncate">
                   <span
-                    className="size-3 rounded-full border border-stone-300 dark:border-stone-600 shrink-0"
+                    className="size-3 rounded-full border border-border shrink-0"
                     style={{ backgroundColor: palette.ink }}
                   />
                   <span className="truncate">{currentThemeLabel}</span>
                 </div>
-                <CaretDown size={12} className="text-stone-400 shrink-0" />
+                <CaretDown size={12} className="text-muted-foreground shrink-0" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48 text-xs font-sans">
                 {THEME_NAMES.map((name) => {
@@ -206,7 +205,7 @@ export function PagePopover() {
                         />
                         <span>{t.label}</span>
                       </div>
-                      {isSelected && <Check size={12} className="text-blue-600 dark:text-blue-400" />}
+                      {isSelected && <Check size={12} className="text-[var(--ui-accent,#007AFF)]" />}
                     </DropdownMenuItem>
                   )
                 })}
@@ -216,7 +215,7 @@ export function PagePopover() {
 
           {/* Font Segmented Buttons */}
           <div className="flex items-center justify-between gap-3">
-            <span className="text-stone-500 dark:text-stone-400 text-xs shrink-0">
+            <span className="text-muted-foreground text-xs shrink-0">
               Font
             </span>
             <div className="flex items-center gap-1.5">
@@ -238,8 +237,8 @@ export function PagePopover() {
                       "tactile-btn w-12 h-7 rounded-md text-xs flex items-center justify-center font-medium cursor-pointer",
                       fontClass,
                       isSelected
-                        ? "bg-stone-200/90 dark:bg-stone-700/90 border border-stone-300 dark:border-stone-600 text-stone-900 dark:text-white shadow-2xs font-semibold scale-102"
-                        : "text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800"
+                        ? "bg-muted border border-border text-foreground shadow-2xs font-semibold scale-102"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                   >
                     {label}
@@ -249,24 +248,24 @@ export function PagePopover() {
             </div>
           </div>
 
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-normal pt-0.5">
+          <p className="text-[11px] text-muted-foreground leading-normal pt-0.5">
             saved with this drawing — a new file starts from whatever you set last
           </p>
         </div>
 
         {/* ── Section Divider ── */}
-        <div className="h-px bg-stone-200/80 dark:bg-stone-800/80 -mx-4" />
+        <div className="h-px bg-border/60 -mx-4" />
 
         {/* ── Section: View ── */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-stone-800 dark:text-stone-200">
+          <div className="flex items-center justify-between text-foreground">
             <span className="font-medium text-xs">View</span>
-            <CaretDown size={12} className="text-stone-400" />
+            <CaretDown size={12} className="text-muted-foreground" />
           </div>
 
           {/* Context menu */}
           <div className="flex items-center justify-between pt-1">
-            <span className="text-stone-500 dark:text-stone-400 text-xs">
+            <span className="text-muted-foreground text-xs">
               Context menu
             </span>
             <Switch
@@ -276,13 +275,13 @@ export function PagePopover() {
             />
           </div>
 
-          <p className="text-[11px] text-stone-400 dark:text-stone-500 leading-normal pt-0.5">
+          <p className="text-[11px] text-muted-foreground leading-normal pt-0.5">
             quick controls float above the selection
           </p>
         </div>
 
         {/* ── Section Divider ── */}
-        <div className="h-px bg-stone-200/80 dark:bg-stone-800/80 -mx-4" />
+        <div className="h-px bg-border/60 -mx-4" />
 
         {/* ── Bottom Action Buttons ── */}
         <div className="flex items-center gap-2 pt-0.5">
@@ -292,7 +291,7 @@ export function PagePopover() {
               zoomToFit()
               setIsOpen(false)
             }}
-            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 cursor-pointer"
+            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 cursor-pointer"
           >
             <CornersOut size={13} aria-hidden="true" />
             <span>Fit</span>
@@ -303,7 +302,7 @@ export function PagePopover() {
               selectAll()
               setIsOpen(false)
             }}
-            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-stone-200 dark:border-stone-700/80 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 cursor-pointer"
+            className="tactile-btn flex-1 flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 cursor-pointer"
           >
             <SelectionAll size={13} aria-hidden="true" />
             <span>Select all</span>

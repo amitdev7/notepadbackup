@@ -42,6 +42,16 @@ export default function Home() {
   const setHistoryOpen = useSquig((s) => s.setHistoryOpen)
   const cloudDocId = useSquig((s) => s.cloudDocId)
 
+  // Lazy dialog visibility selectors to keep initial DOM lightweight
+  const settingsOpen = useShellStore((s) => s.settingsOpen)
+  const commandOpen = useSquig((s) => s.commandOpen)
+  const shortcutsOpen = useSquig((s) => s.shortcutsOpen)
+  const trashOpen = useSquig((s) => s.trashOpen)
+  const expiredArchiveOpen = useShellStore((s) => s.expiredArchiveOpen)
+  const pdfToCanvasOpen = useSquig((s) => Boolean(s.pdfToCanvasDialog?.open))
+  const searchOpen = useSquig((s) => s.searchOpen)
+  const statsOpen = useSquig((s) => s.statsOpen)
+
   useEffect(() => {
     hydrate()
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
@@ -78,7 +88,7 @@ export default function Home() {
           <TopBar />
           <BottomDock />
           <PagePopover />
-          <SettingsDialog />
+          {settingsOpen && <SettingsDialog />}
           <LibraryPanel />
           <Inspector />
         </>
@@ -93,22 +103,22 @@ export default function Home() {
       {/* Notification flash banner */}
       <Notice />
 
-      {/* Overlays, Palettes & Floating Modals */}
+      {/* Overlays, Palettes & Floating Modals (Mounted strictly when activated) */}
       <LinkEditor />
       <CanvasContextMenu />
-      <CommandPalette />
-      <ShortcutsSheet />
-      <ShareDialog isOpen={shareOpen} onClose={() => setShareOpen(false)} cloudDocId={cloudDocId || undefined} />
+      {commandOpen && <CommandPalette />}
+      {shortcutsOpen && <ShortcutsSheet />}
+      {shareOpen && <ShareDialog isOpen={shareOpen} onClose={() => setShareOpen(false)} cloudDocId={cloudDocId || undefined} />}
       <WifiPublishDialog />
       <WifiDevicePanel />
       <ConflictDialog />
       <MigrationDialog />
-      <VersionHistoryPanel isOpen={historyOpen} onClose={() => setHistoryOpen(false)} cloudDocId={cloudDocId || undefined} />
-      <TrashDialog />
-      <ExpiredElementsDialog />
-      <PdfToCanvasDialog />
-      <CanvasSearch />
-      <CanvasStats />
+      {historyOpen && <VersionHistoryPanel isOpen={historyOpen} onClose={() => setHistoryOpen(false)} cloudDocId={cloudDocId || undefined} />}
+      {trashOpen && <TrashDialog />}
+      {expiredArchiveOpen && <ExpiredElementsDialog />}
+      {pdfToCanvasOpen && <PdfToCanvasDialog />}
+      {searchOpen && <CanvasSearch />}
+      {statsOpen && <CanvasStats />}
       <LaserOverlay />
       {!uiHidden && <ToolPropertiesPanel />}
     </main>

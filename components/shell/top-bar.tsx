@@ -109,30 +109,30 @@ export function TopBar() {
               }
             }}
             aria-label="Document title"
-            className="text-xs font-semibold text-stone-900 dark:text-stone-100 bg-white/90 dark:bg-black/60 backdrop-blur-md ring-2 ring-[#007AFF]/50 border border-[#007AFF]/60 rounded-xl px-2.5 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
+            className="text-xs font-semibold text-foreground bg-background/95 backdrop-blur-md ring-2 ring-[var(--ui-accent,#007AFF)]/50 border border-[var(--ui-accent,#007AFF)]/60 rounded-xl px-2.5 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
           />
         ) : (
           <button
             type="button"
             onClick={() => setIsEditingTitle(true)}
-            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200 hover:text-black dark:hover:text-white transition-colors truncate cursor-pointer outline-none"
+            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-foreground/90 hover:text-foreground transition-colors truncate cursor-pointer outline-none"
             title="Click to rename document"
             aria-label={`Rename document: ${fileName}`}
           >
             <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
             <PencilSimple
               size={11}
-              className="text-stone-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
+              className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
               aria-hidden="true"
             />
           </button>
         )}
 
-        <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+        <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
 
         {/* Live Status Indicator Pill */}
         <div
-          className="flex items-center gap-1.5 text-[10px] text-stone-400 dark:text-stone-500 font-mono select-none px-1"
+          className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono select-none px-1"
           title={
             syncStatus === "syncing"
               ? "Synchronizing changes..."
@@ -148,28 +148,28 @@ export function TopBar() {
         >
           {syncStatus === "syncing" ? (
             <>
-              <span className="size-1.5 rounded-full bg-[#007AFF] animate-pulse shadow-[0_0_8px_rgba(0,122,255,0.85)]" aria-hidden="true" />
-              <span className="hidden sm:inline text-[#007AFF] dark:text-[#0A84FF]">syncing</span>
+              <span className="size-1.5 rounded-full bg-[var(--ui-accent,#007AFF)] animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.85)]" aria-hidden="true" />
+              <span className="hidden sm:inline text-[var(--ui-accent,#007AFF)]">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
             <>
-              <span className="size-1.5 rounded-full bg-[#FF9500]" aria-hidden="true" />
-              <span className="text-[#FF9500] dark:text-[#FF9F0A] hidden sm:inline">conflict</span>
+              <span className="size-1.5 rounded-full bg-amber-500" aria-hidden="true" />
+              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">conflict</span>
             </>
           ) : syncStatus === "error" ? (
             <>
-              <span className="size-1.5 rounded-full bg-[#FF3B30]" aria-hidden="true" />
-              <span className="text-[#FF3B30] hidden sm:inline">save error</span>
+              <span className="size-1.5 rounded-full bg-destructive" aria-hidden="true" />
+              <span className="text-destructive hidden sm:inline">save error</span>
             </>
           ) : justSaved ? (
             <>
-              <span className="size-1.5 rounded-full bg-[#34C759] shadow-[0_0_8px_rgba(52,199,89,0.85)] transition-all" aria-hidden="true" />
-              <span className="text-[#34C759] dark:text-[#30D158] hidden sm:inline-flex items-center gap-0.5">
+              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] transition-all" aria-hidden="true" />
+              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline-flex items-center gap-0.5">
                 <Check size={10} weight="bold" /> saved
               </span>
             </>
           ) : (
-            <span className="size-1.5 rounded-full bg-stone-300 dark:bg-stone-600" aria-hidden="true" />
+            <span className="size-1.5 rounded-full bg-muted-foreground/40" aria-hidden="true" />
           )}
         </div>
 
@@ -179,14 +179,14 @@ export function TopBar() {
         {/* Real-Time Clock & Location Detection */}
         {showTimeInTopBar && (
           <>
-            <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
             <TopBarClock />
           </>
         )}
 
         {showToolbarViewMenu && (
           <>
-            <div className="h-3 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
             <ViewMenu />
           </>
         )}

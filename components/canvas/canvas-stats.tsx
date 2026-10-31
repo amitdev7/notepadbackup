@@ -117,16 +117,16 @@ export function CanvasStats() {
         if (e.target === e.currentTarget) setStatsOpen(false)
       }}
     >
-      <div className="w-full max-w-sm rounded-chrome-lg border border-border/80 bg-background shadow-popup p-4 space-y-4 animate-in fade-in zoom-in-95 duration-100">
+      <div className="w-full max-w-sm rounded-2xl border border-border/80 apple-glass-panel shadow-2xl p-4.5 space-y-4 animate-scale-fade">
         <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
           <div className="flex items-center gap-2">
-            <ChartBar className="size-4.5 text-foreground" />
+            <ChartBar className="size-4.5 text-[var(--ui-accent,#007AFF)]" />
             <h2 className="text-sm font-semibold text-foreground">Canvas Statistics</h2>
           </div>
           <button
             type="button"
             onClick={() => setStatsOpen(false)}
-            className="text-muted-foreground hover:text-foreground p-1 rounded-chrome-sm"
+            className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted cursor-pointer"
           >
             <X className="size-4" />
           </button>
@@ -134,11 +134,11 @@ export function CanvasStats() {
 
         {/* Overview Numbers */}
         <div className="grid grid-cols-2 gap-2 text-xs">
-          <div className="p-2.5 rounded-chrome-sm border border-border/60 bg-muted/30">
+          <div className="p-2.5 rounded-xl border border-border/60 bg-muted/40">
             <div className="text-[11px] text-muted-foreground">Total Elements</div>
             <div className="text-base font-bold text-foreground mt-0.5">{stats.total}</div>
           </div>
-          <div className="p-2.5 rounded-chrome-sm border border-border/60 bg-muted/30">
+          <div className="p-2.5 rounded-xl border border-border/60 bg-muted/40">
             <div className="text-[11px] text-muted-foreground">Selected</div>
             <div className="text-base font-bold text-foreground mt-0.5">{selection.length}</div>
           </div>

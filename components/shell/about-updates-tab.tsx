@@ -550,52 +550,52 @@ export function AboutUpdatesTab() {
   return (
     <div className="space-y-5">
       {/* App Header */}
-      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-900/50">
+      <div className="p-4 rounded-xl border border-border/80 bg-card/70">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-600 dark:text-amber-400 font-bold text-lg">
             Z
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="font-bold text-stone-900 dark:text-stone-100 text-sm">Zenithsui Web</h4>
+              <h4 className="font-bold text-foreground text-sm">Zenithsui Web</h4>
               <span className="px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide uppercase bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
                 Web Edition
               </span>
             </div>
-            <p className="text-[11px] text-stone-500 mt-0.5">
+            <p className="text-[11px] text-muted-foreground mt-0.5">
               Version 2.4.0 Production Release • Browser / Cloud
             </p>
           </div>
         </div>
 
-        <p className="text-xs text-stone-600 dark:text-stone-400 mt-3 leading-relaxed">
+        <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
           A minimalist, paper-like infinite canvas for wireframing, note-taking, and academic planning. Built with Next.js Turbopack, React 19, Rough.js, and Zustand.
         </p>
       </div>
 
       {/* Windows Desktop Promotion Card */}
-      <div className="p-4 rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-stone-50/50 to-stone-100/50 dark:from-amber-500/10 dark:via-stone-900/30 dark:to-stone-950/50 space-y-3">
-        <div className="flex items-center gap-2.5 text-stone-900 dark:text-stone-100">
+      <div className="p-4 rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/5 via-background to-muted/30 space-y-3">
+        <div className="flex items-center gap-2.5 text-foreground">
           <WindowsLogo className="w-5 h-5 text-amber-500" />
           <h5 className="font-bold text-xs uppercase tracking-wider">
             Zenithsui for Windows Available
           </h5>
         </div>
 
-        <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           Experience 100% offline startup with an embedded loopback server, native file dialogs, background automatic updates applied on next launch, and full local persistence.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
           <button
             onClick={() => openLink(GITHUB_LATEST_RELEASE_URL)}
-            className="p-3 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-stone-900 dark:text-stone-100 transition-colors flex items-center justify-between group"
+            className="p-3 rounded-lg border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-foreground transition-colors flex items-center justify-between group cursor-pointer"
           >
             <div className="text-left">
               <span className="text-xs font-semibold block group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                 Setup Installer (.exe)
               </span>
-              <span className="text-[10px] text-stone-500 block">
+              <span className="text-[10px] text-muted-foreground block">
                 Standard Windows installer with auto-updates
               </span>
             </div>
@@ -604,54 +604,54 @@ export function AboutUpdatesTab() {
 
           <button
             onClick={() => openLink(GITHUB_LATEST_RELEASE_URL)}
-            className="p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-white/80 dark:bg-stone-900/60 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-900 dark:text-stone-100 transition-colors flex items-center justify-between group"
+            className="p-3 rounded-lg border border-border/80 bg-background/80 hover:bg-muted text-foreground transition-colors flex items-center justify-between group cursor-pointer"
           >
             <div className="text-left">
               <span className="text-xs font-semibold block">
                 Portable Edition (.exe)
               </span>
-              <span className="text-[10px] text-stone-500 block">
+              <span className="text-[10px] text-muted-foreground block">
                 Single binary, zero installation required
               </span>
             </div>
-            <DownloadSimple className="w-4 h-4 text-stone-500 shrink-0" />
+            <DownloadSimple className="w-4 h-4 text-muted-foreground shrink-0" />
           </button>
         </div>
       </div>
 
       {/* Local-first architecture feature points */}
-      <div className="grid grid-cols-2 gap-2 text-stone-600 dark:text-stone-400">
-        <div className="p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 flex items-start gap-2.5">
+      <div className="grid grid-cols-2 gap-2 text-muted-foreground">
+        <div className="p-3 rounded-lg border border-border/80 bg-muted/20 flex items-start gap-2.5">
           <HardDrives className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
           <div className="text-[11px]">
-            <span className="font-semibold block text-stone-800 dark:text-stone-200">Local-First Storage</span>
+            <span className="font-semibold block text-foreground">Local-First Storage</span>
             <span>IndexedDB multi-version store with zero forced lock-in.</span>
           </div>
         </div>
 
-        <div className="p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/30 flex items-start gap-2.5">
+        <div className="p-3 rounded-lg border border-border/80 bg-muted/20 flex items-start gap-2.5">
           <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
           <div className="text-[11px]">
-            <span className="font-semibold block text-stone-800 dark:text-stone-200">Privacy Respecting</span>
+            <span className="font-semibold block text-foreground">Privacy Respecting</span>
             <span>All drawing data remains in your local sandbox by default.</span>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex flex-wrap items-center justify-between text-[11px] text-stone-400 pt-2 border-t border-stone-200 dark:border-stone-800">
+      <div className="flex flex-wrap items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-border/60">
         <p>© 2026 Zenithsui. Open source under MIT License.</p>
         <div className="flex items-center gap-3">
           <button
             onClick={() => openLink(GITHUB_REPO_URL)}
-            className="hover:text-stone-600 dark:hover:text-stone-300 inline-flex items-center gap-1"
+            className="hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
           >
             <GithubLogo className="w-3.5 h-3.5" />
             <span>GitHub</span>
           </button>
           <button
             onClick={() => openLink(GITHUB_RELEASES_URL)}
-            className="hover:text-stone-600 dark:hover:text-stone-300 inline-flex items-center gap-1"
+            className="hover:text-foreground inline-flex items-center gap-1 cursor-pointer"
           >
             <ArrowSquareOut className="w-3.5 h-3.5" />
             <span>Releases</span>

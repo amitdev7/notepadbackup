@@ -23,6 +23,8 @@ const badgeVariants = cva(
           "bg-amber-500/15 text-amber-700 dark:text-amber-400 border border-amber-500/25",
         info:
           "bg-blue-500/15 text-blue-700 dark:text-blue-400 border border-blue-500/25",
+        accent:
+          "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] border border-[var(--ui-accent,#007AFF)]/25 font-semibold",
         pill:
           "bg-[var(--sq-shade)] text-[var(--sq-ink)] border border-[var(--sq-border)]",
       },

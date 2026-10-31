@@ -180,13 +180,12 @@ export function SettingsDialog() {
         aria-label="Settings"
         className={cn(
           "macos-window relative flex flex-col md:flex-row w-[820px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)]",
-          "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
-          "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl shadow-2xl shadow-stone-900/20 dark:shadow-black/70",
-          "overflow-hidden font-sans animate-modal-enter select-none"
+          "rounded-2xl border border-border/80 apple-glass-panel shadow-2xl",
+          "overflow-hidden font-sans animate-scale-fade select-none"
         )}
       >
         {/* ── Left Sidebar: Category List ── */}
-        <aside className="w-full md:w-[220px] shrink-0 border-b md:border-b-0 md:border-r border-stone-200/70 dark:border-stone-800/70 bg-stone-50/70 dark:bg-stone-900/50 py-3 px-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar">
+        <aside className="w-full md:w-[220px] shrink-0 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 py-3 px-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar">
           <div className="hidden md:flex items-center gap-2.5 px-2.5 mb-3 pt-0.5">
             <div className="flex items-center gap-1.5 group">
               <button
@@ -198,7 +197,7 @@ export function SettingsDialog() {
               <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
               <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
             </div>
-            <span className="ml-1 text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            <span className="ml-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
               Settings
             </span>
           </div>
@@ -215,8 +214,8 @@ export function SettingsDialog() {
                   className={cn(
                     "tactile-press flex shrink-0 md:w-full items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                     isActive
-                      ? "bg-blue-600 text-white shadow-2xs font-semibold scale-102"
-                      : "text-stone-600 dark:text-stone-300 hover:bg-stone-200/60 dark:hover:bg-stone-800/60 hover:text-stone-900 dark:hover:text-white"
+                      ? "bg-[var(--ui-accent,#007AFF)] text-white shadow-xs font-semibold scale-102"
+                      : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
                   )}
                 >
                   <Icon size={15} weight={isActive ? "fill" : "regular"} className="shrink-0" />
@@ -228,11 +227,11 @@ export function SettingsDialog() {
         </aside>
 
         {/* ── Right Content: Active Category Settings ── */}
-        <section className="flex-1 flex flex-col overflow-hidden bg-white/50 dark:bg-[#1C1C1F]/50">
+        <section className="flex-1 flex flex-col overflow-hidden bg-background/30">
           {/* Header */}
-          <header className="flex items-center justify-between px-6 py-4 border-b border-stone-200/70 dark:border-stone-800/70 shrink-0">
+          <header className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
             <div>
-              <h3 className="text-base font-bold text-stone-900 dark:text-stone-50 tracking-tight">
+              <h3 className="text-base font-bold text-foreground tracking-tight">
                 {currentSection.label}
               </h3>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">

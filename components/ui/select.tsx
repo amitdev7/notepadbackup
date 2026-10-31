@@ -30,7 +30,7 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         "flex w-fit items-center justify-between gap-1.5 rounded-chrome-sm border border-input bg-transparent py-2 pr-2 pl-2.5 text-label whitespace-nowrap transition-colors outline-none select-none",
-        "hover:border-border focus-visible:border-[var(--sq-ink)] focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/15",
+        "hover:border-border focus-visible:border-[var(--ui-accent,#007AFF)] focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/20",
         "data-disabled:cursor-not-allowed data-disabled:opacity-50",
         "data-[size=default]:h-ctl-lg data-[size=sm]:h-ctl",
         "*:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5",

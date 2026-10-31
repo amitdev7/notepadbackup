@@ -144,10 +144,45 @@ function drawableToPaths(drawable: ReturnType<RoughGenerator["rectangle"]>, dash
   }))
 }
 
+export interface PrimsPathsResult {
+  paths: PathBit[]
+  texts: Extract<Prim, { t: "text" }>[]
+  crisp: CrispBit[]
+}
+
+const MAX_PRIMS_CACHE_SIZE = 800
+const primsPathsCache = new Map<string, PrimsPathsResult>()
+
+export function getCachedPrimsToPaths(
+  cacheKey: string,
+  prims: Prim[],
+  seed: number
+): PrimsPathsResult {
+  const cached = primsPathsCache.get(cacheKey)
+  if (cached) {
+    // Refresh LRU ordering
+    primsPathsCache.delete(cacheKey)
+    primsPathsCache.set(cacheKey, cached)
+    return cached
+  }
+
+  const result = primsToPaths(prims, seed)
+  primsPathsCache.set(cacheKey, result)
+
+  if (primsPathsCache.size > MAX_PRIMS_CACHE_SIZE) {
+    const oldestKey = primsPathsCache.keys().next().value
+    if (oldestKey !== undefined) {
+      primsPathsCache.delete(oldestKey)
+    }
+  }
+
+  return result
+}
+
 export function primsToPaths(
   prims: Prim[],
   seed: number
-): { paths: PathBit[]; texts: Extract<Prim, { t: "text" }>[]; crisp: CrispBit[] } {
+): PrimsPathsResult {
   const paths: PathBit[] = []
   const texts: Extract<Prim, { t: "text" }>[] = []
   const crisp: CrispBit[] = []
@@ -232,6 +267,7 @@ export const SketchPrims = memo(function SketchPrims({
   prims,
   seed,
   hiddenText,
+  cacheKey,
 }: {
   prims: Prim[]
   seed: number
@@ -241,8 +277,15 @@ export const SketchPrims = memo(function SketchPrims({
    * well would print the words twice, half a pixel apart.
    */
   hiddenText?: "all" | number
+  /** LRU cache key for deterministic geometry reuse across culling and re-renders */
+  cacheKey?: string
 }) {
-  const { paths, texts, crisp } = useMemo(() => primsToPaths(prims, seed), [prims, seed])
+  const { paths, texts, crisp } = useMemo(() => {
+    if (cacheKey) {
+      return getCachedPrimsToPaths(cacheKey, prims, seed)
+    }
+    return primsToPaths(prims, seed)
+  }, [cacheKey, prims, seed])
   return (
     <>
       {paths.map((p, i) => (
@@ -401,7 +444,7 @@ export const NodeSketch = memo(function NodeSketch({
           )}
         </g>
       )}
-      <SketchPrims prims={prims} seed={node.seed} hiddenText={hiddenText} />
+      <SketchPrims prims={prims} seed={node.seed} hiddenText={hiddenText} cacheKey={`${shapeKey}:${node.seed}`} />
     </>
   )
 })

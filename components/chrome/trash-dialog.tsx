@@ -95,11 +95,11 @@ export function TrashDialog() {
       }}
     >
       {/* Dimmed backdrop */}
-      <div className="absolute inset-0 bg-foreground/15 backdrop-blur-[2px]" />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-xs transition-opacity duration-200" />
 
       {/* Main modal card */}
       <div
-        className="animate-in fade-in zoom-in-95 relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-chrome-lg border border-border/80 bg-background shadow-popup duration-150"
+        className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl apple-glass-panel shadow-2xl animate-scale-fade duration-200"
         onPointerDown={(e) => e.stopPropagation()}
       >
         {/* Header */}

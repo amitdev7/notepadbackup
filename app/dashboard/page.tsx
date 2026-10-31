@@ -239,7 +239,7 @@ export default function DashboardPage() {
   }, [activeTab, sharedDocs, documents, searchQuery])
 
   return (
-    <div className="flex h-screen w-screen bg-[#FBFAF5] dark:bg-[#0E1015] text-stone-900 dark:text-stone-100 font-sans overflow-hidden select-none">
+    <div className="flex h-screen w-screen bg-background text-foreground font-sans overflow-hidden select-none">
       {/* ── Mobile Sidebar Overlay & Drawer ── */}
       {mobileSidebarOpen && (
         <div className="md:hidden fixed inset-0 z-50 flex">
@@ -247,16 +247,16 @@ export default function DashboardPage() {
             className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <aside className="relative w-72 max-w-[80vw] h-full bg-stone-50 dark:bg-stone-900 border-r border-stone-200/90 dark:border-stone-800 p-4 flex flex-col justify-between shadow-2xl animate-popover-enter">
+          <aside className="relative w-72 max-w-[80vw] h-full apple-glass-panel border-r border-border p-4 flex flex-col justify-between shadow-2xl animate-popover-enter">
             <div>
-              <div className="flex items-center justify-between pb-4 border-b border-stone-200 dark:border-stone-800">
-                <Link href="/" className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400">
+              <div className="flex items-center justify-between pb-4 border-b border-border">
+                <Link href="/" className="font-sans text-base font-bold tracking-tight text-[var(--ui-accent,#007AFF)]">
                   zenithsui
                 </Link>
                 <button
                   type="button"
                   onClick={() => setMobileSidebarOpen(false)}
-                  className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white"
+                  className="p-1 rounded-lg text-muted-foreground hover:text-foreground"
                 >
                   <X size={16} />
                 </button>
@@ -271,7 +271,7 @@ export default function DashboardPage() {
                   setMobileSidebarOpen(false)
                   handleCreateNew()
                 }}
-                className="w-full mt-3 justify-start gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-xs text-xs font-medium rounded-xl"
+                className="w-full mt-3 justify-start gap-2 bg-[var(--ui-accent,#007AFF)] hover:brightness-95 active:brightness-90 text-white shadow-xs text-xs font-medium rounded-xl"
                 size="sm"
               >
                 <Plus size={14} weight="bold" />
@@ -288,8 +288,8 @@ export default function DashboardPage() {
                   className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
                     activeTab === "recent"
-                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
-                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                      ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <Clock size={16} />
@@ -304,8 +304,8 @@ export default function DashboardPage() {
                   className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
                     activeTab === "projects"
-                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
-                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                      ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <Folder size={16} />
@@ -320,8 +320,8 @@ export default function DashboardPage() {
                   className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
                     activeTab === "shared"
-                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
-                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                      ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <ShareNetwork size={16} />
@@ -336,8 +336,8 @@ export default function DashboardPage() {
                   className={cn(
                     "w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-xs font-medium cursor-pointer transition-colors",
                     activeTab === "trash"
-                      ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
-                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
+                      ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold"
+                      : "text-muted-foreground hover:bg-muted"
                   )}
                 >
                   <Trash size={16} />
@@ -346,10 +346,10 @@ export default function DashboardPage() {
               </nav>
             </div>
 
-            <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800">
+            <div className="pt-4 border-t border-border">
               <Link
                 href="/"
-                className="flex items-center gap-2 text-xs font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100"
+                className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground"
               >
                 <ArrowLeft size={14} />
                 <span>Back to Canvas</span>
@@ -360,13 +360,13 @@ export default function DashboardPage() {
       )}
 
       {/* ── Desktop macOS Sidebar ── */}
-      <aside className="hidden md:flex w-64 border-r border-stone-200/80 dark:border-stone-800/80 bg-stone-100/60 dark:bg-stone-900/60 backdrop-blur-xl p-4 flex-col justify-between shrink-0">
+      <aside className="hidden md:flex w-64 border-r border-border/80 apple-glass-panel p-4 flex-col justify-between shrink-0">
         <div>
           {/* Logo & Workspace Selector */}
-          <div className="flex items-center justify-between pb-3 border-b border-stone-200/80 dark:border-stone-800">
+          <div className="flex items-center justify-between pb-3 border-b border-border">
             <Link
               href="/"
-              className="font-sans text-base font-bold tracking-tight text-blue-600 dark:text-blue-400 flex items-center gap-2 hover:opacity-85 transition-opacity"
+              className="font-sans text-base font-bold tracking-tight text-[var(--ui-accent,#007AFF)] flex items-center gap-2 hover:opacity-85 transition-opacity"
             >
               <span>zenithsui</span>
             </Link>
@@ -379,7 +379,7 @@ export default function DashboardPage() {
           {/* New Document Button */}
           <Button
             onClick={handleCreateNew}
-            className="w-full mt-2.5 justify-start gap-2 bg-blue-600 hover:bg-blue-700 text-white shadow-xs text-xs font-medium rounded-xl cursor-pointer tactile-btn"
+            className="w-full mt-2.5 justify-start gap-2 bg-[var(--ui-accent,#007AFF)] hover:brightness-95 active:brightness-90 text-white shadow-xs text-xs font-medium rounded-xl cursor-pointer tactile-btn"
             size="sm"
           >
             <Plus size={14} weight="bold" />
@@ -388,7 +388,7 @@ export default function DashboardPage() {
 
           {/* Navigation Links */}
           <div className="mt-6">
-            <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+            <span className="px-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Library
             </span>
             <nav className="mt-2 space-y-0.5">
@@ -398,8 +398,8 @@ export default function DashboardPage() {
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                   activeTab === "recent"
-                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                    ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] shadow-xs font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -414,8 +414,8 @@ export default function DashboardPage() {
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                   activeTab === "projects"
-                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                    ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] shadow-xs font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -430,8 +430,8 @@ export default function DashboardPage() {
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                   activeTab === "shared"
-                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                    ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] shadow-xs font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -446,8 +446,8 @@ export default function DashboardPage() {
                 className={cn(
                   "w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium cursor-pointer transition-all duration-150 hover:translate-x-0.5",
                   activeTab === "trash"
-                    ? "bg-white dark:bg-stone-800 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                    : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 hover:text-stone-900 dark:hover:text-stone-100"
+                    ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] shadow-xs font-semibold"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
                 <div className="flex items-center gap-2.5">
@@ -460,10 +460,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Back to Canvas */}
-        <div className="pt-4 border-t border-stone-200/80 dark:border-stone-800">
+        <div className="pt-4 border-t border-border">
           <Link
             href="/"
-            className="flex items-center gap-2 text-xs font-medium text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
+            className="flex items-center gap-2 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft size={14} />
             <span>Back to Canvas</span>
@@ -474,19 +474,19 @@ export default function DashboardPage() {
       {/* ── Main Content Area ── */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header Bar */}
-        <header className="h-14 border-b border-stone-200/80 dark:border-stone-800 bg-white/70 dark:bg-[#121316]/80 px-4 sm:px-8 flex items-center justify-between backdrop-blur-md shrink-0">
+        <header className="h-14 border-b border-border/80 bg-background/80 px-4 sm:px-8 flex items-center justify-between backdrop-blur-md shrink-0">
           <div className="flex items-center gap-3">
             {/* Mobile Hamburger Button */}
             <button
               type="button"
               onClick={() => setMobileSidebarOpen(true)}
-              className="md:hidden p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+              className="md:hidden p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
               aria-label="Open sidebar"
             >
               <ListDashes size={20} />
             </button>
 
-            <h1 className="font-sans text-sm sm:text-base font-semibold tracking-tight text-stone-800 dark:text-stone-100 capitalize">
+            <h1 className="font-sans text-sm sm:text-base font-semibold tracking-tight text-foreground capitalize">
               {activeTab === "recent"
                 ? "Recent Drawings"
                 : activeTab === "projects"
@@ -503,7 +503,7 @@ export default function DashboardPage() {
             <div className="relative flex items-center">
               <MagnifyingGlass
                 size={14}
-                className="absolute left-2.5 text-stone-400 dark:text-stone-500 pointer-events-none"
+                className="absolute left-2.5 text-muted-foreground pointer-events-none"
               />
               <input
                 type="text"
@@ -511,13 +511,13 @@ export default function DashboardPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Filter drawings…"
                 aria-label="Filter drawings by name"
-                className="w-36 sm:w-56 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-stone-100 dark:bg-stone-800/70 border border-stone-200/80 dark:border-stone-700/80 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
+                className="w-36 sm:w-56 pl-8 pr-3 py-1.5 rounded-xl text-xs bg-muted/60 border border-border/80 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/40 transition-all"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+                  className="absolute right-2 text-muted-foreground hover:text-foreground"
                 >
                   <X size={12} />
                 </button>
@@ -525,7 +525,7 @@ export default function DashboardPage() {
             </div>
 
             {/* View Mode Switcher (Grid vs List) */}
-            <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700/80">
+            <div className="hidden sm:flex items-center p-0.5 rounded-lg bg-muted border border-border">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
@@ -533,8 +533,8 @@ export default function DashboardPage() {
                 className={cn(
                   "p-1.5 rounded-md transition-colors",
                   viewMode === "grid"
-                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-2xs"
-                    : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                    ? "bg-background text-foreground shadow-2xs"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <SquaresFour size={15} />
@@ -546,8 +546,8 @@ export default function DashboardPage() {
                 className={cn(
                   "p-1.5 rounded-md transition-colors",
                   viewMode === "list"
-                    ? "bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-2xs"
-                    : "text-stone-400 hover:text-stone-700 dark:hover:text-stone-300"
+                    ? "bg-background text-foreground shadow-2xs"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 <List size={15} />
@@ -559,15 +559,15 @@ export default function DashboardPage() {
         {/* Documents Content Grid / List */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-8">
           {loading ? (
-            <div className="flex h-64 items-center justify-center text-xs font-mono text-stone-400 dark:text-stone-500 animate-pulse">
+            <div className="flex h-64 items-center justify-center text-xs font-mono text-muted-foreground animate-pulse">
               Loading drawings…
             </div>
           ) : filteredDocuments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-stone-200/90 dark:border-stone-800 rounded-2xl p-8 text-center max-w-md mx-auto my-12 animate-card-fade">
-              <div className="rounded-2xl bg-stone-100 dark:bg-stone-800/80 p-3.5 text-stone-400 dark:text-stone-500 mb-3 shadow-2xs">
+            <div className="flex flex-col items-center justify-center h-64 border border-dashed border-border rounded-2xl p-8 text-center max-w-md mx-auto my-12 animate-card-fade">
+              <div className="rounded-2xl bg-muted p-3.5 text-muted-foreground mb-3 shadow-2xs">
                 <FileText size={28} />
               </div>
-              <h3 className="text-sm font-semibold text-stone-800 dark:text-stone-200">
+              <h3 className="text-sm font-semibold text-foreground">
                 {searchQuery
                   ? "No matching drawings"
                   : activeTab === "trash"
@@ -576,7 +576,7 @@ export default function DashboardPage() {
                       ? "No shared documents"
                       : "No drawings yet"}
               </h3>
-              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 mb-4 max-w-xs">
+              <p className="text-xs text-muted-foreground mt-1 mb-4 max-w-xs">
                 {searchQuery
                   ? `No drawings found matching "${searchQuery}". Clear your search or create a new file.`
                   : activeTab === "trash"
@@ -604,12 +604,12 @@ export default function DashboardPage() {
                   <div
                     key={doc.id}
                     onClick={() => handleOpenDoc(doc.id)}
-                    className="group tactile-card relative rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/90 dark:bg-[#18191E]/90 p-4 shadow-xs hover:shadow-lg hover:border-blue-500/50 dark:hover:border-blue-500/50 cursor-pointer flex flex-col justify-between h-48 backdrop-blur-xs"
+                    className="group tactile-card relative rounded-2xl border border-border/80 bg-card p-4 shadow-xs hover:shadow-lg hover:border-[var(--ui-accent,#007AFF)]/50 cursor-pointer flex flex-col justify-between h-48 backdrop-blur-xs"
                   >
                     <div>
                       {/* Thumbnail Preview Area */}
-                      <div className="h-24 w-full rounded-xl bg-[#FBFAF5] dark:bg-stone-900 border border-stone-200/60 dark:border-stone-700/60 flex items-center justify-center text-stone-500 group-hover:text-stone-900 dark:group-hover:text-stone-100 group-hover:scale-[1.01] transition-transform duration-200 mb-3 shadow-2xs relative overflow-hidden">
-                        <span className="font-sketch text-xs text-stone-600 dark:text-stone-400">
+                      <div className="h-24 w-full rounded-xl bg-muted/40 border border-border/60 flex items-center justify-center text-muted-foreground group-hover:text-foreground group-hover:scale-[1.01] transition-transform duration-200 mb-3 shadow-2xs relative overflow-hidden">
+                        <span className="font-sketch text-xs text-muted-foreground">
                           {activeTab === "shared" && "role" in doc
                             ? `${doc.role || "viewer"} role`
                             : `${nodeCount} component${nodeCount === 1 ? "" : "s"}`}
@@ -623,7 +623,7 @@ export default function DashboardPage() {
                           <DropdownMenu>
                             <DropdownMenuTrigger
                               aria-label="Document options"
-                              className="size-7 rounded-lg bg-white/90 dark:bg-stone-800/90 shadow-xs flex items-center justify-center text-stone-500 hover:text-stone-900 dark:hover:text-white border border-stone-200/60 dark:border-stone-700/60 outline-none"
+                              className="size-7 rounded-lg bg-background shadow-xs flex items-center justify-center text-muted-foreground hover:text-foreground border border-border outline-none cursor-pointer"
                             >
                               <DotsThreeVertical size={14} weight="bold" />
                             </DropdownMenuTrigger>
@@ -642,7 +642,7 @@ export default function DashboardPage() {
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     onClick={(e) => handleSoftDelete(e, doc.id)}
-                                    className="text-red-600 dark:text-red-400"
+                                    className="text-destructive"
                                   >
                                     <Trash size={14} className="mr-2" /> Move to Trash
                                   </DropdownMenuItem>
@@ -656,7 +656,7 @@ export default function DashboardPage() {
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     onClick={(e) => handlePermanentDelete(e, doc.id)}
-                                    className="text-red-600 dark:text-red-400"
+                                    className="text-destructive"
                                   >
                                     <Trash size={14} className="mr-2" /> Delete Permanently
                                   </DropdownMenuItem>
@@ -680,18 +680,18 @@ export default function DashboardPage() {
                               if (e.key === "Enter") commitRename(doc.id)
                               if (e.key === "Escape") setRenamingId(null)
                             }}
-                            className="w-full text-xs font-semibold text-stone-900 dark:text-white bg-transparent border-b border-blue-500 outline-none px-1 py-0.5"
+                            className="w-full text-xs font-semibold text-foreground bg-transparent border-b border-[var(--ui-accent,#007AFF)] outline-none px-1 py-0.5"
                           />
                         </div>
                       ) : (
-                        <div className="font-sans text-xs font-semibold text-stone-800 dark:text-stone-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <div className="font-sans text-xs font-semibold text-foreground truncate group-hover:text-[var(--ui-accent,#007AFF)] transition-colors">
                           {doc.name}
                         </div>
                       )}
                     </div>
 
                     {/* Metadata Footer */}
-                    <div className="flex items-center justify-between text-[11px] text-stone-400 dark:text-stone-500 pt-2 border-t border-stone-100 dark:border-stone-800/60">
+                    <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-2 border-t border-border/60">
                       <span>{new Date(doc.updatedAt).toLocaleDateString()}</span>
                       <span className="flex items-center gap-1 font-mono text-[10px]">
                         {isPublic ? (
@@ -699,11 +699,11 @@ export default function DashboardPage() {
                             <Globe size={11} /> Public
                           </span>
                         ) : isShared ? (
-                          <span className="flex items-center gap-1 text-blue-600 dark:text-blue-400" title="Shared with collaborators">
+                          <span className="flex items-center gap-1 text-[var(--ui-accent,#007AFF)]" title="Shared with collaborators">
                             <ShareNetwork size={11} /> Shared
                           </span>
                         ) : (
-                          <span className="flex items-center gap-1 text-stone-400" title="Private local document">
+                          <span className="flex items-center gap-1 text-muted-foreground" title="Private local document">
                             <Lock size={11} /> Private
                           </span>
                         )}
@@ -715,17 +715,17 @@ export default function DashboardPage() {
             </div>
           ) : (
             /* ── List View ── */
-            <div className="rounded-2xl border border-stone-200/80 dark:border-stone-800/80 bg-white/90 dark:bg-[#18191E]/90 overflow-hidden shadow-xs animate-card-fade">
+            <div className="rounded-2xl border border-border/80 bg-card overflow-hidden shadow-xs animate-card-fade">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-stone-200/80 dark:border-stone-800/80 bg-stone-50/50 dark:bg-stone-900/50 text-stone-400 dark:text-stone-500 text-[11px] uppercase tracking-wider font-semibold">
+                  <tr className="border-b border-border/80 bg-muted/40 text-muted-foreground text-[11px] uppercase tracking-wider font-semibold">
                     <th className="py-3 px-4">Name</th>
                     <th className="py-3 px-4 hidden sm:table-cell">Status</th>
                     <th className="py-3 px-4 hidden md:table-cell">Modified</th>
                     <th className="py-3 px-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-stone-100 dark:divide-stone-800/60">
+                <tbody className="divide-y divide-border/60">
                   {filteredDocuments.map((doc) => {
                     const isPublic = "isPublic" in doc ? doc.isPublic : false
                     const isShared = activeTab === "shared" || ("shareState" in doc && doc.shareState === "shared")
@@ -734,11 +734,11 @@ export default function DashboardPage() {
                       <tr
                         key={doc.id}
                         onClick={() => handleOpenDoc(doc.id)}
-                        className="group hover:bg-stone-50 dark:hover:bg-stone-800/40 cursor-pointer transition-colors"
+                        className="group hover:bg-muted/40 cursor-pointer transition-colors"
                       >
-                        <td className="py-3 px-4 font-medium text-stone-800 dark:text-stone-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <td className="py-3 px-4 font-medium text-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors">
                           <div className="flex items-center gap-2.5">
-                            <FileText size={16} className="text-stone-400 group-hover:text-blue-500 shrink-0" />
+                            <FileText size={16} className="text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] shrink-0" />
                             <span className="truncate max-w-[200px] sm:max-w-xs">{doc.name}</span>
                           </div>
                         </td>
@@ -748,16 +748,16 @@ export default function DashboardPage() {
                               <Globe size={11} /> Public
                             </span>
                           ) : isShared ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] text-blue-600 dark:text-blue-400 font-mono">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-[var(--ui-accent,#007AFF)] font-mono">
                               <ShareNetwork size={11} /> Shared
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] text-stone-400 font-mono">
+                            <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground font-mono">
                               <Lock size={11} /> Private
                             </span>
                           )}
                         </td>
-                        <td className="py-3 px-4 hidden md:table-cell text-stone-400 font-mono text-[11px]">
+                        <td className="py-3 px-4 hidden md:table-cell text-muted-foreground font-mono text-[11px]">
                           {new Date(doc.updatedAt).toLocaleDateString()}
                         </td>
                         <td className="py-3 px-4 text-right" onClick={(e) => e.stopPropagation()}>
@@ -768,7 +768,7 @@ export default function DashboardPage() {
                                   type="button"
                                   onClick={(e) => handleDuplicate(e, doc.id)}
                                   title="Duplicate"
-                                  className="p-1 rounded-lg text-stone-400 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800"
+                                  className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
                                 >
                                   <Copy size={14} />
                                 </button>
@@ -776,7 +776,7 @@ export default function DashboardPage() {
                                   type="button"
                                   onClick={(e) => handleSoftDelete(e, doc.id)}
                                   title="Move to Trash"
-                                  className="p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                  className="p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted"
                                 >
                                   <Trash size={14} />
                                 </button>
@@ -787,7 +787,7 @@ export default function DashboardPage() {
                                   type="button"
                                   onClick={(e) => handleRestore(e, doc.id)}
                                   title="Restore"
-                                  className="p-1 rounded-lg text-stone-400 hover:text-emerald-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                  className="p-1 rounded-lg text-muted-foreground hover:text-emerald-600 hover:bg-muted"
                                 >
                                   <ArrowCounterClockwise size={14} />
                                 </button>
@@ -795,7 +795,7 @@ export default function DashboardPage() {
                                   type="button"
                                   onClick={(e) => handlePermanentDelete(e, doc.id)}
                                   title="Delete Permanently"
-                                  className="p-1 rounded-lg text-stone-400 hover:text-red-600 hover:bg-stone-100 dark:hover:bg-stone-800"
+                                  className="p-1 rounded-lg text-muted-foreground hover:text-destructive hover:bg-muted"
                                 >
                                   <Trash size={14} />
                                 </button>

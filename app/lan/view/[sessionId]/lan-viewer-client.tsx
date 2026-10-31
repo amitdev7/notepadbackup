@@ -53,7 +53,7 @@ export default function LanViewerClient({ sessionId, pin }: LanViewerClientProps
     <main className="relative h-screen w-screen overflow-hidden bg-[var(--sq-bg)] select-none">
       {/* Mobile-friendly Top Banner */}
       <header className="absolute top-2 left-2 right-2 z-30 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto bg-card/90 backdrop-blur-xs border border-border/70 shadow-sm px-3 py-1.5 rounded-lg text-xs">
+        <div className="flex items-center gap-2 pointer-events-auto apple-glass-panel border-border/80 shadow-md px-3 py-1.5 rounded-xl text-xs">
           <span className="font-sans font-semibold text-foreground tracking-tight">{docName}</span>
           <span className="text-muted-foreground">·</span>
           <span className="flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -67,7 +67,7 @@ export default function LanViewerClient({ sessionId, pin }: LanViewerClientProps
             variant="outline"
             size="sm"
             onClick={() => exportPng()}
-            className="h-8 gap-1.5 text-xs bg-card/90 backdrop-blur-xs border-border/70"
+            className="h-8 gap-1.5 text-xs apple-glass-panel border-border/80"
           >
             <DownloadSimple size={14} />
             Export

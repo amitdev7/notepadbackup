@@ -133,7 +133,7 @@ export function WifiPublishDialog() {
       role="dialog"
       aria-modal="true"
       aria-labelledby="wifi-dialog-title"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-scale-fade"
       onClick={(e) => {
         if (e.target === e.currentTarget) closePublishDialog()
       }}
@@ -141,7 +141,7 @@ export function WifiPublishDialog() {
         if (e.key === "Escape") closePublishDialog()
       }}
     >
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-xl text-card-foreground">
+      <div className="w-full max-w-sm rounded-2xl apple-glass-panel p-6 shadow-2xl text-card-foreground animate-scale-fade">
         <div className="flex items-center justify-between pb-4 border-b border-border/50">
           <div className="flex items-center gap-2">
             <WifiHigh size={20} className="text-muted-foreground" />

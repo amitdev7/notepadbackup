@@ -76,7 +76,7 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
       role="dialog"
       aria-modal="true"
       aria-labelledby="version-history-title"
-      className="fixed inset-y-0 right-0 z-40 w-80 border-l border-border bg-card/95 backdrop-blur-sm p-4 shadow-xl flex flex-col"
+      className="fixed inset-y-0 right-0 z-40 w-80 border-l border-border apple-glass-panel p-4 shadow-2xl flex flex-col animate-slide-right"
     >
       <div className="flex items-center justify-between pb-3 border-b border-border/50">
         <div className="flex items-center gap-2">

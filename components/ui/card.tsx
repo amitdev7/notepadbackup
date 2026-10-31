@@ -5,17 +5,19 @@ import { cn } from "@/lib/utils"
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   glass?: boolean
+  hoverEffect?: boolean
 }
 
-export function Card({ className, glass = false, ...props }: CardProps) {
+export function Card({ className, glass = false, hoverEffect = false, ...props }: CardProps) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "rounded-xl border border-border/80 text-card-foreground transition-all",
+        "rounded-2xl border border-border/80 text-card-foreground transition-all duration-200",
         glass
           ? "apple-glass-panel shadow-sm"
           : "bg-card shadow-xs",
+        hoverEffect && "hover:border-border hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer",
         className
       )}
       {...props}

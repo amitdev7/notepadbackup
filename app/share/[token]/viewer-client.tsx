@@ -68,29 +68,29 @@ export function ViewerClient({
   }
 
   return (
-    <div className="relative flex h-screen w-screen flex-col bg-[#f8f6f0] dark:bg-[#0E1015] text-[#18181b] dark:text-[#f4f4f5] overflow-hidden select-none">
+    <div className="relative flex h-screen w-screen flex-col bg-background text-foreground overflow-hidden select-none">
       {/* Lightweight Viewer Header */}
-      <header className="z-20 flex h-12 items-center justify-between border-b border-[#e4e0d4] dark:border-stone-800 bg-[#f8f6f0]/90 dark:bg-[#121316]/90 px-4 backdrop-blur-xs">
+      <header className="z-20 flex h-12 items-center justify-between border-b border-border/80 apple-glass-panel px-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-xs font-bold tracking-widest text-[#2563eb] dark:text-blue-400">
+          <span className="font-mono text-xs font-bold tracking-widest text-[var(--ui-accent,#007AFF)]">
             ZENITHSUI
           </span>
-          <span className="text-[#a1a1aa] dark:text-stone-500 font-mono">/</span>
-          <span className="font-sans text-xs font-semibold tracking-tight truncate max-w-[200px] md:max-w-md">
+          <span className="text-muted-foreground font-mono">/</span>
+          <span className="font-sans text-xs font-semibold tracking-tight truncate max-w-[200px] md:max-w-md text-foreground">
             {doc?.name || "Shared Wireframe"}
           </span>
-          <span className="flex items-center gap-1 rounded bg-[#e4e0d4] dark:bg-stone-800 px-1.5 py-0.5 font-mono text-[10px] uppercase font-semibold text-[#52525b] dark:text-stone-300">
+          <span className="flex items-center gap-1 rounded-full bg-muted border border-border/60 px-2 py-0.5 font-mono text-[10px] uppercase font-semibold text-muted-foreground">
             <Eye size={12} /> {permission === "edit" ? "Shared Editor" : "View Only"}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {/* Quick Zoom Controls */}
-          <div className="flex items-center border border-[#e4e0d4] dark:border-stone-800 rounded-lg overflow-hidden bg-white/60 dark:bg-stone-900/60 p-0.5">
+          <div className="flex items-center border border-border/80 rounded-xl overflow-hidden bg-background/60 p-0.5">
             <button
               type="button"
               onClick={() => useSquig.getState().zoomBy(0.85)}
-              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors cursor-pointer"
               title="Zoom Out"
             >
               <MagnifyingGlassMinus size={14} />
@@ -98,7 +98,7 @@ export function ViewerClient({
             <button
               type="button"
               onClick={() => useSquig.getState().zoomTo100()}
-              className="px-1.5 py-0.5 text-[11px] font-mono text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              className="px-1.5 py-0.5 text-[11px] font-mono text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors cursor-pointer"
               title="Zoom to 100%"
             >
               100%
@@ -106,7 +106,7 @@ export function ViewerClient({
             <button
               type="button"
               onClick={() => useSquig.getState().zoomBy(1.15)}
-              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors cursor-pointer"
               title="Zoom In"
             >
               <MagnifyingGlassPlus size={14} />
@@ -114,7 +114,7 @@ export function ViewerClient({
             <button
               type="button"
               onClick={() => useSquig.getState().zoomToFit()}
-              className="p-1 text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800 rounded transition-colors"
+              className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted/60 rounded-lg transition-colors cursor-pointer"
               title="Fit to Content"
             >
               <FrameCorners size={14} />

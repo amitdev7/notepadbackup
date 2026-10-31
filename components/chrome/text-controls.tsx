@@ -124,10 +124,10 @@ export function TextAlignMenu({ texts }: { texts: readonly TextNode[] }) {
         title={current.mixed ? "Text alignment · mixed" : active.label}
         aria-label="Text alignment"
         className={cn(
-          "flex size-ctl shrink-0 items-center justify-center rounded-chrome-sm text-muted-foreground transition-colors outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/40",
+          "flex size-ctl shrink-0 items-center justify-center rounded-chrome-sm text-muted-foreground transition-all duration-150 outline-none hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/30",
           current.mixed && "border border-dashed border-border",
           // held open, the button reads as the thing the flyout belongs to
-          open && "bg-[var(--sq-ink)]/12 text-[var(--sq-ink)] ring-1 ring-inset ring-[var(--sq-ink)]/25"
+          open && "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] ring-1 ring-inset ring-[var(--ui-accent,#007AFF)]/30"
         )}
       >
         <Face className="size-4" />
@@ -139,7 +139,7 @@ export function TextAlignMenu({ texts }: { texts: readonly TextNode[] }) {
               it, a press in here would land as a press on the drawing */}
           <Popover.Popup
             data-zenithsui-chrome
-            className="flex origin-(--transform-origin) items-center gap-0.5 rounded-chrome-lg bg-popover p-1.5 shadow-popup ring-1 ring-foreground/10 outline-none transition-[transform,opacity] duration-100 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
+            className="flex origin-(--transform-origin) items-center gap-0.5 rounded-2xl apple-glass-panel p-1.5 shadow-2xl outline-none transition-[transform,opacity] duration-150 data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0"
           >
             {ALIGNMENTS.map(({ value, label, icon: Icon }) => (
               <IconToggle

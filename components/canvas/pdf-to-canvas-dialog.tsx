@@ -166,13 +166,13 @@ export function PdfToCanvasDialog() {
       role="dialog"
       aria-modal="true"
       aria-label="PDF to Canvas"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150 select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-scale-fade select-none"
       onClick={(e) => {
         if (e.target === e.currentTarget && !isProcessing) handleClose()
       }}
     >
       <div
-        className="w-full max-w-lg rounded-xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-lg rounded-2xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl flex flex-col animate-scale-fade duration-200"
         style={{
           boxShadow: "0 20px 40px rgba(0,0,0,0.25), 3px 3px 0px rgba(0,0,0,0.1)",
         }}

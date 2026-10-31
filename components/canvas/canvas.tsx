@@ -245,7 +245,8 @@ export function Canvas() {
     return () => window.removeEventListener("resize", updateSize)
   }, [])
 
-  // Viewport culling calculation
+  // Viewport culling calculation with 80px quantization and stable reference caching
+  const prevVisibleRef = useRef<string[]>([])
   const visibleOrder = useMemo(() => {
     if (!perfSettings?.viewportCulling || perfSettings.cullingBuffer === "off") {
       return order
@@ -258,25 +259,64 @@ export function Canvas() {
           ? 1000
           : 400
 
-    const w = canvasSize.w
-    const h = canvasSize.h
+    const w = canvasSize.w || 1920
+    const h = canvasSize.h || 1080
+    const z = viewport.zoom || 1
 
-    const minX = -viewport.x / viewport.zoom - marginPx
-    const minY = -viewport.y / viewport.zoom - marginPx
-    const maxX = (-viewport.x + w) / viewport.zoom + marginPx
-    const maxY = (-viewport.y + h) / viewport.zoom + marginPx
+    const rawMinX = -viewport.x / z - marginPx
+    const rawMinY = -viewport.y / z - marginPx
+    const rawMaxX = (-viewport.x + w) / z + marginPx
+    const rawMaxY = (-viewport.y + h) / z + marginPx
+
+    // Quantize culling boundaries to 80px to prevent React tree churn during sub-pixel panning
+    const step = 80
+    const minX = Math.floor(rawMinX / step) * step
+    const minY = Math.floor(rawMinY / step) * step
+    const maxX = Math.ceil(rawMaxX / step) * step
+    const maxY = Math.ceil(rawMaxY / step) * step
 
     const selectionSet = new Set(selection)
 
-    return order.filter((id) => {
-      if (id === editingId || selectionSet.has(id)) return true
+    const next: string[] = []
+    for (let i = 0; i < order.length; i++) {
+      const id = order[i]
+      if (id === editingId || selectionSet.has(id)) {
+        next.push(id)
+        continue
+      }
       const n = nodes[id]
-      if (!n) return false
+      if (!n) continue
       const nw = n.w || 0
       const nh = n.h || 0
-      return n.x <= maxX && n.x + nw >= minX && n.y <= maxY && n.y + nh >= minY
+      if (n.x <= maxX && n.x + nw >= minX && n.y <= maxY && n.y + nh >= minY) {
+        next.push(id)
+      }
+    }
+
+    // Preserve previous array identity if visible node list is unchanged
+    const prev = prevVisibleRef.current
+    if (prev.length === next.length) {
+      let isSame = true
+      for (let i = 0; i < prev.length; i++) {
+        if (prev[i] !== next[i]) {
+          isSame = false
+          break
+        }
+      }
+      if (isSame) return prev
+    }
+
+    prevVisibleRef.current = next
+    return next
+  }, [order, nodes, viewport.x, viewport.y, viewport.zoom, selection, editingId, perfSettings?.viewportCulling, perfSettings?.cullingBuffer, canvasSize.w, canvasSize.h])
+
+  // Pre-filter only interactive HTML nodes (documents, interactive components)
+  const visibleInteractiveOrder = useMemo(() => {
+    return visibleOrder.filter((id) => {
+      const type = nodes[id]?.type
+      return type === "document" || type === "component"
     })
-  }, [order, nodes, viewport, selection, editingId, perfSettings, canvasSize])
+  }, [visibleOrder, nodes])
 
   const { isSpacebarHeld } = useSpacebarPan()
   // ⌘C/⌘X/⌘V live on the browser's clipboard events, not in onKey below
@@ -2060,7 +2100,7 @@ export function Canvas() {
           transformOrigin: "0 0",
         }}
       >
-        {visibleOrder.map((id) => {
+        {visibleInteractiveOrder.map((id) => {
           const n = nodes[id]
           if (!n) return null
 

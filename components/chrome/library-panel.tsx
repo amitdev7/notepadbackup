@@ -109,12 +109,12 @@ function Preview({
       }}
       title={`${def.name} — Click to place or drag to canvas`}
       className={cn(
-        "group tactile-card flex flex-col items-center gap-2 rounded-xl border border-stone-200/90 dark:border-stone-800 p-2.5 outline-none cursor-pointer text-left w-full",
-        "bg-white dark:bg-stone-900/80 hover:bg-stone-50 dark:hover:bg-stone-800/90 hover:border-blue-400/80 dark:hover:border-blue-500/80 hover:shadow-md",
-        active && "border-blue-600 dark:border-blue-400 bg-blue-50/60 dark:bg-blue-950/40 ring-1 ring-blue-500 shadow-xs"
+        "group tactile-card flex flex-col items-center gap-2 rounded-xl border border-border/80 p-2.5 outline-none cursor-pointer text-left w-full",
+        "bg-card hover:bg-muted/50 hover:border-[var(--ui-accent,#007AFF)]/70 hover:shadow-md",
+        active && "border-[var(--ui-accent,#007AFF)] bg-[var(--ui-accent,#007AFF)]/10 ring-1 ring-[var(--ui-accent,#007AFF)]/50 shadow-xs"
       )}
     >
-      <div className="w-full h-[96px] flex items-center justify-center overflow-hidden rounded-lg bg-stone-50/70 dark:bg-stone-950/40 border border-stone-100 dark:border-stone-800/60 group-hover:border-stone-200 dark:group-hover:border-stone-700 transition-colors">
+      <div className="w-full h-[96px] flex items-center justify-center overflow-hidden rounded-lg bg-muted/40 border border-border/50 group-hover:border-border transition-colors">
         <svg width={BOX_W} height={BOX_H} className="overflow-visible">
           <g transform={`translate(${ox} ${oy}) scale(${scale})`}>
             <SketchPrims prims={prims} seed={13} />
@@ -123,12 +123,12 @@ function Preview({
       </div>
       <div className="w-full flex items-center justify-between gap-1.5 px-0.5">
         <span
-          className="truncate text-xs font-medium text-stone-800 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white"
+          className="truncate text-xs font-medium text-foreground group-hover:text-foreground"
           title={def.name}
         >
           {def.name}
         </span>
-        <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 uppercase font-mono font-medium">
+        <span className="shrink-0 text-[9px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground uppercase font-mono font-medium">
           {def.category === "blocks" ? (def.group === "Screens" ? "Template" : "Block") : "UI"}
         </span>
       </div>
@@ -185,22 +185,28 @@ export function LibraryPanel() {
   }, [isLibraryOpen, setPanel])
 
   const defs = useMemo(() => {
+    if (!isLibraryOpen) return []
     return searchUnifiedLibrary(query, activeFilter, selectedCategory)
-  }, [query, activeFilter, selectedCategory])
+  }, [isLibraryOpen, query, activeFilter, selectedCategory])
 
-  const sections = useMemo(() => groupUnifiedDefs(defs), [defs])
+  const sections = useMemo(() => {
+    if (!isLibraryOpen) return []
+    return groupUnifiedDefs(defs)
+  }, [isLibraryOpen, defs])
+
   const total = defs.length
   const first = defs[0]
 
   // Category counts
   const counts = useMemo(() => {
+    if (!isLibraryOpen) return { all: 0, components: 0, blocks: 0, templates: 0 }
     return {
       all: searchUnifiedLibrary(query, "all", selectedCategory).length,
       components: searchUnifiedLibrary(query, "components", selectedCategory).length,
       blocks: searchUnifiedLibrary(query, "blocks", selectedCategory).length,
       templates: searchUnifiedLibrary(query, "templates", selectedCategory).length,
     }
-  }, [query, selectedCategory])
+  }, [isLibraryOpen, query, selectedCategory])
 
   if (!isLibraryOpen) return null
 
@@ -225,21 +231,21 @@ export function LibraryPanel() {
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3.5 border-b border-stone-200/80 dark:border-stone-800/80">
+      <div className="flex items-center justify-between px-5 py-3.5 border-b border-border/80">
         <div className="flex items-center gap-2.5">
-          <div className="size-7 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs shadow-2xs">
+          <div className="size-7 rounded-xl bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] flex items-center justify-center font-bold text-xs shadow-2xs">
             <Sparkle size={16} weight="bold" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-50 leading-tight">
+              <h2 className="text-sm font-semibold text-foreground leading-tight">
                 Library
               </h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300">
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-muted text-muted-foreground">
                 {total} {total === 1 ? "item" : "items"}
               </span>
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400">
+            <p className="text-[11px] text-muted-foreground">
               Reusable components, wireframe blocks & templates
             </p>
           </div>
@@ -253,7 +259,7 @@ export function LibraryPanel() {
               importDoc()
               setPanel(null)
             }}
-            className="tactile-btn flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
+            className="tactile-btn flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-[var(--ui-accent,#007AFF)] hover:bg-[var(--ui-accent,#007AFF)]/10 cursor-pointer"
             title="Import Sketch Library (.sketchlib / .json)"
           >
             <UploadSimple size={14} />
@@ -264,7 +270,7 @@ export function LibraryPanel() {
           <button
             type="button"
             onClick={() => setIsWide(!isWide)}
-            className="tactile-btn hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+            className="tactile-btn hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
             title={isWide ? "Compact layout" : "Spacious layout"}
             aria-label="Toggle library width"
           >
@@ -272,13 +278,13 @@ export function LibraryPanel() {
             <span className="text-[11px]">{isWide ? "Compact" : "Expand"}</span>
           </button>
 
-          <div className="hidden sm:block h-4 w-px bg-stone-200 dark:bg-stone-700 mx-1" />
+          <div className="hidden sm:block h-4 w-px bg-border mx-1" />
 
           {/* Close Button */}
           <button
             type="button"
             onClick={handleClose}
-            className="tactile-btn rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+            className="tactile-btn rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
             title="Close (Esc)"
             aria-label="Close library"
           >

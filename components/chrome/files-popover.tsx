@@ -129,16 +129,16 @@ export function FilesPopover() {
         aria-label="Manage canvas files"
         className={cn(
           "group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer outline-none",
-          "focus-visible:ring-2 focus-visible:ring-blue-500/50",
+          "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/40",
           isOpen
-            ? "bg-stone-200/90 dark:bg-stone-700/90 text-stone-900 dark:text-white shadow-2xs"
-            : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/80"
+            ? "bg-muted text-foreground shadow-2xs font-semibold"
+            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
         )}
       >
         <FolderSimple
           size={14}
           weight="fill"
-          className="text-blue-500 shrink-0 group-hover:scale-110 transition-transform"
+          className="text-[var(--ui-accent,#007AFF)] shrink-0 group-hover:scale-110 transition-transform"
           aria-hidden="true"
         />
         <span>Files</span>
@@ -146,7 +146,7 @@ export function FilesPopover() {
           size={10}
           weight="bold"
           className={cn(
-            "text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-200 shrink-0",
+            "text-muted-foreground group-hover:text-foreground transition-transform duration-200 shrink-0",
             isOpen && "rotate-180"
           )}
           aria-hidden="true"
@@ -163,21 +163,21 @@ export function FilesPopover() {
 
       {/* Dropdown Menu / Popover */}
       {isOpen && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,22rem)] max-w-sm rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-stone-900 dark:text-stone-100 text-xs animate-popover-enter font-sans overflow-hidden">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[min(92vw,22rem)] max-w-sm rounded-2xl apple-glass-panel shadow-2xl z-50 p-2.5 text-popover-foreground text-xs animate-popover-enter font-sans overflow-hidden">
           {/* Top celestial accent gradient matching visionOS Clouds */}
-          <div className="h-1 -mx-2.5 -mt-2.5 mb-2.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-400 opacity-90" />
+          <div className="h-1 -mx-2.5 -mt-2.5 mb-2.5 bg-gradient-to-r from-[var(--ui-accent,#007AFF)] via-indigo-500 to-sky-400 opacity-90" />
           {/* Header with New Canvas Action */}
-          <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-stone-200/60 dark:border-stone-800/60">
+          <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-border/60">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-stone-900 dark:text-white">Canvas Files</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
+              <span className="font-semibold text-foreground">Canvas Files</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
                 {files.length}
               </span>
             </div>
             <button
               type="button"
               onClick={handleCreateNew}
-              className="tactile-btn flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#007AFF] hover:bg-[#0071E3] active:bg-[#0062C4] text-white font-semibold text-xs shadow-xs cursor-pointer"
+              className="tactile-btn flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[var(--ui-accent,#007AFF)] hover:brightness-95 active:brightness-90 text-white font-semibold text-xs shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
               <span>New Canvas</span>
@@ -187,19 +187,19 @@ export function FilesPopover() {
           {/* Quick Search if more than 3 files */}
           {files.length > 3 && (
             <div className="relative mb-2 px-1">
-              <MagnifyingGlass size={13} className="absolute left-3 top-2 text-stone-400 pointer-events-none" />
+              <MagnifyingGlass size={13} className="absolute left-3 top-2 text-muted-foreground pointer-events-none" />
               <input
                 type="text"
                 value={fileSearch}
                 onChange={(e) => setFileSearch(e.target.value)}
                 placeholder="Search canvases…"
-                className="w-full pl-7 pr-6 py-1.5 rounded-xl text-xs bg-stone-100/80 dark:bg-stone-800/60 border border-stone-200/60 dark:border-stone-700/60 text-stone-800 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#007AFF]/40"
+                className="w-full pl-7 pr-6 py-1.5 rounded-xl text-xs bg-muted/60 border border-border/60 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/40"
               />
               {fileSearch && (
                 <button
                   type="button"
                   onClick={() => setFileSearch("")}
-                  className="absolute right-2.5 top-2 text-stone-400 hover:text-stone-600"
+                  className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground"
                 >
                   <X size={11} />
                 </button>
@@ -210,7 +210,7 @@ export function FilesPopover() {
           {/* Files List */}
           <div className="max-h-60 overflow-y-auto space-y-0.5 pr-0.5 scrollbar-thin">
             {filteredFiles.length === 0 ? (
-              <div className="py-6 text-center text-stone-400 dark:text-stone-500">
+              <div className="py-6 text-center text-muted-foreground">
                 {fileSearch ? "No matching canvases." : "No saved canvases yet."}
               </div>
             ) : (
@@ -225,21 +225,21 @@ export function FilesPopover() {
                     className={cn(
                       "group flex items-center justify-between gap-2 px-2.5 py-2 rounded-xl cursor-pointer select-none transition-all duration-150 hover:translate-x-0.5",
                       isCurrent
-                        ? "bg-[#007AFF]/12 dark:bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] shadow-2xs font-semibold"
-                        : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-800 dark:text-stone-200"
+                        ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] shadow-2xs font-semibold"
+                        : "hover:bg-muted text-foreground"
                     )}
                   >
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {isCurrent ? (
-                        <Check size={13} weight="bold" className="text-[#007AFF] dark:text-[#0A84FF] shrink-0" />
+                        <Check size={13} weight="bold" className="text-[var(--ui-accent,#007AFF)] shrink-0" />
                       ) : (
-                        <div className="size-1.5 rounded-full bg-stone-300 dark:bg-stone-700 shrink-0 ml-1" />
+                        <div className="size-1.5 rounded-full bg-border shrink-0 ml-1" />
                       )}
                       <div className="min-w-0 flex-1">
                         <p className={cn("truncate font-medium text-xs", isCurrent && "font-semibold")}>
                           {file.name}
                         </p>
-                        <p className="text-[10px] text-stone-400 dark:text-stone-500 flex items-center gap-1 font-mono">
+                        <p className="text-[10px] text-muted-foreground flex items-center gap-1 font-mono">
                           <Clock size={10} />
                           <span>{relativeTime(file.updatedAt)}</span>
                         </p>
@@ -253,7 +253,7 @@ export function FilesPopover() {
                         onClick={(e) => handleDuplicateFile(e, file)}
                         title="Duplicate canvas"
                         aria-label={`Duplicate ${file.name}`}
-                        className="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-400 hover:text-blue-600 transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-[var(--ui-accent,#007AFF)] transition-colors cursor-pointer"
                       >
                         <Copy size={12} />
                       </button>
@@ -282,14 +282,14 @@ export function FilesPopover() {
           </div>
 
           {/* Quick Disk Actions */}
-          <div className="pt-2 mt-1.5 border-t border-stone-200/60 dark:border-stone-800/60 flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 px-1">
+          <div className="pt-2 mt-1.5 border-t border-border/60 flex items-center justify-between text-[11px] text-muted-foreground px-1">
             <button
               type="button"
               onClick={() => {
                 importDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+              className="tactile-btn flex items-center gap-1 hover:text-foreground px-2 py-1 rounded-lg hover:bg-muted cursor-pointer"
             >
               <FolderOpen size={13} />
               <span>Open file</span>
@@ -301,7 +301,7 @@ export function FilesPopover() {
                 exportDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 hover:text-stone-900 dark:hover:text-stone-100 px-2 py-1 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+              className="tactile-btn flex items-center gap-1 hover:text-foreground px-2 py-1 rounded-lg hover:bg-muted cursor-pointer"
               title="Export as native .zenithsui document"
             >
               <DownloadSimple size={13} />
@@ -314,7 +314,7 @@ export function FilesPopover() {
                 exportExcalidrawDoc()
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-2 py-1 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/40 cursor-pointer"
+              className="tactile-btn flex items-center gap-1 text-[var(--ui-accent,#007AFF)] hover:brightness-110 px-2 py-1 rounded-lg hover:bg-[var(--ui-accent,#007AFF)]/10 cursor-pointer"
               title="Export as Universal Sketch (.sketch) file"
             >
               <DownloadSimple size={13} />
@@ -327,7 +327,7 @@ export function FilesPopover() {
                 useShellStore.getState().setExpiredArchiveOpen(true)
                 setIsOpen(false)
               }}
-              className="tactile-btn flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 px-2 py-1 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 cursor-pointer"
+              className="tactile-btn flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 px-2 py-1 rounded-lg hover:bg-amber-500/10 cursor-pointer"
               title="Open Expired Elements Archive"
             >
               <Archive size={13} />
@@ -336,14 +336,14 @@ export function FilesPopover() {
           </div>
 
           {/* Wi-Fi & Auto-Save Status Footer */}
-          <div className="mt-1.5 pt-1.5 border-t border-stone-100/60 dark:border-stone-800/60 flex items-center justify-between px-2 text-[10px] text-stone-400 dark:text-stone-500">
+          <div className="mt-1.5 pt-1.5 border-t border-border/60 flex items-center justify-between px-2 text-[10px] text-muted-foreground">
             {wifiAutoSync ? (
               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
                 <WifiHigh size={12} weight="bold" className="animate-pulse-subtle" />
                 <span>Same Wi-Fi Sync Active</span>
               </span>
             ) : (
-              <span className="flex items-center gap-1 text-stone-500 dark:text-stone-400 font-medium">
+              <span className="flex items-center gap-1 text-muted-foreground font-medium">
                 <span className="size-1.5 rounded-full bg-emerald-500" />
                 <span>Local Storage Active</span>
               </span>

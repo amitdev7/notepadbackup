@@ -176,10 +176,12 @@ export function getArrowPatchesForMovedNodes(
   allNodes: Record<string, SquigNode>,
   movedNodeIds: Set<string>
 ): Record<string, Partial<SquigNode>> {
+  if (movedNodeIds.size === 0) return {}
   const patches: Record<string, Partial<SquigNode>> = {}
 
-  for (const node of Object.values(allNodes)) {
-    if (node.type !== "arrow") continue
+  for (const id in allNodes) {
+    const node = allNodes[id]
+    if (!node || node.type !== "arrow") continue
     const arrow = node as ArrowNode
 
     const startBound = arrow.startBinding?.elementId && allNodes[arrow.startBinding.elementId]

@@ -345,8 +345,8 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
           <button
             type="button"
             onClick={() => setActiveTab("collaborate")}
-            className={`pb-1 transition-colors ${activeTab === "collaborate"
-              ? "border-b-2 border-primary text-foreground font-semibold"
+            className={`pb-1 transition-all duration-150 cursor-pointer ${activeTab === "collaborate"
+              ? "border-b-2 border-[var(--ui-accent,#007AFF)] text-foreground font-semibold"
               : "text-muted-foreground hover:text-foreground"
               }`}
           >
@@ -355,8 +355,8 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
           <button
             type="button"
             onClick={() => setActiveTab("publish")}
-            className={`pb-1 transition-colors ${activeTab === "publish"
-              ? "border-b-2 border-primary text-foreground font-semibold"
+            className={`pb-1 transition-all duration-150 cursor-pointer ${activeTab === "publish"
+              ? "border-b-2 border-[var(--ui-accent,#007AFF)] text-foreground font-semibold"
               : "text-muted-foreground hover:text-foreground"
               }`}
           >

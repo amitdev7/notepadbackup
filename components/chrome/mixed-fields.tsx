@@ -152,7 +152,7 @@ function parseNumber(raw: string): number | null {
 // below so the two are pixel-identical and only their innards differ.
 
 const FIELD_BOX =
-  "flex h-ctl min-w-0 items-center gap-1.5 rounded-chrome-sm border border-input bg-transparent pr-2 pl-1.5 transition-colors hover:border-border focus-within:border-[var(--sq-ink)] focus-within:ring-2 focus-within:ring-[var(--sq-ink)]/15"
+  "flex h-ctl min-w-0 items-center gap-1.5 rounded-chrome-sm border border-input/80 bg-background/50 pr-2 pl-1.5 transition-all duration-150 hover:border-border focus-within:border-[var(--ui-accent,#007AFF)] focus-within:ring-2 focus-within:ring-[var(--ui-accent,#007AFF)]/20"
 
 const FIELD_INPUT =
   "h-full w-full min-w-0 bg-transparent text-label tabular-nums outline-none placeholder:text-muted-foreground [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"

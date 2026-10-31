@@ -118,8 +118,11 @@ export async function startDesktopServer(): Promise<LocalServerHandle> {
   }
 }
 
-async function waitForServerReady(targetUrl: string, maxAttempts = 50): Promise<void> {
+async function waitForServerReady(targetUrl: string, maxAttempts = 70): Promise<void> {
   for (let i = 0; i < maxAttempts; i++) {
+    const timeoutMs = i < 15 ? 150 : i < 35 ? 250 : 500
+    const delayMs = i < 15 ? 25 : i < 35 ? 50 : 100
+
     try {
       await new Promise<void>((resolve, reject) => {
         const req = http.get(targetUrl, (res) => {
@@ -130,14 +133,14 @@ async function waitForServerReady(targetUrl: string, maxAttempts = 50): Promise<
           }
         })
         req.on("error", reject)
-        req.setTimeout(500, () => {
+        req.setTimeout(timeoutMs, () => {
           req.destroy()
           reject(new Error("Timeout"))
         })
       })
       return
     } catch {
-      await new Promise((r) => setTimeout(r, 150))
+      await new Promise((r) => setTimeout(r, delayMs))
     }
   }
 }

@@ -124,7 +124,7 @@ export function TimeSettingsTab() {
     <div className="space-y-6">
       {/* Toast Feedback Notice */}
       {feedbackNotice && (
-        <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-700 dark:text-blue-300 text-xs flex items-center gap-2 animate-in fade-in duration-150">
+        <div className="p-2.5 rounded-xl bg-[var(--ui-accent,#007AFF)]/15 border border-[var(--ui-accent,#007AFF)]/25 text-[var(--ui-accent,#007AFF)] text-xs flex items-center gap-2 animate-scale-fade duration-150">
           <Check size={14} className="shrink-0" />
           <span>{feedbackNotice}</span>
         </div>
@@ -132,17 +132,17 @@ export function TimeSettingsTab() {
 
       {/* Group 1: Automatic Detection & Environment Context */}
       <div className="space-y-3">
-        <h5 className="text-[11px] font-bold uppercase tracking-wider text-stone-400 dark:text-stone-500">
+        <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           Automatic Detection & Timezone
         </h5>
 
-        <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700/60 space-y-3">
+        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-semibold text-xs text-stone-900 dark:text-stone-100 block">
+              <span className="font-semibold text-xs text-foreground block">
                 Automatic Timezone Detection
               </span>
-              <span className="text-[11px] text-stone-500">
+              <span className="text-[11px] text-muted-foreground">
                 Uses browser&apos;s native Internationalization API to detect your local environment
               </span>
             </div>
@@ -152,25 +152,25 @@ export function TimeSettingsTab() {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 dark:border-stone-700/60 text-xs">
-            <span className="text-stone-600 dark:text-stone-400">Current Timezone:</span>
+          <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
+            <span className="text-muted-foreground">Current Timezone:</span>
             <div className="flex items-center gap-1.5 font-mono">
-              <span className="font-semibold text-stone-900 dark:text-stone-100">{activeTz}</span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold border border-blue-500/20">
+              <span className="font-semibold text-foreground">{activeTz}</span>
+              <span className="px-1.5 py-0.5 rounded text-[10px] bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold border border-[var(--ui-accent,#007AFF)]/25">
                 {activeUtcOffset}
               </span>
             </div>
           </div>
 
           {!clockPrefs.autoTimezone && (
-            <div className="pt-2 border-t border-stone-200/60 dark:border-stone-700/60">
-              <label className="text-[11px] font-medium text-stone-600 dark:text-stone-400 block mb-1">
+            <div className="pt-2 border-t border-border/60">
+              <label className="text-[11px] font-medium text-muted-foreground block mb-1">
                 Manual Timezone Override
               </label>
               <select
                 value={clockPrefs.manualTimezone || activeTz}
                 onChange={(e) => updateClockPrefs({ manualTimezone: e.target.value })}
-                className="w-full px-2.5 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs outline-none"
+                className="w-full px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/20"
               >
                 {COMMON_TIMEZONES.map((tz) => (
                   <option key={tz.id} value={tz.id}>
@@ -183,13 +183,13 @@ export function TimeSettingsTab() {
         </div>
 
         {/* Approximate Geolocation Card */}
-        <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700/60 space-y-3">
+        <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <span className="font-semibold text-xs text-stone-900 dark:text-stone-100 block">
+              <span className="font-semibold text-xs text-foreground block">
                 Approximate Geographical Location (IP)
               </span>
-              <span className="text-[11px] text-stone-500">
+              <span className="text-[11px] text-muted-foreground">
                 Identifies city and country via privacy-conscious server proxy headers
               </span>
             </div>
@@ -200,14 +200,14 @@ export function TimeSettingsTab() {
           </div>
 
           {clockPrefs.autoLocation && (
-            <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 dark:border-stone-700/60 text-xs">
+            <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
               <div className="flex items-center gap-1.5">
                 <MapPin size={14} className="text-rose-500" />
-                <span className="font-medium text-stone-900 dark:text-stone-100">
+                <span className="font-medium text-foreground">
                   {geoInfo?.city ? `${geoInfo.city}, ${geoInfo.country || ""}` : "Resolving location…"}
                 </span>
                 {geoInfo?.source && (
-                  <span className="text-[10px] text-stone-400">
+                  <span className="text-[10px] text-muted-foreground">
                     ({geoInfo.source === "gps" ? "GPS" : geoInfo.source === "ip" ? "IP" : "Timezone"})
                   </span>
                 )}
@@ -217,7 +217,7 @@ export function TimeSettingsTab() {
                 type="button"
                 onClick={handleRefreshGeo}
                 disabled={isRefreshingGeo}
-                className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 hover:bg-stone-200/50 dark:hover:bg-stone-800 text-[11px] font-medium text-stone-700 dark:text-stone-300 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                className="px-2.5 py-1 rounded-lg border border-border hover:bg-muted text-[11px] font-medium text-foreground transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50"
               >
                 <ArrowsClockwise size={12} className={cn(isRefreshingGeo && "animate-spin")} />
                 <span>Refresh Location</span>

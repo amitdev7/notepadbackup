@@ -274,13 +274,13 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
         role="dialog"
         aria-modal="true"
         aria-label={`Document Viewer: ${node.name}`}
-        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs animate-scale-fade duration-150"
         onClick={(e) => {
           if (e.target === e.currentTarget) onClose()
         }}
       >
         <div
-          className="w-full max-w-6xl h-[92vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
+          className="w-full max-w-6xl h-[92vh] flex flex-col rounded-2xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-scale-fade duration-200"
           style={{
             boxShadow: "0 20px 40px rgba(0,0,0,0.3), 4px 4px 0px rgba(0,0,0,0.15)",
           }}
@@ -320,13 +320,13 @@ export function DocumentViewerModal({ node, onClose }: DocumentViewerModalProps)
       role="dialog"
       aria-modal="true"
       aria-label={`Document Viewer: ${node.name}`}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-in fade-in duration-150"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-xs animate-scale-fade duration-150"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose()
       }}
     >
       <div
-        className="w-full max-w-5xl h-[88vh] flex flex-col rounded-lg overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-in zoom-in-95 duration-150"
+        className="w-full max-w-5xl h-[88vh] flex flex-col rounded-2xl overflow-hidden bg-[var(--sq-paper)] text-[var(--sq-ink)] border border-[var(--sq-border)] shadow-2xl animate-scale-fade duration-200"
         style={{
           boxShadow: "0 20px 40px rgba(0,0,0,0.25), 4px 4px 0px rgba(0,0,0,0.12)",
         }}

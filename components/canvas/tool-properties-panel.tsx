@@ -153,7 +153,7 @@ export function ToolPropertiesPanel() {
       <button
         type="button"
         onClick={() => setStylePanelOpen(true)}
-        className="fixed left-3 sm:left-4 top-16 sm:top-18 z-30 flex items-center gap-1.5 p-2 rounded-xl bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-xl border border-stone-200/90 dark:border-stone-800 shadow-md text-stone-700 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white hover:bg-stone-50 dark:hover:bg-stone-800 transition-all cursor-pointer"
+        className="fixed left-3 sm:left-4 top-16 sm:top-18 z-30 flex items-center gap-1.5 p-2 rounded-xl apple-glass-pill border border-border/80 shadow-md text-foreground hover:bg-muted transition-all cursor-pointer"
         title="Show Styles Panel"
         aria-label="Show Styles Panel"
       >
@@ -169,9 +169,9 @@ export function ToolPropertiesPanel() {
       aria-label="Tool Properties"
       className={cn(
         "fixed left-3 sm:left-4 top-16 sm:top-18 z-30 flex flex-col w-[218px] max-h-[calc(100vh-6rem)] overflow-y-auto no-scrollbar",
-        "rounded-2xl border border-stone-200/90 dark:border-stone-800",
-        "bg-white/95 dark:bg-[#1C1C1F]/95 backdrop-blur-2xl shadow-xl shadow-stone-950/10 dark:shadow-black/60",
-        "p-3.5 space-y-3.5 select-none text-stone-900 dark:text-stone-100 text-xs animate-panel-left gpu-accelerated font-sans"
+        "rounded-2xl border border-border/80",
+        "apple-glass-panel shadow-2xl",
+        "p-3.5 space-y-3.5 select-none text-foreground text-xs animate-panel-left gpu-accelerated font-sans"
       )}
     >
       {/* Header with Title & Collapse */}

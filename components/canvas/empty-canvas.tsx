@@ -61,7 +61,7 @@ export function EmptyCanvas() {
   const [line] = useState(pickLine)
 
   return (
-    <div className="pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-5">
+    <div className="pointer-events-none absolute inset-0 flex select-none flex-col items-center justify-center gap-5 animate-scale-fade">
       <svg
         viewBox={`0 0 ${DOODLE_W} ${DOODLE_H}`}
         width={DOODLE_WIDTH}
@@ -71,13 +71,14 @@ export function EmptyCanvas() {
         strokeWidth={DOODLE_STROKE}
         strokeLinecap="round"
         strokeLinejoin="round"
+        className="transition-opacity duration-300"
         aria-hidden
       >
         {DOODLE_PATHS.map((d, i) => (
           <path key={i} d={d} />
         ))}
       </svg>
-      <p className="text-center text-sm" style={{ color: "var(--sq-muted)", fontFamily: "var(--sq-font)" }}>
+      <p className="text-center text-sm font-medium tracking-wide" style={{ color: "var(--sq-muted)", fontFamily: "var(--sq-font)" }}>
         {line}
       </p>
     </div>

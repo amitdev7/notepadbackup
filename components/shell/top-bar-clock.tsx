@@ -240,7 +240,7 @@ export function TopBarClock({
         aria-label={`Current time: ${snapshot.formattedTime}, ${displayLocation ? `location: ${displayLocation}` : ""}`}
       >
         <div className="flex items-center gap-1.5">
-          <Clock size={13} className={cn("text-stone-500 dark:text-stone-400 group-hover:text-[#007AFF] transition-colors", isDock && "size-3.5")} />
+          <Clock size={13} className={cn("text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors", isDock && "size-3.5")} />
           <span className="font-mono font-semibold text-[11px] tracking-tight">
             {snapshot.formattedTime}
           </span>
@@ -304,7 +304,7 @@ export function TopBarClock({
               type="button"
               onClick={handleRefreshLocation}
               disabled={isRefreshingGeo}
-              className="text-[10px] text-[#007AFF] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+              className="text-[10px] text-[var(--ui-accent,#007AFF)] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
               title="Refresh IP location detection"
             >
               <ArrowsClockwise size={11} className={cn(isRefreshingGeo && "animate-spin")} />
@@ -312,20 +312,20 @@ export function TopBarClock({
             </button>
           </div>
 
-          <div className="text-xs font-medium text-stone-900 dark:text-stone-100">
+          <div className="text-xs font-medium text-foreground">
             {displayLocation ? (
               <span>{displayLocation}</span>
             ) : (
-              <span className="text-stone-400">Detecting location…</span>
+              <span className="text-muted-foreground">Detecting location…</span>
             )}
             {geoInfo?.region && (
-              <span className="text-[11px] text-stone-400 block font-normal">
+              <span className="text-[11px] text-muted-foreground block font-normal">
                 Region: {geoInfo.region}
               </span>
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-1 border-t border-stone-200/50 dark:border-stone-800 text-[10px] text-stone-500">
+          <div className="flex items-center justify-between pt-1 border-t border-border/50 text-[10px] text-muted-foreground">
             <span>
               Source: {geoInfo?.source === "gps" ? "Precise GPS" : geoInfo?.source === "ip" ? "Approximate IP" : "Timezone Context"}
             </span>
@@ -335,7 +335,7 @@ export function TopBarClock({
                 type="button"
                 onClick={handleRequestPreciseLocation}
                 disabled={requestingGps}
-                className="text-stone-600 dark:text-stone-300 hover:text-black dark:hover:text-white flex items-center gap-1 cursor-pointer"
+                className="text-muted-foreground hover:text-foreground flex items-center gap-1 cursor-pointer"
                 title="Enable precise device location"
               >
                 <Crosshair size={11} className={cn(requestingGps && "animate-spin")} />
@@ -346,9 +346,9 @@ export function TopBarClock({
         </div>
 
         {/* Calibration & Accuracy Card */}
-        <div className="p-2.5 rounded-xl border border-stone-200/60 dark:border-stone-700/60 bg-white/50 dark:bg-stone-900/40 space-y-1.5">
+        <div className="p-2.5 rounded-xl border border-border/60 bg-muted/30 space-y-1.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-800 dark:text-stone-200">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
               <Globe size={14} className="text-emerald-500" />
               <span>Time Accuracy</span>
             </div>
@@ -357,7 +357,7 @@ export function TopBarClock({
               type="button"
               onClick={handleSyncTime}
               disabled={isSyncingTime}
-              className="text-[10px] text-[#007AFF] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+              className="text-[10px] text-[var(--ui-accent,#007AFF)] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
               title="Calibrate against /api/time"
             >
               <ArrowsClockwise size={11} className={cn(isSyncingTime && "animate-spin")} />

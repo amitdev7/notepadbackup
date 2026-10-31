@@ -15,6 +15,7 @@ import { fileURLToPath } from "node:url"
 import { startDesktopServer, type LocalServerHandle } from "./server.js"
 import { DesktopUpdaterService } from "./updater.js"
 import { registerIpcHandlers } from "./ipc.js"
+import { getSplashDataUrl } from "./splash.js"
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -115,13 +116,27 @@ async function createWindow() {
     }
   })
 
-  // Start local server and load URL
+  // Load instant branded splash screen immediately for instant visual feedback (<150ms)
+  try {
+    await mainWindow.loadURL(getSplashDataUrl())
+  } catch (err) {
+    console.error("[Zenithsui-Desktop] Failed to load splash screen:", err)
+  }
+
+  // Start local server and transition to canvas once ready
   try {
     serverHandle = await startDesktopServer()
-    console.log("[Zenithsui-Desktop] Loading interface from:", serverHandle.url)
-    await mainWindow.loadURL(serverHandle.url)
-  } catch (err) {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      console.log("[Zenithsui-Desktop] Loading interface from:", serverHandle.url)
+      await mainWindow.loadURL(serverHandle.url)
+    }
+  } catch (err: any) {
     console.error("[Zenithsui-Desktop] Failed to load application interface:", err)
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      void mainWindow.webContents.executeJavaScript(`
+        window.postMessage({ type: 'server-error', message: ${JSON.stringify(err?.message || String(err))} }, '*');
+      `)
+    }
   }
 }
 

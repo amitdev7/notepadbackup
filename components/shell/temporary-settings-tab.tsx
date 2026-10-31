@@ -94,23 +94,23 @@ export function TemporarySettingsTab() {
           <Timer className="w-6 h-6" weight="duotone" />
         </div>
         <div className="space-y-1">
-          <h3 className="font-semibold text-sm text-stone-900 dark:text-stone-100 flex items-center gap-2">
+          <h3 className="font-semibold text-sm text-foreground flex items-center gap-2">
             Temporary Elements & Automatic Expiration Engine
           </h3>
-          <p className="text-xs text-stone-600 dark:text-stone-400 leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed">
             Specify how long canvas elements remain visible. Once their countdown reaches zero, they automatically vanish from the active canvas and move to the local Expired Elements Archive for safe recovery.
           </p>
         </div>
       </div>
 
       {/* Section 1: Global Mode Toggle */}
-      <div className="p-4 rounded-xl border border-stone-200/70 dark:border-stone-800/70 bg-stone-50/50 dark:bg-stone-900/50 space-y-4">
+      <div className="p-4 rounded-xl border border-border/80 bg-muted/30 space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">
+            <span className="font-medium text-xs text-foreground block">
               Temporary Creation Mode
             </span>
-            <span className="text-[11px] text-stone-500 dark:text-stone-400">
+            <span className="text-[11px] text-muted-foreground">
               When turned on, any newly created drawings, shapes, text, images, or notes automatically receive an expiration timer.
             </span>
           </div>
@@ -121,7 +121,7 @@ export function TemporarySettingsTab() {
         </div>
 
         {temporarySettings.temporaryMode && (
-          <div className="pt-2 border-t border-stone-200/50 dark:border-stone-800/50 flex items-center gap-2 text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+          <div className="pt-2 border-t border-border/50 flex items-center gap-2 text-[11px] text-amber-600 dark:text-amber-400 font-medium">
             <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
             Temporary Mode is currently ACTIVE on the canvas.
           </div>
@@ -132,11 +132,11 @@ export function TemporarySettingsTab() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-xs font-semibold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+            <h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-amber-500" weight="bold" />
               Default Element Lifetime
             </h4>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400">
+            <p className="text-[11px] text-muted-foreground">
               Initial duration assigned to newly created temporary elements.
             </p>
           </div>
@@ -152,10 +152,10 @@ export function TemporarySettingsTab() {
                 type="button"
                 onClick={() => handleSelectPreset(preset.value)}
                 className={cn(
-                  "py-2 px-2.5 rounded-xl border text-center transition-all text-xs font-medium",
+                  "py-2 px-2.5 rounded-xl border text-center transition-all text-xs font-medium cursor-pointer",
                   isSelected
-                    ? "bg-amber-500 text-white border-amber-600 shadow-sm shadow-amber-500/20"
-                    : "bg-white dark:bg-stone-800 border-stone-200/70 dark:border-stone-700/70 text-stone-700 dark:text-stone-300 hover:border-amber-500/50 hover:bg-amber-500/5"
+                    ? "bg-amber-500 text-white border-amber-600 shadow-sm shadow-amber-500/20 font-semibold"
+                    : "bg-background border-border/80 text-muted-foreground hover:border-amber-500/50 hover:bg-amber-500/5 hover:text-foreground"
                 )}
               >
                 {preset.label}
@@ -165,13 +165,13 @@ export function TemporarySettingsTab() {
         </div>
 
         {/* Custom Duration Inputs */}
-        <div className="p-3 rounded-xl border border-stone-200/70 dark:border-stone-800/70 bg-stone-50/40 dark:bg-stone-900/40 space-y-2 mt-2">
-          <div className="text-[11px] font-medium text-stone-600 dark:text-stone-300">
+        <div className="p-3 rounded-xl border border-border/80 bg-muted/20 space-y-2 mt-2">
+          <div className="text-[11px] font-medium text-foreground">
             Or specify custom duration:
           </div>
           <div className="grid grid-cols-4 gap-2">
             <div>
-              <label className="text-[10px] text-stone-400 block mb-0.5">Days</label>
+              <label className="text-[10px] text-muted-foreground block mb-0.5">Days</label>
               <input
                 type="number"
                 min="0"
@@ -185,11 +185,11 @@ export function TemporarySettingsTab() {
                     customSecs
                   )
                 }
-                className="w-full px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/20"
               />
             </div>
             <div>
-              <label className="text-[10px] text-stone-400 block mb-0.5">Hours</label>
+              <label className="text-[10px] text-muted-foreground block mb-0.5">Hours</label>
               <input
                 type="number"
                 min="0"
@@ -203,11 +203,11 @@ export function TemporarySettingsTab() {
                     customSecs
                   )
                 }
-                className="w-full px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/20"
               />
             </div>
             <div>
-              <label className="text-[10px] text-stone-400 block mb-0.5">Minutes</label>
+              <label className="text-[10px] text-muted-foreground block mb-0.5">Minutes</label>
               <input
                 type="number"
                 min="0"
@@ -221,11 +221,11 @@ export function TemporarySettingsTab() {
                     customSecs
                   )
                 }
-                className="w-full px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/20"
               />
             </div>
             <div>
-              <label className="text-[10px] text-stone-400 block mb-0.5">Seconds</label>
+              <label className="text-[10px] text-muted-foreground block mb-0.5">Seconds</label>
               <input
                 type="number"
                 min="0"
@@ -239,7 +239,7 @@ export function TemporarySettingsTab() {
                     Math.max(0, parseInt(e.target.value) || 0)
                   )
                 }
-                className="w-full px-2 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-xs"
+                className="w-full px-2 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/20"
               />
             </div>
           </div>

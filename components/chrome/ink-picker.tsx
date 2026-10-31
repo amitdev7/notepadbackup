@@ -43,7 +43,7 @@ function InkMenuItems() {
             <InkSwatch name={name} />
             {THEMES[name].label}
           </span>
-          {theme === name && <CheckIcon className="ml-auto size-3.5 text-muted-foreground" weight="bold" />}
+          {theme === name && <CheckIcon className="ml-auto size-3.5 text-[var(--ui-accent,#007AFF)]" weight="bold" />}
         </DropdownMenuItem>
       ))}
     </>
@@ -65,7 +65,7 @@ export function InkPicker() {
         // the face is a chip and a palette name, so the control needs to say
         // out loud what it is for anyone not looking at it
         aria-label={`Palette — ${THEMES[theme].label}`}
-        className="flex h-ctl w-full min-w-0 items-center gap-2 rounded-chrome-sm border border-input bg-transparent px-2 text-label outline-none transition-colors hover:border-border focus-visible:border-[var(--sq-ink)] focus-visible:ring-2 focus-visible:ring-[var(--sq-ink)]/15"
+        className="flex h-ctl w-full min-w-0 items-center gap-2 rounded-chrome-sm border border-input/80 bg-background/50 px-2 text-label outline-none transition-all duration-150 hover:border-border focus-visible:border-[var(--ui-accent,#007AFF)] focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/20"
       >
         <InkSwatch name={theme} />
         <span className="min-w-0 flex-1 truncate text-left">{THEMES[theme].label}</span>

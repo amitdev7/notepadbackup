@@ -85,9 +85,27 @@ export const SHADOW = {
 } as const
 
 export const MOTION = {
-  fast: "100ms cubic-bezier(0.16, 1, 0.3, 1)",
-  normal: "150ms cubic-bezier(0.16, 1, 0.3, 1)",
-  slow: "250ms cubic-bezier(0.16, 1, 0.3, 1)",
+  fast: "120ms cubic-bezier(0.16, 1, 0.3, 1)",
+  normal: "200ms cubic-bezier(0.16, 1, 0.3, 1)",
+  slow: "320ms cubic-bezier(0.16, 1, 0.3, 1)",
+  spring: "420ms cubic-bezier(0.16, 1, 0.3, 1)",
+  bounce: "500ms cubic-bezier(0.34, 1.56, 0.64, 1)",
+  snappy: "150ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+  easing: {
+    standard: "cubic-bezier(0.16, 1, 0.3, 1)",
+    spring: "cubic-bezier(0.16, 1, 0.3, 1)",
+    bounce: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+    snappy: "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    emphasized: "cubic-bezier(0.05, 0.7, 0.1, 1)",
+  },
+  duration: {
+    instant: "80ms",
+    micro: "120ms",
+    fast: "160ms",
+    normal: "240ms",
+    medium: "320ms",
+    slow: "420ms",
+  },
 } as const
 
 /** Application UI Accent Colors (Customizable via Settings -> Appearance -> Accent) */

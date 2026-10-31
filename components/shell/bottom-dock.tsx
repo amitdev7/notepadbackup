@@ -160,9 +160,9 @@ function MagnifiedDockItem({
             }}
             className={cn(
               "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
-              "focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:outline-none",
+              "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/40 focus-visible:outline-none",
               active
-                ? "bg-[#007AFF]/15 text-[#007AFF] dark:text-[#0A84FF] font-semibold shadow-xs border border-[#007AFF]/30"
+                ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold shadow-xs border border-[var(--ui-accent,#007AFF)]/30"
                 : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent",
               className
             )}
