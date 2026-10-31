@@ -53,6 +53,59 @@ export async function migrateLocalStorageToIndexedDB(): Promise<{
       count++
     }
 
+    // Migrate any legacy Excalidraw elements stored in browser localStorage
+    try {
+      const rawExcalidraw = localStorage.getItem("excalidraw")
+      if (rawExcalidraw) {
+        const parsed = JSON.parse(rawExcalidraw)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const legacyExId = "legacy_excalidraw_import"
+          const existing = await getLocalDocument(legacyExId)
+          if (!existing) {
+            const convertedNodes: Record<string, any> = {}
+            const order: string[] = []
+            for (const el of parsed) {
+              if (el && el.id && !el.isDeleted) {
+                convertedNodes[el.id] = {
+                  id: el.id,
+                  type: el.type === "rectangle" || el.type === "ellipse" || el.type === "diamond" ? "shape" : el.type || "shape",
+                  shape: el.type || "rectangle",
+                  x: el.x || 0,
+                  y: el.y || 0,
+                  w: el.width || 100,
+                  h: el.height || 100,
+                  rotation: el.angle || 0,
+                  color: el.strokeColor || "#000000",
+                  text: el.text || "",
+                }
+                order.push(el.id)
+              }
+            }
+            if (order.length > 0) {
+              await saveLocalDocument({
+                id: legacyExId,
+                name: "Recovered Excalidraw Canvas",
+                doc: {
+                  fileName: "Recovered Excalidraw Canvas",
+                  nodes: convertedNodes,
+                  order,
+                },
+                baseRevision: 1,
+                serverRevision: 1,
+                syncStatus: "local-only",
+                createdAt: Date.now(),
+                updatedAt: Date.now(),
+                deletedAt: null,
+              })
+              count++
+            }
+          }
+        }
+      }
+    } catch {
+      // ignore corrupt legacy entries
+    }
+
     // Mark migration complete in app_state and localStorage flag
     localStorage.setItem(MIGRATION_FLAG_KEY, "true")
     await withTransaction(STORES.APP_STATE, "readwrite", (tx) => {

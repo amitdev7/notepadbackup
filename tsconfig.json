@@ -44,8 +44,8 @@
     "files/**/*",
     "packages",
     "packages/**/*",
-    "zenithsui-app",
-    "zenithsui-app/**/*",
+
+
     "examples",
     "examples/**/*",
     "firebase-project",
