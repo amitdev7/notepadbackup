@@ -1339,7 +1339,7 @@ function ExpirationSection({
   selected: SquigNode[]
   patch: (fn: (n: SquigNode) => Partial<SquigNode>) => void
 }) {
-  const [, setTick] = useState(0)
+  const [now, setNow] = useState(0)
   const [customOpen, setCustomOpen] = useState(false)
   const [customDays, setCustomDays] = useState(0)
   const [customHours, setCustomHours] = useState(0)
@@ -1350,9 +1350,10 @@ function ExpirationSection({
 
   // Ticker for live remaining time display
   useEffect(() => {
+    setNow(Date.now())
     const hasTemp = selected.some((n) => n.expiration && Number.isFinite(n.expiration.expiresAt))
     if (!hasTemp) return
-    const interval = setInterval(() => setTick((t: number) => t + 1), 1000)
+    const interval = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(interval)
   }, [selected])
 
@@ -1362,7 +1363,7 @@ function ExpirationSection({
   const isMixed = !allTemporary && !noneTemporary
 
   const firstTemp = selected.find((n) => n.expiration && Number.isFinite(n.expiration.expiresAt))
-  const now = Date.now()
+  const currentTime = now || 0
 
   return (
     <PanelSection
@@ -1593,7 +1594,7 @@ function ExpirationSection({
           {firstTemp?.expiration && (
             <Row label="Remaining">
               <span className="font-mono text-xs font-semibold text-amber-700 dark:text-amber-300">
-                {formatRemainingTime(firstTemp.expiration.expiresAt, now)}
+                {formatRemainingTime(firstTemp.expiration.expiresAt, currentTime)}
               </span>
             </Row>
           )}

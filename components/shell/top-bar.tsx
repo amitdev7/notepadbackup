@@ -164,7 +164,7 @@ export function TopBar() {
           ) : justSaved ? (
             <>
               <span className="size-1.5 rounded-full bg-[#34C759] shadow-[0_0_8px_rgba(52,199,89,0.85)] transition-all" aria-hidden="true" />
-              <span className="text-[#34C759] dark:text-[#30D158] hidden sm:inline flex items-center gap-0.5">
+              <span className="text-[#34C759] dark:text-[#30D158] hidden sm:inline-flex items-center gap-0.5">
                 <Check size={10} weight="bold" /> saved
               </span>
             </>
@@ -192,7 +192,7 @@ export function TopBar() {
         )}
 
         {isViewer && (
-          <span className="animate-badge-pop px-1.5 py-0.2 rounded-full text-[9px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider ml-1">
+          <span className="animate-badge-pop px-1.5 py-0.5 rounded-full text-[9px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider ml-1">
             Viewer
           </span>
         )}

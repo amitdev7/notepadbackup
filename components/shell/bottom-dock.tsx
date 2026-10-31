@@ -652,20 +652,6 @@ export function BottomDock() {
           <div className="hidden sm:block h-5 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
         )}
 
-        {/* ── Real-Time Clock on Dock ── */}
-        {showDockClock && (
-          <div className="flex items-center gap-0.5 shrink-0">
-            <TopBarClock variant="dock" side="top" />
-          </div>
-        )}
-
-        {/* ── View Menu on Dock ── */}
-        {showDockViewMenu && (
-          <div className="flex items-center gap-0.5 shrink-0">
-            <ViewMenu side="top" variant="dock" />
-          </div>
-        )}
-
         {/* ── Zoom Controls ── */}
         {dockControls.zoomControls && (
           <div className="hidden sm:flex items-center gap-0.5 shrink-0">
@@ -713,6 +699,30 @@ export function BottomDock() {
               <Plus size={13} aria-hidden="true" />
             </MagnifiedDockItem>
           </div>
+        )}
+
+        {/* ── View Menu on Dock ── */}
+        {showDockViewMenu && (
+          <>
+            {dockControls.zoomControls && (
+              <div className="hidden sm:block h-4 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            )}
+            <div className="flex items-center gap-0.5 shrink-0">
+              <ViewMenu side="top" variant="dock" />
+            </div>
+          </>
+        )}
+
+        {/* ── Real-Time Clock on Dock ── */}
+        {showDockClock && (
+          <>
+            {(dockControls.zoomControls || showDockViewMenu) && (
+              <div className="hidden sm:block h-4 w-px bg-stone-200/80 dark:bg-stone-700/80 mx-0.5 shrink-0" />
+            )}
+            <div className="flex items-center gap-0.5 shrink-0">
+              <TopBarClock variant="dock" side="top" />
+            </div>
+          </>
         )}
       </nav>
     </TooltipProvider>

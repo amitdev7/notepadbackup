@@ -60,11 +60,13 @@ export function ExpiredElementsDialog() {
   const [confirmClearAll, setConfirmClearAll] = useState(false)
   const [customRestoreItem, setCustomRestoreItem] = useState<ExpiredElementRecord | null>(null)
   const [customRestoreDuration, setCustomRestoreDuration] = useState(5 * 60 * 1000)
+  const [now, setNow] = useState(0)
 
   // Refresh records whenever dialog opens or storage changes
   useEffect(() => {
     if (!open) return
     const refresh = async () => {
+      setNow(Date.now())
       const list = await listExpiredRecords()
       setRecords(list)
     }
@@ -95,9 +97,9 @@ export function ExpiredElementsDialog() {
 
   if (!open) return null
 
-  const now = Date.now()
-  const oneDayAgo = now - 24 * 3600 * 1000
-  const oneWeekAgo = now - 7 * 24 * 3600 * 1000
+  const currentTime = now || 0
+  const oneDayAgo = currentTime - 24 * 3600 * 1000
+  const oneWeekAgo = currentTime - 7 * 24 * 3600 * 1000
 
   // Filter items
   const filtered = records.filter((r) => {
@@ -417,7 +419,7 @@ export function ExpiredElementsDialog() {
                 <h4 className="text-xs font-semibold">Delete Permanently?</h4>
               </div>
               <p className="text-[11px] text-stone-500">
-                Are you sure you want to permanently delete "{confirmDelete.previewLabel}"?
+                Are you sure you want to permanently delete &quot;{confirmDelete.previewLabel}&quot;?
                 This action cannot be undone.
               </p>
               <div className="flex items-center justify-end gap-2 pt-2">
@@ -485,7 +487,7 @@ export function ExpiredElementsDialog() {
                 <h4 className="text-xs font-semibold">Restore with New Timer</h4>
               </div>
               <p className="text-[11px] text-stone-500">
-                Choose how long "{customRestoreItem.previewLabel}" should remain active on the canvas:
+                Choose how long &quot;{customRestoreItem.previewLabel}&quot; should remain active on the canvas:
               </p>
 
               <div className="grid grid-cols-3 gap-1.5 py-1">
