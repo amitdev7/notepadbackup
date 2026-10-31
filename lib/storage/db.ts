@@ -1,15 +1,16 @@
 // ---------------------------------------------------------------------------
-// Zenithsui IndexedDB Storage Engine (zenithsui-db v1)
+// Zenithsui IndexedDB Storage Engine (zenithsui-db v2)
 // ---------------------------------------------------------------------------
 
 export const DB_NAME = "zenithsui-db"
-export const DB_VERSION = 1
+export const DB_VERSION = 2
 
 export const STORES = {
   DOCUMENTS: "documents",
   SYNC_QUEUE: "sync_queue",
   ASSET_BLOBS: "asset_blobs",
   APP_STATE: "app_state",
+  EXPIRED_ELEMENTS: "expired_elements",
 } as const
 
 let dbInstance: IDBDatabase | null = null
@@ -53,6 +54,14 @@ export function openZenithsuiDb(): Promise<IDBDatabase> {
       // 4. App state store (preferences, active workspace, etc.)
       if (!db.objectStoreNames.contains(STORES.APP_STATE)) {
         db.createObjectStore(STORES.APP_STATE, { keyPath: "key" })
+      }
+
+      // 5. Expired elements archive store
+      if (!db.objectStoreNames.contains(STORES.EXPIRED_ELEMENTS)) {
+        const archiveStore = db.createObjectStore(STORES.EXPIRED_ELEMENTS, { keyPath: "archiveId" })
+        archiveStore.createIndex("by_documentId", "documentId", { unique: false })
+        archiveStore.createIndex("by_archivedAt", "archivedAt", { unique: false })
+        archiveStore.createIndex("by_expiresAt", "expiresAt", { unique: false })
       }
     }
 

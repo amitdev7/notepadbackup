@@ -14,7 +14,7 @@
 // somewhere else.
 // ---------------------------------------------------------------------------
 
-import { useMemo, useRef } from "react"
+import { useMemo, useRef, useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { cn } from "@/lib/utils"
 import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder } from "@/lib/types"
@@ -48,7 +48,10 @@ import {
   Lock,
   LockOpen,
   ChatCenteredText,
+  Timer,
+  Plus,
 } from "@phosphor-icons/react"
+import { formatRemainingTime, expireNodeNow } from "@/lib/canvas/expiration-manager"
 import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -895,6 +898,9 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
 
       {/* --- universal: hover notes (applicable to any selected node) --- */}
       <HoverNoteSection selected={selected} patch={patch} />
+
+      {/* --- universal: expiration (applicable to any selected node) --- */}
+      <ExpirationSection selected={selected} patch={patch} />
     </>
   )
 }
@@ -1322,6 +1328,345 @@ function HoverNoteSection({
           </button>
         </div>
       </div>
+    </PanelSection>
+  )
+}
+
+function ExpirationSection({
+  selected,
+  patch,
+}: {
+  selected: SquigNode[]
+  patch: (fn: (n: SquigNode) => Partial<SquigNode>) => void
+}) {
+  const [, setTick] = useState(0)
+  const [customOpen, setCustomOpen] = useState(false)
+  const [customDays, setCustomDays] = useState(0)
+  const [customHours, setCustomHours] = useState(0)
+  const [customMins, setCustomMins] = useState(5)
+  const [customSecs, setCustomSecs] = useState(0)
+  const [expireAtDate, setExpireAtDate] = useState("")
+  const [expireAtTime, setExpireAtTime] = useState("")
+
+  // Ticker for live remaining time display
+  useEffect(() => {
+    const hasTemp = selected.some((n) => n.expiration && Number.isFinite(n.expiration.expiresAt))
+    if (!hasTemp) return
+    const interval = setInterval(() => setTick((t: number) => t + 1), 1000)
+    return () => clearInterval(interval)
+  }, [selected])
+
+  const tempCount = selected.filter((n) => n.expiration && Number.isFinite(n.expiration.expiresAt)).length
+  const allTemporary = tempCount === selected.length && selected.length > 0
+  const noneTemporary = tempCount === 0
+  const isMixed = !allTemporary && !noneTemporary
+
+  const firstTemp = selected.find((n) => n.expiration && Number.isFinite(n.expiration.expiresAt))
+  const now = Date.now()
+
+  return (
+    <PanelSection
+      id="expiration"
+      title="Expiration"
+      count={tempCount > 0 && tempCount < selected.length ? tempCount : undefined}
+    >
+      {/* Expiration Status Selector */}
+      <Row label="Status">
+        <div className="flex items-center gap-1 w-full">
+          <button
+            type="button"
+            onClick={() => {
+              patch(() => ({ expiration: undefined }))
+            }}
+            className={cn(
+              "flex-1 py-1 rounded-chrome-sm text-label font-medium transition-all text-center cursor-pointer",
+              noneTemporary
+                ? "bg-accent text-foreground font-semibold shadow-2xs"
+                : "text-muted-foreground hover:bg-muted"
+            )}
+          >
+            Permanent
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const defaultMs = 5 * 60 * 1000
+              const expiresAt = Date.now() + defaultMs
+              patch(() => ({
+                expiration: {
+                  expiresAt,
+                  createdAt: Date.now(),
+                  durationMs: defaultMs,
+                  showCountdown: true,
+                },
+              }))
+            }}
+            className={cn(
+              "flex-1 py-1 rounded-chrome-sm text-label font-medium transition-all text-center cursor-pointer flex items-center justify-center gap-1",
+              allTemporary
+                ? "bg-amber-500/20 text-amber-700 dark:text-amber-300 font-semibold border border-amber-500/30"
+                : isMixed
+                ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                : "text-muted-foreground hover:bg-muted"
+            )}
+          >
+            <Timer size={12} className={allTemporary ? "text-amber-500" : ""} />
+            <span>{isMixed ? "Mixed" : "Temporary"}</span>
+          </button>
+        </div>
+      </Row>
+
+      {(allTemporary || isMixed) && (
+        <>
+          {/* Preset Duration Pills */}
+          <StackRow label="Duration">
+            <div className="grid grid-cols-4 gap-1 w-full">
+              {[
+                { label: "10s", ms: 10 * 1000 },
+                { label: "1m", ms: 60 * 1000 },
+                { label: "5m", ms: 5 * 60 * 1000 },
+                { label: "30m", ms: 30 * 60 * 1000 },
+                { label: "1h", ms: 60 * 60 * 1000 },
+                { label: "24h", ms: 24 * 3600 * 1000 },
+                { label: "7d", ms: 7 * 86400 * 1000 },
+                { label: "Custom", ms: -1 },
+              ].map(({ label, ms }) => {
+                const isSelected =
+                  ms === -1
+                    ? customOpen
+                    : firstTemp?.expiration?.durationMs === ms
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      if (ms === -1) {
+                        setCustomOpen(!customOpen)
+                      } else {
+                        const newExpiresAt = Date.now() + ms
+                        patch((n) => ({
+                          expiration: {
+                            expiresAt: newExpiresAt,
+                            createdAt: n.expiration?.createdAt || Date.now(),
+                            durationMs: ms,
+                            showCountdown: n.expiration?.showCountdown ?? true,
+                          },
+                        }))
+                        setCustomOpen(false)
+                      }
+                    }}
+                    className={cn(
+                      "py-1 px-1 rounded-chrome-sm text-[10px] font-mono font-medium transition-all text-center cursor-pointer",
+                      isSelected
+                        ? "bg-amber-500 text-white font-bold shadow-2xs"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+          </StackRow>
+
+          {/* Custom Duration & Expire At */}
+          {customOpen && (
+            <div className="p-2.5 rounded-chrome-md bg-muted/60 border border-border/80 text-[11px] space-y-2 mt-1 animate-popover-enter">
+              <span className="font-semibold text-foreground block">Custom Lifetime</span>
+              <div className="grid grid-cols-4 gap-1 text-center font-mono">
+                <div>
+                  <label className="text-[9px] text-muted-foreground block">Days</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={365}
+                    value={customDays}
+                    onChange={(e) => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full text-center py-0.5 rounded border border-border bg-background text-foreground text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground block">Hours</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={23}
+                    value={customHours}
+                    onChange={(e) => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full text-center py-0.5 rounded border border-border bg-background text-foreground text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground block">Mins</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={59}
+                    value={customMins}
+                    onChange={(e) => setCustomMins(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full text-center py-0.5 rounded border border-border bg-background text-foreground text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="text-[9px] text-muted-foreground block">Secs</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={59}
+                    value={customSecs}
+                    onChange={(e) => setCustomSecs(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-full text-center py-0.5 rounded border border-border bg-background text-foreground text-xs"
+                  />
+                </div>
+              </div>
+
+              <Button
+                size="sm"
+                className="w-full h-6 text-xs bg-amber-500 hover:bg-amber-600 text-white"
+                onClick={() => {
+                  const totalMs =
+                    customDays * 86400000 +
+                    customHours * 3600000 +
+                    customMins * 60000 +
+                    customSecs * 1000
+                  if (totalMs > 0) {
+                    const newExpiry = Date.now() + totalMs
+                    patch((n) => ({
+                      expiration: {
+                        expiresAt: newExpiry,
+                        createdAt: n.expiration?.createdAt || Date.now(),
+                        durationMs: totalMs,
+                        showCountdown: n.expiration?.showCountdown ?? true,
+                      },
+                    }))
+                    setCustomOpen(false)
+                  }
+                }}
+              >
+                Apply Custom Duration
+              </Button>
+
+              <div className="h-px bg-border my-1" />
+
+              <span className="font-semibold text-foreground block">Or Expire At Date & Time</span>
+              <div className="flex items-center gap-1.5">
+                <input
+                  type="date"
+                  value={expireAtDate}
+                  onChange={(e) => setExpireAtDate(e.target.value)}
+                  className="flex-1 py-1 px-1.5 rounded border border-border bg-background text-foreground text-[10px] font-mono"
+                />
+                <input
+                  type="time"
+                  value={expireAtTime}
+                  onChange={(e) => setExpireAtTime(e.target.value)}
+                  className="w-24 py-1 px-1.5 rounded border border-border bg-background text-foreground text-[10px] font-mono"
+                />
+              </div>
+
+              <Button
+                size="sm"
+                variant="outline"
+                className="w-full h-6 text-xs"
+                onClick={() => {
+                  if (!expireAtDate) return
+                  const combined = new Date(`${expireAtDate}T${expireAtTime || "23:59:00"}`).getTime()
+                  if (Number.isFinite(combined) && combined > Date.now()) {
+                    patch((n) => ({
+                      expiration: {
+                        expiresAt: combined,
+                        createdAt: n.expiration?.createdAt || Date.now(),
+                        durationMs: combined - Date.now(),
+                        showCountdown: n.expiration?.showCountdown ?? true,
+                      },
+                    }))
+                    setCustomOpen(false)
+                  }
+                }}
+              >
+                Set Expire Timestamp
+              </Button>
+            </div>
+          )}
+
+          {/* Real-time remaining time display */}
+          {firstTemp?.expiration && (
+            <Row label="Remaining">
+              <span className="font-mono text-xs font-semibold text-amber-700 dark:text-amber-300">
+                {formatRemainingTime(firstTemp.expiration.expiresAt, now)}
+              </span>
+            </Row>
+          )}
+
+          {/* Countdown badge toggle */}
+          <Row label="Canvas Badge">
+            <Switch
+              checked={firstTemp?.expiration?.showCountdown ?? true}
+              onCheckedChange={(checked) => {
+                patch((n) =>
+                  n.expiration ? { expiration: { ...n.expiration, showCountdown: checked } } : {}
+                )
+              }}
+            />
+          </Row>
+
+          {/* Quick extension and expiration actions */}
+          <div className="flex items-center gap-1.5 pt-1">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-ctl flex-1 rounded-chrome-sm text-[11px]"
+              onClick={() => {
+                patch((n) => {
+                  if (!n.expiration) return {}
+                  return {
+                    expiration: {
+                      ...n.expiration,
+                      expiresAt: Math.max(Date.now(), n.expiration.expiresAt) + 5 * 60 * 1000,
+                      durationMs: (n.expiration.durationMs ?? 0) + 5 * 60 * 1000,
+                    },
+                  }
+                })
+              }}
+            >
+              <Plus className="size-3 text-blue-500" /> +5m
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-ctl flex-1 rounded-chrome-sm text-[11px]"
+              onClick={() => {
+                patch((n) => {
+                  if (!n.expiration) return {}
+                  return {
+                    expiration: {
+                      ...n.expiration,
+                      expiresAt: Math.max(Date.now(), n.expiration.expiresAt) + 60 * 60 * 1000,
+                      durationMs: (n.expiration.durationMs ?? 0) + 60 * 60 * 1000,
+                    },
+                  }
+                })
+              }}
+            >
+              <Plus className="size-3 text-indigo-500" /> +1h
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-ctl flex-1 rounded-chrome-sm text-[11px] text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                for (const node of selected) {
+                  void expireNodeNow(node.id)
+                }
+              }}
+            >
+              Expire Now
+            </Button>
+          </div>
+        </>
+      )}
     </PanelSection>
   )
 }

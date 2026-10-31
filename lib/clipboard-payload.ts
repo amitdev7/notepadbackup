@@ -228,6 +228,29 @@ export function validNode(v: unknown): SquigNode | null {
     }
   }
 
+  // Validate and sanitize optional Expiration metadata
+  if (out.expiration !== undefined) {
+    const exp = out.expiration as unknown
+    if (!exp || typeof exp !== "object") {
+      delete out.expiration
+    } else {
+      const candidate = exp as Record<string, unknown>
+      const expiresAt = typeof candidate.expiresAt === "number" && Number.isFinite(candidate.expiresAt) ? candidate.expiresAt : null
+      const createdAt = typeof candidate.createdAt === "number" && Number.isFinite(candidate.createdAt) ? candidate.createdAt : Date.now()
+      if (!expiresAt || expiresAt <= 0) {
+        delete out.expiration
+      } else {
+        out.expiration = {
+          expiresAt,
+          createdAt,
+          durationMs: typeof candidate.durationMs === "number" && Number.isFinite(candidate.durationMs) ? Math.max(1000, candidate.durationMs) : undefined,
+          showCountdown: candidate.showCountdown !== undefined ? Boolean(candidate.showCountdown) : true,
+          label: typeof candidate.label === "string" ? candidate.label.slice(0, 100) : undefined,
+        }
+      }
+    }
+  }
+
   return out
 }
 

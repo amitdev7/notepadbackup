@@ -37,6 +37,7 @@ import {
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
 import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./canvas-core/index"
+import { sweepExpiredElements } from "./canvas/expiration-manager"
 import {
   getViewState,
   loadViewStateAsync,
@@ -893,32 +894,67 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
 
   addNode: (node, opts = {}) => {
+    const tempSettings = useShellStore.getState().preferences?.temporarySettings
+    let expiration = node.expiration
+    if (expiration === undefined && tempSettings?.temporaryMode) {
+      const duration = tempSettings.defaultDurationMs || 5 * 60 * 1000
+      const now = Date.now()
+      expiration = {
+        expiresAt: now + duration,
+        createdAt: now,
+        durationMs: duration,
+        showCountdown: tempSettings.showCountdown ?? true,
+      }
+    }
+
     const id = node.id ?? nanoid(8)
     const seed = node.seed ?? Math.floor(Math.random() * 2 ** 31)
     if (opts.checkpoint !== false) get().checkpoint()
     set((s) => {
       const selection = opts.select !== false ? [id] : s.selection
       const past = stampSelAfter(s.past, selection)
-      return { nodes: { ...s.nodes, [id]: { ...node, id, seed } as SquigNode }, order: [...s.order, id], selection, past }
+      const finalized = { ...node, id, seed, ...(expiration ? { expiration } : {}) } as SquigNode
+      return { nodes: { ...s.nodes, [id]: finalized }, order: [...s.order, id], selection, past }
     })
     scheduleSave(get)
+    if (expiration) {
+      void sweepExpiredElements()
+    }
     return id
   },
 
   addNodes: (nodes, opts = {}) => {
+    const tempSettings = useShellStore.getState().preferences?.temporarySettings
+    const hasTemp = Boolean(tempSettings?.temporaryMode)
+    const duration = tempSettings?.defaultDurationMs || 5 * 60 * 1000
+    const now = Date.now()
+
     if (opts.checkpoint !== false) get().checkpoint()
     set((s) => {
       const map = { ...s.nodes }
       const ids: string[] = []
       for (const n of nodes) {
-        map[n.id] = n
-        ids.push(n.id)
+        let finalNode = n
+        if (hasTemp && n.expiration === undefined) {
+          finalNode = {
+            ...n,
+            expiration: {
+              expiresAt: now + duration,
+              createdAt: now,
+              durationMs: duration,
+              showCountdown: tempSettings?.showCountdown ?? true,
+            },
+          }
+        }
+        map[finalNode.id] = finalNode
+        ids.push(finalNode.id)
       }
       const selection = opts.select !== false ? ids : s.selection
       const past = stampSelAfter(s.past, selection)
       return { nodes: map, order: [...s.order, ...ids], selection, past }
     })
     scheduleSave(get)
+    void sweepExpiredElements()
   },
 
   updateNode: (id, patch, opts) => {
@@ -1612,6 +1648,7 @@ export const useSquig = create<SquigState>((set, get) => ({
 
               dirty = false
               flushSave(get)
+              void sweepExpiredElements()
             } else {
               set({ files: dropFile(id) })
             }
@@ -1665,6 +1702,7 @@ export const useSquig = create<SquigState>((set, get) => ({
     // straight off the drawer, so there is nothing to write back yet
     dirty = false
     flushSave(get)
+    void sweepExpiredElements()
   },
 
   deleteFile: (id) => {
@@ -1787,6 +1825,7 @@ export const useSquig = create<SquigState>((set, get) => ({
       // an import brings its author's ink and paper with it, when it has any
       if (payload.look) wearLook(set, knownLook(payload.look, lookOf(get())))
       scheduleSave(get)
+      void sweepExpiredElements()
       return true
     } catch {
       return false

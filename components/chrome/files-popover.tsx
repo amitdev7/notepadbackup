@@ -25,6 +25,7 @@ import {
   CaretDown,
   DownloadSimple,
   FolderOpen,
+  Archive,
   WifiHigh,
   Clock,
   MagnifyingGlass,
@@ -318,6 +319,19 @@ export function FilesPopover() {
             >
               <DownloadSimple size={13} />
               <span>.sketch</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                useShellStore.getState().setExpiredArchiveOpen(true)
+                setIsOpen(false)
+              }}
+              className="tactile-btn flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 px-2 py-1 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 cursor-pointer"
+              title="Open Expired Elements Archive"
+            >
+              <Archive size={13} />
+              <span>Archive</span>
             </button>
           </div>
 

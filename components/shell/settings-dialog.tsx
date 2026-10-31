@@ -38,6 +38,7 @@ import { THEMES, THEME_NAMES, PAPER_SHADES, type ThemeName, type FontMode, type 
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
+import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
 import {
   Sliders,
   Palette,
@@ -101,6 +102,7 @@ import {
   WarningCircle,
   Compass,
   Clock,
+  Timer,
   MapPin,
   Globe,
 } from "@phosphor-icons/react"
@@ -115,6 +117,7 @@ interface SectionItem {
 const SECTIONS: SectionItem[] = [
   { id: "general", label: "General", description: "Language, start page and application defaults", icon: Sliders },
   { id: "time", label: "Time & Location", description: "Real-time clock, automatic timezone, IP geolocation and calibration", icon: Clock },
+  { id: "temporary", label: "Temporary Elements", description: "Auto-expiration timers, canvas countdown badges, and expired archive", icon: Timer },
   { id: "appearance", label: "Appearance & Themes", description: "Website theme modes, UI accents, density, radius and translucency", icon: Palette },
   { id: "laser", label: "Laser Pointer", description: "Laser beam color, trail lifetime, width and glow effects", icon: Flashlight },
   { id: "drawing", label: "Drawing & Inking", description: "Default stroke color, line weights, smoothing and pressure", icon: PencilLine },
@@ -3167,6 +3170,9 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
     case "time":
       return <TimeSettingsTab />
+
+    case "temporary":
+      return <TemporarySettingsTab />
 
     default:
       return null

@@ -59,6 +59,65 @@ export interface HoverNote {
   [key: string]: unknown
 }
 
+/**
+ * Temporary canvas element expiration metadata.
+ * Controls automatic archival and countdown tracking based on absolute epoch timestamp.
+ */
+export interface ExpirationMetadata {
+  /** Absolute epoch timestamp (ms) when this element expires and moves to the archive */
+  expiresAt: number
+  /** Absolute epoch timestamp (ms) when this element's expiration was created */
+  createdAt: number
+  /** Original configured duration in milliseconds */
+  durationMs?: number
+  /** Whether to show a countdown badge on the canvas near the element (default true) */
+  showCountdown?: boolean
+  /** Optional custom human-readable label or description */
+  label?: string
+}
+
+/** Recoverable record preserved in the Expired Elements Archive in IndexedDB */
+export interface ExpiredElementRecord {
+  /** Unique archive record ID */
+  archiveId: string
+  /** Source canvas document ID where this element originally lived */
+  documentId: string
+  /** Original node ID */
+  originalNodeId: string
+  /** Complete snapshot of the expired node with all properties, coordinates, styles */
+  nodeSnapshot: SquigNode
+  /** Original z-order index in the document nodes order */
+  originalOrderIndex: number
+  /** Epoch timestamp (ms) when the element was moved into the archive */
+  archivedAt: number
+  /** Configured expiration timestamp (ms) */
+  expiresAt: number
+  /** Original creation timestamp (ms) */
+  createdAt: number
+  /** Human-readable node type identifier (e.g. "text", "draw", "shape", "image", etc.) */
+  elementType: string
+  /** Short summary or content snippet for archive list rendering */
+  previewLabel: string
+}
+
+export const EXPIRATION_PRESETS = [
+  { label: "10 seconds", value: 10 * 1000 },
+  { label: "30 seconds", value: 30 * 1000 },
+  { label: "1 minute", value: 60 * 1000 },
+  { label: "2 minutes", value: 2 * 60 * 1000 },
+  { label: "5 minutes", value: 5 * 60 * 1000 },
+  { label: "10 minutes", value: 10 * 60 * 1000 },
+  { label: "15 minutes", value: 15 * 60 * 1000 },
+  { label: "30 minutes", value: 30 * 60 * 1000 },
+  { label: "1 hour", value: 60 * 60 * 1000 },
+  { label: "2 hours", value: 2 * 3600 * 1000 },
+  { label: "6 hours", value: 6 * 3600 * 1000 },
+  { label: "12 hours", value: 12 * 3600 * 1000 },
+  { label: "24 hours", value: 24 * 3600 * 1000 },
+  { label: "3 days", value: 3 * 86400 * 1000 },
+  { label: "7 days", value: 7 * 86400 * 1000 },
+] as const
+
 export interface BaseNode {
   id: string
   x: number
@@ -84,6 +143,8 @@ export interface BaseNode {
   color?: string
   /** Smart Hover Note annotation metadata revealed on pointer hover */
   hoverNote?: HoverNote
+  /** Temporary canvas element expiration metadata */
+  expiration?: ExpirationMetadata
 }
 
 export interface ComponentNode extends BaseNode {

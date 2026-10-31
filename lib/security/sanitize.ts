@@ -364,7 +364,36 @@ export function validateSecureNode(v: unknown): SquigNode | null {
     }
   }
 
+  // Validate and sanitize optional Expiration metadata
+  if (sanitized.expiration !== undefined) {
+    const cleaned = sanitizeNodeExpiration(sanitized.expiration)
+    if (cleaned) {
+      sanitized.expiration = cleaned
+    } else {
+      delete sanitized.expiration
+    }
+  }
+
   return sanitized
+}
+
+/**
+ * Validates and sanitizes optional node Expiration metadata
+ */
+export function sanitizeNodeExpiration(exp: unknown): import("../types").ExpirationMetadata | undefined {
+  if (!exp || typeof exp !== "object") return undefined
+  const candidate = exp as Record<string, unknown>
+  const expiresAt = typeof candidate.expiresAt === "number" && Number.isFinite(candidate.expiresAt) ? candidate.expiresAt : null
+  const createdAt = typeof candidate.createdAt === "number" && Number.isFinite(candidate.createdAt) ? candidate.createdAt : Date.now()
+  if (!expiresAt || expiresAt <= 0) return undefined
+
+  return {
+    expiresAt,
+    createdAt,
+    durationMs: typeof candidate.durationMs === "number" && Number.isFinite(candidate.durationMs) ? Math.max(1000, candidate.durationMs) : undefined,
+    showCountdown: candidate.showCountdown !== undefined ? Boolean(candidate.showCountdown) : true,
+    label: typeof candidate.label === "string" ? candidate.label.slice(0, 100) : undefined,
+  }
 }
 
 /**

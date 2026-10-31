@@ -31,6 +31,7 @@ import {
   Gear,
   CaretDown,
   FolderOpen,
+  Archive,
   ShareNetwork,
   WifiHigh,
   ClockCounterClockwise,
@@ -423,6 +424,9 @@ export function BottomDock() {
                   <ClockCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Version History
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem onClick={() => useShellStore.getState().setExpiredArchiveOpen(true)}>
+                <Archive size={14} className="mr-2" aria-hidden="true" /> Expired Elements Archive…
+              </DropdownMenuItem>
               {dockControls.menuUndo && (
                 <DropdownMenuItem onClick={() => undo()}>
                   <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Undo

@@ -21,6 +21,7 @@ import { ConflictDialog } from "@/components/chrome/conflict-dialog"
 import { MigrationDialog } from "@/components/chrome/migration-dialog"
 import { VersionHistoryPanel } from "@/components/chrome/version-history-panel"
 import { TrashDialog } from "@/components/chrome/trash-dialog"
+import { ExpiredElementsDialog } from "@/components/chrome/expired-elements-dialog"
 import { PdfToCanvasDialog } from "@/components/canvas/pdf-to-canvas-dialog"
 import { CanvasSearch } from "@/components/canvas/canvas-search"
 import { CanvasStats } from "@/components/canvas/canvas-stats"
@@ -95,6 +96,7 @@ export default function Home() {
       <MigrationDialog />
       <VersionHistoryPanel isOpen={historyOpen} onClose={() => setHistoryOpen(false)} cloudDocId={cloudDocId || undefined} />
       <TrashDialog />
+      <ExpiredElementsDialog />
       <PdfToCanvasDialog />
       <CanvasSearch />
       <CanvasStats />

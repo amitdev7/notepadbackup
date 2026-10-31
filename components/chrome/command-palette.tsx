@@ -15,6 +15,7 @@ import { copyAsPngWithNotice } from "@/lib/export-image"
 import { relativeTime } from "@/lib/files"
 import { kbd } from "@/lib/shortcuts"
 import { useShellStore } from "@/lib/shell-store"
+import { makeNodesTemporary, makeNodesPermanent, restoreExpiredElement, listExpiredRecords } from "@/lib/canvas/expiration-manager"
 import {
   MagnifyingGlassIcon,
   CursorIcon,
@@ -61,6 +62,9 @@ import {
   BookmarkSimple as BookmarkSimpleIcon,
   Eye as EyeIcon,
   Compass as CompassIcon,
+  Timer as TimerIcon,
+  Archive as ArchiveIcon,
+  Infinity as InfinityIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
 
@@ -153,12 +157,14 @@ function Palette() {
       { id: "insert-chart", label: "Insert Chart (Bar, Line, Radar)…", section: "Tools", keywords: "chart bar line radar graph data spreadsheet table", icon: SparkleIcon, run: () => st().setChartDialogOpen(true) },
       { id: "insert-mermaid", label: "Insert Mermaid Diagram…", section: "Tools", keywords: "mermaid diagram flowchart sequence process map", icon: SparkleIcon, run: () => st().setMermaidDialogOpen(true) },
       { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
+      { id: "toggle-temporary-mode", label: "Toggle Temporary Mode", section: "Tools", keywords: "temporary expire timer ephemeral auto-delete vanish countdown", icon: TimerIcon, run: () => useShellStore.getState().toggleTemporaryMode() },
 
       { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
 
       { id: "set-all", label: "Open Settings", hint: kbd("mod+,"), section: "Settings", keywords: "preferences options config", icon: GearIcon, run: () => useShellStore.getState().setSettingsOpen(true) },
       { id: "set-appearance", label: "Appearance & Theme Settings", section: "Settings", keywords: "theme dark light accent color ui density", icon: GearIcon, run: () => { useShellStore.getState().setSettingsSection("appearance"); useShellStore.getState().setSettingsOpen(true) } },
       { id: "set-page", label: "Page & Paper Settings", section: "Settings", keywords: "paper shade dot grid pen color ink font", icon: GearIcon, run: () => useShellStore.getState().setPagePopoverOpen(true) },
+      { id: "set-temporary", label: "Temporary Elements & Expiration Settings", section: "Settings", keywords: "temporary elements expire timer countdown archive preferences", icon: TimerIcon, run: () => { useShellStore.getState().setSettingsSection("temporary"); useShellStore.getState().setSettingsOpen(true) } },
 
       { id: "undo", label: "Undo", hint: kbd("mod+z"), section: "Edit", icon: ArrowUUpLeftIcon, run: () => st().undo() },
       { id: "redo", label: "Redo", hint: kbd("mod+shift+z"), section: "Edit", icon: ArrowUUpRightIcon, run: () => st().redo() },
@@ -177,6 +183,9 @@ function Palette() {
         run: () => st().detachSelected(),
       },
       { id: "selectall", label: "Select all", hint: kbd("mod+a"), section: "Edit", icon: StackIcon, run: () => st().setSelection([...st().order]) },
+      { id: "make-selection-temporary", label: "Make Selected Elements Temporary (5 min)", hint: kbd("alt+t"), section: "Edit", keywords: "temporary expire timer ephemeral 5m", icon: TimerIcon, disabled: !hasSel, run: () => makeNodesTemporary(st().selection, 5 * 60 * 1000) },
+      { id: "make-selection-permanent", label: "Make Selected Elements Permanent", section: "Edit", keywords: "permanent keep forever remove expiration", icon: InfinityIcon, disabled: !hasSel, run: () => makeNodesPermanent(st().selection) },
+      { id: "open-expired-archive", label: "Open Expired Elements Archive…", section: "Edit", keywords: "expired elements archive trash history recover restore deleted", icon: ArchiveIcon, run: () => useShellStore.getState().setExpiredArchiveOpen(true) },
 
       { id: "forward", label: "Bring forward", hint: kbd("mod+]"), section: "Arrange", icon: StackSimpleIcon, disabled: !hasSel, run: () => st().bringForward(st().selection) },
       { id: "backward", label: "Send backward", hint: kbd("mod+["), section: "Arrange", icon: StackSimpleIcon, disabled: !hasSel, run: () => st().sendBackward(st().selection) },

@@ -53,8 +53,18 @@ import {
   Eye,
   LockSimple as LockSimpleIcon,
   ChatCenteredText,
+  Timer as TimerIcon,
+  Archive as ArchiveIcon,
+  Infinity as InfinityIcon,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react"
+import { useShellStore } from "@/lib/shell-store"
+import {
+  makeNodesTemporary,
+  makeNodesPermanent,
+  extendNodeExpiration,
+  expireNodeNow,
+} from "@/lib/canvas/expiration-manager"
 import { downloadDocument } from "@/lib/storage/document-assets"
 import { exportExcalidrawDoc } from "@/lib/file-io"
 import type { DocumentNode } from "@/lib/types"
@@ -194,6 +204,37 @@ export function CanvasContextMenu() {
       },
       { label: "Export as Universal Sketch (.sketch)", icon: DownloadSimple, run: exportExcalidrawDoc },
       { separator: true },
+      ...(targets.some((id) => nodes[id]?.expiration)
+        ? [
+            {
+              label: "Extend Lifetime (+5m)",
+              icon: TimerIcon,
+              run: () => {
+                targets.forEach((id) => extendNodeExpiration(id, 5 * 60 * 1000))
+              },
+            } as Entry,
+            {
+              label: "Make Permanent",
+              icon: InfinityIcon,
+              run: () => makeNodesPermanent(targets),
+            } as Entry,
+            {
+              label: "Expire Now (Archive)",
+              icon: ArchiveIcon,
+              danger: true,
+              run: () => {
+                targets.forEach((id) => void expireNodeNow(id))
+              },
+            } as Entry,
+          ]
+        : [
+            {
+              label: "Make Temporary (5 min)",
+              icon: TimerIcon,
+              run: () => makeNodesTemporary(targets, 5 * 60 * 1000),
+            } as Entry,
+          ]),
+      { separator: true },
       { label: "Delete", hint: kbd("del"), icon: TrashIcon, danger: true, run: () => st().removeNodes(targets) },
     ]
   } else {
@@ -251,6 +292,19 @@ export function CanvasContextMenu() {
         label: contextRow ? "Hide context menu" : "Show context menu",
         icon: SlidersHorizontalIcon,
         run: () => st().setContextRow(!contextRow),
+      },
+      { separator: true },
+      {
+        label: useShellStore.getState().preferences?.temporarySettings?.temporaryMode
+          ? "Disable Temporary Mode"
+          : "Enable Temporary Mode",
+        icon: TimerIcon,
+        run: () => useShellStore.getState().toggleTemporaryMode(),
+      },
+      {
+        label: "Expired Elements Archive…",
+        icon: ArchiveIcon,
+        run: () => useShellStore.getState().setExpiredArchiveOpen(true),
       },
       { label: "Hide the interface", hint: kbd("mod+\\"), icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
       { label: "Keyboard shortcuts", hint: kbd("shift+/"), icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },

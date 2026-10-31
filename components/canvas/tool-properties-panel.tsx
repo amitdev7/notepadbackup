@@ -18,10 +18,11 @@
 // is active, or when elements are selected.
 // ---------------------------------------------------------------------------
 
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { fitTextBox } from "@/lib/canvas/text-reflow"
+import { formatDurationLabel } from "@/lib/canvas/expiration-manager"
 import { cn } from "@/lib/utils"
 import {
   SlidersHorizontal,
@@ -32,6 +33,10 @@ import {
   TextB,
   TextItalic,
   TextUnderline,
+  Timer,
+  Clock,
+  Archive,
+  Check,
 } from "@phosphor-icons/react"
 import type { StrokeWeight, TextNode } from "@/lib/types"
 
@@ -66,6 +71,18 @@ export function ToolPropertiesPanel() {
 
   const strokeColorInputRef = useRef<HTMLInputElement>(null)
   const bgColorInputRef = useRef<HTMLInputElement>(null)
+
+  const temporarySettings = useShellStore((s) => s.preferences.temporarySettings)
+  const toggleTemporaryMode = useShellStore((s) => s.toggleTemporaryMode)
+  const setTemporaryDuration = useShellStore((s) => s.setTemporaryDuration)
+  const updateTemporarySettings = useShellStore((s) => s.updateTemporarySettings)
+  const setExpiredArchiveOpen = useShellStore((s) => s.setExpiredArchiveOpen)
+
+  const [customDurationOpen, setCustomDurationOpen] = useState(false)
+  const [customDays, setCustomDays] = useState(0)
+  const [customHours, setCustomHours] = useState(0)
+  const [customMins, setCustomMins] = useState(5)
+  const [customSecs, setCustomSecs] = useState(0)
 
   // Determine what element types are selected or what tool is active
   const isSelectionActive = selection.length > 0
@@ -761,6 +778,182 @@ export function ToolPropertiesPanel() {
             <span>100</span>
           </div>
         </div>
+      </div>
+
+      {/* ── 10. Temporary Creation Mode ────────────────────────────────────────── */}
+      <div className="pt-2 border-t border-stone-100 dark:border-stone-800/80">
+        <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center gap-1.5">
+            <Timer
+              size={14}
+              weight={temporarySettings?.temporaryMode ? "bold" : "regular"}
+              className={temporarySettings?.temporaryMode ? "text-amber-500 animate-pulse" : "text-stone-400"}
+            />
+            <span className="text-[11px] font-semibold text-stone-700 dark:text-stone-300">
+              Temporary Mode
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={toggleTemporaryMode}
+            className={cn(
+              "relative inline-flex h-4 w-7 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
+              temporarySettings?.temporaryMode ? "bg-amber-500" : "bg-stone-300 dark:bg-stone-700"
+            )}
+            title="Toggle Temporary Mode for new elements"
+            aria-label="Toggle Temporary Mode"
+          >
+            <span
+              className={cn(
+                "pointer-events-none inline-block size-3 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out",
+                temporarySettings?.temporaryMode ? "translate-x-3" : "translate-x-0"
+              )}
+            />
+          </button>
+        </div>
+
+        {temporarySettings?.temporaryMode && (
+          <div className="mt-2 space-y-2 animate-fade-in">
+            <div className="p-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-800 dark:text-amber-300 flex items-center justify-between">
+              <span>Expires after creation:</span>
+              <span className="font-mono font-bold">
+                {formatDurationLabel(temporarySettings.defaultDurationMs || 300000)}
+              </span>
+            </div>
+
+            {/* Quick Duration Preset Pills */}
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { label: "10s", ms: 10 * 1000 },
+                { label: "1m", ms: 60 * 1000 },
+                { label: "5m", ms: 5 * 60 * 1000 },
+                { label: "30m", ms: 30 * 60 * 1000 },
+                { label: "1h", ms: 60 * 60 * 1000 },
+                { label: "24h", ms: 24 * 3600 * 1000 },
+                { label: "7d", ms: 7 * 86400 * 1000 },
+                { label: "Custom", ms: -1 },
+              ].map(({ label, ms }) => {
+                const isSelected = ms === -1 ? customDurationOpen : temporarySettings.defaultDurationMs === ms
+                return (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => {
+                      if (ms === -1) {
+                        setCustomDurationOpen(!customDurationOpen)
+                      } else {
+                        setTemporaryDuration(ms)
+                        setCustomDurationOpen(false)
+                      }
+                    }}
+                    className={cn(
+                      "py-1 px-1 rounded-md text-[10px] font-mono font-medium transition-all text-center cursor-pointer",
+                      isSelected
+                        ? "bg-amber-500 text-white shadow-2xs font-bold"
+                        : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
+                    )}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Custom Duration Sub-panel */}
+            {customDurationOpen && (
+              <div className="p-2 rounded-xl bg-stone-50 dark:bg-stone-900/60 border border-stone-200/80 dark:border-stone-800 text-[10px] space-y-1.5 animate-popover-enter">
+                <span className="font-semibold text-stone-700 dark:text-stone-300 block">Set Custom Lifetime:</span>
+                <div className="grid grid-cols-4 gap-1 text-center font-mono">
+                  <div>
+                    <label className="text-[9px] text-stone-400">Days</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={365}
+                      value={customDays}
+                      onChange={(e) => setCustomDays(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full text-center py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-stone-400">Hours</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={23}
+                      value={customHours}
+                      onChange={(e) => setCustomHours(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full text-center py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-stone-400">Mins</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={59}
+                      value={customMins}
+                      onChange={(e) => setCustomMins(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full text-center py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-stone-400">Secs</label>
+                    <input
+                      type="number"
+                      min={0}
+                      max={59}
+                      value={customSecs}
+                      onChange={(e) => setCustomSecs(Math.max(0, parseInt(e.target.value) || 0))}
+                      className="w-full text-center py-0.5 rounded border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    const totalMs =
+                      customDays * 86400000 +
+                      customHours * 3600000 +
+                      customMins * 60000 +
+                      customSecs * 1000
+                    if (totalMs > 0) {
+                      setTemporaryDuration(totalMs)
+                      setCustomDurationOpen(false)
+                    }
+                  }}
+                  className="w-full py-1 rounded bg-amber-500 text-white font-medium text-[10px] hover:bg-amber-600 transition-colors cursor-pointer"
+                >
+                  Apply Lifetime
+                </button>
+              </div>
+            )}
+
+            {/* Countdown Badge Toggle & Archive Button */}
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex items-center gap-1.5 cursor-pointer text-[10px] text-stone-600 dark:text-stone-400">
+                <input
+                  type="checkbox"
+                  checked={temporarySettings.showCountdown}
+                  onChange={(e) => updateTemporarySettings({ showCountdown: e.target.checked })}
+                  className="rounded border-stone-300 text-amber-600 focus:ring-amber-500"
+                />
+                <span>Show Countdown</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => setExpiredArchiveOpen(true)}
+                className="flex items-center gap-1 text-[10px] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 cursor-pointer"
+              >
+                <Archive size={12} />
+                <span>Archive</span>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

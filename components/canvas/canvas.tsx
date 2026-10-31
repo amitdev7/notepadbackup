@@ -50,6 +50,8 @@ import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
 import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
+import { TemporaryCountdownOverlay } from "./temporary-countdown-overlay"
+import { initExpirationEngine } from "@/lib/canvas/expiration-manager"
 import { cn } from "@/lib/utils"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
@@ -226,6 +228,10 @@ export function Canvas() {
 
   const perfSettings = useShellStore((s) => s.preferences.performanceSettings)
   const [canvasSize, setCanvasSize] = useState({ w: 1920, h: 1080 })
+
+  useEffect(() => {
+    return initExpirationEngine()
+  }, [])
 
   useEffect(() => {
     const updateSize = () => {
@@ -2133,6 +2139,9 @@ export function Canvas() {
         gestureKind={gestureKind}
         readOnly={isViewer}
       />
+
+      {/* Temporary Element Expiration Countdowns (screen space) */}
+      <TemporaryCountdownOverlay viewport={v} />
 
       {/* Smart Hover Notes: Universal floating explanatory notes (Clouds Theme) */}
       <SmartHoverNote

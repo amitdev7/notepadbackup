@@ -27,6 +27,7 @@ export type SettingsSectionId =
   | "wifi"
   | "privacy"
   | "accessibility"
+  | "temporary"
   | "advanced"
   | "about"
   | "future"
@@ -147,6 +148,26 @@ export const DEFAULT_TEXT_SETTINGS: TextSettings = {
   underline: false,
 }
 
+export interface TemporaryElementsPreferences {
+  temporaryMode: boolean
+  defaultDurationMs: number
+  showCountdown: boolean
+  disappearingAnimation: boolean
+  notificationsEnabled: boolean
+  expiringSoonSeconds: number
+  archiveRetention: "indefinite" | "7days" | "30days"
+}
+
+export const DEFAULT_TEMPORARY_PREFERENCES: TemporaryElementsPreferences = {
+  temporaryMode: false,
+  defaultDurationMs: 5 * 60 * 1000, // 5 minutes default
+  showCountdown: true,
+  disappearingAnimation: true,
+  notificationsEnabled: false,
+  expiringSoonSeconds: 60,
+  archiveRetention: "indefinite",
+}
+
 export interface DockControlsVisibility {
   // Drawing & Creation Tools
   toolSelect: boolean
@@ -252,6 +273,7 @@ export interface ShellPreferences {
   databaseSettings: DatabaseSettings
   wifiAutoSync: boolean
   clockSettings: ClockPreferences
+  temporarySettings: TemporaryElementsPreferences
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -283,6 +305,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   databaseSettings: DEFAULT_DATABASE_SETTINGS,
   wifiAutoSync: false,
   clockSettings: DEFAULT_CLOCK_PREFERENCES,
+  temporarySettings: DEFAULT_TEMPORARY_PREFERENCES,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -329,6 +352,10 @@ function loadInitialPreferences(): ShellPreferences {
           ...DEFAULT_CLOCK_PREFERENCES,
           ...(parsed.clockSettings || {}),
         },
+        temporarySettings: {
+          ...DEFAULT_TEMPORARY_PREFERENCES,
+          ...(parsed.temporarySettings || {}),
+        },
       }
     }
   } catch { }
@@ -359,6 +386,9 @@ interface ShellState {
   // Global search modal
   globalSearchOpen: boolean
 
+  // Expired elements archive modal
+  expiredArchiveOpen: boolean
+
   // App UI Preferences
   preferences: ShellPreferences
 
@@ -375,6 +405,11 @@ interface ShellState {
   setLibraryFilter: (f: LibraryFilterType) => void
   setLibraryCategory: (c: string) => void
   setGlobalSearchOpen: (open: boolean) => void
+  setExpiredArchiveOpen: (open: boolean) => void
+  toggleTemporaryMode: () => void
+  setTemporaryMode: (enabled: boolean) => void
+  setTemporaryDuration: (durationMs: number) => void
+  updateTemporarySettings: (updates: Partial<TemporaryElementsPreferences>) => void
   updatePreferences: (updates: Partial<ShellPreferences>) => void
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   toggleToolbar: () => void
@@ -499,6 +534,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
   libraryCategory: "All",
 
   globalSearchOpen: false,
+  expiredArchiveOpen: false,
 
   preferences: loadInitialPreferences(),
 
@@ -515,6 +551,45 @@ export const useShellStore = create<ShellState>((set, get) => ({
   setLibraryFilter: (libraryFilter) => set({ libraryFilter }),
   setLibraryCategory: (libraryCategory) => set({ libraryCategory }),
   setGlobalSearchOpen: (globalSearchOpen) => set({ globalSearchOpen }),
+  setExpiredArchiveOpen: (expiredArchiveOpen) => set({ expiredArchiveOpen }),
+
+  toggleTemporaryMode: () => {
+    set((state) => {
+      const current = state.preferences.temporarySettings?.temporaryMode ?? false
+      const nextVal = !current
+      const nextSettings = { ...state.preferences.temporarySettings, temporaryMode: nextVal }
+      const next = { ...state.preferences, temporarySettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setTemporaryMode: (enabled) => {
+    set((state) => {
+      const nextSettings = { ...state.preferences.temporarySettings, temporaryMode: enabled }
+      const next = { ...state.preferences, temporarySettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setTemporaryDuration: (durationMs) => {
+    set((state) => {
+      const nextSettings = { ...state.preferences.temporarySettings, defaultDurationMs: Math.max(1000, durationMs) }
+      const next = { ...state.preferences, temporarySettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updateTemporarySettings: (updates) => {
+    set((state) => {
+      const nextSettings = { ...state.preferences.temporarySettings, ...updates }
+      const next = { ...state.preferences, temporarySettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
 
   updatePreferences: (updates) => {
     set((state) => {
