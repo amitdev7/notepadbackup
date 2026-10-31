@@ -1545,7 +1545,7 @@ export function Canvas() {
         // Only update client cursor position if an active hover note target exists, avoiding 144Hz full-canvas re-renders
         if (noteTarget) {
           setPointerClientPos((prev) => {
-            if (prev && Math.abs(prev.x - clientX) < 2 && Math.abs(prev.y - clientY) < 2) return prev
+            if (prev && prev.x === clientX && prev.y === clientY) return prev
             return { x: clientX, y: clientY }
           })
         } else {

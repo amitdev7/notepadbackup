@@ -139,20 +139,32 @@ interface FloatingHoverCardProps {
 
 function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [layoutState, setLayoutState] = useState(() => ({
-    left: anchorPos.x + 18,
-    top: anchorPos.y + 18,
-    mouseOffset: { x: 0, y: 0 },
-  }))
+  const isInitializedRef = useRef(false)
+  const rafIdRef = useRef<number | null>(null)
+
+  // Track target coordinates and normalized mouse offset
+  const targetRef = useRef({
+    x: anchorPos.x + 18,
+    y: anchorPos.y + 18,
+    normX: 0,
+    normY: 0,
+  })
+
+  // Track current smoothly interpolated position
+  const currentRef = useRef({
+    x: anchorPos.x + 18,
+    y: anchorPos.y + 18,
+    normX: 0,
+    normY: 0,
+  })
 
   useEffect(() => {
     const el = cardRef.current
-    if (!el) return
-
-    const rect = el.getBoundingClientRect()
     const padding = 16
-    const vw = window.innerWidth
-    const vh = window.innerHeight
+    const vw = typeof window !== "undefined" ? window.innerWidth : 1920
+    const vh = typeof window !== "undefined" ? window.innerHeight : 1080
+
+    const rect = el ? el.getBoundingClientRect() : { width: 280, height: 140 }
 
     let left = anchorPos.x + 18
     let top = anchorPos.y + 18
@@ -173,12 +185,109 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
     const normX = Math.max(-1, Math.min(1, (anchorPos.x - centerX) / (rect.width / 2 || 1)))
     const normY = Math.max(-1, Math.min(1, (anchorPos.y - centerY) / (rect.height / 2 || 1)))
 
-    setLayoutState({
-      left,
-      top,
-      mouseOffset: { x: normX, y: normY },
-    })
+    targetRef.current = { x: left, y: top, normX, normY }
+
+    // Instant initial placement on mount to avoid sliding from (0,0)
+    if (!isInitializedRef.current) {
+      currentRef.current = { x: left, y: top, normX, normY }
+      if (el) {
+        el.style.transform = `translate3d(${left.toFixed(2)}px, ${top.toFixed(2)}px, 0)`
+        const tiltX = (-normY * 15).toFixed(2)
+        const tiltY = (normX * 15).toFixed(2)
+        const floatX = (normX * 8).toFixed(2)
+        const floatY = (normY * 6).toFixed(2)
+        const weatherX = (-normX * 12).toFixed(2)
+        const weatherY = (-normY * 10).toFixed(2)
+
+        el.style.setProperty("--hover-tilt-x", `${tiltX}deg`)
+        el.style.setProperty("--hover-tilt-y", `${tiltY}deg`)
+        el.style.setProperty("--hover-float-x", `${floatX}px`)
+        el.style.setProperty("--hover-float-y", `${floatY}px`)
+        el.style.setProperty("--hover-weather-x", `${weatherX}px`)
+        el.style.setProperty("--hover-weather-y", `${weatherY}px`)
+      }
+      isInitializedRef.current = true
+    }
+
+    // High-performance spring-lerp loop driven by requestAnimationFrame
+    const startRaf = () => {
+      if (rafIdRef.current !== null) return
+
+      const tick = () => {
+        const domEl = cardRef.current
+        if (!domEl) {
+          rafIdRef.current = null
+          return
+        }
+
+        const target = targetRef.current
+        const current = currentRef.current
+
+        // Critically damped spring lerp coefficients
+        // 0.18 provides immediate, zero-lag response with a silky smooth deceleration
+        const posFactor = 0.18
+        const tiltFactor = 0.22
+
+        const dx = target.x - current.x
+        const dy = target.y - current.y
+        const dNormX = target.normX - current.normX
+        const dNormY = target.normY - current.normY
+
+        current.x += dx * posFactor
+        current.y += dy * posFactor
+        current.normX += dNormX * tiltFactor
+        current.normY += dNormY * tiltFactor
+
+        // Hardware accelerated GPU compositing
+        domEl.style.transform = `translate3d(${current.x.toFixed(2)}px, ${current.y.toFixed(2)}px, 0)`
+
+        // CSS custom properties for 3D tilt and floating parallax
+        const tiltX = (-current.normY * 15).toFixed(2)
+        const tiltY = (current.normX * 15).toFixed(2)
+        const floatX = (current.normX * 8).toFixed(2)
+        const floatY = (current.normY * 6).toFixed(2)
+        const weatherX = (-current.normX * 12).toFixed(2)
+        const weatherY = (-current.normY * 10).toFixed(2)
+
+        domEl.style.setProperty("--hover-tilt-x", `${tiltX}deg`)
+        domEl.style.setProperty("--hover-tilt-y", `${tiltY}deg`)
+        domEl.style.setProperty("--hover-float-x", `${floatX}px`)
+        domEl.style.setProperty("--hover-float-y", `${floatY}px`)
+        domEl.style.setProperty("--hover-weather-x", `${weatherX}px`)
+        domEl.style.setProperty("--hover-weather-y", `${weatherY}px`)
+
+        const isSettled =
+          Math.abs(dx) < 0.05 &&
+          Math.abs(dy) < 0.05 &&
+          Math.abs(dNormX) < 0.005 &&
+          Math.abs(dNormY) < 0.005
+
+        if (isSettled) {
+          current.x = target.x
+          current.y = target.y
+          current.normX = target.normX
+          current.normY = target.normY
+          domEl.style.transform = `translate3d(${target.x.toFixed(2)}px, ${target.y.toFixed(2)}px, 0)`
+          rafIdRef.current = null
+        } else {
+          rafIdRef.current = requestAnimationFrame(tick)
+        }
+      }
+
+      rafIdRef.current = requestAnimationFrame(tick)
+    }
+
+    startRaf()
   }, [anchorPos.x, anchorPos.y])
+
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current !== null) {
+        cancelAnimationFrame(rafIdRef.current)
+        rafIdRef.current = null
+      }
+    }
+  }, [])
 
   return (
     <div
@@ -186,17 +295,15 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
       role="tooltip"
       aria-live="polite"
       className={cn(
-        "fixed z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
+        "fixed top-0 left-0 z-50 pointer-events-none select-none max-w-xs sm:max-w-sm w-max",
         "animate-in fade-in zoom-in-95 duration-150 ease-out"
       )}
       style={{
-        left: `${layoutState.left}px`,
-        top: `${layoutState.top}px`,
-        transition: "left 0.08s ease-out, top 0.08s ease-out",
-        willChange: "left, top",
+        transform: `translate3d(${currentRef.current.x.toFixed(2)}px, ${currentRef.current.y.toFixed(2)}px, 0)`,
+        willChange: "transform",
       }}
     >
-      <SmartHoverCardContent node={node} note={note} mouseOffset={layoutState.mouseOffset} />
+      <SmartHoverCardContent node={node} note={note} />
     </div>
   )
 }
@@ -308,21 +415,23 @@ export function VueWordCloudHoverText({
     return (
       <div
         className={cn(
-          "pointer-events-auto select-none bg-transparent border-0 shadow-none p-1.5 animate-in fade-in zoom-in-95 duration-150 transition-transform duration-100 ease-out",
+          "pointer-events-auto select-none bg-transparent border-0 shadow-none p-1.5 animate-in fade-in zoom-in-95 duration-150",
           className
         )}
         style={{
-          transform: `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${floatX}px, ${floatY}px, 0)`,
+          transform: `perspective(800px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
           transformStyle: "preserve-3d",
+          willChange: "transform",
         }}
       >
         <span
-          className="inline-block font-sans font-black text-2xl sm:text-3xl tracking-tight transition-all duration-200 cursor-default hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC]"
+          className="inline-block font-sans font-black text-2xl sm:text-3xl tracking-tight cursor-default hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC]"
           style={{
             color,
             textShadow:
               "0 2px 10px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9), 0 0 16px rgba(59,130,246,0.25)",
             transform: "translate3d(0, 0, 15px)",
+            transition: "transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease-out",
           }}
           title={text}
         >
@@ -336,12 +445,13 @@ export function VueWordCloudHoverText({
   return (
     <div
       className={cn(
-        "pointer-events-auto select-none bg-transparent border-0 shadow-none max-w-[340px] sm:max-w-[420px] p-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 animate-in fade-in zoom-in-95 duration-150 transition-transform duration-100 ease-out",
+        "pointer-events-auto select-none bg-transparent border-0 shadow-none max-w-[340px] sm:max-w-[420px] p-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 animate-in fade-in zoom-in-95 duration-150",
         className
       )}
       style={{
-        transform: `perspective(800px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${floatX}px, ${floatY}px, 0)`,
+        transform: `perspective(800px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
         transformStyle: "preserve-3d",
+        willChange: "transform",
       }}
     >
       {wordTokens.map((item, idx) => {
@@ -359,7 +469,7 @@ export function VueWordCloudHoverText({
           <span
             key={`${item.text}-${idx}`}
             className={cn(
-              "inline-block font-sans tracking-tight transition-all duration-200 cursor-default",
+              "inline-block font-sans tracking-tight cursor-default",
               "hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC] hover:z-10",
               fontSizeClass
             )}
@@ -367,7 +477,9 @@ export function VueWordCloudHoverText({
               color,
               textShadow:
                 "0 2px 8px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9)",
+              transition: "transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease-out",
             }}
+            title={item.text}
           >
             {item.text}
           </span>
@@ -406,7 +518,7 @@ export function SmartHoverCardContent({
   return (
     <div
       className={cn(
-        "rounded-3xl font-sans overflow-hidden transition-all",
+        "rounded-3xl font-sans overflow-hidden",
         isMac && [
           "border border-black/10 dark:border-white/15",
           "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
@@ -425,6 +537,10 @@ export function SmartHoverCardContent({
         className
       )}
       style={{
+        transform:
+          "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
         boxShadow: isIos
           ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
           : isMac
@@ -549,9 +665,8 @@ export function Frosted3DCloud({
       style={{
         minWidth: "210px",
         maxWidth: "340px",
-        transform: `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) translate3d(${floatX}px, ${floatY}px, 0)`,
+        transform: `perspective(1000px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
         transformStyle: "preserve-3d",
-        transition: "transform 0.12s cubic-bezier(0.16, 1, 0.3, 1)",
         willChange: "transform",
         backfaceVisibility: "hidden",
       }}
@@ -560,11 +675,12 @@ export function Frosted3DCloud({
       {/* Sun Accent (default, matching bottom-left of reference image) */}
       {isSun && (
         <div
-          className="absolute -top-3.5 right-[26%] size-11 rounded-full z-0 pointer-events-none transition-transform duration-200 ease-out"
+          className="absolute -top-3.5 right-[26%] size-11 rounded-full z-0 pointer-events-none"
           style={{
             background: "radial-gradient(circle at 35% 30%, #FFE066 0%, #F59E0B 52%, #EA580C 100%)",
             boxShadow: "0 0 24px 6px rgba(245, 158, 11, 0.6), inset -2px -2px 4px rgba(0,0,0,0.18)",
-            transform: `translate3d(${weatherParallaxX}px, ${weatherParallaxY}px, -15px)`,
+            transform: `translate3d(var(--hover-weather-x, ${weatherParallaxX}px), var(--hover-weather-y, ${weatherParallaxY}px), -15px)`,
+            willChange: "transform",
           }}
         />
       )}
@@ -572,9 +688,10 @@ export function Frosted3DCloud({
       {/* Rain Droplets (matching top-right of reference image) */}
       {isRain && (
         <div
-          className="absolute -bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-0 pointer-events-none transition-transform duration-200 ease-out"
+          className="absolute -bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-0 pointer-events-none"
           style={{
-            transform: `translate3d(${weatherParallaxX * 0.8}px, ${weatherParallaxY * 0.8}px, -10px)`,
+            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.8), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.8), -10px)`,
+            willChange: "transform",
           }}
         >
           {[0, 1, 2, 3, 4, 5].map((i) => (
@@ -594,9 +711,10 @@ export function Frosted3DCloud({
       {/* Lightning Bolt (matching top-left of reference image) */}
       {isLightning && (
         <div
-          className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none transition-transform duration-200 ease-out"
+          className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none"
           style={{
-            transform: `translate3d(${weatherParallaxX * 0.9}px, ${weatherParallaxY * 0.9}px, -10px) rotate(${normX * 8}deg)`,
+            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.9), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.9), -10px) rotate(${normX * 8}deg)`,
+            willChange: "transform",
           }}
         >
           <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
@@ -612,9 +730,10 @@ export function Frosted3DCloud({
       {/* Wind / Breeze Snowflake (matching bottom-right of reference image) */}
       {isWind && (
         <div
-          className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-0 pointer-events-none transition-transform duration-200 ease-out"
+          className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-0 pointer-events-none"
           style={{
-            transform: `translate3d(${weatherParallaxX * 0.8}px, ${weatherParallaxY * 0.8}px, -10px) rotate(${normX * 12}deg)`,
+            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.8), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.8), -10px) rotate(${normX * 12}deg)`,
+            willChange: "transform",
           }}
         >
           <svg width="28" height="20" viewBox="0 0 28 20" fill="none">
@@ -717,9 +836,10 @@ export function Frosted3DCloud({
 
       {/* 3. Text Inside the Cloud Body with 3D Depth */}
       <div
-        className="relative z-20 pt-10 pb-6 px-7 sm:px-8 text-center flex flex-col items-center justify-center transition-transform duration-150 ease-out"
+        className="relative z-20 pt-10 pb-6 px-7 sm:px-8 text-center flex flex-col items-center justify-center"
         style={{
-          transform: `translate3d(${floatX * 0.4}px, ${floatY * 0.4}px, 20px)`,
+          transform: `translate3d(calc(var(--hover-float-x, ${floatX}px) * 0.4), calc(var(--hover-float-y, ${floatY}px) * 0.4), 20px)`,
+          willChange: "transform",
         }}
       >
         {hasTitle && (
