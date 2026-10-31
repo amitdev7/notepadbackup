@@ -53,6 +53,7 @@ import {
 } from "@phosphor-icons/react"
 import { formatRemainingTime, expireNodeNow } from "@/lib/canvas/expiration-manager"
 import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
+import { LiquidGlassCardIcon } from "@/components/canvas/liquid-glass-icons"
 import { HOVER_THEMES } from "@/lib/hover-themes"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
@@ -1185,7 +1186,7 @@ function HoverNoteSection({
               <label className="text-micro text-muted-foreground font-medium">Card Style (5 Designs)</label>
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1.5">
               {HOVER_THEMES.map((t) => {
                 const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "yellow-slate"
                 const isActive = curTheme === t.id
@@ -1203,14 +1204,14 @@ function HoverNoteSection({
                       }))
                     }}
                     className={cn(
-                      "px-2.5 py-1.5 text-[11px] font-medium rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2",
+                      "px-2.5 py-2 text-[11px] font-medium rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2.5 group",
                       isActive
-                        ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
-                        : "bg-background/70 hover:bg-muted border-border/70 text-foreground hover:border-border"
+                        ? "bg-primary text-primary-foreground border-primary shadow-[0_4px_14px_rgba(0,122,255,0.25)] font-semibold"
+                        : "liquid-glass-icon bg-background/80 hover:bg-muted/80 border-border/70 text-foreground hover:border-border"
                     )}
                   >
-                    <span className="truncate flex items-center gap-2">
-                      <span className="text-sm">{t.emoji}</span>
+                    <span className="truncate flex items-center gap-2.5">
+                      <LiquidGlassCardIcon themeId={t.id} size="sm" active={isActive} />
                       <span className="truncate">{t.shortLabel}</span>
                     </span>
                     <span

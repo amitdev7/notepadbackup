@@ -19,6 +19,7 @@ import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { LiquidGlassCardIcon } from "./liquid-glass-icons"
 
 export interface SmartHoverNoteProps {
   /** Target node currently under the pointer */
@@ -357,15 +358,18 @@ export function YellowSlateCard({
       <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
         {/* Header row: Badge + Title */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          {hasTitle ? (
-            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
-              {note.title!.trim()}
-            </h4>
-          ) : (
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#FACC15]">
-              Note
-            </span>
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            <LiquidGlassCardIcon themeId="yellow-slate" size="sm" />
+            {hasTitle ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+                {note.title!.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#FACC15]">
+                Note
+              </span>
+            )}
+          </div>
 
           {nodeTypeLabel && (
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/40 shrink-0">
@@ -418,15 +422,18 @@ export function IceCeramicCard({
       <div className="w-full h-full rounded-[28px] bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#EFF6FF] text-slate-800 p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
         {/* Header row: Badge + Title */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          {hasTitle ? (
-            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
-              {note.title!.trim()}
-            </h4>
-          ) : (
-            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600">
-              Note
-            </span>
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            <LiquidGlassCardIcon themeId="ice-ceramic" size="sm" />
+            {hasTitle ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
+                {note.title!.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600">
+                Note
+              </span>
+            )}
+          </div>
 
           {nodeTypeLabel && (
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 shrink-0">
@@ -479,15 +486,18 @@ export function RoyalSlateCard({
       <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
         {/* Header row: Badge + Title */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          {hasTitle ? (
-            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
-              {note.title!.trim()}
-            </h4>
-          ) : (
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
-              Note
-            </span>
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            <LiquidGlassCardIcon themeId="royal-slate" size="sm" />
+            {hasTitle ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+                {note.title!.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
+                Note
+              </span>
+            )}
+          </div>
 
           {nodeTypeLabel && (
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/40 shrink-0">
@@ -540,15 +550,18 @@ export function CyanSlateCard({
       <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
         {/* Header row: Badge + Title */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          {hasTitle ? (
-            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
-              {note.title!.trim()}
-            </h4>
-          ) : (
-            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
-              Note
-            </span>
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            <LiquidGlassCardIcon themeId="cyan-slate" size="sm" />
+            {hasTitle ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+                {note.title!.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+                Note
+              </span>
+            )}
+          </div>
 
           {nodeTypeLabel && (
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shrink-0">
@@ -611,15 +624,18 @@ export function AcrylicGlassCard({
       <div className="relative z-0 w-full h-full rounded-[22px] bg-white text-slate-800 p-4 sm:p-5 flex flex-col justify-center min-h-[110px] sm:min-h-[130px] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
         {/* Header row: Badge + Title */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          {hasTitle ? (
-            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
-              {note.title!.trim()}
-            </h4>
-          ) : (
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
-              Note
-            </span>
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            <LiquidGlassCardIcon themeId="acrylic-glass" size="sm" />
+            {hasTitle ? (
+              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
+                {note.title!.trim()}
+              </h4>
+            ) : (
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+                Note
+              </span>
+            )}
+          </div>
 
           {nodeTypeLabel && (
             <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 shrink-0">
