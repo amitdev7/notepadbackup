@@ -53,6 +53,7 @@ import {
 } from "@phosphor-icons/react"
 import { formatRemainingTime, expireNodeNow } from "@/lib/canvas/expiration-manager"
 import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
+import { HOVER_THEMES, HOVER_THEME_CATEGORIES, CLOUD_WEATHER_STYLES } from "@/lib/hover-themes"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
 import { bgOf, paletteOf, PAPER_SHADES, type FontMode, type PaperShade } from "@/lib/theme"
@@ -1065,6 +1066,8 @@ function HoverNoteSection({
   selected: SquigNode[]
   patch: (fn: (n: SquigNode) => Partial<SquigNode> | null) => void
 }) {
+  const [hoverThemeCategory, setHoverThemeCategory] = useState<string>("all")
+
   if (selected.length === 0) return null
 
   // Single selection
@@ -1179,20 +1182,46 @@ function HoverNoteSection({
           </div>
 
           {/* Aesthetic Theme */}
-          <div className="flex flex-col gap-1">
-            <label className="text-micro text-muted-foreground font-medium">Theme</label>
-            <div className="grid grid-cols-2 gap-1">
-              {[
-                { id: "wordcloud", label: "Word Cloud (Text) ☁️" },
-                { id: "frosted", label: "3D Frosted Cloud ⛅" },
-                { id: "macos", label: "macOS Card 🍏" },
-                { id: "ios", label: "iOS Glass 📱" },
-              ].map((t) => {
-                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "wordcloud"
+          <div className="flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-micro text-muted-foreground font-medium">Theme ({HOVER_THEMES.length} Styles)</label>
+              <div className="flex items-center gap-0.5 bg-muted/60 p-0.5 rounded-md border border-border/50 text-[10px]">
+                <button
+                  type="button"
+                  onClick={() => setHoverThemeCategory("all")}
+                  className={cn(
+                    "px-1.5 py-0.5 rounded transition-colors font-medium cursor-pointer",
+                    hoverThemeCategory === "all" ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  All
+                </button>
+                {HOVER_THEME_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setHoverThemeCategory(cat.id)}
+                    title={cat.label}
+                    className={cn(
+                      "px-1.5 py-0.5 rounded transition-colors font-medium flex items-center gap-0.5 cursor-pointer",
+                      hoverThemeCategory === cat.id ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <span>{cat.icon}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto pr-0.5 scrollbar-thin">
+              {HOVER_THEMES.filter((t) => hoverThemeCategory === "all" || t.category === hoverThemeCategory).map((t) => {
+                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "clouds"
+                const isActive = curTheme === t.id || (t.id === "frosted" && curTheme === "clouds")
                 return (
                   <button
                     key={t.id}
                     type="button"
+                    title={t.description}
                     onClick={() => {
                       patch((n) => ({
                         hoverNote: {
@@ -1202,13 +1231,20 @@ function HoverNoteSection({
                       }))
                     }}
                     className={cn(
-                      "px-2 py-1 text-[11px] font-medium rounded border text-center transition-colors cursor-pointer",
-                      curTheme === t.id
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
+                      "px-2 py-1.5 text-[11px] font-medium rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-1.5",
+                      isActive
+                        ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
+                        : "bg-background/70 hover:bg-muted border-border/70 text-foreground hover:border-border"
                     )}
                   >
-                    {t.label}
+                    <span className="truncate flex items-center gap-1.5">
+                      <span>{t.emoji}</span>
+                      <span className="truncate">{t.shortLabel}</span>
+                    </span>
+                    <span
+                      className="size-2 rounded-full shrink-0 shadow-2xs"
+                      style={{ backgroundColor: t.previewColor }}
+                    />
                   </button>
                 )
               })}
@@ -1216,22 +1252,17 @@ function HoverNoteSection({
           </div>
 
           {/* Cloud Weather Accent if frosted 3D cloud theme */}
-          {(((note as Record<string, unknown> | undefined)?.theme === "frosted" || (note as Record<string, unknown> | undefined)?.theme === "clouds")) && (
+          {(((note as Record<string, unknown> | undefined)?.theme === "frosted" || (note as Record<string, unknown> | undefined)?.theme === "clouds" || !(note as Record<string, unknown> | undefined)?.theme)) && (
             <div className="flex flex-col gap-1">
               <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
               <div className="flex items-center gap-1 flex-wrap">
-                {[
-                  { id: "sun", label: "Sun ☀️" },
-                  { id: "rain", label: "Rain 🌧️" },
-                  { id: "lightning", label: "Thunder ⚡" },
-                  { id: "wind", label: "Breeze ❄️" },
-                  { id: "classic", label: "Pure ☁️" },
-                ].map((cs) => {
+                {CLOUD_WEATHER_STYLES.map((cs) => {
                   const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
                   return (
                     <button
                       key={cs.id}
                       type="button"
+                      title={cs.description}
                       onClick={() => {
                         patch((n) => ({
                           hoverNote: {

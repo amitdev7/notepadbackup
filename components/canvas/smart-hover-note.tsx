@@ -18,7 +18,22 @@
 import { useState, useEffect, useRef, useMemo } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
-import { Cloud, ChatCenteredText, Tag, ArrowRight, PencilSimple, Sparkle } from "@phosphor-icons/react"
+import {
+  Cloud,
+  ChatCenteredText,
+  Tag,
+  ArrowRight,
+  PencilSimple,
+  Sparkle,
+  Terminal,
+  Lightning,
+  Compass,
+  Cube,
+  ShieldCheck,
+  Scroll,
+  Sun,
+  Flame,
+} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface SmartHoverNoteProps {
@@ -500,40 +515,83 @@ export function SmartHoverCardContent({
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
   const theme = note.theme || "clouds"
 
-  // 3D Frosted Glass Cloud (Default & Primary matching user reference images)
+  // 1. 3D Frosted Glass Cloud (Default & Primary matching user reference images)
   if (!note.theme || theme === "clouds" || theme === "frosted") {
     return <Frosted3DCloud note={note} node={node} className={className} mouseOffset={mouseOffset} />
   }
 
-  // 1:1 pdsuwwz/vue-word-cloud text effect
+  // 2. 1:1 pdsuwwz/vue-word-cloud text effect
   if (theme === "wordcloud") {
     return <VueWordCloudHoverText note={note} node={node} className={className} mouseOffset={mouseOffset} />
   }
 
-  // Alternate visual themes: macOS, iOS, Minimalist
-  const isMac = theme === "macos"
-  const isIos = theme === "ios"
+  // 3. Complete suite of 12 distinct styled cards
+  const isHologram = theme === "hologram"
+  const isAurora = theme === "aurora"
+  const isGoldenGate = theme === "golden-gate"
+  const isCyberpunk = theme === "cyberpunk"
+  const isMatrix = theme === "matrix"
+  const isBlueprint = theme === "blueprint"
   const isMinimal = theme === "minimalist"
+  const isStealth = theme === "stealth"
+  const isSynthwave = theme === "synthwave"
+  const isParchment = theme === "parchment"
+  const isIos = theme === "ios"
+  const isMac =
+    theme === "macos" ||
+    (!isHologram &&
+      !isAurora &&
+      !isGoldenGate &&
+      !isCyberpunk &&
+      !isMatrix &&
+      !isBlueprint &&
+      !isMinimal &&
+      !isStealth &&
+      !isSynthwave &&
+      !isParchment &&
+      !isIos)
+
+  // Surface box shadows
+  const boxShadow = isHologram
+    ? "0 0 35px rgba(6, 182, 212, 0.35), inset 0 0 20px rgba(56, 189, 248, 0.2)"
+    : isAurora
+      ? "0 20px 50px rgba(16, 185, 129, 0.25), 0 0 35px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+      : isGoldenGate
+        ? "0 24px 60px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(254, 243, 199, 0.4)"
+        : isCyberpunk
+          ? "0 0 25px rgba(251, 191, 36, 0.25), 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(251, 191, 36, 0.08)"
+          : isMatrix
+            ? "0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 12px rgba(16, 185, 129, 0.15)"
+            : isBlueprint
+              ? "0 20px 45px rgba(2, 132, 199, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.1)"
+              : isSynthwave
+                ? "0 0 30px rgba(236, 72, 153, 0.4), 0 0 15px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
+                : isStealth
+                  ? "0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
+                  : isParchment
+                    ? "0 20px 45px rgba(120, 53, 15, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6)"
+                    : isIos
+                      ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
+                      : isMinimal
+                        ? "0 14px 30px -8px rgba(0, 0, 0, 0.15)"
+                        : "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
 
   return (
     <div
       className={cn(
-        "rounded-3xl font-sans overflow-hidden",
-        isMac && [
-          "border border-black/10 dark:border-white/15",
-          "bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100",
-          "shadow-2xl ring-1 ring-black/5 dark:ring-white/10",
-        ],
-        isIos && [
-          "border border-white/20",
-          "bg-stone-950/92 backdrop-blur-3xl text-white",
-          "shadow-2xl ring-1 ring-white/15",
-        ],
-        isMinimal && [
-          "border border-stone-300 dark:border-stone-700",
-          "bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100",
-          "shadow-xl",
-        ],
+        "overflow-hidden select-none",
+        isHologram && "rounded-3xl border border-cyan-400/50 bg-[#05131f]/90 backdrop-blur-3xl text-cyan-50",
+        isAurora && "rounded-3xl border border-emerald-400/40 bg-slate-950/92 backdrop-blur-3xl text-white",
+        isGoldenGate && "rounded-3xl border border-amber-400/50 bg-stone-950/94 backdrop-blur-3xl text-amber-50",
+        isCyberpunk && "rounded-2xl border-2 border-amber-400/80 bg-[#090b10]/95 backdrop-blur-2xl text-cyan-200 font-mono",
+        isMatrix && "rounded-xl border border-emerald-500/70 bg-black/95 backdrop-blur-xl text-emerald-400 font-mono",
+        isBlueprint && "rounded-2xl border-2 border-sky-400/70 bg-[#0a1c38]/95 backdrop-blur-2xl text-sky-100 font-sans",
+        isSynthwave && "rounded-3xl border border-fuchsia-500/70 bg-[#120520]/94 backdrop-blur-3xl text-white",
+        isStealth && "rounded-2xl border border-white/15 bg-[#0b0c0e]/95 backdrop-blur-3xl text-slate-200",
+        isParchment && "rounded-2xl border-2 border-[#d3c29f] dark:border-[#423b34] bg-[#fbf6ec] dark:bg-[#1a1715] text-[#2b221a] dark:text-[#f7f2e7] font-serif",
+        isIos && "rounded-3xl border border-white/20 bg-stone-950/92 backdrop-blur-3xl text-white ring-1 ring-white/15",
+        isMinimal && "rounded-2xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100",
+        isMac && "rounded-3xl border border-black/10 dark:border-white/15 bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100 ring-1 ring-black/5 dark:ring-white/10",
         className
       )}
       style={{
@@ -541,19 +599,42 @@ export function SmartHoverCardContent({
           "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
         transformStyle: "preserve-3d",
         willChange: "transform",
-        boxShadow: isIos
-          ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-          : isMac
-            ? "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
-            : "0 14px 30px -8px rgba(0, 0, 0, 0.15)",
+        boxShadow,
       }}
     >
       {/* Top Accent Gradient Bar */}
-      {isMac && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
+      {isHologram && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-sky-300 via-indigo-400 to-fuchsia-400 opacity-90 animate-pulse" />
+      )}
+      {isAurora && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-300 via-indigo-400 to-fuchsia-500 opacity-95" />
+      )}
+      {isGoldenGate && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-600 opacity-95" />
+      )}
+      {isCyberpunk && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-yellow-300 to-cyan-400 opacity-100" />
+      )}
+      {isMatrix && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-500 opacity-90" />
+      )}
+      {isBlueprint && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-cyan-300 to-sky-500 opacity-90" />
+      )}
+      {isSynthwave && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 opacity-100" />
+      )}
+      {isStealth && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-zinc-700 via-stone-500 to-zinc-700 opacity-70" />
+      )}
+      {isParchment && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 opacity-60" />
       )}
       {isIos && (
         <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 opacity-95" />
+      )}
+      {isMac && (
+        <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
       )}
 
       <div className="p-3.5 sm:p-4 space-y-2.5">
@@ -563,32 +644,83 @@ export function SmartHoverCardContent({
             <span
               className={cn(
                 "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
-                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isHologram && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
+                isAurora && "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
+                isGoldenGate && "bg-amber-500/20 text-amber-300 border-amber-400/40",
+                isCyberpunk && "bg-amber-400/20 text-amber-300 border-amber-400/50",
+                isMatrix && "bg-emerald-950/60 text-emerald-400 border-emerald-500/50",
+                isBlueprint && "bg-sky-500/20 text-sky-200 border-sky-400/40",
+                isSynthwave && "bg-pink-500/20 text-pink-300 border-pink-400/40",
+                isStealth && "bg-white/10 text-slate-300 border-white/15",
+                isParchment && "bg-amber-200/50 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border-amber-400/40",
                 isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
-                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700"
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700"
               )}
             >
-              {isMac ? (
+              {isHologram ? (
+                <Cube size={15} weight="fill" />
+              ) : isAurora ? (
                 <Sparkle size={15} weight="fill" />
+              ) : isGoldenGate ? (
+                <Sun size={15} weight="fill" />
+              ) : isCyberpunk ? (
+                <Lightning size={15} weight="fill" />
+              ) : isMatrix ? (
+                <Terminal size={15} weight="bold" />
+              ) : isBlueprint ? (
+                <Compass size={15} weight="bold" />
+              ) : isSynthwave ? (
+                <Flame size={15} weight="fill" />
+              ) : isStealth ? (
+                <ShieldCheck size={15} weight="bold" />
+              ) : isParchment ? (
+                <Scroll size={15} weight="fill" />
               ) : isIos ? (
                 <ChatCenteredText size={15} weight="fill" />
-              ) : (
+              ) : isMinimal ? (
                 <Tag size={15} weight="bold" />
+              ) : (
+                <Sparkle size={15} weight="fill" />
               )}
             </span>
 
             {hasTitle ? (
-              <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug">
+              <h4
+                className={cn(
+                  "text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug",
+                  isHologram && "text-cyan-100 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] font-mono",
+                  isAurora && "text-emerald-100 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]",
+                  isGoldenGate && "text-amber-100 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]",
+                  isCyberpunk && "text-amber-300 font-mono uppercase tracking-wider",
+                  isMatrix && "text-emerald-400 font-mono tracking-wider flex items-center",
+                  isBlueprint && "text-sky-200 font-mono uppercase tracking-wider",
+                  isSynthwave && "text-pink-200 drop-shadow-[0_0_8px_rgba(236,72,153,0.7)]",
+                  isStealth && "text-slate-100",
+                  isParchment && "text-[#2b221a] dark:text-[#f7f2e7] font-serif",
+                  isIos && "text-white"
+                )}
+              >
                 {note.title!.trim()}
+                {isMatrix && <span className="inline-block w-1.5 h-3 bg-emerald-400 animate-pulse ml-1" />}
               </h4>
             ) : (
               <span
                 className={cn(
                   "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
+                  isHologram && "text-cyan-300 font-mono",
+                  isAurora && "text-emerald-300",
+                  isGoldenGate && "text-amber-300",
+                  isCyberpunk && "text-amber-300 font-mono",
+                  isMatrix && "text-emerald-400 font-mono",
+                  isBlueprint && "text-sky-300 font-mono",
+                  isSynthwave && "text-pink-300",
+                  isStealth && "text-slate-400",
+                  isParchment && "text-amber-800 dark:text-amber-300 font-serif",
                   isIos && "text-cyan-200"
                 )}
               >
-                Note
+                {isMatrix ? ">_ NOTE" : isCyberpunk ? "[SYS//NOTE]" : isBlueprint ? "SPEC.01" : "Note"}
               </span>
             )}
           </div>
@@ -596,10 +728,19 @@ export function SmartHoverCardContent({
           {nodeTypeLabel && (
             <span
               className={cn(
-                "text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0",
-                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
+                "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0 font-mono",
+                isHologram && "bg-cyan-500/20 text-cyan-200 border-cyan-400/40",
+                isAurora && "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
+                isGoldenGate && "bg-amber-500/20 text-amber-200 border-amber-400/40",
+                isCyberpunk && "bg-amber-400/15 text-amber-300 border-amber-400/50",
+                isMatrix && "bg-emerald-950/60 text-emerald-400 border-emerald-500/50",
+                isBlueprint && "bg-sky-500/20 text-sky-200 border-sky-400/40",
+                isSynthwave && "bg-pink-500/20 text-pink-200 border-pink-400/40",
+                isStealth && "bg-white/10 text-slate-300 border-white/15",
+                isParchment && "bg-amber-200/40 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-400/40 font-serif",
                 isIos && "bg-white/10 text-cyan-200 border-white/15",
-                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700"
+                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700",
+                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700"
               )}
             >
               {nodeTypeLabel}
@@ -612,7 +753,18 @@ export function SmartHoverCardContent({
           <div
             className={cn(
               "text-xs leading-relaxed whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1",
-              isIos ? "text-stone-200" : "text-slate-700 dark:text-slate-200"
+              isHologram && "text-cyan-100/90 font-mono",
+              isAurora && "text-emerald-50/90",
+              isGoldenGate && "text-amber-100/85",
+              isCyberpunk && "text-cyan-100 font-mono",
+              isMatrix && "text-emerald-300 font-mono",
+              isBlueprint && "text-sky-100 font-mono",
+              isSynthwave && "text-purple-100",
+              isStealth && "text-slate-300",
+              isParchment && "text-[#3f3529] dark:text-[#e4ddcf] font-serif",
+              isIos && "text-stone-200",
+              isMinimal && "text-stone-700 dark:text-stone-300",
+              isMac && "text-slate-700 dark:text-slate-200"
             )}
           >
             {note.body.trim()}
