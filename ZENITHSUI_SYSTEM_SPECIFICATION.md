@@ -377,7 +377,7 @@ export interface DocumentViewState {
 }
 ```
 
-### 4.4 Smart Hover Notes & 14-Theme Aesthetic Engine
+### 4.4 Smart Hover Notes & 5-Theme Physical Card Aesthetic Engine
 Every canvas node can carry an optional explanatory hover note (`HoverNote`) that reveals rich contextual annotations upon hover:
 ```typescript
 export interface HoverNote {
@@ -391,28 +391,22 @@ export interface HoverNote {
 }
 ```
 
-#### Universal 14-Theme Aesthetic Registry ([lib/hover-themes.ts](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/lib/hover-themes.ts))
-1. **Spatial & Clouds**:
-   - `wordcloud`: Pure floating word cloud cluster with dynamic weights, ECharts palettes, and interactive word hover.
-   - `frosted`: Apple VisionOS 3D frosted glass cloud with celestial weather accents (Sun, Rain, Thunder, Breeze, Pure).
-   - `hologram`: Apple Vision Pro spatial computing glass with chromatic dispersion ring and 3D depth.
-2. **Apple & Modern Glass**:
-   - `macos`: Cupertino desktop frosted glass with specular rim light and sparkle accents.
-   - `ios`: Deep onyx dark glass with multi-colored electric neon border gradient.
-   - `aurora`: Cosmic space glass with shimmering emerald & amethyst aurora refraction.
-   - `golden-gate`: 24k champagne gold & sunset bronze liquid glass luxury finish from Golden Gate OS.
-3. **High-Tech & Cyber**:
-   - `cyberpunk`: High-tech amber & cyan telemetry HUD with scanline micro-grid and monospace badges.
-   - `matrix`: Retro CRT phosphor green monospace terminal with pulse cursor and CRT glow.
-   - `blueprint`: Architectural drafting cyan grid with chalk-white precision coordinates and drafting compass.
-4. **Editorial & Specialized**:
-   - `minimalist`: Swiss editorial stark paper card with hairline precision borders and generous whitespace.
-   - `stealth`: Matte carbon black tactical finish with understated graphite rim luster.
-   - `synthwave`: 80s arcade neon magenta sunset horizon with retro glow and text shadows.
-   - `parchment`: Antique sepia papyrus parchment with classic literary serif typography and archive stamp.
+#### Physical Card Design Registry ([lib/hover-themes.ts](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/lib/hover-themes.ts))
+Replaced all legacy virtual cloud and generic dashboard themes with 5 pixel-perfect physical chassis designs derived from hardware and ceramic reference mockups:
+
+1. **Yellow Slate (`yellow-slate`)** *(Reference Image 1)*:
+   - Deep matte obsidian black screen (`#18191E`, `text-slate-100`) surrounded by an ultra-bold sunny yellow rounded bezel (`#FACC15`) with a 32px corner radius and physical inset depth.
+2. **Ice Ceramic Glass (`ice-ceramic`)** *(Reference Image 2)*:
+   - Silky frosted milky white ceramic tablet encased within a translucent icy cyan-blue glass perimeter (`#7DD3FC`), soft ambient diffusion, and subtle ice refraction.
+3. **Royal Cobalt Slate (`royal-slate`)** *(Reference Image 3)*:
+   - Deep matte obsidian black screen framed by an electric royal cobalt blue outer bezel (`#2563EB`) with tactile drop shadows and high-contrast sapphire highlights.
+4. **Neon Cyan Slate (`cyan-slate`)** *(Reference Image 4)*:
+   - Deep matte obsidian screen enclosed by an energetic bright electric cyan bezel (`#00B4D8`) with crisp edge contours and modern technical ergonomics.
+5. **Acrylic Glass Specular (`acrylic-glass`)** *(Reference Image 5)*:
+   - Transparent acrylic glass chassis bordered by a warm yellow wire rim (`#EAB308`), featuring a 135° diagonal specular reflection sheen across the top-left pane over a floating nested white ceramic card.
 
 #### GPU Spring-Lerp Physics Engine
-Driven by a `requestAnimationFrame` critically damped spring-lerp loop ($\text{factor}=0.18$, $\text{tiltFactor}=0.22$) writing directly to `transform: translate3d(...)` and DOM CSS custom properties (`--hover-tilt-x`, `--hover-tilt-y`, `--hover-float-x`, `--hover-weather-x`), guaranteeing 144Hz ProMotion motion with zero React virtual-DOM re-renders.
+Driven by a `requestAnimationFrame` critically damped spring-lerp loop ($\text{factor}=0.18$, $\text{tiltFactor}=0.22$) writing directly to `transform: translate3d(...)` and DOM CSS custom properties (`--hover-tilt-x`, `--hover-tilt-y`, `--hover-float-x`), guaranteeing 144Hz ProMotion fluid motion with zero React virtual-DOM re-renders.
 
 ---
 

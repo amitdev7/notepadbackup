@@ -15,25 +15,9 @@
 // 6. Zero canvas clutter: 100% hidden when not hovering over the object's area.
 // ---------------------------------------------------------------------------
 
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import type { HoverNote, SquigNode } from "@/lib/types"
-import {
-  Cloud,
-  ChatCenteredText,
-  Tag,
-  ArrowRight,
-  PencilSimple,
-  Sparkle,
-  Terminal,
-  Lightning,
-  Compass,
-  Cube,
-  ShieldCheck,
-  Scroll,
-  Sun,
-  Flame,
-} from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
 export interface SmartHoverNoteProps {
@@ -324,7 +308,13 @@ function FloatingHoverCard({ node, note, anchorPos }: FloatingHoverCardProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Shared Smart Hover Card Presentation (Clouds Theme Apple macOS / iOS)
+// 1:1 Physical Hover Note Card Presentations (Matching User Reference Images)
+//
+// 1. yellow-slate  : Cyber Yellow Bezel + Matte Obsidian Slate (Image 1)
+// 2. ice-ceramic   : Translucent Ice Sky Glass Rim + Frosted Ceramic White (Image 2)
+// 3. royal-slate   : Royal Cobalt Blue Bezel + Matte Obsidian Slate (Image 3)
+// 4. cyan-slate    : Electric Neon Cyan Bezel + Matte Obsidian Slate (Image 4)
+// 5. acrylic-glass : Specular Transparent Acrylic Glass Tile + Floating White Card (Image 5)
 // ---------------------------------------------------------------------------
 
 export interface SmartHoverCardContentProps {
@@ -334,264 +324,26 @@ export interface SmartHoverCardContentProps {
   mouseOffset?: { x: number; y: number }
 }
 
-// ---------------------------------------------------------------------------
-// 1:1 Vue Word Cloud Hover Note Presentation (pdsuwwz/vue-word-cloud)
-// Renders ONLY text — zero background boxes, zero borders, zero cards, zero weather SVGs.
-// Uses ECharts-style color generation, dynamic typography weights, and interactive
-// word emphasis hover matching pdsuwwz/vue-word-cloud.
-// ---------------------------------------------------------------------------
-
-const VUE_WORD_CLOUD_PALETTE = [
-  "#2563EB", // Blue
-  "#7C3AED", // Violet
-  "#DB2777", // Pink
-  "#059669", // Emerald
-  "#D97706", // Amber
-  "#0891B2", // Cyan
-  "#4F46E5", // Indigo
-  "#DC2626", // Red
-  "#0284C7", // Sky
-  "#9333EA", // Purple
-  "#10B981", // Teal
-  "#E11D48", // Rose
-]
-
-/** Color generator matching pdsuwwz/vue-word-cloud */
-function getWordCloudColor(word: string, index: number): string {
-  let hash = index * 17
-  for (let i = 0; i < word.length; i++) {
-    hash = (hash << 5) - hash + word.charCodeAt(i)
-    hash |= 0
-  }
-  const idx = Math.abs(hash) % VUE_WORD_CLOUD_PALETTE.length
-  return VUE_WORD_CLOUD_PALETTE[idx]
-}
-
-export function VueWordCloudHoverText({
+/** 1. Yellow Slate Card (1:1 Reference Image 1) */
+export function YellowSlateCard({
   note,
   node,
   className,
-  mouseOffset,
 }: {
   note: HoverNote
   node?: SquigNode | null
   className?: string
-  mouseOffset?: { x: number; y: number }
 }) {
-  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
-  const titleText = note.title?.trim() || ""
-  const bodyText = note.body ? note.body.trim() : ""
-
-  const normX = mouseOffset?.x ?? 0
-  const normY = mouseOffset?.y ?? 0
-  const tiltX = -normY * 12
-  const tiltY = normX * 12
-  const floatX = normX * 8
-  const floatY = normY * 6
-
-  // Parse words from title & body
-  const wordTokens = useMemo(() => {
-    const tokens: Array<{ text: string; weight: number }> = []
-
-    if (hasTitle) {
-      tokens.push({ text: titleText, weight: 100 })
-    }
-
-    if (bodyText) {
-      // Split by whitespace, newlines, commas, colons
-      const words = bodyText
-        .split(/[\s,\n]+/)
-        .map((w) => w.trim())
-        .filter(Boolean)
-
-      const freqMap: Record<string, number> = {}
-      words.forEach((w) => {
-        const lower = w.toLowerCase()
-        freqMap[lower] = (freqMap[lower] || 0) + 1
-      })
-
-      words.forEach((w, i) => {
-        // Prevent excessive duplicate tags if word repeated
-        if (tokens.some((t) => t.text.toLowerCase() === w.toLowerCase())) return
-        const count = freqMap[w.toLowerCase()] || 1
-        const weight = 30 + count * 15 + Math.max(0, 20 - i * 2)
-        tokens.push({ text: w, weight })
-      })
-    }
-
-    return tokens
-  }, [hasTitle, titleText, bodyText])
-
-  // If single word or short phrase (e.g. "amit")
-  if (wordTokens.length <= 1) {
-    const text = titleText || bodyText || "Note"
-    const color = getWordCloudColor(text, 0)
-
-    return (
-      <div
-        className={cn(
-          "pointer-events-auto select-none bg-transparent border-0 shadow-none p-1.5 animate-in fade-in zoom-in-95 duration-150",
-          className
-        )}
-        style={{
-          transform: `perspective(800px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
-          transformStyle: "preserve-3d",
-          willChange: "transform",
-        }}
-      >
-        <span
-          className="inline-block font-sans font-black text-2xl sm:text-3xl tracking-tight cursor-default hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC]"
-          style={{
-            color,
-            textShadow:
-              "0 2px 10px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9), 0 0 16px rgba(59,130,246,0.25)",
-            transform: "translate3d(0, 0, 15px)",
-            transition: "transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease-out",
-          }}
-          title={text}
-        >
-          {text}
-        </span>
-      </div>
-    )
-  }
-
-  // Multi-word Word Cloud Cluster (1:1 pdsuwwz/vue-word-cloud layout)
-  return (
-    <div
-      className={cn(
-        "pointer-events-auto select-none bg-transparent border-0 shadow-none max-w-[340px] sm:max-w-[420px] p-2 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1.5 animate-in fade-in zoom-in-95 duration-150",
-        className
-      )}
-      style={{
-        transform: `perspective(800px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
-        transformStyle: "preserve-3d",
-        willChange: "transform",
-      }}
-    >
-      {wordTokens.map((item, idx) => {
-        const color = getWordCloudColor(item.text, idx)
-        const isHeader = idx === 0 && hasTitle
-        const fontSizeClass = isHeader
-          ? "text-xl sm:text-2xl font-black"
-          : item.weight > 45
-            ? "text-base sm:text-lg font-extrabold"
-            : item.weight > 35
-              ? "text-sm sm:text-base font-bold"
-              : "text-xs sm:text-sm font-semibold"
-
-        return (
-          <span
-            key={`${item.text}-${idx}`}
-            className={cn(
-              "inline-block font-sans tracking-tight cursor-default",
-              "hover:scale-115 hover:text-[#552288] dark:hover:text-[#C084FC] hover:z-10",
-              fontSizeClass
-            )}
-            style={{
-              color,
-              textShadow:
-                "0 2px 8px rgba(0,0,0,0.22), 0 0 1px rgba(255,255,255,0.9)",
-              transition: "transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease-out",
-            }}
-            title={item.text}
-          >
-            {item.text}
-          </span>
-        )
-      })}
-    </div>
-  )
-}
-
-export function SmartHoverCardContent({
-  node,
-  note,
-  className,
-  mouseOffset,
-}: SmartHoverCardContentProps) {
   const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
   const hasBody = Boolean(note.body && note.body.trim().length > 0)
-  const theme = note.theme || "clouds"
-
-  // 1. 3D Frosted Glass Cloud (Default & Primary matching user reference images)
-  if (!note.theme || theme === "clouds" || theme === "frosted") {
-    return <Frosted3DCloud note={note} node={node} className={className} mouseOffset={mouseOffset} />
-  }
-
-  // 2. 1:1 pdsuwwz/vue-word-cloud text effect
-  if (theme === "wordcloud") {
-    return <VueWordCloudHoverText note={note} node={node} className={className} mouseOffset={mouseOffset} />
-  }
-
-  // 3. Complete suite of 12 distinct styled cards
-  const isHologram = theme === "hologram"
-  const isAurora = theme === "aurora"
-  const isGoldenGate = theme === "golden-gate"
-  const isCyberpunk = theme === "cyberpunk"
-  const isMatrix = theme === "matrix"
-  const isBlueprint = theme === "blueprint"
-  const isMinimal = theme === "minimalist"
-  const isStealth = theme === "stealth"
-  const isSynthwave = theme === "synthwave"
-  const isParchment = theme === "parchment"
-  const isIos = theme === "ios"
-  const isMac =
-    theme === "macos" ||
-    (!isHologram &&
-      !isAurora &&
-      !isGoldenGate &&
-      !isCyberpunk &&
-      !isMatrix &&
-      !isBlueprint &&
-      !isMinimal &&
-      !isStealth &&
-      !isSynthwave &&
-      !isParchment &&
-      !isIos)
-
-  // Surface box shadows
-  const boxShadow = isHologram
-    ? "0 0 35px rgba(6, 182, 212, 0.35), inset 0 0 20px rgba(56, 189, 248, 0.2)"
-    : isAurora
-      ? "0 20px 50px rgba(16, 185, 129, 0.25), 0 0 35px rgba(139, 92, 246, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-      : isGoldenGate
-        ? "0 24px 60px rgba(217, 119, 6, 0.3), inset 0 1px 0 rgba(254, 243, 199, 0.4)"
-        : isCyberpunk
-          ? "0 0 25px rgba(251, 191, 36, 0.25), 0 0 15px rgba(6, 182, 212, 0.3), inset 0 0 10px rgba(251, 191, 36, 0.08)"
-          : isMatrix
-            ? "0 0 25px rgba(16, 185, 129, 0.4), inset 0 0 12px rgba(16, 185, 129, 0.15)"
-            : isBlueprint
-              ? "0 20px 45px rgba(2, 132, 199, 0.3), inset 0 0 15px rgba(56, 189, 248, 0.1)"
-              : isSynthwave
-                ? "0 0 30px rgba(236, 72, 153, 0.4), 0 0 15px rgba(168, 85, 247, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)"
-                : isStealth
-                  ? "0 25px 60px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.1)"
-                  : isParchment
-                    ? "0 20px 45px rgba(120, 53, 15, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6)"
-                    : isIos
-                      ? "0 24px 60px -12px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.25)"
-                      : isMinimal
-                        ? "0 14px 30px -8px rgba(0, 0, 0, 0.15)"
-                        : "0 20px 45px -10px rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9)"
 
   return (
     <div
       className={cn(
-        "overflow-hidden select-none",
-        isHologram && "rounded-3xl border border-cyan-400/50 bg-[#05131f]/90 backdrop-blur-3xl text-cyan-50",
-        isAurora && "rounded-3xl border border-emerald-400/40 bg-slate-950/92 backdrop-blur-3xl text-white",
-        isGoldenGate && "rounded-3xl border border-amber-400/50 bg-stone-950/94 backdrop-blur-3xl text-amber-50",
-        isCyberpunk && "rounded-2xl border-2 border-amber-400/80 bg-[#090b10]/95 backdrop-blur-2xl text-cyan-200 font-mono",
-        isMatrix && "rounded-xl border border-emerald-500/70 bg-black/95 backdrop-blur-xl text-emerald-400 font-mono",
-        isBlueprint && "rounded-2xl border-2 border-sky-400/70 bg-[#0a1c38]/95 backdrop-blur-2xl text-sky-100 font-sans",
-        isSynthwave && "rounded-3xl border border-fuchsia-500/70 bg-[#120520]/94 backdrop-blur-3xl text-white",
-        isStealth && "rounded-2xl border border-white/15 bg-[#0b0c0e]/95 backdrop-blur-3xl text-slate-200",
-        isParchment && "rounded-2xl border-2 border-[#d3c29f] dark:border-[#423b34] bg-[#fbf6ec] dark:bg-[#1a1715] text-[#2b221a] dark:text-[#f7f2e7] font-serif",
-        isIos && "rounded-3xl border border-white/20 bg-stone-950/92 backdrop-blur-3xl text-white ring-1 ring-white/15",
-        isMinimal && "rounded-2xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100",
-        isMac && "rounded-3xl border border-black/10 dark:border-white/15 bg-white/90 dark:bg-stone-900/90 backdrop-blur-3xl text-stone-900 dark:text-stone-100 ring-1 ring-black/5 dark:ring-white/10",
+        "relative select-none font-sans overflow-hidden",
+        "w-[260px] sm:w-[320px] rounded-[32px] p-[6px]",
+        "bg-[#FACC15] shadow-[0_24px_45px_rgba(0,0,0,0.22),0_8px_18px_rgba(0,0,0,0.12)]",
         className
       )}
       style={{
@@ -599,174 +351,32 @@ export function SmartHoverCardContent({
           "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
         transformStyle: "preserve-3d",
         willChange: "transform",
-        boxShadow,
       }}
     >
-      {/* Top Accent Gradient Bar */}
-      {isHologram && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-sky-300 via-indigo-400 to-fuchsia-400 opacity-90 animate-pulse" />
-      )}
-      {isAurora && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-400 via-teal-300 via-indigo-400 to-fuchsia-500 opacity-95" />
-      )}
-      {isGoldenGate && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-600 opacity-95" />
-      )}
-      {isCyberpunk && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-yellow-300 to-cyan-400 opacity-100" />
-      )}
-      {isMatrix && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-emerald-600 via-emerald-400 to-emerald-500 opacity-90" />
-      )}
-      {isBlueprint && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-sky-400 via-cyan-300 to-sky-500 opacity-90" />
-      )}
-      {isSynthwave && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 opacity-100" />
-      )}
-      {isStealth && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-zinc-700 via-stone-500 to-zinc-700 opacity-70" />
-      )}
-      {isParchment && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-amber-700 via-amber-600 to-amber-800 opacity-60" />
-      )}
-      {isIos && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-cyan-400 via-violet-500 to-pink-500 opacity-95" />
-      )}
-      {isMac && (
-        <div className="h-1.5 w-full bg-gradient-to-r from-stone-400 via-stone-300 to-stone-400 dark:from-stone-600 dark:via-stone-500 dark:to-stone-600 opacity-80" />
-      )}
-
-      <div className="p-3.5 sm:p-4 space-y-2.5">
-        {/* Header row: Icon + Title / Annotation + Node Type Badge */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <span
-              className={cn(
-                "p-1.5 rounded-xl shrink-0 border shadow-xs flex items-center justify-center",
-                isHologram && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
-                isAurora && "bg-emerald-500/20 text-emerald-300 border-emerald-400/30",
-                isGoldenGate && "bg-amber-500/20 text-amber-300 border-amber-400/40",
-                isCyberpunk && "bg-amber-400/20 text-amber-300 border-amber-400/50",
-                isMatrix && "bg-emerald-950/60 text-emerald-400 border-emerald-500/50",
-                isBlueprint && "bg-sky-500/20 text-sky-200 border-sky-400/40",
-                isSynthwave && "bg-pink-500/20 text-pink-300 border-pink-400/40",
-                isStealth && "bg-white/10 text-slate-300 border-white/15",
-                isParchment && "bg-amber-200/50 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border-amber-400/40",
-                isIos && "bg-cyan-500/20 text-cyan-300 border-cyan-400/30",
-                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700",
-                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700"
-              )}
-            >
-              {isHologram ? (
-                <Cube size={15} weight="fill" />
-              ) : isAurora ? (
-                <Sparkle size={15} weight="fill" />
-              ) : isGoldenGate ? (
-                <Sun size={15} weight="fill" />
-              ) : isCyberpunk ? (
-                <Lightning size={15} weight="fill" />
-              ) : isMatrix ? (
-                <Terminal size={15} weight="bold" />
-              ) : isBlueprint ? (
-                <Compass size={15} weight="bold" />
-              ) : isSynthwave ? (
-                <Flame size={15} weight="fill" />
-              ) : isStealth ? (
-                <ShieldCheck size={15} weight="bold" />
-              ) : isParchment ? (
-                <Scroll size={15} weight="fill" />
-              ) : isIos ? (
-                <ChatCenteredText size={15} weight="fill" />
-              ) : isMinimal ? (
-                <Tag size={15} weight="bold" />
-              ) : (
-                <Sparkle size={15} weight="fill" />
-              )}
+      {/* Inner Screen: Matte Obsidian Black */}
+      <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
+        {/* Header row: Badge + Title */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {hasTitle ? (
+            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+              {note.title!.trim()}
+            </h4>
+          ) : (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#FACC15]">
+              Note
             </span>
-
-            {hasTitle ? (
-              <h4
-                className={cn(
-                  "text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug",
-                  isHologram && "text-cyan-100 drop-shadow-[0_0_8px_rgba(6,182,212,0.6)] font-mono",
-                  isAurora && "text-emerald-100 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]",
-                  isGoldenGate && "text-amber-100 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]",
-                  isCyberpunk && "text-amber-300 font-mono uppercase tracking-wider",
-                  isMatrix && "text-emerald-400 font-mono tracking-wider flex items-center",
-                  isBlueprint && "text-sky-200 font-mono uppercase tracking-wider",
-                  isSynthwave && "text-pink-200 drop-shadow-[0_0_8px_rgba(236,72,153,0.7)]",
-                  isStealth && "text-slate-100",
-                  isParchment && "text-[#2b221a] dark:text-[#f7f2e7] font-serif",
-                  isIos && "text-white"
-                )}
-              >
-                {note.title!.trim()}
-                {isMatrix && <span className="inline-block w-1.5 h-3 bg-emerald-400 animate-pulse ml-1" />}
-              </h4>
-            ) : (
-              <span
-                className={cn(
-                  "text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1",
-                  isHologram && "text-cyan-300 font-mono",
-                  isAurora && "text-emerald-300",
-                  isGoldenGate && "text-amber-300",
-                  isCyberpunk && "text-amber-300 font-mono",
-                  isMatrix && "text-emerald-400 font-mono",
-                  isBlueprint && "text-sky-300 font-mono",
-                  isSynthwave && "text-pink-300",
-                  isStealth && "text-slate-400",
-                  isParchment && "text-amber-800 dark:text-amber-300 font-serif",
-                  isIos && "text-cyan-200"
-                )}
-              >
-                {isMatrix ? ">_ NOTE" : isCyberpunk ? "[SYS//NOTE]" : isBlueprint ? "SPEC.01" : "Note"}
-              </span>
-            )}
-          </div>
+          )}
 
           {nodeTypeLabel && (
-            <span
-              className={cn(
-                "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs shrink-0 font-mono",
-                isHologram && "bg-cyan-500/20 text-cyan-200 border-cyan-400/40",
-                isAurora && "bg-emerald-500/20 text-emerald-200 border-emerald-400/30",
-                isGoldenGate && "bg-amber-500/20 text-amber-200 border-amber-400/40",
-                isCyberpunk && "bg-amber-400/15 text-amber-300 border-amber-400/50",
-                isMatrix && "bg-emerald-950/60 text-emerald-400 border-emerald-500/50",
-                isBlueprint && "bg-sky-500/20 text-sky-200 border-sky-400/40",
-                isSynthwave && "bg-pink-500/20 text-pink-200 border-pink-400/40",
-                isStealth && "bg-white/10 text-slate-300 border-white/15",
-                isParchment && "bg-amber-200/40 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border-amber-400/40 font-serif",
-                isIos && "bg-white/10 text-cyan-200 border-white/15",
-                isMinimal && "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700",
-                isMac && "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700"
-              )}
-            >
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#FACC15]/20 text-[#FACC15] border border-[#FACC15]/40 shrink-0">
               {nodeTypeLabel}
             </span>
           )}
         </div>
 
-        {/* Note Body */}
+        {/* Body Text */}
         {hasBody && (
-          <div
-            className={cn(
-              "text-xs leading-relaxed whitespace-pre-wrap break-words max-h-52 overflow-y-auto overscroll-contain pr-1",
-              isHologram && "text-cyan-100/90 font-mono",
-              isAurora && "text-emerald-50/90",
-              isGoldenGate && "text-amber-100/85",
-              isCyberpunk && "text-cyan-100 font-mono",
-              isMatrix && "text-emerald-300 font-mono",
-              isBlueprint && "text-sky-100 font-mono",
-              isSynthwave && "text-purple-100",
-              isStealth && "text-slate-300",
-              isParchment && "text-[#3f3529] dark:text-[#e4ddcf] font-serif",
-              isIos && "text-stone-200",
-              isMinimal && "text-stone-700 dark:text-stone-300",
-              isMac && "text-slate-700 dark:text-slate-200"
-            )}
-          >
+          <div className="text-xs leading-relaxed text-stone-200/90 whitespace-pre-wrap break-words max-h-48 overflow-y-auto pr-1">
             {note.body.trim()}
           </div>
         )}
@@ -775,237 +385,286 @@ export function SmartHoverCardContent({
   )
 }
 
-// ---------------------------------------------------------------------------
-// 3D Frosted Glass Cloud (Apple VisionOS / macOS Sequoia Aesthetic)
-// Direct fidelity implementation of user reference cloud image
-// ---------------------------------------------------------------------------
-
-export function Frosted3DCloud({
+/** 2. Ice Ceramic Glass Card (1:1 Reference Image 2) */
+export function IceCeramicCard({
   note,
+  node,
   className,
-  mouseOffset,
 }: {
   note: HoverNote
   node?: SquigNode | null
   className?: string
-  mouseOffset?: { x: number; y: number }
 }) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
   const hasTitle = Boolean(note.title && note.title.trim().length > 0)
-  const text = note.body ? note.body.trim() : ""
-  const cloudStyle = note.cloudStyle || "sun"
-  const isSun = cloudStyle === "sun"
-  const isRain = cloudStyle === "rain"
-  const isLightning = cloudStyle === "lightning"
-  const isWind = cloudStyle === "wind"
-
-  // 3D Parallax & Magnetic Tilt (matching pdsuwwz/vue-word-cloud interactive dynamics)
-  const normX = mouseOffset?.x ?? 0
-  const normY = mouseOffset?.y ?? 0
-  const tiltX = -normY * 16 // degrees tilt on X
-  const tiltY = normX * 16 // degrees tilt on Y
-  const floatX = normX * 10 // magnetic translate on X
-  const floatY = normY * 8 // magnetic translate on Y
-  const weatherParallaxX = -normX * 14 // deep background parallax X
-  const weatherParallaxY = -normY * 12 // deep background parallax Y
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
 
   return (
     <div
       className={cn(
-        "relative select-none font-sans filter drop-shadow-[0_20px_35px_rgba(56,189,248,0.30)] drop-shadow-[0_8px_18px_rgba(15,23,42,0.12)]",
+        "relative select-none font-sans overflow-hidden",
+        "w-[260px] sm:w-[320px] rounded-[32px] p-[4px]",
+        "bg-[#93C5FD]/85 shadow-[0_24px_45px_rgba(147,197,253,0.30),0_8px_18px_rgba(15,23,42,0.08)]",
         className
       )}
       style={{
-        minWidth: "210px",
-        maxWidth: "340px",
-        transform: `perspective(1000px) rotateX(var(--hover-tilt-x, ${tiltX}deg)) rotateY(var(--hover-tilt-y, ${tiltY}deg)) translate3d(var(--hover-float-x, ${floatX}px), var(--hover-float-y, ${floatY}px), 0)`,
+        transform:
+          "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
         transformStyle: "preserve-3d",
         willChange: "transform",
-        backfaceVisibility: "hidden",
       }}
     >
-      {/* 1. Weather Accents behind / underneath cloud (matching user reference image) */}
-      {/* Sun Accent (default, matching bottom-left of reference image) */}
-      {isSun && (
-        <div
-          className="absolute -top-3.5 right-[26%] size-11 rounded-full z-0 pointer-events-none"
-          style={{
-            background: "radial-gradient(circle at 35% 30%, #FFE066 0%, #F59E0B 52%, #EA580C 100%)",
-            boxShadow: "0 0 24px 6px rgba(245, 158, 11, 0.6), inset -2px -2px 4px rgba(0,0,0,0.18)",
-            transform: `translate3d(var(--hover-weather-x, ${weatherParallaxX}px), var(--hover-weather-y, ${weatherParallaxY}px), -15px)`,
-            willChange: "transform",
-          }}
-        />
-      )}
+      {/* Inner Screen: Frosted Milky Ceramic White */}
+      <div className="w-full h-full rounded-[28px] bg-gradient-to-b from-[#FFFFFF] via-[#F8FAFC] to-[#EFF6FF] text-slate-800 p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)]">
+        {/* Header row: Badge + Title */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {hasTitle ? (
+            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
+              {note.title!.trim()}
+            </h4>
+          ) : (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-sky-600">
+              Note
+            </span>
+          )}
 
-      {/* Rain Droplets (matching top-right of reference image) */}
-      {isRain && (
-        <div
-          className="absolute -bottom-4 inset-x-0 flex items-center justify-center gap-1.5 z-0 pointer-events-none"
-          style={{
-            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.8), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.8), -10px)`,
-            willChange: "transform",
-          }}
-        >
-          {[0, 1, 2, 3, 4, 5].map((i) => (
-            <div
-              key={i}
-              className="w-1.5 rounded-full bg-gradient-to-b from-sky-400 via-cyan-400 to-sky-300 shadow-[0_2px_8px_rgba(56,189,248,0.4)] transition-all duration-300"
-              style={{
-                height: i % 2 === 0 ? "17px" : "12px",
-                opacity: 0.85,
-                transform: `rotate(${normX * 10}deg)`,
-              }}
-            />
-          ))}
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-sky-100 text-sky-700 border border-sky-300 shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
         </div>
-      )}
 
-      {/* Lightning Bolt (matching top-left of reference image) */}
-      {isLightning && (
-        <div
-          className="absolute -bottom-6 left-1/2 -translate-x-1/2 z-0 pointer-events-none"
-          style={{
-            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.9), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.9), -10px) rotate(${normX * 8}deg)`,
-            willChange: "transform",
-          }}
-        >
-          <svg width="24" height="28" viewBox="0 0 24 28" fill="none">
-            <path
-              d="M14 0L2 15H12L9 28L22 11H12L14 0Z"
-              fill="#06B6D4"
-              filter="drop-shadow(0 0 10px rgba(6,182,212,0.75))"
-            />
-          </svg>
-        </div>
-      )}
-
-      {/* Wind / Breeze Snowflake (matching bottom-right of reference image) */}
-      {isWind && (
-        <div
-          className="absolute -bottom-5 left-1/2 -translate-x-1/2 z-0 pointer-events-none"
-          style={{
-            transform: `translate3d(calc(var(--hover-weather-x, ${weatherParallaxX}px) * 0.8), calc(var(--hover-weather-y, ${weatherParallaxY}px) * 0.8), -10px) rotate(${normX * 12}deg)`,
-            willChange: "transform",
-          }}
-        >
-          <svg width="28" height="20" viewBox="0 0 28 20" fill="none">
-            <path
-              d="M14 20V8M14 8L7 15M14 8L21 15M14 8L9 2M14 8L19 2"
-              stroke="#38BDF8"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="drop-shadow(0 0 8px rgba(56,189,248,0.6))"
-            />
-          </svg>
-        </div>
-      )}
-
-      {/* 2. Frosted Glass Cloud SVG Body */}
-      <svg
-        className="absolute inset-0 w-full h-full z-10 pointer-events-none"
-        viewBox="0 0 280 144"
-        preserveAspectRatio="none"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          {/* Light Mode Milky Frosted Gradient */}
-          <linearGradient id="cloudMilkyGlass" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.97" />
-            <stop offset="60%" stopColor="#F8FAFC" stopOpacity="0.92" />
-            <stop offset="100%" stopColor="#EFF6FF" stopOpacity="0.88" />
-          </linearGradient>
-
-          {/* Dark Mode Moonlight Twilight Gradient */}
-          <linearGradient id="cloudDarkGlass" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#1E293B" stopOpacity="0.95" />
-            <stop offset="60%" stopColor="#1E293B" stopOpacity="0.92" />
-            <stop offset="100%" stopColor="#0F172A" stopOpacity="0.96" />
-          </linearGradient>
-
-          {/* Specular Rim Light */}
-          <linearGradient id="cloudRimLight" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
-            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#BAE6FD" stopOpacity="0.3" />
-          </linearGradient>
-          <linearGradient id="cloudRimDark" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
-            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.15" />
-            <stop offset="100%" stopColor="#38BDF8" stopOpacity="0.1" />
-          </linearGradient>
-
-          {/* Subsurface Sun Scattering Glow */}
-          <radialGradient id="sunTranslucency" cx="68%" cy="16%" r="35%">
-            <stop offset="0%" stopColor="#F97316" stopOpacity="0.35" />
-            <stop offset="50%" stopColor="#FB923C" stopOpacity="0.12" />
-            <stop offset="100%" stopColor="#F97316" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-
-        {/* Fluffy Cloud Perimeter Path */}
-        <path
-          d="
-            M 34 136
-            H 246
-            C 264 136 276 124 276 106
-            C 276 88 266 76 250 72
-            C 250 36 222 10 186 10
-            C 160 10 138 24 130 46
-            C 120 32 104 24 86 24
-            C 54 24 30 48 28 80
-            C 14 84 4 96 4 112
-            C 4 126 18 136 34 136
-            Z
-          "
-          className="fill-[url(#cloudMilkyGlass)] dark:fill-[url(#cloudDarkGlass)] stroke-[url(#cloudRimLight)] dark:stroke-[url(#cloudRimDark)]"
-          strokeWidth="1.5"
-          vectorEffect="non-scaling-stroke"
-        />
-
-        {/* Subsurface Sun Glow through translucent glass */}
-        {isSun && (
-          <path
-            d="
-              M 34 136
-              H 246
-              C 264 136 276 124 276 106
-              C 276 88 266 76 250 72
-              C 250 36 222 10 186 10
-              C 160 10 138 24 130 46
-              C 120 32 104 24 86 24
-              C 54 24 30 48 28 80
-              C 14 84 4 96 4 112
-              C 4 126 18 136 34 136
-              Z
-            "
-            fill="url(#sunTranslucency)"
-            vectorEffect="non-scaling-stroke"
-          />
-        )}
-      </svg>
-
-      {/* 3. Text Inside the Cloud Body with 3D Depth */}
-      <div
-        className="relative z-20 pt-10 pb-6 px-7 sm:px-8 text-center flex flex-col items-center justify-center"
-        style={{
-          transform: `translate3d(calc(var(--hover-float-x, ${floatX}px) * 0.4), calc(var(--hover-float-y, ${floatY}px) * 0.4), 20px)`,
-          willChange: "transform",
-        }}
-      >
-        {hasTitle && (
-          <div className="text-[12px] sm:text-[13px] font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-1 leading-snug break-words">
-            {note.title!.trim()}
+        {/* Body Text */}
+        {hasBody && (
+          <div className="text-xs leading-relaxed text-slate-700 whitespace-pre-wrap break-words max-h-48 overflow-y-auto pr-1">
+            {note.body.trim()}
           </div>
         )}
-
-        <div className="text-xs sm:text-[14px] font-semibold leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-wrap break-words max-h-48 overflow-y-auto scrollbar-thin">
-          {text}
-        </div>
       </div>
     </div>
   )
+}
+
+/** 3. Royal Cobalt Slate Card (1:1 Reference Image 3) */
+export function RoyalSlateCard({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
+
+  return (
+    <div
+      className={cn(
+        "relative select-none font-sans overflow-hidden",
+        "w-[260px] sm:w-[320px] rounded-[32px] p-[6px]",
+        "bg-[#2563EB] shadow-[0_24px_45px_rgba(37,99,235,0.30),0_8px_18px_rgba(0,0,0,0.14)]",
+        className
+      )}
+      style={{
+        transform:
+          "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
+    >
+      {/* Inner Screen: Matte Obsidian Black */}
+      <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
+        {/* Header row: Badge + Title */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {hasTitle ? (
+            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+              {note.title!.trim()}
+            </h4>
+          ) : (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
+              Note
+            </span>
+          )}
+
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/40 shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Body Text */}
+        {hasBody && (
+          <div className="text-xs leading-relaxed text-stone-200/90 whitespace-pre-wrap break-words max-h-48 overflow-y-auto pr-1">
+            {note.body.trim()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** 4. Neon Cyan Slate Card (1:1 Reference Image 4) */
+export function CyanSlateCard({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
+
+  return (
+    <div
+      className={cn(
+        "relative select-none font-sans overflow-hidden",
+        "w-[260px] sm:w-[320px] rounded-[32px] p-[6px]",
+        "bg-[#00B4D8] shadow-[0_24px_45px_rgba(0,180,216,0.30),0_8px_18px_rgba(0,0,0,0.14)]",
+        className
+      )}
+      style={{
+        transform:
+          "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
+    >
+      {/* Inner Screen: Matte Obsidian Black */}
+      <div className="w-full h-full rounded-[26px] bg-[#18191E] text-white p-4 sm:p-5 flex flex-col justify-center min-h-[120px] sm:min-h-[140px] shadow-inner">
+        {/* Header row: Badge + Title */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {hasTitle ? (
+            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-white">
+              {note.title!.trim()}
+            </h4>
+          ) : (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-400">
+              Note
+            </span>
+          )}
+
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Body Text */}
+        {hasBody && (
+          <div className="text-xs leading-relaxed text-stone-200/90 whitespace-pre-wrap break-words max-h-48 overflow-y-auto pr-1">
+            {note.body.trim()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/** 5. Acrylic Glass Specular Tile (1:1 Reference Image 5) */
+export function AcrylicGlassCard({
+  note,
+  node,
+  className,
+}: {
+  note: HoverNote
+  node?: SquigNode | null
+  className?: string
+}) {
+  const nodeTypeLabel = getNodeTypeLabel(node)
+  const hasTitle = Boolean(note.title && note.title.trim().length > 0)
+  const hasBody = Boolean(note.body && note.body.trim().length > 0)
+
+  return (
+    <div
+      className={cn(
+        "relative select-none font-sans overflow-hidden",
+        "w-[270px] sm:w-[330px] rounded-[34px] p-2.5 sm:p-3",
+        "border-2 border-[#EAB308]/90 bg-white/45 dark:bg-black/35 backdrop-blur-2xl",
+        "shadow-[0_24px_50px_rgba(0,0,0,0.18),0_8px_20px_rgba(0,0,0,0.08)]",
+        className
+      )}
+      style={{
+        transform:
+          "perspective(900px) rotateX(var(--hover-tilt-x, 0deg)) rotateY(var(--hover-tilt-y, 0deg)) translate3d(calc(var(--hover-float-x, 0px) * 0.3), calc(var(--hover-float-y, 0px) * 0.3), 0)",
+        transformStyle: "preserve-3d",
+        willChange: "transform",
+      }}
+    >
+      {/* 1:1 Specular diagonal glass sheen across top-left corner matching Image 5 */}
+      <div
+        className="absolute inset-0 pointer-events-none rounded-[32px] z-10"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 28%, transparent 28.5%)",
+        }}
+      />
+
+      {/* Floating White Card Nested Inside Clear Acrylic Chassis */}
+      <div className="relative z-0 w-full h-full rounded-[22px] bg-white text-slate-800 p-4 sm:p-5 flex flex-col justify-center min-h-[110px] sm:min-h-[130px] shadow-[0_2px_8px_rgba(0,0,0,0.06)]">
+        {/* Header row: Badge + Title */}
+        <div className="flex items-center justify-between gap-2 mb-2">
+          {hasTitle ? (
+            <h4 className="text-xs sm:text-[13px] font-bold tracking-tight truncate leading-snug text-slate-900">
+              {note.title!.trim()}
+            </h4>
+          ) : (
+            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-600">
+              Note
+            </span>
+          )}
+
+          {nodeTypeLabel && (
+            <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-300 shrink-0">
+              {nodeTypeLabel}
+            </span>
+          )}
+        </div>
+
+        {/* Body Text */}
+        {hasBody && (
+          <div className="text-xs leading-relaxed text-slate-700 whitespace-pre-wrap break-words max-h-48 overflow-y-auto pr-1">
+            {note.body.trim()}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Master Smart Hover Card Content Selector.
+ * Renders the chosen physical reference card design.
+ */
+export function SmartHoverCardContent({
+  node,
+  note,
+  className,
+}: SmartHoverCardContentProps) {
+  const theme = note.theme || "yellow-slate"
+
+  if (theme === "ice-ceramic") {
+    return <IceCeramicCard note={note} node={node} className={className} />
+  }
+  if (theme === "royal-slate") {
+    return <RoyalSlateCard note={note} node={node} className={className} />
+  }
+  if (theme === "cyan-slate") {
+    return <CyanSlateCard note={note} node={node} className={className} />
+  }
+  if (theme === "acrylic-glass") {
+    return <AcrylicGlassCard note={note} node={node} className={className} />
+  }
+
+  // Default to yellow-slate (Image 1)
+  return <YellowSlateCard note={note} node={node} className={className} />
 }
 
 // ---------------------------------------------------------------------------

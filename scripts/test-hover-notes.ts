@@ -201,37 +201,26 @@ console.log("✓ pickHoverTarget successfully detects stroke hits and area bound
 
 // Test 7: Universal Theme Registry
 console.log("\n-> 7. Testing Hover Note Theme Registry & Expanded Aesthetic Catalog...")
-import { HOVER_THEMES, HOVER_THEME_CATEGORIES, CLOUD_WEATHER_STYLES } from "@/lib/hover-themes"
+import { HOVER_THEMES } from "@/lib/hover-themes"
 
-assert.equal(HOVER_THEMES.length, 14, "Must offer 14 diverse themes")
-assert.equal(HOVER_THEME_CATEGORIES.length, 4, "Must offer 4 theme categories")
-assert.equal(CLOUD_WEATHER_STYLES.length, 5, "Must offer 5 cloud weather styles")
+assert.equal(HOVER_THEMES.length, 5, "Must offer 5 reference card designs")
 
 // Ensure unique theme IDs
 const themeIds = new Set(HOVER_THEMES.map((t) => t.id))
-assert.equal(themeIds.size, 14, "All theme IDs must be unique")
+assert.equal(themeIds.size, 5, "All theme IDs must be unique")
 
-// Verify specific signature themes exist
+// Verify specific reference themes exist matching user uploaded designs
 const requiredThemes = [
-  "wordcloud",
-  "frosted",
-  "hologram",
-  "macos",
-  "ios",
-  "aurora",
-  "golden-gate",
-  "cyberpunk",
-  "matrix",
-  "blueprint",
-  "minimalist",
-  "stealth",
-  "synthwave",
-  "parchment",
+  "yellow-slate",
+  "ice-ceramic",
+  "royal-slate",
+  "cyan-slate",
+  "acrylic-glass",
 ]
 for (const req of requiredThemes) {
   assert.ok(themeIds.has(req), `Theme '${req}' must be registered`)
 }
-console.log("✓ All 14 aesthetic themes are correctly registered and validated.")
+console.log("✓ All 5 reference card designs (Images 1-5) are correctly registered and validated.")
 
 console.log("\n============================================================")
 console.log("ALL ZENITHSUI SMART HOVER NOTE TESTS PASSED 100%!")

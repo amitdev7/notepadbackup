@@ -53,7 +53,7 @@ import {
 } from "@phosphor-icons/react"
 import { formatRemainingTime, expireNodeNow } from "@/lib/canvas/expiration-manager"
 import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
-import { HOVER_THEMES, HOVER_THEME_CATEGORIES, CLOUD_WEATHER_STYLES } from "@/lib/hover-themes"
+import { HOVER_THEMES } from "@/lib/hover-themes"
 import { kbd } from "@/lib/shortcuts"
 import { InkPicker } from "./ink-picker"
 import { bgOf, paletteOf, PAPER_SHADES, type FontMode, type PaperShade } from "@/lib/theme"
@@ -1066,8 +1066,6 @@ function HoverNoteSection({
   selected: SquigNode[]
   patch: (fn: (n: SquigNode) => Partial<SquigNode> | null) => void
 }) {
-  const [hoverThemeCategory, setHoverThemeCategory] = useState<string>("all")
-
   if (selected.length === 0) return null
 
   // Single selection
@@ -1181,42 +1179,16 @@ function HoverNoteSection({
             />
           </div>
 
-          {/* Aesthetic Theme */}
+          {/* Card Style (5 Reference Designs) */}
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-micro text-muted-foreground font-medium">Theme ({HOVER_THEMES.length} Styles)</label>
-              <div className="flex items-center gap-0.5 bg-muted/60 p-0.5 rounded-md border border-border/50 text-[10px]">
-                <button
-                  type="button"
-                  onClick={() => setHoverThemeCategory("all")}
-                  className={cn(
-                    "px-1.5 py-0.5 rounded transition-colors font-medium cursor-pointer",
-                    hoverThemeCategory === "all" ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  All
-                </button>
-                {HOVER_THEME_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    onClick={() => setHoverThemeCategory(cat.id)}
-                    title={cat.label}
-                    className={cn(
-                      "px-1.5 py-0.5 rounded transition-colors font-medium flex items-center gap-0.5 cursor-pointer",
-                      hoverThemeCategory === cat.id ? "bg-background text-foreground shadow-2xs font-semibold" : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <span>{cat.icon}</span>
-                  </button>
-                ))}
-              </div>
+              <label className="text-micro text-muted-foreground font-medium">Card Style (5 Designs)</label>
             </div>
 
-            <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto pr-0.5 scrollbar-thin">
-              {HOVER_THEMES.filter((t) => hoverThemeCategory === "all" || t.category === hoverThemeCategory).map((t) => {
-                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "clouds"
-                const isActive = curTheme === t.id || (t.id === "frosted" && curTheme === "clouds")
+            <div className="flex flex-col gap-1">
+              {HOVER_THEMES.map((t) => {
+                const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "yellow-slate"
+                const isActive = curTheme === t.id
                 return (
                   <button
                     key={t.id}
@@ -1231,18 +1203,18 @@ function HoverNoteSection({
                       }))
                     }}
                     className={cn(
-                      "px-2 py-1.5 text-[11px] font-medium rounded-lg border text-left transition-all cursor-pointer flex items-center justify-between gap-1.5",
+                      "px-2.5 py-1.5 text-[11px] font-medium rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2",
                       isActive
                         ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
                         : "bg-background/70 hover:bg-muted border-border/70 text-foreground hover:border-border"
                     )}
                   >
-                    <span className="truncate flex items-center gap-1.5">
-                      <span>{t.emoji}</span>
+                    <span className="truncate flex items-center gap-2">
+                      <span className="text-sm">{t.emoji}</span>
                       <span className="truncate">{t.shortLabel}</span>
                     </span>
                     <span
-                      className="size-2 rounded-full shrink-0 shadow-2xs"
+                      className="size-3 rounded-full shrink-0 border border-black/15 shadow-2xs"
                       style={{ backgroundColor: t.previewColor }}
                     />
                   </button>
@@ -1250,41 +1222,6 @@ function HoverNoteSection({
               })}
             </div>
           </div>
-
-          {/* Cloud Weather Accent if frosted 3D cloud theme */}
-          {(((note as Record<string, unknown> | undefined)?.theme === "frosted" || (note as Record<string, unknown> | undefined)?.theme === "clouds" || !(note as Record<string, unknown> | undefined)?.theme)) && (
-            <div className="flex flex-col gap-1">
-              <label className="text-micro text-muted-foreground font-medium">Weather Accent</label>
-              <div className="flex items-center gap-1 flex-wrap">
-                {CLOUD_WEATHER_STYLES.map((cs) => {
-                  const curCs = ((note as Record<string, unknown> | undefined)?.cloudStyle as string) || "sun"
-                  return (
-                    <button
-                      key={cs.id}
-                      type="button"
-                      title={cs.description}
-                      onClick={() => {
-                        patch((n) => ({
-                          hoverNote: {
-                            ...(n.hoverNote || { enabled: true, body: "" }),
-                            cloudStyle: cs.id,
-                          },
-                        }))
-                      }}
-                      className={cn(
-                        "px-2 py-0.5 text-[10px] font-medium rounded-full border text-center transition-colors cursor-pointer",
-                        curCs === cs.id
-                          ? "bg-sky-500 text-white border-sky-400 font-semibold"
-                          : "bg-background/60 hover:bg-muted border-border/70 text-foreground"
-                      )}
-                    >
-                      {cs.label}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-          )}
 
           {/* Live Preview Card */}
           {(note.title?.trim() || note.body?.trim()) && (
