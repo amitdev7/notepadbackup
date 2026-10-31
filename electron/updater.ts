@@ -12,7 +12,12 @@
 // ---------------------------------------------------------------------------
 
 import { app, BrowserWindow, shell } from "electron"
-import { autoUpdater } from "electron-updater"
+import { createRequire } from "node:module"
+import type { AppUpdater } from "electron-updater"
+
+const require = createRequire(import.meta.url)
+const electronUpdater = require("electron-updater")
+const autoUpdater: AppUpdater = electronUpdater.autoUpdater || electronUpdater.default?.autoUpdater
 import fs from "node:fs"
 import path from "node:path"
 import https from "node:https"
