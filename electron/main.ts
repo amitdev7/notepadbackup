@@ -30,7 +30,9 @@ let isQuitting = false
 let updaterService: DesktopUpdaterService | null = null
 
 async function createWindow() {
-  const iconPath = path.join(__dirname, "..", "public", "favicon.ico")
+  const iconPath = app.isPackaged
+    ? path.join(process.resourcesPath, "standalone", "public", "favicon.ico")
+    : path.join(__dirname, "..", "public", "favicon.ico")
 
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -42,7 +44,7 @@ async function createWindow() {
     backgroundColor: "#FAF9F5",
     show: false, // Show once ready-to-show to prevent white flash
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "preload.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
