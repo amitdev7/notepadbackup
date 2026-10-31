@@ -39,6 +39,7 @@ import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
+import { AboutUpdatesTab } from "@/components/shell/about-updates-tab"
 import {
   Sliders,
   Palette,
@@ -3092,23 +3093,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
       )
 
     case "about":
-      return (
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/40">
-            <h4 className="font-bold text-stone-900 dark:text-stone-100 text-sm">Zenithsui</h4>
-            <p className="text-[11px] text-stone-500 mt-0.5">
-              Version 2.4.0 Production Release
-            </p>
-            <p className="text-xs text-stone-600 dark:text-stone-400 mt-2 leading-relaxed">
-              A minimalist, paper-like infinite canvas for wireframing, note-taking, and academic planning. Built with Next.js Turbopack, React 19, Rough.js, and Zustand.
-            </p>
-          </div>
-          <div className="text-[11px] text-stone-400 space-y-1">
-            <p>© 2026 Zenithsui. Open source under MIT License.</p>
-            <p>Local-first, privacy-respecting architecture.</p>
-          </div>
-        </div>
-      )
+      return <AboutUpdatesTab />
 
     case "future":
       return (

@@ -1,8 +1,11 @@
 {
   "name": "zenithsui",
   "version": "0.1.0",
+  "description": "Zenithsui - Minimalist Paper-like Infinite Canvas & Academic Workspace",
+  "author": "Zenithsui",
   "private": true,
   "type": "module",
+  "main": "dist-electron/main.js",
   "packageManager": "pnpm@10.4.1",
   "engines": {
     "node": "20.x || 22.x || 24.x",
@@ -13,40 +16,49 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-hover-notes.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-viewport-memory.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clock-location.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-image-border-text-zoom.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-temporary-elements.ts"
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-hover-notes.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-viewport-memory.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clock-location.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-image-border-text-zoom.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-temporary-elements.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-desktop-updater.ts",
+    "desktop:compile": "tsc -p tsconfig.electron.json",
+    "desktop:dev": "node scripts/start-desktop-dev.mjs",
+    "desktop:build": "pnpm build && pnpm desktop:compile && node scripts/prepare-standalone.mjs",
+    "desktop:dist:nsis": "pnpm desktop:build && electron-builder --win nsis",
+    "desktop:dist:portable": "pnpm desktop:build && electron-builder --win portable",
+    "desktop:dist": "pnpm desktop:build && electron-builder --win nsis portable"
   },
   "dependencies": {
+    "electron-updater": "^6.8.11"
+  },
+  "devDependencies": {
     "@base-ui/react": "^1.6.0",
     "@phosphor-icons/core": "^2.1.1",
     "@phosphor-icons/react": "^2.1.10",
     "@supabase/server": "^1.9.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.49.1",
-    "@vercel/blob": "^2.8.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "nanoid": "^6.0.0",
-    "next": "16.2.12",
-    "pdfjs-dist": "^6.3.289",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "roughjs": "^4.6.6",
-    "shadcn": "^4.16.0",
-    "tailwind-merge": "^3.6.0",
-    "tw-animate-css": "^1.4.0",
-    "zustand": "^5.0.14"
-  },
-  "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vercel/blob": "^2.8.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "nanoid": "^6.0.0",
+    "next": "16.2.12",
+    "pdfjs-dist": "^6.3.289",
     "pg": "^8.23.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "roughjs": "^4.6.6",
+    "shadcn": "^4.16.0",
+    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^5",
+    "zustand": "^5.0.14"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -47,6 +47,15 @@ export default function Home() {
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
     useAuthStore.getState().initialize()
     migrateLocalStorageToIndexedDB()
+
+    // Register desktop close handshake to flush unsaved changes
+    if (typeof window !== "undefined" && window.zenithsuiDesktop) {
+      const cleanup = window.zenithsuiDesktop.onSaveBeforeClose(async () => {
+        console.log("[Zenithsui] Desktop shutdown requested. Flushing pending canvas saves...")
+        useSquig.getState().saveNow()
+      })
+      return cleanup
+    }
   }, [hydrate])
 
   if (!hydrated) {

@@ -18,6 +18,8 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "dist-desktop/**",
+    "dist-electron/**",
     "next-env.d.ts",
     "scripts/**",
     "docs/**",
@@ -27,7 +29,6 @@ const eslintConfig = defineConfig([
     "mouse/**",
     "files/**",
     "packages/**",
-
     "examples/**",
     "firebase-project/**",
     "setupTests.ts",

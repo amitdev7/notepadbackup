@@ -1,0 +1,59 @@
+appId: com.zenithsui.app
+productName: Zenithsui
+copyright: Copyright © 2026 Zenithsui
+
+npmRebuild: false
+nodeGypRebuild: false
+asar: true
+
+directories:
+  output: dist-desktop
+  buildResources: build
+
+files:
+  - dist-electron/**/*
+  - package.json
+
+extraResources:
+  - from: .next/standalone
+    to: standalone
+    filter:
+      - "**/*"
+  - from: public
+    to: standalone/public
+    filter:
+      - "**/*"
+  - from: .next/static
+    to: standalone/.next/static
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: public/android-chrome-512x512.png
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Zenithsui
+  artifactName: "${productName} Setup ${version}.${ext}"
+  uninstallDisplayName: "${productName}"
+
+portable:
+  artifactName: "${productName} Portable ${version}.${ext}"
+
+publish:
+  provider: github
+  owner: amitdev7
+  repo: notepadbackup
+  releaseType: release

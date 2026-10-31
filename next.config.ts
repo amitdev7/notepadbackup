@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   // the resolution path, so a dependency missing from this repo could quietly
   // resolve to a different version of itself two directories up. Saying where
   // the root is means that can't happen, whatever else is lying around.
+  output: "standalone",
   poweredByHeader: false,
   reactStrictMode: true,
   typescript: {
