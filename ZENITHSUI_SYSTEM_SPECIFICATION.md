@@ -408,18 +408,13 @@ Replaced all legacy virtual cloud and generic dashboard themes with 5 pixel-perf
 #### GPU Spring-Lerp Physics Engine
 Driven by a `requestAnimationFrame` critically damped spring-lerp loop ($\text{factor}=0.18$, $\text{tiltFactor}=0.22$) writing directly to `transform: translate3d(...)` and DOM CSS custom properties (`--hover-tilt-x`, `--hover-tilt-y`, `--hover-float-x`), guaranteeing 144Hz ProMotion fluid motion with zero React virtual-DOM re-renders.
 
-### 4.5 Apple iOS & macOS Liquid Glass 2.0 Icon System
-Zenithsui implements an authentic Apple HIG Liquid Glass icon system across the entire application chrome, bottom dock, and inspector palettes:
+### 4.5 Apple iOS & macOS Liquid Glass Card Emblem System
+Zenithsui implements an authentic Apple HIG Liquid Glass icon system exclusively for the 5 reference design hover themes:
 
-1. **Hardware Card Emblem Badges (`LiquidGlassCardIcon`)** ([components/canvas/liquid-glass-icons.tsx](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/components/canvas/liquid-glass-icons.tsx)):
-   - Miniature, physical 1:1 hardware card replicas rendering high-fidelity squircles for each of the 5 reference themes (`yellow-slate`, `ice-ceramic`, `royal-slate`, `cyan-slate`, `acrylic-glass`).
-   - Integrated directly into the Inspector Card Style picker and the header of every rendered floating hover card.
-2. **Liquid Glass Dock Tiles (`liquid-glass-dock-tile`)** ([app/globals.css](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/app/globals.css) & [components/shell/bottom-dock.tsx](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/components/shell/bottom-dock.tsx)):
-   - Multi-layer glass materials with Apple HIG continuous squircle curvature, top specular rim highlights (`inset 0 1px 1.5px 0 rgba(255,255,255,0.9)`), bottom refraction bevels (`inset 0 -1px 1.5px 0 rgba(0,0,0,0.08)`), and diagonal gloss sheen (`linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 45%, transparent 46%)`).
-   - Curated Apple HIG accent tints per canvas tool (Sapphire Select, Amber Draw, Violet Shape, Rose Eraser, Cyan Arrow, Emerald Text, Sunflower Sticky, Sky Frame, Ruby Laser, Amethyst Library).
-   - Dynamic glowing active state (`.liquid-glass-dock-tile-active`) with Apple ProMotion spring feedback and illuminated LED indicator dot.
-3. **Mobile Drawer & Quick Actions**:
-   - Touch-optimized liquid glass app tiles with tactile spring press physics and specular reflections on small screen viewports (<640px).
+- **Hardware Card Emblem Badges (`LiquidGlassCardIcon`)** ([components/canvas/liquid-glass-icons.tsx](file:///c:/Users/amitk/Pictures/websitetesting/notepadbackup/components/canvas/liquid-glass-icons.tsx)):
+  - Miniature, physical 1:1 hardware card replicas rendering high-fidelity squircles for each of the 5 reference themes (`yellow-slate`, `ice-ceramic`, `royal-slate`, `cyan-slate`, `acrylic-glass`).
+  - Integrated directly into the Inspector Card Style picker and the header of every rendered floating hover card.
+  - Multi-layer glass materials with Apple HIG squircle curvature, top specular rim highlights (`inset 0 1px 1.5px 0 rgba(255,255,255,0.9)`), bottom refraction bevels, and diagonal gloss sheen (`linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.08) 45%, transparent 46%)`).
 
 ---
 

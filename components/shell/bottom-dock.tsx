@@ -80,21 +80,20 @@ interface ToolDef {
   icon: React.ElementType
   shortcut?: string
   prefKey: keyof DockControlsVisibility
-  tintClass: string
 }
 
 const ALL_TOOLS: ToolDef[] = [
-  { id: "select", label: "Select", icon: Cursor, shortcut: "V", prefKey: "toolSelect", tintClass: "text-blue-500 dark:text-blue-400" },
-  { id: "hand", label: "Hand (Pan)", icon: Hand, shortcut: "H", prefKey: "toolHand", tintClass: "text-slate-600 dark:text-slate-300" },
-  { id: "shape", label: "Shape", icon: Rectangle, shortcut: "R", prefKey: "toolShape", tintClass: "text-indigo-500 dark:text-indigo-400" },
-  { id: "draw", label: "Draw", icon: PencilLine, shortcut: "P", prefKey: "toolDraw", tintClass: "text-amber-500 dark:text-amber-400" },
-  { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E", prefKey: "toolEraser", tintClass: "text-rose-500 dark:text-rose-400" },
-  { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A", prefKey: "toolArrow", tintClass: "text-cyan-500 dark:text-cyan-400" },
-  { id: "text", label: "Text", icon: TextT, shortcut: "T", prefKey: "toolText", tintClass: "text-emerald-500 dark:text-emerald-400" },
-  { id: "sticky", label: "Sticky Note", icon: Note, shortcut: "S", prefKey: "toolSticky", tintClass: "text-yellow-600 dark:text-yellow-400" },
-  { id: "frame", label: "Frame", icon: Crop, shortcut: "F", prefKey: "toolFrame", tintClass: "text-sky-500 dark:text-sky-400" },
-  { id: "laser", label: "Laser Pointer", icon: Flashlight, shortcut: "K", prefKey: "toolLaser", tintClass: "text-red-500 dark:text-rose-400" },
-  { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary", tintClass: "text-purple-500 dark:text-purple-400" },
+  { id: "select", label: "Select", icon: Cursor, shortcut: "V", prefKey: "toolSelect" },
+  { id: "hand", label: "Hand (Pan)", icon: Hand, shortcut: "H", prefKey: "toolHand" },
+  { id: "shape", label: "Shape", icon: Rectangle, shortcut: "R", prefKey: "toolShape" },
+  { id: "draw", label: "Draw", icon: PencilLine, shortcut: "P", prefKey: "toolDraw" },
+  { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E", prefKey: "toolEraser" },
+  { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A", prefKey: "toolArrow" },
+  { id: "text", label: "Text", icon: TextT, shortcut: "T", prefKey: "toolText" },
+  { id: "sticky", label: "Sticky Note", icon: Note, shortcut: "S", prefKey: "toolSticky" },
+  { id: "frame", label: "Frame", icon: Crop, shortcut: "F", prefKey: "toolFrame" },
+  { id: "laser", label: "Laser Pointer", icon: Flashlight, shortcut: "K", prefKey: "toolLaser" },
+  { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary" },
 ]
 
 // ── Magnified Dock Item Component ─────────────────────────────────────────────
@@ -160,11 +159,11 @@ function MagnifiedDockItem({
               transform: `scale(${scale})`,
             }}
             className={cn(
-              "dock-magnify-item liquid-glass-dock-tile relative flex items-center justify-center size-8 sm:size-9 rounded-xl cursor-pointer select-none outline-none",
-              "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/50 focus-visible:outline-none",
+              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none",
+              "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/40 focus-visible:outline-none",
               active
-                ? "liquid-glass-dock-tile-active"
-                : "text-stone-700 dark:text-stone-200 hover:text-stone-950 dark:hover:text-white",
+                ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold shadow-xs border border-[var(--ui-accent,#007AFF)]/30"
+                : "text-stone-600 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 border border-transparent",
               className
             )}
           >
@@ -336,16 +335,14 @@ export function BottomDock() {
                     type="button"
                     onClick={() => handleToolClick(t)}
                     className={cn(
-                      "flex flex-col items-center justify-center p-2.5 rounded-2xl cursor-pointer tactile-press min-h-[66px] transition-all",
+                      "flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer tactile-press min-h-[58px]",
                       active
-                        ? "liquid-glass-dock-tile-active text-white font-semibold"
-                        : "liquid-glass-dock-tile text-stone-700 dark:text-stone-200"
+                        ? "bg-blue-600/12 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400 font-semibold"
+                        : "text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
                     )}
                   >
-                    <div className={cn("size-8 rounded-xl flex items-center justify-center", active ? "text-white" : t.tintClass)}>
-                      <Icon size={22} weight={active ? "bold" : "regular"} />
-                    </div>
-                    <span className="text-[11px] mt-1 truncate max-w-full font-medium">{t.label}</span>
+                    <Icon size={22} weight={active ? "bold" : "regular"} />
+                    <span className="text-[11px] mt-1.5 truncate max-w-full">{t.label}</span>
                   </button>
                 )
               })}
@@ -536,12 +533,7 @@ export function BottomDock() {
                   reducedMotion={reducedMotion}
                   showIndicatorDot={true}
                 >
-                  <Icon
-                    size={17}
-                    weight={active ? "bold" : "regular"}
-                    className={cn("transition-colors duration-150 drop-shadow-2xs", active ? "text-white" : t.tintClass)}
-                    aria-hidden="true"
-                  />
+                  <Icon size={16} weight={active ? "bold" : "regular"} aria-hidden="true" />
                 </MagnifiedDockItem>
               )
             })}
@@ -562,18 +554,13 @@ export function BottomDock() {
                   aria-label={t.label}
                   aria-pressed={active}
                   className={cn(
-                    "liquid-glass-dock-tile relative flex items-center justify-center size-8 rounded-xl cursor-pointer tactile-tool",
+                    "relative flex items-center justify-center size-8 rounded-xl cursor-pointer tactile-tool",
                     active
-                      ? "liquid-glass-dock-tile-active text-white font-semibold"
-                      : "text-stone-700 dark:text-stone-300"
+                      ? "bg-blue-600/15 text-blue-600 dark:bg-blue-500/25 dark:text-blue-400 font-semibold"
+                      : "text-stone-600 dark:text-stone-400 hover:bg-stone-200/50"
                   )}
                 >
-                  <Icon
-                    size={17}
-                    weight={active ? "bold" : "regular"}
-                    className={cn("transition-colors duration-150 drop-shadow-2xs", active ? "text-white" : t.tintClass)}
-                    aria-hidden="true"
-                  />
+                  <Icon size={17} weight={active ? "bold" : "regular"} aria-hidden="true" />
                   {active && <span className="dock-active-dot" aria-hidden="true" />}
                 </button>
               )
@@ -584,7 +571,7 @@ export function BottomDock() {
                 onClick={() => setMobileDrawerOpen(true)}
                 title="All Tools"
                 aria-label="Open all tools drawer"
-                className="liquid-glass-dock-tile flex items-center justify-center size-8 rounded-xl text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white tactile-press"
+                className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 tactile-press"
               >
                 <SquaresFour size={17} aria-hidden="true" />
               </button>
@@ -610,7 +597,7 @@ export function BottomDock() {
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
               >
-                <MagnifyingGlass size={17} className="text-blue-500 dark:text-blue-400 drop-shadow-2xs" aria-hidden="true" />
+                <MagnifyingGlass size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
 
@@ -624,7 +611,7 @@ export function BottomDock() {
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
               >
-                <ChartBar size={17} className="text-indigo-500 dark:text-indigo-400 drop-shadow-2xs" aria-hidden="true" />
+                <ChartBar size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
 
@@ -639,7 +626,7 @@ export function BottomDock() {
                 reducedMotion={reducedMotion}
                 showIndicatorDot={true}
               >
-                <File size={17} className={cn("drop-shadow-2xs", pagePopoverOpen ? "text-white" : "text-slate-600 dark:text-slate-300")} aria-hidden="true" />
+                <File size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
 
@@ -654,7 +641,7 @@ export function BottomDock() {
                 reducedMotion={reducedMotion}
                 showIndicatorDot={true}
               >
-                <Gear size={17} className={cn("drop-shadow-2xs", settingsOpen ? "text-white" : "text-stone-600 dark:text-stone-300")} aria-hidden="true" />
+                <Gear size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
           </div>
@@ -676,7 +663,7 @@ export function BottomDock() {
               mouseX={mouseX}
               reducedMotion={reducedMotion}
             >
-              <Minus size={14} weight="bold" className="text-stone-700 dark:text-stone-300" aria-hidden="true" />
+              <Minus size={13} aria-hidden="true" />
             </MagnifiedDockItem>
 
             <Tooltip>
@@ -686,7 +673,7 @@ export function BottomDock() {
                     type="button"
                     onClick={zoomTo100}
                     aria-label={`Current zoom ${zoomPercent}%, click to reset to 100%`}
-                    className="tactile-pill liquid-glass-dock-tile min-w-[46px] h-7 text-center px-1.5 text-[11px] font-mono font-medium text-stone-700 dark:text-stone-200 select-none cursor-pointer"
+                    className="tactile-pill min-w-[42px] text-center px-1.5 py-0.5 rounded-lg text-[11px] font-mono font-medium text-stone-600 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60"
                   >
                     {zoomPercent}%
                   </button>
@@ -709,7 +696,7 @@ export function BottomDock() {
               mouseX={mouseX}
               reducedMotion={reducedMotion}
             >
-              <Plus size={14} weight="bold" className="text-stone-700 dark:text-stone-300" aria-hidden="true" />
+              <Plus size={13} aria-hidden="true" />
             </MagnifiedDockItem>
           </div>
         )}
