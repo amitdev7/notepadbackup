@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://notepadbyamit.vercel.app/" target="_blank" rel="noopener noreferrer">
+<a href="https://zenithsui.vercel.app/" target="_blank" rel="noopener noreferrer">
   <img src="assets/branding/social-preview/zenithsui-social-preview.svg" alt="Zenithsui — Minimalist Paper-like Infinite Canvas & Academic Workspace" width="100%" />
 </a>
 
@@ -26,8 +26,8 @@ Designed for product thinkers, systems engineers, and students who think by draw
 <br />
 
 <p align="center">
-  <a href="https://notepadbyamit.vercel.app/" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/badge/🚀_LAUNCH_WEB_APP-notepadbyamit.vercel.app-2563EB?style=for-the-badge" alt="Launch Web Canvas" />
+  <a href="https://zenithsui.vercel.app/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/🚀_LAUNCH_WEB_APP-zenithsui.vercel.app-2563EB?style=for-the-badge" alt="Launch Web Canvas" />
   </a>&nbsp;&nbsp;
   <a href="https://github.com/amitdev7/notepadbackup/releases">
     <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_DESKTOP-Windows_x64-059669?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Desktop" />

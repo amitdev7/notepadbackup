@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Zenithsui - Minimalist Paper-like Infinite Canvas & Academic Workspace",
   "author": "Zenithsui",
+  "homepage": "https://zenithsui.vercel.app",
   "private": true,
   "type": "module",
   "main": "dist-electron/main.js",

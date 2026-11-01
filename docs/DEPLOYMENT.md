@@ -30,7 +30,7 @@ const defaultSiteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "https://zenithsui.sh");
+    : "https://zenithsui.vercel.app");
 ```
 When deployed on Vercel, canonical metadata and OpenGraph URLs configure automatically without manual intervention.
 

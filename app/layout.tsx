@@ -31,7 +31,7 @@ const defaultSiteUrl =
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "https://zenithsui.sh");
+    : "https://zenithsui.vercel.app");
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultSiteUrl),
