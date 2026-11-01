@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Apple iOS & macOS Liquid Glass Icon System
 //
-// 1:1 Vector Physical Card Replicas for the 5 Hardware Reference Designs:
+// 1:1 Authentic Vector Physical Card Replicas for the 5 Reference Designs:
 // 1. Yellow Slate: Sunny yellow 3D bezel + deep obsidian screen + specular sheen
 // 2. Ice Ceramic: Translucent ice-blue glass rim + frosted milky ceramic white card
 // 3. Royal Slate: Electric royal cobalt blue bezel + obsidian screen + sapphire gloss
@@ -39,8 +39,8 @@ export function LiquidGlassCardIcon({
 
   const dims = {
     sm: "w-7 h-[19px]",
-    md: "w-10 h-[27px]",
-    lg: "w-13 h-[35px]",
+    md: "w-11 h-[29px]",
+    lg: "w-14 h-[37px]",
   }[size]
 
   switch (themeId) {
@@ -51,7 +51,7 @@ export function LiquidGlassCardIcon({
       const fShadow = `ys-f-${uid}`
       return (
         <svg
-          viewBox="0 0 44 30"
+          viewBox="0 0 48 32"
           aria-hidden="true"
           className={cn(
             "shrink-0 select-none transition-transform duration-200 overflow-visible",
@@ -62,37 +62,42 @@ export function LiquidGlassCardIcon({
           fill="none"
         >
           <defs>
+            {/* 3D Yellow Bezel Gradient: light from top-left */}
             <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#FEF08A" />
-              <stop offset="35%" stopColor="#FACC15" />
+              <stop offset="30%" stopColor="#FACC15" />
+              <stop offset="85%" stopColor="#EAB308" />
               <stop offset="100%" stopColor="#CA8A04" />
             </linearGradient>
+            {/* Matte Obsidian Screen Gradient */}
             <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#1E2026" />
               <stop offset="100%" stopColor="#121316" />
             </linearGradient>
+            {/* Liquid Specular Gloss Arc */}
             <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
-              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
-              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
+              <stop offset="42%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="48%" stopColor="#FFFFFF" stopOpacity="0" />
             </linearGradient>
+            {/* Ambient Physical Drop Shadow */}
             <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#000000" floodOpacity="0.4" />
-              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#FACC15" floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#000000" floodOpacity="0.45" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#FACC15" floodOpacity="0.35" />
             </filter>
           </defs>
 
-          {/* Outer Sunny Yellow Bezel */}
-          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
-          {/* Top Edge Specular Rim Light */}
-          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.7)" strokeWidth="0.8" fill="none" />
+          {/* Outer Sunny Yellow Bezel with 3D Shadow */}
+          <rect x="2" y="2" width="44" height="28" rx="8" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Top-Edge Specular Rim Light */}
+          <rect x="2.5" y="2.5" width="43" height="27" rx="7.5" stroke="rgba(255,255,255,0.75)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
-          {/* Inset Screen Shadow */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
-          {/* Glass Specular Gloss Arc */}
+          <rect x="6" y="6" width="36" height="20" rx="5.5" fill={`url(#${gScreen})`} />
+          {/* Inner Bezel Inset Contour */}
+          <rect x="6" y="6" width="36" height="20" rx="5.5" stroke="rgba(0,0,0,0.65)" strokeWidth="0.8" fill="none" />
+          {/* Glass Specular Reflection Sheen */}
           <path
-            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            d="M 6 11.5 C 6 8.5, 8.5 6, 11.5 6 L 36.5 6 C 39.5 6, 42 8.5, 42 11.5 L 42 13.5 C 26 15.5, 16 15.5, 6 13.5 Z"
             fill={`url(#${gGloss})`}
           />
         </svg>
@@ -106,7 +111,7 @@ export function LiquidGlassCardIcon({
       const fShadow = `ic-f-${uid}`
       return (
         <svg
-          viewBox="0 0 44 30"
+          viewBox="0 0 48 32"
           aria-hidden="true"
           className={cn(
             "shrink-0 select-none transition-transform duration-200 overflow-visible",
@@ -117,38 +122,42 @@ export function LiquidGlassCardIcon({
           fill="none"
         >
           <defs>
+            {/* Translucent Ice-Blue Glass Rim Gradient */}
             <linearGradient id={gRim} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#BAE6FD" />
-              <stop offset="45%" stopColor="#7DD3FC" />
+              <stop offset="40%" stopColor="#7DD3FC" />
               <stop offset="100%" stopColor="#38BDF8" />
             </linearGradient>
+            {/* Frosted Milky Ceramic Screen Gradient */}
             <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="60%" stopColor="#F8FAFC" />
+              <stop offset="55%" stopColor="#F8FAFC" />
               <stop offset="100%" stopColor="#EFF6FF" />
             </linearGradient>
+            {/* Specular Light Reflection */}
             <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
-              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.12" />
-              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.65" />
+              <stop offset="42%" stopColor="#FFFFFF" stopOpacity="0.15" />
+              <stop offset="48%" stopColor="#FFFFFF" stopOpacity="0" />
             </linearGradient>
+            {/* Ambient Ice-Blue Diffusion Shadow */}
             <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0284C7" floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#0284C7" floodOpacity="0.32" />
               <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.15" />
             </filter>
           </defs>
 
-          {/* Outer Translucent Ice Blue Glass Rim */}
-          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gRim})`} filter={`url(#${fShadow})`} />
-          {/* Top Edge Specular White Light */}
-          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.95)" strokeWidth="0.8" fill="none" />
-          {/* Inner Frosted Milky Ceramic Card */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
-          {/* Inset Rim Reflection */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(186,230,253,0.7)" strokeWidth="0.8" fill="none" />
-          {/* Ceramic Glass Gloss Arc */}
+          {/* Outer Translucent Ice Blue Rim */}
+          <rect x="2" y="2" width="44" height="28" rx="8" fill={`url(#${gRim})`} filter={`url(#${fShadow})`} />
+          {/* Specular White Rim Highlight */}
+          <rect x="2.5" y="2.5" width="43" height="27" rx="7.5" stroke="rgba(255,255,255,0.95)" strokeWidth="0.9" fill="none" />
+          {/* Frosted Milky Ceramic White Card */}
+          <rect x="6" y="6" width="36" height="20" rx="5.5" fill={`url(#${gScreen})`} />
+          {/* Inset Reflection Edge */}
+          <rect x="6" y="6" width="36" height="20" rx="5.5" stroke="rgba(186,230,253,0.75)" strokeWidth="0.8" fill="none" />
+          {/* Specular Glass Gloss Arc */}
           <path
-            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            d="M 6 11.5 C 6 8.5, 8.5 6, 11.5 6 L 36.5 6 C 39.5 6, 42 8.5, 42 11.5 L 42 13.5 C 26 15.5, 16 15.5, 6 13.5 Z"
             fill={`url(#${gGloss})`}
           />
         </svg>
@@ -162,7 +171,7 @@ export function LiquidGlassCardIcon({
       const fShadow = `rs-f-${uid}`
       return (
         <svg
-          viewBox="0 0 44 30"
+          viewBox="0 0 48 32"
           aria-hidden="true"
           className={cn(
             "shrink-0 select-none transition-transform duration-200 overflow-visible",
@@ -173,9 +182,11 @@ export function LiquidGlassCardIcon({
           fill="none"
         >
           <defs>
+            {/* Electric Royal Cobalt Blue Bezel Gradient */}
             <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#93C5FD" />
               <stop offset="35%" stopColor="#2563EB" />
+              <stop offset="85%" stopColor="#1D4ED8" />
               <stop offset="100%" stopColor="#1E40AF" />
             </linearGradient>
             <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -183,27 +194,27 @@ export function LiquidGlassCardIcon({
               <stop offset="100%" stopColor="#121316" />
             </linearGradient>
             <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
-              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
-              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.48" />
+              <stop offset="42%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="48%" stopColor="#FFFFFF" stopOpacity="0" />
             </linearGradient>
             <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#1D4ED8" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#1D4ED8" floodOpacity="0.45" />
               <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.35" />
             </filter>
           </defs>
 
           {/* Outer Royal Cobalt Blue Bezel */}
-          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
-          {/* Top Edge Specular Light */}
-          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.75)" strokeWidth="0.8" fill="none" />
+          <rect x="2" y="2" width="44" height="28" rx="8" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Specular Rim Light */}
+          <rect x="2.5" y="2.5" width="43" height="27" rx="7.5" stroke="rgba(255,255,255,0.8)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          <rect x="6" y="6" width="36" height="20" rx="5.5" fill={`url(#${gScreen})`} />
           {/* Inset Screen Shadow */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
+          <rect x="6" y="6" width="36" height="20" rx="5.5" stroke="rgba(0,0,0,0.65)" strokeWidth="0.8" fill="none" />
           {/* Sapphire Glass Gloss Arc */}
           <path
-            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            d="M 6 11.5 C 6 8.5, 8.5 6, 11.5 6 L 36.5 6 C 39.5 6, 42 8.5, 42 11.5 L 42 13.5 C 26 15.5, 16 15.5, 6 13.5 Z"
             fill={`url(#${gGloss})`}
           />
         </svg>
@@ -217,7 +228,7 @@ export function LiquidGlassCardIcon({
       const fShadow = `cs-f-${uid}`
       return (
         <svg
-          viewBox="0 0 44 30"
+          viewBox="0 0 48 32"
           aria-hidden="true"
           className={cn(
             "shrink-0 select-none transition-transform duration-200 overflow-visible",
@@ -228,9 +239,11 @@ export function LiquidGlassCardIcon({
           fill="none"
         >
           <defs>
+            {/* Electric Neon Cyan Bezel Gradient */}
             <linearGradient id={gBezel} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#A5F3FC" />
               <stop offset="35%" stopColor="#00B4D8" />
+              <stop offset="85%" stopColor="#0284C7" />
               <stop offset="100%" stopColor="#0369A1" />
             </linearGradient>
             <linearGradient id={gScreen} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -238,27 +251,27 @@ export function LiquidGlassCardIcon({
               <stop offset="100%" stopColor="#121316" />
             </linearGradient>
             <linearGradient id={gGloss} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.45" />
-              <stop offset="45%" stopColor="#FFFFFF" stopOpacity="0.08" />
-              <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.48" />
+              <stop offset="42%" stopColor="#FFFFFF" stopOpacity="0.08" />
+              <stop offset="48%" stopColor="#FFFFFF" stopOpacity="0" />
             </linearGradient>
             <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#00B4D8" floodOpacity="0.4" />
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#00B4D8" floodOpacity="0.45" />
               <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.35" />
             </filter>
           </defs>
 
           {/* Outer Electric Neon Cyan Bezel */}
-          <rect x="2" y="2" width="40" height="26" rx="7.5" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
-          {/* Top Edge Specular Light */}
-          <rect x="2.4" y="2.4" width="39.2" height="25.2" rx="7.1" stroke="rgba(255,255,255,0.85)" strokeWidth="0.8" fill="none" />
+          <rect x="2" y="2" width="44" height="28" rx="8" fill={`url(#${gBezel})`} filter={`url(#${fShadow})`} />
+          {/* Specular Rim Light */}
+          <rect x="2.5" y="2.5" width="43" height="27" rx="7.5" stroke="rgba(255,255,255,0.85)" strokeWidth="0.8" fill="none" />
           {/* Inner Matte Obsidian Screen */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" fill={`url(#${gScreen})`} />
+          <rect x="6" y="6" width="36" height="20" rx="5.5" fill={`url(#${gScreen})`} />
           {/* Inset Screen Shadow */}
-          <rect x="5.5" y="5.5" width="33" height="19" rx="5" stroke="rgba(0,0,0,0.6)" strokeWidth="0.8" fill="none" />
+          <rect x="6" y="6" width="36" height="20" rx="5.5" stroke="rgba(0,0,0,0.65)" strokeWidth="0.8" fill="none" />
           {/* Cyan Glass Gloss Arc */}
           <path
-            d="M 5.5 10.5 C 5.5 7.5, 7.5 5.5, 10.5 5.5 L 33.5 5.5 C 36.5 5.5, 38.5 7.5, 38.5 10.5 L 38.5 12.5 C 24 14.5, 14 14.5, 5.5 12.5 Z"
+            d="M 6 11.5 C 6 8.5, 8.5 6, 11.5 6 L 36.5 6 C 39.5 6, 42 8.5, 42 11.5 L 42 13.5 C 26 15.5, 16 15.5, 6 13.5 Z"
             fill={`url(#${gGloss})`}
           />
         </svg>
@@ -272,7 +285,7 @@ export function LiquidGlassCardIcon({
       const fShadow = `ag-f-${uid}`
       return (
         <svg
-          viewBox="0 0 44 30"
+          viewBox="0 0 48 32"
           aria-hidden="true"
           className={cn(
             "shrink-0 select-none transition-transform duration-200 overflow-visible",
@@ -283,32 +296,34 @@ export function LiquidGlassCardIcon({
           fill="none"
         >
           <defs>
+            {/* Transparent Acrylic Glass Material */}
             <linearGradient id={gGlass} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.55" />
-              <stop offset="50%" stopColor="#F8FAFC" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#CBD5E1" stopOpacity="0.15" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.65" />
+              <stop offset="50%" stopColor="#F8FAFC" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#CBD5E1" stopOpacity="0.18" />
             </linearGradient>
+            {/* 135-degree Diagonal Specular Sheen (Image 5 1:1) */}
             <linearGradient id={gDiag} x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.9" />
-              <stop offset="28%" stopColor="#FFFFFF" stopOpacity="0.32" />
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+              <stop offset="28%" stopColor="#FFFFFF" stopOpacity="0.35" />
               <stop offset="28.5%" stopColor="#FFFFFF" stopOpacity="0" />
               <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
             </linearGradient>
             <filter id={fShadow} x="-20%" y="-20%" width="140%" height="150%">
-              <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#CA8A04" floodOpacity="0.3" />
-              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.15" />
+              <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" floodColor="#CA8A04" floodOpacity="0.32" />
+              <feDropShadow dx="0" dy="0.8" stdDeviation="1" floodColor="#000000" floodOpacity="0.18" />
             </filter>
           </defs>
 
           {/* Transparent Acrylic Glass Frame with Ambient Shadow */}
-          <rect x="2" y="2" width="40" height="26" rx="8" fill={`url(#${gGlass})`} filter={`url(#${fShadow})`} />
+          <rect x="2" y="2" width="44" height="28" rx="8.5" fill={`url(#${gGlass})`} filter={`url(#${fShadow})`} />
           {/* Amber Yellow Wire Rim */}
-          <rect x="2" y="2" width="40" height="26" rx="8" stroke="#EAB308" strokeWidth="1.2" fill="none" />
-          {/* Nested Floating White Card */}
-          <rect x="6.5" y="5.5" width="31" height="19" rx="5" fill="#FFFFFF" />
-          <rect x="6.5" y="5.5" width="31" height="19" rx="5" stroke="rgba(0,0,0,0.08)" strokeWidth="0.6" fill="none" />
+          <rect x="2" y="2" width="44" height="28" rx="8.5" stroke="#EAB308" strokeWidth="1.2" fill="none" />
+          {/* Nested Floating Ceramic White Card */}
+          <rect x="7" y="6" width="34" height="20" rx="5.5" fill="#FFFFFF" />
+          <rect x="7" y="6" width="34" height="20" rx="5.5" stroke="rgba(0,0,0,0.08)" strokeWidth="0.6" fill="none" />
           {/* 135° Diagonal Specular Glass Reflection Slicing Across Pane */}
-          <rect x="2" y="2" width="40" height="26" rx="8" fill={`url(#${gDiag})`} />
+          <rect x="2" y="2" width="44" height="28" rx="8.5" fill={`url(#${gDiag})`} />
         </svg>
       )
     }

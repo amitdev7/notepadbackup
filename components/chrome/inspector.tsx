@@ -1181,15 +1181,40 @@ function HoverNoteSection({
           </div>
 
           {/* Card Style (5 Reference Designs) */}
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="text-micro text-muted-foreground font-medium">Card Style (5 Designs)</label>
+              <label className="text-micro text-muted-foreground font-semibold tracking-wider uppercase">
+                Card Style (5 Designs)
+              </label>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            {/* Apple Liquid Glass Pod Deck */}
+            <div className="p-1.5 rounded-[22px] bg-black/20 dark:bg-black/40 backdrop-blur-2xl border border-white/10 dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.22),inset_0_1px_1px_rgba(255,255,255,0.08)] flex flex-col gap-1">
               {HOVER_THEMES.map((t) => {
                 const curTheme = ((note as Record<string, unknown> | undefined)?.theme as string) || "yellow-slate"
                 const isActive = curTheme === t.id
+
+                const themeSubtitles: Record<string, string> = {
+                  "yellow-slate": "Obsidian Screen · Yellow Bezel",
+                  "ice-ceramic": "Frosted Ceramic · Ice Glass Rim",
+                  "royal-slate": "Obsidian Screen · Cobalt Bezel",
+                  "cyan-slate": "Obsidian Screen · Neon Cyan Bezel",
+                  "acrylic-glass": "Floating White Card · 135° Specular",
+                }
+
+                const themeActiveGradients: Record<string, string> = {
+                  "yellow-slate":
+                    "bg-gradient-to-r from-[#FACC15]/25 via-[#FACC15]/10 to-transparent border-[#FACC15]/75 shadow-[0_4px_24px_rgba(250,204,21,0.3),inset_0_1px_1.5px_rgba(255,255,255,0.6)] ring-1 ring-[#FACC15]/50",
+                  "ice-ceramic":
+                    "bg-gradient-to-r from-[#7DD3FC]/30 via-[#38BDF8]/15 to-transparent border-[#7DD3FC]/85 shadow-[0_4px_24px_rgba(125,211,252,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.85)] ring-1 ring-[#7DD3FC]/50",
+                  "royal-slate":
+                    "bg-gradient-to-r from-[#2563EB]/30 via-[#3B82F6]/15 to-transparent border-[#3B82F6]/85 shadow-[0_4px_24px_rgba(37,99,235,0.4),inset_0_1px_1.5px_rgba(255,255,255,0.7)] ring-1 ring-[#2563EB]/50",
+                  "cyan-slate":
+                    "bg-gradient-to-r from-[#00B4D8]/30 via-[#00B4D8]/15 to-transparent border-[#00B4D8]/85 shadow-[0_4px_24px_rgba(0,180,216,0.4),inset_0_1px_1.5px_rgba(255,255,255,0.7)] ring-1 ring-[#00B4D8]/50",
+                  "acrylic-glass":
+                    "bg-gradient-to-r from-[#EAB308]/25 via-[#FDE047]/12 to-transparent border-[#EAB308]/85 shadow-[0_4px_24px_rgba(234,179,8,0.35),inset_0_1px_1.5px_rgba(255,255,255,0.8)] ring-1 ring-[#EAB308]/50",
+                }
+
                 return (
                   <button
                     key={t.id}
@@ -1204,23 +1229,39 @@ function HoverNoteSection({
                       }))
                     }}
                     className={cn(
-                      "relative px-3 py-2 text-[12px] font-medium rounded-2xl border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group select-none backdrop-blur-xl",
+                      "relative px-2.5 py-2 text-[12px] rounded-[18px] border text-left transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 group select-none backdrop-blur-xl",
                       isActive
-                        ? "bg-white/20 dark:bg-white/15 text-foreground border-white/40 dark:border-white/30 shadow-[0_4px_20px_rgba(0,0,0,0.25),inset_0_1px_1.5px_rgba(255,255,255,0.5)] font-semibold ring-1 ring-white/20"
-                        : "bg-white/[0.04] hover:bg-white/[0.09] dark:bg-white/[0.04] dark:hover:bg-white/[0.08] border-white/10 dark:border-white/10 text-foreground/90 hover:text-foreground hover:border-white/20 hover:shadow-md"
+                        ? themeActiveGradients[t.id] || "bg-white/15 border-white/30 text-white font-semibold"
+                        : "bg-white/[0.03] hover:bg-white/[0.08] dark:bg-white/[0.03] dark:hover:bg-white/[0.07] border-white/10 dark:border-white/[0.08] text-foreground/90 hover:text-foreground hover:border-white/20 hover:shadow-md"
                     )}
                   >
-                    <span className="truncate flex items-center gap-2.5">
+                    <div className="flex items-center gap-3 min-w-0">
                       <LiquidGlassCardIcon themeId={t.id} size="md" active={isActive} />
-                      <span className="truncate font-medium tracking-tight">{t.shortLabel}</span>
-                    </span>
-                    <span
-                      className="relative size-3.5 rounded-full shrink-0 border border-white/30 transition-transform duration-200 group-hover:scale-110"
-                      style={{
-                        backgroundColor: t.previewColor,
-                        boxShadow: `0 0 10px ${t.previewColor}80, inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1.5px rgba(0,0,0,0.4)`,
-                      }}
-                    />
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-xs text-foreground tracking-tight leading-tight truncate">
+                          {t.shortLabel}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground/80 font-mono tracking-tight truncate mt-0.5">
+                          {themeSubtitles[t.id] || t.description}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="relative size-4 shrink-0 flex items-center justify-center">
+                      {isActive && (
+                        <span
+                          className="absolute inset-0 rounded-full animate-ping opacity-35"
+                          style={{ backgroundColor: t.previewColor }}
+                        />
+                      )}
+                      <span
+                        className="relative size-3.5 rounded-full border border-white/40 shadow-md transition-transform duration-200 group-hover:scale-115"
+                        style={{
+                          backgroundColor: t.previewColor,
+                          boxShadow: `0 0 10px ${t.previewColor}99, inset 0 1px 1px rgba(255,255,255,0.9), inset 0 -1px 1.5px rgba(0,0,0,0.5)`,
+                        }}
+                      />
+                    </div>
                   </button>
                 )
               })}
