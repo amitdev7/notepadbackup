@@ -9,6 +9,7 @@ import {
   eventToKeybindSpec,
   kbd,
   ZEN_MODE_PRESETS,
+  HIDE_MOUSE_PRESETS,
 } from "../lib/shortcuts.ts"
 import {
   useShellStore,
@@ -29,7 +30,22 @@ assert.equal(
   true,
   "DEFAULT_PREFERENCES.zenModeExitHint must default to true"
 )
-console.log("  ✓ DEFAULT_PREFERENCES has correct zenModeKeybind and zenModeExitHint")
+assert.equal(
+  DEFAULT_PREFERENCES.hideMouseKeybind,
+  "alt+m",
+  "DEFAULT_PREFERENCES.hideMouseKeybind must default to 'alt+m'"
+)
+assert.equal(
+  DEFAULT_PREFERENCES.autoHideMouseInZenMode,
+  false,
+  "DEFAULT_PREFERENCES.autoHideMouseInZenMode must default to false"
+)
+assert.equal(
+  DEFAULT_PREFERENCES.revealMouseOnMove,
+  true,
+  "DEFAULT_PREFERENCES.revealMouseOnMove must default to true"
+)
+console.log("  ✓ DEFAULT_PREFERENCES has correct zenModeKeybind, hideMouseKeybind, and mouse view preferences")
 
 // Test store updater
 useShellStore.getState().setZenModeKeybind("f11")
@@ -39,6 +55,18 @@ assert.equal(
   "setZenModeKeybind('f11') must update preferences.zenModeKeybind"
 )
 console.log("  ✓ setZenModeKeybind updates store preferences")
+
+useShellStore.getState().setHideMouseKeybind("m")
+assert.equal(
+  useShellStore.getState().preferences.hideMouseKeybind,
+  "m",
+  "setHideMouseKeybind('m') must update preferences.hideMouseKeybind"
+)
+useShellStore.getState().setAutoHideMouseInZenMode(true)
+assert.equal(useShellStore.getState().preferences.autoHideMouseInZenMode, true)
+useShellStore.getState().setRevealMouseOnMove(false)
+assert.equal(useShellStore.getState().preferences.revealMouseOnMove, false)
+console.log("  ✓ setHideMouseKeybind and mouse view options update store preferences")
 
 useShellStore.getState().setZenModeExitHint(false)
 assert.equal(
@@ -50,8 +78,14 @@ console.log("  ✓ setZenModeExitHint updates store preferences")
 
 // Reset to default
 useShellStore.getState().setZenModeKeybind("mod+\\")
+useShellStore.getState().setHideMouseKeybind("alt+m")
+useShellStore.getState().setAutoHideMouseInZenMode(false)
+useShellStore.getState().setRevealMouseOnMove(true)
 useShellStore.getState().setZenModeExitHint(true)
 assert.equal(useShellStore.getState().preferences.zenModeKeybind, "mod+\\")
+assert.equal(useShellStore.getState().preferences.hideMouseKeybind, "alt+m")
+assert.equal(useShellStore.getState().preferences.autoHideMouseInZenMode, false)
+assert.equal(useShellStore.getState().preferences.revealMouseOnMove, true)
 assert.equal(useShellStore.getState().preferences.zenModeExitHint, true)
 console.log("  ✓ Reset to default verified")
 
@@ -64,7 +98,14 @@ assert.ok(ZEN_MODE_PRESETS.some((p) => p.spec === "z"))
 assert.ok(ZEN_MODE_PRESETS.some((p) => p.spec === "alt+z"))
 assert.ok(ZEN_MODE_PRESETS.some((p) => p.spec === "mod+h"))
 assert.ok(ZEN_MODE_PRESETS.some((p) => p.spec === "mod+shift+f"))
-console.log(`  ✓ All ${ZEN_MODE_PRESETS.length} presets valid`)
+console.log(`  ✓ All ${ZEN_MODE_PRESETS.length} Zen Mode presets valid`)
+
+assert.ok(Array.isArray(HIDE_MOUSE_PRESETS) && HIDE_MOUSE_PRESETS.length >= 4)
+assert.ok(HIDE_MOUSE_PRESETS.some((p) => p.spec === "alt+m"))
+assert.ok(HIDE_MOUSE_PRESETS.some((p) => p.spec === "mod+shift+m"))
+assert.ok(HIDE_MOUSE_PRESETS.some((p) => p.spec === "m"))
+assert.ok(HIDE_MOUSE_PRESETS.some((p) => p.spec === "f10"))
+console.log(`  ✓ All ${HIDE_MOUSE_PRESETS.length} Hide Mouse presets valid`)
 
 // 3. Keybind Matching Engine (matchesKeybind)
 console.log("\n3. Keybind Matching Engine:")
@@ -113,7 +154,16 @@ const eModShiftF = makeKeyEvent({ key: "F", code: "KeyF", ctrlKey: true, shiftKe
 assert.equal(matchesKeybind(eModShiftF, "mod+shift+f"), true, "Ctrl+Shift+F must match 'mod+shift+f'")
 assert.equal(matchesKeybind(makeKeyEvent({ key: "F", code: "KeyF", ctrlKey: true }), "mod+shift+f"), false, "Ctrl+F must not match 'mod+shift+f'")
 
-// 3f. Edge Cases & Safety
+// 3f. Hide Mouse keybinds ("alt+m", "m")
+const eAltM = makeKeyEvent({ key: "m", code: "KeyM", altKey: true })
+assert.equal(matchesKeybind(eAltM, "alt+m"), true, "Alt+M must match 'alt+m'")
+assert.equal(matchesKeybind(makeKeyEvent({ key: "m", code: "KeyM" }), "alt+m"), false, "Plain M must not match 'alt+m'")
+
+const eSingleM = makeKeyEvent({ key: "m", code: "KeyM" })
+assert.equal(matchesKeybind(eSingleM, "m"), true, "Single M must match 'm'")
+assert.equal(matchesKeybind(makeKeyEvent({ key: "m", code: "KeyM", ctrlKey: true }), "m"), false, "Ctrl+M must not match 'm'")
+
+// 3g. Edge Cases & Safety
 assert.equal(matchesKeybind(eF11, ""), false, "Empty keybind string must return false")
 assert.equal(matchesKeybind(eF11, "   "), false, "Whitespace keybind must return false")
 console.log("  ✓ matchesKeybind correctly evaluates all modifier combinations and keys")

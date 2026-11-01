@@ -276,6 +276,9 @@ export interface ShellPreferences {
   temporarySettings: TemporaryElementsPreferences
   zenModeKeybind: string
   zenModeExitHint: boolean
+  hideMouseKeybind: string
+  autoHideMouseInZenMode: boolean
+  revealMouseOnMove: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -310,6 +313,9 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   temporarySettings: DEFAULT_TEMPORARY_PREFERENCES,
   zenModeKeybind: "mod+\\",
   zenModeExitHint: true,
+  hideMouseKeybind: "alt+m",
+  autoHideMouseInZenMode: false,
+  revealMouseOnMove: true,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -362,6 +368,9 @@ function loadInitialPreferences(): ShellPreferences {
         },
         zenModeKeybind: typeof parsed.zenModeKeybind === "string" ? parsed.zenModeKeybind : "mod+\\",
         zenModeExitHint: parsed.zenModeExitHint !== undefined ? Boolean(parsed.zenModeExitHint) : true,
+        hideMouseKeybind: typeof parsed.hideMouseKeybind === "string" ? parsed.hideMouseKeybind : "alt+m",
+        autoHideMouseInZenMode: parsed.autoHideMouseInZenMode !== undefined ? Boolean(parsed.autoHideMouseInZenMode) : false,
+        revealMouseOnMove: parsed.revealMouseOnMove !== undefined ? Boolean(parsed.revealMouseOnMove) : true,
       }
     }
   } catch { }
@@ -419,6 +428,9 @@ interface ShellState {
   updatePreferences: (updates: Partial<ShellPreferences>) => void
   setZenModeKeybind: (keybind: string) => void
   setZenModeExitHint: (show: boolean) => void
+  setHideMouseKeybind: (keybind: string) => void
+  setAutoHideMouseInZenMode: (enabled: boolean) => void
+  setRevealMouseOnMove: (enabled: boolean) => void
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   toggleToolbar: () => void
   toggleDock: () => void
@@ -652,6 +664,18 @@ export const useShellStore = create<ShellState>((set, get) => ({
 
   setZenModeExitHint: (zenModeExitHint) => {
     get().updatePreferences({ zenModeExitHint })
+  },
+
+  setHideMouseKeybind: (hideMouseKeybind) => {
+    get().updatePreferences({ hideMouseKeybind })
+  },
+
+  setAutoHideMouseInZenMode: (autoHideMouseInZenMode) => {
+    get().updatePreferences({ autoHideMouseInZenMode })
+  },
+
+  setRevealMouseOnMove: (revealMouseOnMove) => {
+    get().updatePreferences({ revealMouseOnMove })
   },
 
   toggleToolbar: () => {

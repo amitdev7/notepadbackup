@@ -31,6 +31,7 @@ import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type H
 import { pickAt, pickInRect, pickSoftAt, pickHoverTarget } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { matchesKeybind, kbd } from "@/lib/shortcuts"
+import { cn } from "@/lib/utils"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
 import { dropFiles } from "@/lib/clipboard"
 import { editTarget, hasEditableText } from "@/lib/canvas/edit-target"
@@ -53,7 +54,6 @@ import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
 import { TemporaryCountdownOverlay } from "./temporary-countdown-overlay"
 import { initExpirationEngine } from "@/lib/canvas/expiration-manager"
-import { cn } from "@/lib/utils"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -228,6 +228,10 @@ export function Canvas() {
   const isViewer = effectiveRole === "viewer"
 
   const perfSettings = useShellStore((s) => s.preferences.performanceSettings)
+  const cursorHidden = useSquig((s) => s.cursorHidden)
+  const revealMouseOnMove = useShellStore((s) => s.preferences.revealMouseOnMove ?? true)
+  const [temporarilyRevealed, setTemporarilyRevealed] = useState(false)
+  const revealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [canvasSize, setCanvasSize] = useState({ w: 1920, h: 1080 })
 
   useEffect(() => {
@@ -1543,6 +1547,15 @@ export function Canvas() {
           return noteTarget
         })
 
+        // Auto-reveal cursor temporarily on pointer movement if revealMouseOnMove is enabled
+        if (cursorHidden && revealMouseOnMove) {
+          setTemporarilyRevealed(true)
+          if (revealTimerRef.current) clearTimeout(revealTimerRef.current)
+          revealTimerRef.current = setTimeout(() => {
+            setTemporarilyRevealed(false)
+          }, 2200)
+        }
+
         // Only update client cursor position if an active hover note target exists, avoiding 144Hz full-canvas re-renders
         if (noteTarget) {
           setPointerClientPos((prev) => {
@@ -1554,7 +1567,7 @@ export function Canvas() {
         }
       })
     },
-    [st, toWorld, isSpacebarHeld]
+    [st, toWorld, isSpacebarHeld, cursorHidden, revealMouseOnMove]
   )
 
   const onPointerLeave = useCallback(() => {
@@ -1671,6 +1684,9 @@ export function Canvas() {
         const willHide = !s.uiHidden
         s.setUiHidden(willHide)
         if (willHide) {
+          if (useShellStore.getState().preferences.autoHideMouseInZenMode) {
+            s.setCursorHidden(true)
+          }
           s.setNotice(`Pure Canvas Mode: Press ${kbd(zenModeKeybind)} or Esc to restore interface`)
         } else {
           s.setNotice("Interface restored")
@@ -1678,10 +1694,25 @@ export function Canvas() {
         return
       }
 
-      if (s.uiHidden && e.key === "Escape") {
+      // Hide Mouse Cursor (Clean View Mode) shortcut toggle
+      const hideMouseKeybind = useShellStore.getState().preferences.hideMouseKeybind || "alt+m"
+      if (matchesKeybind(e, hideMouseKeybind)) {
         e.preventDefault()
-        s.setUiHidden(false)
-        s.setNotice("Interface restored")
+        const willHideCursor = !s.cursorHidden
+        s.setCursorHidden(willHideCursor)
+        if (willHideCursor) {
+          s.setNotice(`Mouse cursor hidden: Press ${kbd(hideMouseKeybind)} or Esc to restore`)
+        } else {
+          s.setNotice("Mouse cursor restored")
+        }
+        return
+      }
+
+      if ((s.uiHidden || s.cursorHidden) && e.key === "Escape") {
+        e.preventDefault()
+        if (s.uiHidden) s.setUiHidden(false)
+        if (s.cursorHidden) s.setCursorHidden(false)
+        s.setNotice("Interface and cursor restored")
         return
       }
 
@@ -2043,13 +2074,18 @@ export function Canvas() {
                   ? (altHeld ? "var(--cursor-pointer, copy)" : "var(--cursor-move, move)")
                   : "var(--cursor-default, default)"
 
+  const isCursorEffectivelyHidden = cursorHidden && !temporarilyRevealed
+
   return (
     <div
       ref={containerRef}
       tabIndex={-1}
-      className="absolute inset-0 overflow-hidden touch-none outline-none select-none"
+      className={cn(
+        "absolute inset-0 overflow-hidden touch-none outline-none select-none",
+        isCursorEffectivelyHidden && "cursor-none [&_*]:!cursor-none"
+      )}
       style={{
-        cursor: cursorStyle,
+        cursor: isCursorEffectivelyHidden ? "none" : cursorStyle,
         backgroundColor: "var(--sq-bg)",
         backgroundImage: grid ? "radial-gradient(circle, var(--sq-grid) 1px, transparent 1px)" : "none",
         backgroundSize: `${24 * v.zoom}px ${24 * v.zoom}px`,
@@ -2101,7 +2137,7 @@ export function Canvas() {
               strokeLinejoin="round"
             />
           )}
-          {placingDef && cursor && (
+          {placingDef && cursor && !isCursorEffectivelyHidden && (
             <g
               transform={`translate(${cursor[0] - placingDef.size.w / 2} ${cursor[1] - placingDef.size.h / 2})`}
               opacity={0.45}

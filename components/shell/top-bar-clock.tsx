@@ -85,12 +85,16 @@ export function TopBarClock({
     })
   }, [now, activeTimezone, clockPrefs.format24h, clockPrefs.showSeconds, calibration?.offsetMs])
 
-  // Stable container width to eliminate layout shifts and rapid capsule resizing as seconds tick
+  // Fixed, mathematically constant width for the live time slot across any second or digit tick
   const timeWidthClass = useMemo(() => {
     if (!clockPrefs.format24h) {
-      return clockPrefs.showSeconds ? "w-[80px]" : "w-[56px]"
+      return clockPrefs.showSeconds
+        ? "w-[88px] min-w-[88px] max-w-[88px]"
+        : "w-[62px] min-w-[62px] max-w-[62px]"
     } else {
-      return clockPrefs.showSeconds ? "w-[58px]" : "w-[40px]"
+      return clockPrefs.showSeconds
+        ? "w-[66px] min-w-[66px] max-w-[66px]"
+        : "w-[44px] min-w-[44px] max-w-[44px]"
     }
   }, [clockPrefs.format24h, clockPrefs.showSeconds])
 
@@ -220,21 +224,23 @@ export function TopBarClock({
       <div
         className={cn(
           isDock
-            ? "flex items-center justify-center px-2 py-1 rounded-xl text-stone-400 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
-            : "flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-stone-400 select-none",
+            ? "flex items-center justify-center px-2 py-1 rounded-xl text-stone-400 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50 shrink-0 flex-none"
+            : "flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-stone-400 select-none shrink-0 flex-none",
           className
         )}
       >
-        <Clock size={13} className="text-stone-400 shrink-0" />
-        <span
+        <Clock size={13} className="text-stone-400 shrink-0 flex-none" />
+        <div
           className={cn(
-            "font-mono font-semibold text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 whitespace-nowrap",
+            "font-mono font-medium text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 flex-none whitespace-nowrap",
             timeWidthClass
           )}
-          style={{ fontVariantNumeric: "tabular-nums" }}
+          style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
         >
-          --:--
-        </span>
+          <span className="inline-block tabular-nums text-right w-[2ch] shrink-0 flex-none">--</span>
+          <span className="inline-block select-none text-muted-foreground/60 w-[0.7ch] text-center shrink-0 flex-none">:</span>
+          <span className="inline-block tabular-nums text-center w-[2ch] shrink-0 flex-none">--</span>
+        </div>
       </div>
     )
   }
@@ -249,34 +255,67 @@ export function TopBarClock({
         type="button"
         className={cn(
           isDock
-            ? "relative flex items-center justify-center px-2 py-1 rounded-xl cursor-pointer select-none outline-none text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
-            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-colors duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200",
+            ? "relative flex items-center justify-center px-2 py-1 rounded-xl cursor-pointer select-none outline-none text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50 shrink-0 flex-none"
+            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-colors duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200 shrink-0 flex-none",
           className
         )}
         title={`${snapshot.fullDate} · ${snapshot.timezone} (${snapshot.utcOffset})`}
         aria-label={`Current time: ${snapshot.formattedTime}, ${displayLocation ? `location: ${displayLocation}` : ""}`}
       >
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Clock size={13} className={cn("text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors shrink-0", isDock && "size-3.5")} />
-          <span
+        <div className="flex items-center gap-1.5 shrink-0 flex-none">
+          <Clock
+            size={13}
             className={cn(
-              "font-mono font-semibold text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 whitespace-nowrap",
+              "text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors shrink-0 flex-none",
+              isDock && "size-3.5"
+            )}
+          />
+          <div
+            className={cn(
+              "font-mono font-medium text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 flex-none whitespace-nowrap",
               timeWidthClass
             )}
-            style={{ fontVariantNumeric: "tabular-nums" }}
+            style={{ fontVariantNumeric: "tabular-nums lining-nums" }}
           >
-            {snapshot.formattedTime}
-          </span>
+            {/* Hour slot: 2 characters wide, right-aligned so single-digit hours don't shift minutes/seconds */}
+            <span className="inline-block tabular-nums text-right w-[2ch] shrink-0 flex-none">
+              {snapshot.hours}
+            </span>
+            <span className="inline-block select-none text-muted-foreground/60 w-[0.7ch] text-center shrink-0 flex-none">
+              :
+            </span>
+            {/* Minute slot: 2 characters wide */}
+            <span className="inline-block tabular-nums text-center w-[2ch] shrink-0 flex-none">
+              {snapshot.minutes}
+            </span>
+            {/* Optional second slot: 2 characters wide with accent color */}
+            {clockPrefs.showSeconds && (
+              <>
+                <span className="inline-block select-none text-muted-foreground/60 w-[0.7ch] text-center shrink-0 flex-none">
+                  :
+                </span>
+                <span className="inline-block tabular-nums text-center w-[2ch] text-[var(--ui-accent,#007AFF)] dark:text-[#0A84FF] shrink-0 flex-none font-semibold">
+                  {snapshot.seconds}
+                </span>
+              </>
+            )}
+            {/* Optional AM/PM period indicator: fixed width */}
+            {snapshot.ampm && (
+              <span className="inline-block uppercase select-none text-[9.5px] font-semibold text-muted-foreground/80 w-[2.2ch] text-center ml-0.5 shrink-0 flex-none">
+                {snapshot.ampm}
+              </span>
+            )}
+          </div>
         </div>
 
         {!isDock && clockPrefs.showLocation && displayLocation && (
-          <div className="hidden md:flex items-center gap-1 text-[10px] text-stone-500 dark:text-stone-400 font-sans truncate max-w-[150px]">
-            <MapPin size={11} className="text-rose-500 shrink-0" />
+          <div className="hidden md:flex items-center gap-1 text-[10px] text-stone-500 dark:text-stone-400 font-sans truncate max-w-[150px] shrink-0 flex-none">
+            <MapPin size={11} className="text-rose-500 shrink-0 flex-none" />
             <span className="truncate">{cityLabel}</span>
           </div>
         )}
 
-        <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150 shrink-0" />
+        <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150 shrink-0 flex-none" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent

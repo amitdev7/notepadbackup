@@ -108,7 +108,7 @@ import {
   Globe,
   EyeSlash,
 } from "@phosphor-icons/react"
-import { kbd, eventToKeybindSpec, ZEN_MODE_PRESETS } from "@/lib/shortcuts"
+import { kbd, eventToKeybindSpec, ZEN_MODE_PRESETS, HIDE_MOUSE_PRESETS } from "@/lib/shortcuts"
 
 interface SectionItem {
   id: SettingsSectionId
@@ -579,18 +579,27 @@ function TypographyPreview({
 function KeyboardSettingsSection() {
   const zenModeKeybind = useShellStore((s) => s.preferences.zenModeKeybind || "mod+\\")
   const zenModeExitHint = useShellStore((s) => s.preferences.zenModeExitHint ?? true)
+  const hideMouseKeybind = useShellStore((s) => s.preferences.hideMouseKeybind || "alt+m")
+  const autoHideMouseInZenMode = useShellStore((s) => s.preferences.autoHideMouseInZenMode ?? false)
+  const revealMouseOnMove = useShellStore((s) => s.preferences.revealMouseOnMove ?? true)
+
   const setZenModeKeybind = useShellStore((s) => s.setZenModeKeybind)
   const setZenModeExitHint = useShellStore((s) => s.setZenModeExitHint)
+  const setHideMouseKeybind = useShellStore((s) => s.setHideMouseKeybind)
+  const setAutoHideMouseInZenMode = useShellStore((s) => s.setAutoHideMouseInZenMode)
+  const setRevealMouseOnMove = useShellStore((s) => s.setRevealMouseOnMove)
+
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const setUiHidden = useSquig((s) => s.setUiHidden)
+  const cursorHidden = useSquig((s) => s.cursorHidden)
+  const setCursorHidden = useSquig((s) => s.setCursorHidden)
   const setNotice = useSquig((s) => s.setNotice)
 
-  const [recording, setRecording] = useState(false)
-  const [justSaved, setJustSaved] = useState(false)
-  const recordRef = useRef<HTMLButtonElement>(null)
+  const [recordingTarget, setRecordingTarget] = useState<"zen" | "mouse" | null>(null)
+  const [justSavedTarget, setJustSavedTarget] = useState<"zen" | "mouse" | null>(null)
 
   useEffect(() => {
-    if (!recording) return
+    if (!recordingTarget) return
 
     const handleKeyDown = (e: KeyboardEvent) => {
       e.preventDefault()
@@ -598,16 +607,21 @@ function KeyboardSettingsSection() {
 
       // Allow Escape to cancel recording if no other keys pressed
       if (e.key === "Escape" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
-        setRecording(false)
+        setRecordingTarget(null)
         return
       }
 
       const spec = eventToKeybindSpec(e)
       if (spec) {
-        setZenModeKeybind(spec)
-        setRecording(false)
-        setJustSaved(true)
-        setTimeout(() => setJustSaved(false), 2000)
+        if (recordingTarget === "zen") {
+          setZenModeKeybind(spec)
+        } else if (recordingTarget === "mouse") {
+          setHideMouseKeybind(spec)
+        }
+        const target = recordingTarget
+        setRecordingTarget(null)
+        setJustSavedTarget(target)
+        setTimeout(() => setJustSavedTarget(null), 2000)
       }
     }
 
@@ -615,17 +629,26 @@ function KeyboardSettingsSection() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown, { capture: true })
     }
-  }, [recording, setZenModeKeybind])
+  }, [recordingTarget, setZenModeKeybind, setHideMouseKeybind])
 
   const handleTestPureCanvas = () => {
     setSettingsOpen(false)
     setUiHidden(true)
+    if (autoHideMouseInZenMode) {
+      setCursorHidden(true)
+    }
     setNotice(`Pure Canvas Mode: Press ${kbd(zenModeKeybind)} or Esc to restore interface.`)
+  }
+
+  const handleToggleCursor = () => {
+    const next = !cursorHidden
+    setCursorHidden(next)
+    setNotice(next ? `Mouse cursor hidden: Press ${kbd(hideMouseKeybind)} to restore` : "Mouse cursor restored")
   }
 
   return (
     <div className="space-y-6">
-      {/* Zen Mode / Pure Canvas Hero Card */}
+      {/* 1. Zen Mode / Pure Canvas Hero Card */}
       <div className="relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-50/70 via-background to-blue-500/5 p-4 sm:p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/20 dark:via-background dark:to-blue-900/10">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -662,24 +685,23 @@ function KeyboardSettingsSection() {
               </kbd>
 
               <button
-                ref={recordRef}
                 type="button"
-                onClick={() => setRecording(!recording)}
+                onClick={() => setRecordingTarget(recordingTarget === "zen" ? null : "zen")}
                 className={cn(
                   "h-8 px-3 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-1.5",
-                  recording
+                  recordingTarget === "zen"
                     ? "bg-amber-500 text-white animate-pulse shadow-md shadow-amber-500/20"
-                    : justSaved
+                    : justSavedTarget === "zen"
                     ? "bg-emerald-600 text-white"
                     : "bg-foreground text-background hover:opacity-90"
                 )}
               >
-                {recording ? (
+                {recordingTarget === "zen" ? (
                   <>
                     <span className="size-1.5 rounded-full bg-white animate-ping" />
                     Press any key...
                   </>
-                ) : justSaved ? (
+                ) : justSavedTarget === "zen" ? (
                   <>
                     <Check size={14} weight="bold" />
                     Keybind Saved!
@@ -702,7 +724,7 @@ function KeyboardSettingsSection() {
             </div>
           </div>
 
-          {recording && (
+          {recordingTarget === "zen" && (
             <div className="mt-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-500/30 p-2 text-center text-xs text-amber-800 dark:text-amber-300 animate-in fade-in">
               Press any key or key combination now (e.g., <strong>F11</strong>, <strong>Z</strong>, <strong>Alt+Z</strong>, <strong>Ctrl+H</strong>, <strong>Ctrl+\</strong>). Press <em>Esc</em> to cancel.
             </div>
@@ -722,8 +744,8 @@ function KeyboardSettingsSection() {
                     type="button"
                     onClick={() => {
                       setZenModeKeybind(preset.spec)
-                      setJustSaved(true)
-                      setTimeout(() => setJustSaved(false), 2000)
+                      setJustSavedTarget("zen")
+                      setTimeout(() => setJustSavedTarget(null), 2000)
                     }}
                     className={cn(
                       "px-2.5 py-1 rounded-md text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 border",
@@ -763,6 +785,161 @@ function KeyboardSettingsSection() {
             <Sparkle size={14} weight="bold" />
             Enter Pure Canvas Mode Now
           </button>
+        </div>
+      </div>
+
+      {/* 2. Hide Mouse Cursor (Clean View Mode) Hero Card */}
+      <div className="relative overflow-hidden rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-50/70 via-background to-violet-500/5 p-4 sm:p-5 shadow-sm dark:border-violet-500/20 dark:from-violet-950/20 dark:via-background dark:to-violet-900/10">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white shadow-md shadow-violet-500/20">
+              <Cursor size={22} weight="bold" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-foreground">Hide Mouse Cursor (Clean View Mode)</h3>
+                <span className="rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] font-semibold text-violet-600 dark:text-violet-400">
+                  Spectator / Presenter Mode
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Hide the mouse pointer and crosshair on the canvas for an unobstructed, gallery-clean presentation and view mode.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Current Keybind & Recording Area */}
+        <div className="mt-4 rounded-xl border border-border/80 bg-background/80 p-3.5 backdrop-blur-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-semibold text-foreground block">Active Mouse Hide Keybind</span>
+              <span className="text-[11px] text-muted-foreground">
+                Click &quot;Record Custom Keybind&quot; or choose a popular preset below
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <kbd className="inline-flex h-8 min-w-[70px] items-center justify-center rounded-lg border border-border/80 bg-muted/60 px-3 font-mono text-xs font-bold text-foreground shadow-2xs">
+                {kbd(hideMouseKeybind)}
+              </kbd>
+
+              <button
+                type="button"
+                onClick={() => setRecordingTarget(recordingTarget === "mouse" ? null : "mouse")}
+                className={cn(
+                  "h-8 px-3 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-1.5",
+                  recordingTarget === "mouse"
+                    ? "bg-amber-500 text-white animate-pulse shadow-md shadow-amber-500/20"
+                    : justSavedTarget === "mouse"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-foreground text-background hover:opacity-90"
+                )}
+              >
+                {recordingTarget === "mouse" ? (
+                  <>
+                    <span className="size-1.5 rounded-full bg-white animate-ping" />
+                    Press any key...
+                  </>
+                ) : justSavedTarget === "mouse" ? (
+                  <>
+                    <Check size={14} weight="bold" />
+                    Keybind Saved!
+                  </>
+                ) : (
+                  "Record Custom Keybind"
+                )}
+              </button>
+
+              {hideMouseKeybind !== "alt+m" && (
+                <button
+                  type="button"
+                  onClick={() => setHideMouseKeybind("alt+m")}
+                  className="size-8 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+                  title="Reset to default (Alt+M)"
+                >
+                  <ArrowCounterClockwise size={14} weight="bold" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {recordingTarget === "mouse" && (
+            <div className="mt-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-500/30 p-2 text-center text-xs text-amber-800 dark:text-amber-300 animate-in fade-in">
+              Press any key or key combination now (e.g., <strong>Alt+M</strong>, <strong>M</strong>, <strong>F10</strong>, <strong>Ctrl+Shift+M</strong>, <strong>Alt+C</strong>). Press <em>Esc</em> to cancel.
+            </div>
+          )}
+
+          {/* Preset Chips */}
+          <div className="mt-3 pt-3 border-t border-border/40">
+            <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase block mb-1.5">
+              Quick Selection Presets
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {HIDE_MOUSE_PRESETS.map((preset) => {
+                const isActive = hideMouseKeybind.toLowerCase() === preset.spec.toLowerCase()
+                return (
+                  <button
+                    key={preset.spec}
+                    type="button"
+                    onClick={() => {
+                      setHideMouseKeybind(preset.spec)
+                      setJustSavedTarget("mouse")
+                      setTimeout(() => setJustSavedTarget(null), 2000)
+                    }}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 border",
+                      isActive
+                        ? "border-violet-500 bg-violet-500/10 text-violet-600 dark:text-violet-400 font-semibold shadow-2xs"
+                        : "border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <span>{kbd(preset.spec)}</span>
+                    <span className="text-[10px] opacity-70 font-sans">({preset.label.split("(")[0].trim()})</span>
+                    {isActive && <Check size={12} weight="bold" />}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Behavior Toggles & Test Drive */}
+        <div className="mt-4 space-y-3 pt-3 border-t border-violet-500/20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5">
+                <Switch
+                  id="auto-hide-mouse-zen"
+                  checked={autoHideMouseInZenMode}
+                  onCheckedChange={setAutoHideMouseInZenMode}
+                />
+                <label htmlFor="auto-hide-mouse-zen" className="text-xs text-foreground cursor-pointer select-none">
+                  Auto-hide mouse pointer when entering Pure Canvas Mode
+                </label>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <Switch
+                  id="reveal-mouse-move"
+                  checked={revealMouseOnMove}
+                  onCheckedChange={setRevealMouseOnMove}
+                />
+                <label htmlFor="reveal-mouse-move" className="text-xs text-foreground cursor-pointer select-none">
+                  Briefly reveal cursor on mouse movement (auto-hides after 2s idle)
+                </label>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleToggleCursor}
+              className="px-3.5 py-1.5 rounded-lg border border-violet-500/40 bg-violet-600/10 hover:bg-violet-600 text-violet-700 dark:text-violet-300 hover:text-white text-xs font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs self-start sm:self-auto shrink-0"
+            >
+              <Cursor size={14} weight="bold" />
+              {cursorHidden ? "Show Mouse Cursor Now" : "Hide Mouse Cursor Now"}
+            </button>
+          </div>
         </div>
       </div>
 

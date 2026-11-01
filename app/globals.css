@@ -13,7 +13,7 @@
 @font-face {
   font-family: "Cascadia";
   src: url("/fonts/Cascadia.woff2") format("woff2");
-  font-weight: 400;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -32,7 +32,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", var(--font-sans), system-ui, sans-serif;
-  --font-mono: "SF Mono", Menlo, Monaco, "Cascadia", var(--font-geist-mono), monospace;
+  --font-mono: "SF Mono", Menlo, Monaco, "Cascadia", Consolas, "Courier New", var(--font-geist-mono), monospace;
   --font-heading: var(--font-sans);
   --font-sketch: "Virgil", var(--font-sketch), "Patrick Hand", "Comic Sans MS", cursive;
   --font-serif: var(--font-serif), "Source Serif 4", ui-serif, Georgia, serif;

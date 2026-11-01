@@ -80,6 +80,14 @@ export const ZEN_MODE_PRESETS: KeybindPreset[] = [
   { spec: "mod+shift+f", label: "Focus (⌘⇧F / Ctrl+Shift+F)", description: "Distraction-free focus mode" },
 ]
 
+export const HIDE_MOUSE_PRESETS: KeybindPreset[] = [
+  { spec: "alt+m", label: "Alt + M (Default)", description: "Convenient thumb toggle" },
+  { spec: "mod+shift+m", label: "⌘⇧M / Ctrl+Shift+M", description: "Standard hide mouse shortcut" },
+  { spec: "m", label: "Single Key (M)", description: "Fast one-key mouse toggle" },
+  { spec: "f10", label: "Function Key (F10)", description: "Clean spectator key" },
+  { spec: "alt+c", label: "Alt + C", description: "Clean cursor toggle" },
+]
+
 export function matchesKeybind(e: KeyboardEvent, spec: string): boolean {
   if (!spec || typeof spec !== "string") return false
   const parts = spec.toLowerCase().split("+").map((s) => s.trim()).filter(Boolean)

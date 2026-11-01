@@ -163,6 +163,8 @@ interface SquigState {
   arrowHead: boolean
   /** ⌘\ — everything but the canvas gets out of the way */
   uiHidden: boolean
+  /** Hide mouse pointer for clean presentation / spectator view mode */
+  cursorHidden: boolean
   shortcutsOpen: boolean
   /** ⌘K over selected text opens the link field instead of the palette */
   linkOpen: boolean
@@ -213,6 +215,8 @@ interface SquigState {
   setTransforming: (on: boolean) => void
   setArrowHead: (on: boolean) => void
   setUiHidden: (on: boolean) => void
+  setCursorHidden: (on: boolean) => void
+  toggleCursorHidden: () => void
   setShortcutsOpen: (on: boolean) => void
   setLinkOpen: (on: boolean) => void
   setTrashOpen: (on: boolean) => void
@@ -620,6 +624,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   transforming: false,
   arrowHead: true,
   uiHidden: false,
+  cursorHidden: false,
   shortcutsOpen: false,
   linkOpen: false,
   trashOpen: false,
@@ -823,6 +828,8 @@ export const useSquig = create<SquigState>((set, get) => ({
   setTransforming: (on) => set((s) => (s.transforming === on ? s : { transforming: on })),
   setArrowHead: (on) => set({ arrowHead: on }),
   setUiHidden: (on) => set({ uiHidden: on }),
+  setCursorHidden: (on: boolean) => set({ cursorHidden: on }),
+  toggleCursorHidden: () => set((s) => ({ cursorHidden: !s.cursorHidden })),
   setShortcutsOpen: (on) => set({ shortcutsOpen: on, commandOpen: false, contextMenu: null }),
   setLinkOpen: (on) => set({ linkOpen: on, contextMenu: null }),
   setTrashOpen: (on) => set({ trashOpen: on, commandOpen: false, contextMenu: null }),
