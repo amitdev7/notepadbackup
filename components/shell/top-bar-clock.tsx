@@ -85,6 +85,15 @@ export function TopBarClock({
     })
   }, [now, activeTimezone, clockPrefs.format24h, clockPrefs.showSeconds, calibration?.offsetMs])
 
+  // Stable container width to eliminate layout shifts and rapid capsule resizing as seconds tick
+  const timeWidthClass = useMemo(() => {
+    if (!clockPrefs.format24h) {
+      return clockPrefs.showSeconds ? "w-[80px]" : "w-[56px]"
+    } else {
+      return clockPrefs.showSeconds ? "w-[58px]" : "w-[40px]"
+    }
+  }, [clockPrefs.format24h, clockPrefs.showSeconds])
+
   // 1-second accurate ticker with visibility/focus resume
   useEffect(() => {
     setMounted(true)
@@ -216,8 +225,16 @@ export function TopBarClock({
           className
         )}
       >
-        <Clock size={13} className="text-stone-400" />
-        <span>--:--</span>
+        <Clock size={13} className="text-stone-400 shrink-0" />
+        <span
+          className={cn(
+            "font-mono font-semibold text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 whitespace-nowrap",
+            timeWidthClass
+          )}
+          style={{ fontVariantNumeric: "tabular-nums" }}
+        >
+          --:--
+        </span>
       </div>
     )
   }
@@ -233,15 +250,21 @@ export function TopBarClock({
         className={cn(
           isDock
             ? "relative flex items-center justify-center px-2 py-1 rounded-xl cursor-pointer select-none outline-none text-stone-700 dark:text-stone-300 hover:bg-stone-200/50 dark:hover:bg-stone-800/60 font-mono text-xs gap-1 border border-stone-200/50 dark:border-stone-700/50"
-            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-all duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200",
+            : "group tactile-press flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full outline-none transition-colors duration-150 cursor-pointer select-none hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 text-stone-800 dark:text-stone-200",
           className
         )}
         title={`${snapshot.fullDate} · ${snapshot.timezone} (${snapshot.utcOffset})`}
         aria-label={`Current time: ${snapshot.formattedTime}, ${displayLocation ? `location: ${displayLocation}` : ""}`}
       >
-        <div className="flex items-center gap-1.5">
-          <Clock size={13} className={cn("text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors", isDock && "size-3.5")} />
-          <span className="font-mono font-semibold text-[11px] tracking-tight">
+        <div className="flex items-center gap-1.5 shrink-0">
+          <Clock size={13} className={cn("text-muted-foreground group-hover:text-[var(--ui-accent,#007AFF)] transition-colors shrink-0", isDock && "size-3.5")} />
+          <span
+            className={cn(
+              "font-mono font-semibold text-[11px] tabular-nums tracking-normal select-none inline-flex items-center justify-center shrink-0 whitespace-nowrap",
+              timeWidthClass
+            )}
+            style={{ fontVariantNumeric: "tabular-nums" }}
+          >
             {snapshot.formattedTime}
           </span>
         </div>
@@ -253,7 +276,7 @@ export function TopBarClock({
           </div>
         )}
 
-        <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150" />
+        <CaretDown size={10} className="text-stone-400 group-hover:text-stone-600 dark:group-hover:text-stone-200 transition-transform duration-150 shrink-0" />
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
@@ -264,10 +287,10 @@ export function TopBarClock({
       >
         {/* Big Live Digital Clock Display */}
         <div className="p-3.5 rounded-2xl bg-gradient-to-b from-stone-100/90 to-stone-50/80 dark:from-stone-800/80 dark:to-stone-900/80 border border-stone-200/60 dark:border-stone-700/60 flex flex-col items-center justify-center text-center shadow-xs">
-          <div className="flex items-baseline gap-1.5 font-mono font-bold tracking-tight text-3xl text-stone-900 dark:text-stone-100">
-            <span>{snapshot.hours}:{snapshot.minutes}</span>
+          <div className="flex items-baseline gap-1.5 font-mono font-bold text-3xl text-stone-900 dark:text-stone-100 tabular-nums">
+            <span className="tabular-nums">{snapshot.hours}:{snapshot.minutes}</span>
             {clockPrefs.showSeconds && (
-              <span className="text-xl text-[#007AFF] dark:text-[#0A84FF]">
+              <span className="text-xl text-[#007AFF] dark:text-[#0A84FF] tabular-nums w-[2ch] inline-block text-left">
                 :{snapshot.seconds}
               </span>
             )}
