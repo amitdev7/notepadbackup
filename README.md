@@ -21,7 +21,7 @@ Designed for product thinkers, systems engineers, and students who think by draw
 [![pnpm](https://img.shields.io/badge/pnpm-10.4.1-F69220?style=flat-square&logo=pnpm)](https://pnpm.io/)
 [![Electron](https://img.shields.io/badge/Electron-45.2.1-47848F?style=flat-square&logo=electron)](https://www.electronjs.org/)
 [![Storage](https://img.shields.io/badge/Storage-IndexedDB%20(Local--First)-059669?style=flat-square)](docs/STORAGE.md)
-[![Verification](https://img.shields.io/badge/Tests-37%20Passed%20(100%25)-10B981?style=flat-square)](docs/TESTING.md)
+[![Verification](https://img.shields.io/badge/Tests-38%20Passed%20(100%25)-10B981?style=flat-square)](docs/TESTING.md)
 
 <br />
 
@@ -46,7 +46,7 @@ Designed for product thinkers, systems engineers, and students who think by draw
 
 | Perceived Latency | Viewport Motion | Privacy Model | Stroke Determinism | Verification Status | Storage Engine |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| **`0 ms`**<br/><sub>In-Memory Zustand</sub> | **`60 FPS`**<br/><sub>Sub-Pixel Vector Math</sub> | **`AES-256-GCM`**<br/><sub>Zero-Knowledge Hash</sub> | **`32-Bit Seeds`**<br/><sub>Deterministic Strokes</sub> | **`37 / 37 Passed`**<br/><sub>100% Suite Coverage</sub> | **`IndexedDB v2`**<br/><sub>100% Offline Autonomy</sub> |
+| **`0 ms`**<br/><sub>In-Memory Zustand</sub> | **`60 FPS`**<br/><sub>Sub-Pixel Vector Math</sub> | **`AES-256-GCM`**<br/><sub>Zero-Knowledge Hash</sub> | **`32-Bit Seeds`**<br/><sub>Deterministic Strokes</sub> | **`38 / 38 Passed`**<br/><sub>100% Suite Coverage</sub> | **`IndexedDB v2`**<br/><sub>100% Offline Autonomy</sub> |
 
 </div>
 
@@ -358,10 +358,10 @@ Zenithsui requires **zero environment variables** for offline local use. Externa
 
 ## Automated Testing and Quality Assurance
 
-Zenithsui includes **37 dedicated automated test suites** verifying mathematical invariants, collision geometry, security rules, and offline sync mechanics:
+Zenithsui includes **38 dedicated automated test suites** verifying mathematical invariants, collision geometry, security rules, and offline sync mechanics:
 
 ```bash
-# Run all 37 test suites sequentially
+# Run all 38 test suites sequentially
 pnpm test
 
 # Run TypeScript static type check
@@ -372,7 +372,7 @@ pnpm lint
 ```
 
 <details>
-<summary><strong>Click to view the 37 Test Suites Breakdown</strong></summary>
+<summary><strong>Click to view the 38 Test Suites Breakdown</strong></summary>
 
 <br />
 
@@ -382,7 +382,7 @@ pnpm lint
 | **Security & Networking** | `test-security.ts`<br/>`test-asset-proxy-security.ts`<br/>`test-phase2-permissions.ts`<br/>`test-phase2-sharing.ts`<br/>`test-phase2-invitations.ts`<br/>`test-phase2-public.ts`<br/>`test-wifi-auto-sync-consent.ts`<br/>`test-lan.ts` | 110 XSS input checks, 16 SSRF vector checks (RFC-1918/metadata blocklist), AES-256-GCM token encryption, Wi-Fi gateway peer isolation. |
 | **Storage & Database** | `test-database.ts`<br/>`test-sync.ts`<br/>`test-document-switching-race.ts`<br/>`test-production-hardening.ts` | PostgreSQL schemas, Supabase RLS policies, atomic autosave commits, async document switching race prevention. |
 | **Files & Media** | `test-document-attachments.ts`<br/>`test-pdf-service.ts` | Binary attachments, SHA-256 integrity, PDF rendering and page extraction. |
-| **Theming & Time** | `test-hover-notes.ts`<br/>`test-clock-location.ts` | 14 card theme styles, spring-lerp GPU motion, NTP time calibration, timezone resolution. |
+| **Theming, Keyboard & Time** | `test-hover-notes.ts`<br/>`test-clock-location.ts`<br/>`test-zen-mode-keybind.ts` | 14 card theme styles, spring-lerp GPU motion, NTP time calibration, timezone resolution, customizable pure canvas Zen Mode keybind. |
 | **Academic OS** | `test-academic-analytics.ts`<br/>`test-academic-syllabus.ts`<br/>`test-academic-planner.ts`<br/>`test-academic-guardian.ts`<br/>`test-academic-db.ts`<br/>`test-phase3-revision.ts`<br/>`test-phase3-practice.ts`<br/>`test-phase3-recommender.ts`<br/>`test-student-hub.ts`<br/>`test-functional-calendar.ts` | Curriculum progress heatmaps, spaced repetition Leitner boxes, focus time bounds, 4-mode calendar collision detection. |
 | **Desktop Shell** | `test-desktop-updater.ts` | Electron IPC context bridge, auto-update checking, NSIS installer integrity. |
 
@@ -447,7 +447,7 @@ notepadbackup/
 │   └── storage/          # IndexedDB persistence, document store, autosave
 ├── docs/                 # Detailed architectural specifications & runbooks
 ├── assets/branding/      # Official brand marks, screenshots, and social previews
-└── scripts/              # 37 test suites and standalone desktop build scripts
+└── scripts/              # 38 test suites and standalone desktop build scripts
 ```
 
 <p align="right"><a href="#zenithsui">back to top ↑</a></p>
@@ -463,7 +463,7 @@ Explore the comprehensive technical documentation available in [`docs/`](docs/RE
 - 📦 [**Installation Guide**](docs/INSTALLATION.md): Setup instructions for web, Docker, and Electron desktop.
 - ⚙️ [**Configuration Reference**](docs/CONFIGURATION.md): Complete directory of environment variables.
 - 🚀 [**Deployment Guide**](docs/DEPLOYMENT.md): Vercel edge deployment, Docker containerization, and release pipelines.
-- 🧪 [**Testing Runbook**](docs/TESTING.md): Overview of all 37 test suites and execution instructions.
+- 🧪 [**Testing Runbook**](docs/TESTING.md): Overview of all 38 test suites and execution instructions.
 - 💾 [**Storage & Local-First**](docs/STORAGE.md): IndexedDB schema, autosave mechanics, and format exports.
 - 🎯 [**Canvas Engine & Math**](docs/CANVAS-ENGINE.md): Screen-to-world transformations, seed determinism, and R-tree indexing.
 - 🔒 [**Security Architecture**](docs/SECURITY.md): Threat model, AES-GCM crypto, SSRF proxy guards, and Electron hardening.
@@ -485,7 +485,7 @@ Explore the comprehensive technical documentation available in [`docs/`](docs/RE
   - Client-side AES-256-GCM cryptographic sharing.
   - Peer-to-peer Wi-Fi LAN collaboration bridge.
   - Windows NSIS installer and portable desktop builds with auto-updates.
-  - 37 automated test suites.
+  - 38 automated test suites.
 - [ ] **v0.1.1 — Quality & Touch Hardening**
   - Enhanced gesture smoothing for high-DPI stylus devices.
   - Mobile viewport touch gesture optimizations.

@@ -1,12 +1,12 @@
 # Zenithsui Testing & Quality Assurance Runbook
 
-Zenithsui features an extensive, zero-dependency automated testing architecture composed of **37 specialized test suites** validating mathematical invariants, memory safety, collision geometry, cryptographic sharing, database security, and offline sync mechanics.
+Zenithsui features an extensive, zero-dependency automated testing architecture composed of **38 specialized test suites** validating mathematical invariants, memory safety, collision geometry, cryptographic sharing, database security, and offline sync mechanics.
 
 ---
 
 ## 1. Running Tests
 
-### Execute All 37 Test Suites
+### Execute All 38 Test Suites
 ```bash
 pnpm test
 ```
@@ -22,7 +22,7 @@ node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/t
 
 ---
 
-## 2. Test Suites Catalog (37 Suites)
+## 2. Test Suites Catalog (38 Suites)
 
 ### Canvas Math, Geometry & Interaction
 1. `scripts/test-geometry.ts`: 67 bounding box, intersection, coordinate conversion, and rotation checks.
@@ -74,6 +74,9 @@ node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/t
 
 ### Native Desktop & Auto-Updater
 37. `scripts/test-desktop-updater.ts`: 30 Electron native bridge, auto-update checking, and NSIS setup tests.
+
+### Zen Mode & Custom Shortcuts
+38. `scripts/test-zen-mode-keybind.ts`: Pure Canvas Mode (Zen Mode) custom keybind recording, preset matching, and distraction-free canvas visibility invariants.
 
 ---
 

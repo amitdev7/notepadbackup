@@ -106,7 +106,9 @@ import {
   Timer,
   MapPin,
   Globe,
+  EyeSlash,
 } from "@phosphor-icons/react"
+import { kbd, eventToKeybindSpec, ZEN_MODE_PRESETS } from "@/lib/shortcuts"
 
 interface SectionItem {
   id: SettingsSectionId
@@ -570,6 +572,232 @@ function TypographyPreview({
       <p className="text-[10px] text-stone-400 text-center">
         Type above to test your custom typography style in real-time
       </p>
+    </div>
+  )
+}
+
+function KeyboardSettingsSection() {
+  const zenModeKeybind = useShellStore((s) => s.preferences.zenModeKeybind || "mod+\\")
+  const zenModeExitHint = useShellStore((s) => s.preferences.zenModeExitHint ?? true)
+  const setZenModeKeybind = useShellStore((s) => s.setZenModeKeybind)
+  const setZenModeExitHint = useShellStore((s) => s.setZenModeExitHint)
+  const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
+  const setUiHidden = useSquig((s) => s.setUiHidden)
+  const setNotice = useSquig((s) => s.setNotice)
+
+  const [recording, setRecording] = useState(false)
+  const [justSaved, setJustSaved] = useState(false)
+  const recordRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!recording) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+
+      // Allow Escape to cancel recording if no other keys pressed
+      if (e.key === "Escape" && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+        setRecording(false)
+        return
+      }
+
+      const spec = eventToKeybindSpec(e)
+      if (spec) {
+        setZenModeKeybind(spec)
+        setRecording(false)
+        setJustSaved(true)
+        setTimeout(() => setJustSaved(false), 2000)
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown, { capture: true })
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown, { capture: true })
+    }
+  }, [recording, setZenModeKeybind])
+
+  const handleTestPureCanvas = () => {
+    setSettingsOpen(false)
+    setUiHidden(true)
+    setNotice(`Pure Canvas Mode: Press ${kbd(zenModeKeybind)} or Esc to restore interface.`)
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Zen Mode / Pure Canvas Hero Card */}
+      <div className="relative overflow-hidden rounded-2xl border border-blue-500/30 bg-gradient-to-br from-blue-50/70 via-background to-blue-500/5 p-4 sm:p-5 shadow-sm dark:border-blue-500/20 dark:from-blue-950/20 dark:via-background dark:to-blue-900/10">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-md shadow-blue-500/20">
+              <EyeSlash size={22} weight="bold" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-foreground">Pure Canvas Mode (Zen Mode)</h3>
+                <span className="rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-600 dark:text-blue-400">
+                  Custom Keybind
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Press your custom keybind to instantly hide all UI chrome, dock, capsules, and toolbars for an uncompromised, pure drawing experience.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Current Keybind & Recording Area */}
+        <div className="mt-4 rounded-xl border border-border/80 bg-background/80 p-3.5 backdrop-blur-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <span className="text-xs font-semibold text-foreground block">Active Canvas Keybind</span>
+              <span className="text-[11px] text-muted-foreground">
+                Click &quot;Record Custom Keybind&quot; or choose a popular preset below
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <kbd className="inline-flex h-8 min-w-[70px] items-center justify-center rounded-lg border border-border/80 bg-muted/60 px-3 font-mono text-xs font-bold text-foreground shadow-2xs">
+                {kbd(zenModeKeybind)}
+              </kbd>
+
+              <button
+                ref={recordRef}
+                type="button"
+                onClick={() => setRecording(!recording)}
+                className={cn(
+                  "h-8 px-3 rounded-lg text-xs font-medium transition-all duration-200 cursor-pointer flex items-center gap-1.5",
+                  recording
+                    ? "bg-amber-500 text-white animate-pulse shadow-md shadow-amber-500/20"
+                    : justSaved
+                    ? "bg-emerald-600 text-white"
+                    : "bg-foreground text-background hover:opacity-90"
+                )}
+              >
+                {recording ? (
+                  <>
+                    <span className="size-1.5 rounded-full bg-white animate-ping" />
+                    Press any key...
+                  </>
+                ) : justSaved ? (
+                  <>
+                    <Check size={14} weight="bold" />
+                    Keybind Saved!
+                  </>
+                ) : (
+                  "Record Custom Keybind"
+                )}
+              </button>
+
+              {zenModeKeybind !== "mod+\\" && (
+                <button
+                  type="button"
+                  onClick={() => setZenModeKeybind("mod+\\")}
+                  className="size-8 rounded-lg border border-border/60 hover:bg-muted text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+                  title="Reset to default (⌘\ / Ctrl+\)"
+                >
+                  <ArrowCounterClockwise size={14} weight="bold" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {recording && (
+            <div className="mt-2.5 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-500/30 p-2 text-center text-xs text-amber-800 dark:text-amber-300 animate-in fade-in">
+              Press any key or key combination now (e.g., <strong>F11</strong>, <strong>Z</strong>, <strong>Alt+Z</strong>, <strong>Ctrl+H</strong>, <strong>Ctrl+\</strong>). Press <em>Esc</em> to cancel.
+            </div>
+          )}
+
+          {/* Preset Chips */}
+          <div className="mt-3 pt-3 border-t border-border/40">
+            <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase block mb-1.5">
+              Quick Selection Presets
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {ZEN_MODE_PRESETS.map((preset) => {
+                const isActive = zenModeKeybind.toLowerCase() === preset.spec.toLowerCase()
+                return (
+                  <button
+                    key={preset.spec}
+                    type="button"
+                    onClick={() => {
+                      setZenModeKeybind(preset.spec)
+                      setJustSaved(true)
+                      setTimeout(() => setJustSaved(false), 2000)
+                    }}
+                    className={cn(
+                      "px-2.5 py-1 rounded-md text-xs font-mono transition-all cursor-pointer flex items-center gap-1.5 border",
+                      isActive
+                        ? "border-blue-500 bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold shadow-2xs"
+                        : "border-border/60 bg-muted/40 text-muted-foreground hover:border-border hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <span>{kbd(preset.spec)}</span>
+                    <span className="text-[10px] opacity-70 font-sans">({preset.label.split("(")[0].trim()})</span>
+                    {isActive && <Check size={12} weight="bold" />}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Options & Immediate Test Drive */}
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-blue-500/20">
+          <div className="flex items-center gap-2.5">
+            <Switch
+              id="zen-exit-hint"
+              checked={zenModeExitHint}
+              onCheckedChange={setZenModeExitHint}
+            />
+            <label htmlFor="zen-exit-hint" className="text-xs text-foreground cursor-pointer select-none">
+              Show subtle exit pill in Pure Canvas Mode
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleTestPureCanvas}
+            className="px-3.5 py-1.5 rounded-lg border border-blue-500/40 bg-blue-600/10 hover:bg-blue-600 text-blue-700 dark:text-blue-300 hover:text-white text-xs font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+          >
+            <Sparkle size={14} weight="bold" />
+            Enter Pure Canvas Mode Now
+          </button>
+        </div>
+      </div>
+
+      {/* Standard Keyboard Reference */}
+      <div>
+        <h4 className="text-xs font-semibold text-foreground mb-1.5">Standard Shortcuts Directory</h4>
+        <p className="text-[11px] text-muted-foreground mb-2.5">
+          Standard single-key tool bindings and navigation hotkeys. Modifier keys use Ctrl on Windows and ⌘ on Mac.
+        </p>
+        <div className="rounded-xl border border-border/80 overflow-hidden divide-y divide-border/60">
+          {[
+            { key: "V", action: "Select Tool" },
+            { key: "R", action: "Rectangle / Shape Tool" },
+            { key: "D / P", action: "Freehand Draw Tool" },
+            { key: "T", action: "Text Tool" },
+            { key: "A / L", action: "Arrow & Line Tool" },
+            { key: "C / L", action: "Open Component Library" },
+            { key: "⌘K / Ctrl+K", action: "Global Command Palette" },
+            { key: "⌘Z / Ctrl+Z", action: "Undo Canvas Action" },
+            { key: "⌘Shift+Z", action: "Redo Canvas Action" },
+            { key: "⌘D / Ctrl+D", action: "Duplicate Selected Node" },
+            { key: "Shift+1", action: "Zoom to Fit Content" },
+            { key: "Shift+0", action: "Zoom to 100%" },
+            { key: "Delete / Backspace", action: "Delete Selection" },
+            { key: "Space + Drag", action: "Pan Infinite Viewport" },
+          ].map((s) => (
+            <div key={s.action} className="flex items-center justify-between px-3 py-2 bg-muted/20">
+              <span className="text-foreground font-medium text-xs">{s.action}</span>
+              <kbd className="px-2 py-0.5 rounded bg-muted/60 border border-border font-mono text-[10px] text-foreground shadow-2xs">
+                {s.key}
+              </kbd>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -1125,6 +1353,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const updateDockControl = useShellStore((s) => s.updateDockControl)
   const setAllDockControls = useShellStore((s) => s.setAllDockControls)
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
+  const setSettingsSection = useShellStore((s) => s.setSettingsSection)
   const resetDockControls = useShellStore((s) => s.resetDockControls)
 
   const theme = useSquig((s) => s.theme)
@@ -2469,6 +2698,31 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
     case "canvas":
       return (
         <div className="space-y-6">
+          {/* Quick Pure Canvas Mode Card */}
+          <div className="p-3.5 rounded-xl bg-blue-500/5 border border-blue-500/20 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-600 text-white shadow-2xs">
+                <EyeSlash size={16} weight="bold" />
+              </div>
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Pure Canvas Mode (Zen Mode)</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Hide all toolbars, dock, and capsules with your custom keybind:{" "}
+                  <kbd className="font-mono font-bold text-foreground bg-muted/60 px-1.5 py-0.5 rounded border border-border/40 text-[10px]">
+                    {kbd(useShellStore.getState().preferences.zenModeKeybind || "mod+\\")}
+                  </kbd>
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSettingsSection("keyboard")}
+              className="px-2.5 py-1 rounded-lg border border-border/60 hover:bg-muted text-[11px] font-medium text-foreground transition-colors cursor-pointer shrink-0"
+            >
+              Change Keybind →
+            </button>
+          </div>
+
           {/* Header controls for dock */}
           <div className="p-3.5 rounded-xl bg-stone-50 dark:bg-stone-800/40 border border-stone-200 dark:border-stone-700/60 flex items-center justify-between">
             <div>
@@ -2876,37 +3130,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
     }
 
     case "keyboard":
-      return (
-        <div className="space-y-3">
-          <p className="text-[11px] text-stone-500 mb-2">
-            Standard single-key tool bindings and shortcuts. Modifier keys use Ctrl on Windows and ⌘ on Mac.
-          </p>
-          <div className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden divide-y divide-stone-200 dark:divide-stone-800">
-            {[
-              { key: "V", action: "Select Tool" },
-              { key: "R", action: "Rectangle / Shape Tool" },
-              { key: "D", action: "Freehand Draw Tool" },
-              { key: "T", action: "Text Tool" },
-              { key: "A", action: "Arrow Tool" },
-              { key: "L", action: "Open Library (Components & Blocks)" },
-              { key: "⌘K / Ctrl+K", action: "Global Search / Command Palette" },
-              { key: "⌘Z / Ctrl+Z", action: "Undo Canvas Action" },
-              { key: "⌘Shift+Z", action: "Redo Canvas Action" },
-              { key: "⌘D / Ctrl+D", action: "Duplicate Selected Node" },
-              { key: "Shift+1", action: "Zoom to Fit" },
-              { key: "Shift+0", action: "Zoom to 100%" },
-              { key: "Delete / Backspace", action: "Delete Selection" },
-            ].map((s) => (
-              <div key={s.action} className="flex items-center justify-between px-3 py-2 bg-stone-50/50 dark:bg-stone-900/40">
-                <span className="text-stone-700 dark:text-stone-300 font-medium">{s.action}</span>
-                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 font-mono text-[10px] text-stone-800 dark:text-stone-200 shadow-2xs">
-                  {s.key}
-                </kbd>
-              </div>
-            ))}
-          </div>
-        </div>
-      )
+      return <KeyboardSettingsSection />
 
     case "storage":
       return <StorageSection />

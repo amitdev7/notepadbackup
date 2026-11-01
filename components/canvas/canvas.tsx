@@ -30,6 +30,7 @@ import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
 import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type Handle } from "@/lib/canvas/transform"
 import { pickAt, pickInRect, pickSoftAt, pickHoverTarget } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
+import { matchesKeybind, kbd } from "@/lib/shortcuts"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
 import { dropFiles } from "@/lib/clipboard"
 import { editTarget, hasEditableText } from "@/lib/canvas/edit-target"
@@ -1662,6 +1663,28 @@ export function Canvas() {
     const onKey = (e: KeyboardEvent) => {
       if (!canvasOwnsKeyboard(e.target)) return
       const s = st()
+
+      // Pure Canvas Mode (Zen Mode) shortcut toggle
+      const zenModeKeybind = useShellStore.getState().preferences.zenModeKeybind || "mod+\\"
+      if (matchesKeybind(e, zenModeKeybind) || (zenModeKeybind !== "mod+\\" && matchesKeybind(e, "mod+\\"))) {
+        e.preventDefault()
+        const willHide = !s.uiHidden
+        s.setUiHidden(willHide)
+        if (willHide) {
+          s.setNotice(`Pure Canvas Mode: Press ${kbd(zenModeKeybind)} or Esc to restore interface`)
+        } else {
+          s.setNotice("Interface restored")
+        }
+        return
+      }
+
+      if (s.uiHidden && e.key === "Escape") {
+        e.preventDefault()
+        s.setUiHidden(false)
+        s.setNotice("Interface restored")
+        return
+      }
+
       if (s.effectiveRole === "viewer") {
         if (e.key === "Escape") {
           if (s.shortcutsOpen) s.setShortcutsOpen(false)

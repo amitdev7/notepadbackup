@@ -274,6 +274,8 @@ export interface ShellPreferences {
   wifiAutoSync: boolean
   clockSettings: ClockPreferences
   temporarySettings: TemporaryElementsPreferences
+  zenModeKeybind: string
+  zenModeExitHint: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -306,6 +308,8 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   wifiAutoSync: false,
   clockSettings: DEFAULT_CLOCK_PREFERENCES,
   temporarySettings: DEFAULT_TEMPORARY_PREFERENCES,
+  zenModeKeybind: "mod+\\",
+  zenModeExitHint: true,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -356,6 +360,8 @@ function loadInitialPreferences(): ShellPreferences {
           ...DEFAULT_TEMPORARY_PREFERENCES,
           ...(parsed.temporarySettings || {}),
         },
+        zenModeKeybind: typeof parsed.zenModeKeybind === "string" ? parsed.zenModeKeybind : "mod+\\",
+        zenModeExitHint: parsed.zenModeExitHint !== undefined ? Boolean(parsed.zenModeExitHint) : true,
       }
     }
   } catch { }
@@ -411,6 +417,8 @@ interface ShellState {
   setTemporaryDuration: (durationMs: number) => void
   updateTemporarySettings: (updates: Partial<TemporaryElementsPreferences>) => void
   updatePreferences: (updates: Partial<ShellPreferences>) => void
+  setZenModeKeybind: (keybind: string) => void
+  setZenModeExitHint: (show: boolean) => void
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   toggleToolbar: () => void
   toggleDock: () => void
@@ -636,6 +644,14 @@ export const useShellStore = create<ShellState>((set, get) => ({
       }
       return { preferences: next }
     })
+  },
+
+  setZenModeKeybind: (zenModeKeybind) => {
+    get().updatePreferences({ zenModeKeybind })
+  },
+
+  setZenModeExitHint: (zenModeExitHint) => {
+    get().updatePreferences({ zenModeExitHint })
   },
 
   toggleToolbar: () => {

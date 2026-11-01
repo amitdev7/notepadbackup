@@ -31,11 +31,13 @@ import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
 import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
 import { kbd } from "@/lib/shortcuts"
+import { X } from "@phosphor-icons/react"
 
 export default function Home() {
   const hydrated = useSquig((s) => s.hydrated)
   const hydrate = useSquig((s) => s.hydrate)
   const uiHidden = useSquig((s) => s.uiHidden)
+  const setUiHidden = useSquig((s) => s.setUiHidden)
   const shareOpen = useSquig((s) => s.shareOpen)
   const setShareOpen = useSquig((s) => s.setShareOpen)
   const historyOpen = useSquig((s) => s.historyOpen)
@@ -44,6 +46,8 @@ export default function Home() {
 
   // Lazy dialog visibility selectors to keep initial DOM lightweight
   const settingsOpen = useShellStore((s) => s.settingsOpen)
+  const zenModeKeybind = useShellStore((s) => s.preferences.zenModeKeybind || "mod+\\")
+  const zenModeExitHint = useShellStore((s) => s.preferences.zenModeExitHint ?? true)
   const commandOpen = useSquig((s) => s.commandOpen)
   const shortcutsOpen = useSquig((s) => s.shortcutsOpen)
   const trashOpen = useSquig((s) => s.trashOpen)
@@ -94,10 +98,27 @@ export default function Home() {
         </>
       )}
 
-      {uiHidden && (
-        <p className="pointer-events-none absolute right-4 bottom-4 z-30 font-mono text-[10px] text-muted-foreground/60">
-          {kbd("mod+\\\\")}
-        </p>
+      {uiHidden && zenModeExitHint && (
+        <aside
+          aria-label="Pure Canvas Mode Indicator"
+          className="group fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full border border-border/40 bg-background/50 py-1.5 pr-2.5 pl-3.5 text-xs text-muted-foreground/75 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-border/80 hover:bg-background/90 hover:text-foreground hover:shadow-md"
+        >
+          <span className="flex size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[11px] font-medium tracking-tight">Pure Canvas</span>
+          <span className="text-muted-foreground/30">•</span>
+          <kbd className="rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+            {kbd(zenModeKeybind)}
+          </kbd>
+          <button
+            type="button"
+            onClick={() => setUiHidden(false)}
+            className="ml-1 rounded-full p-1 text-muted-foreground/60 hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
+            title="Restore Interface (or press Esc)"
+            aria-label="Exit Pure Canvas Mode"
+          >
+            <X size={12} weight="bold" />
+          </button>
+        </aside>
       )}
 
       {/* Notification flash banner */}
@@ -106,19 +127,19 @@ export default function Home() {
       {/* Overlays, Palettes & Floating Modals (Mounted strictly when activated) */}
       <LinkEditor />
       <CanvasContextMenu />
-      {commandOpen && <CommandPalette />}
-      {shortcutsOpen && <ShortcutsSheet />}
+      {!uiHidden && commandOpen && <CommandPalette />}
+      {!uiHidden && shortcutsOpen && <ShortcutsSheet />}
       {shareOpen && <ShareDialog isOpen={shareOpen} onClose={() => setShareOpen(false)} cloudDocId={cloudDocId || undefined} />}
       <WifiPublishDialog />
       <WifiDevicePanel />
       <ConflictDialog />
       <MigrationDialog />
       {historyOpen && <VersionHistoryPanel isOpen={historyOpen} onClose={() => setHistoryOpen(false)} cloudDocId={cloudDocId || undefined} />}
-      {trashOpen && <TrashDialog />}
-      {expiredArchiveOpen && <ExpiredElementsDialog />}
-      {pdfToCanvasOpen && <PdfToCanvasDialog />}
-      {searchOpen && <CanvasSearch />}
-      {statsOpen && <CanvasStats />}
+      {!uiHidden && trashOpen && <TrashDialog />}
+      {!uiHidden && expiredArchiveOpen && <ExpiredElementsDialog />}
+      {!uiHidden && pdfToCanvasOpen && <PdfToCanvasDialog />}
+      {!uiHidden && searchOpen && <CanvasSearch />}
+      {!uiHidden && statsOpen && <CanvasStats />}
       <LaserOverlay />
       {!uiHidden && <ToolPropertiesPanel />}
     </main>

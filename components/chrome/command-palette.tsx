@@ -214,7 +214,7 @@ function Palette() {
       { id: "home-go", label: "Go to Home View", hint: kbd("home"), section: "View", keywords: "home view start starting viewport", icon: HouseIcon, run: () => st().goToHomeView() },
       { id: "home-set", label: "Set current view as Home", hint: kbd("shift+home"), section: "View", keywords: "home save starting viewport", icon: BookmarkSimpleIcon, run: () => st().setHomeView() },
       { id: "home-clear", label: "Clear Home View", section: "View", keywords: "home remove reset starting viewport", icon: TrashIcon, run: () => st().clearHomeView() },
-      { id: "hide-ui", label: "Hide the interface", hint: kbd("mod+\\"), section: "View", keywords: "clean present chrome", icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
+      { id: "hide-ui", label: "Pure Canvas Mode (Hide UI)", hint: kbd(useShellStore.getState().preferences.zenModeKeybind || "mod+\\"), section: "View", keywords: "clean present chrome pure canvas zen mode focus immersive", icon: EyeSlashIcon, run: () => st().setUiHidden(true) },
       { id: "toggle-toolbar", label: "Toggle Top Toolbar", hint: kbd("mod+shift+t"), section: "View", keywords: "show hide toolbar topbar title header", icon: EyeIcon, run: () => useShellStore.getState().toggleToolbar() },
       { id: "toggle-dock", label: "Toggle Bottom Dock", hint: kbd("mod+shift+d"), section: "View", keywords: "show hide dock tools bottom navigation", icon: EyeIcon, run: () => useShellStore.getState().toggleDock() },
       { id: "toggle-toolbar-viewmenu", label: "Toggle View Menu in Toolbar", section: "View", keywords: "view zoom menu compass toolbar top", icon: CompassIcon, run: () => useShellStore.getState().toggleToolbarViewMenu() },
