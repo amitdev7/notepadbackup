@@ -1,0 +1,31 @@
+# ==============================================================================
+# Zenithsui Codeowners
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# ==============================================================================
+
+# Global owner for the entire repository
+* @amitdev7
+
+# Canvas Engine & Procedural Rendering
+/components/canvas/ @amitdev7
+/lib/canvas/ @amitdev7
+
+# Local-First Storage & Persistence
+/lib/storage/ @amitdev7
+
+# Academic OS Suite
+/components/academic/ @amitdev7
+/lib/academic/ @amitdev7
+
+# Networking, Cryptography & Cloud APIs
+/app/api/ @amitdev7
+/lib/crypto/ @amitdev7
+/lib/lan/ @amitdev7
+
+# Electron Desktop Packaging
+/electron/ @amitdev7
+/electron-builder.yml @amitdev7
+
+# CI/CD & Security Automation
+/.github/ @amitdev7
+/SECURITY.md @amitdev7

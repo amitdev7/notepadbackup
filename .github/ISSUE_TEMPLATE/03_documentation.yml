@@ -1,0 +1,26 @@
+name: "Documentation Issue"
+description: "Report missing, outdated, or incorrect documentation."
+title: "[Docs]: "
+labels: ["documentation", "status: needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Documentation Problem
+      description: What documentation is missing, unclear, or incorrect?
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Affected File or URL
+      placeholder: "e.g., docs/ARCHITECTURE.md, docs/INSTALLATION.md, or README.md"
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Suggested Correction
+      description: How should the documentation be updated?
+    validations:
+      required: true

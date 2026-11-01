@@ -1,0 +1,80 @@
+name: "Bug Report"
+description: "Report a reproducible problem or unexpected behavior in Zenithsui."
+title: "[Bug]: "
+labels: ["bug", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please verify that your bug hasn't already been reported in existing issues.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: When selecting multiple nodes on canvas and dragging...
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to reproduce the behavior.
+      placeholder: |
+        1. Open infinite canvas at '/'
+        2. Draw a rectangle ('R')
+        3. Attempt to group with '⌘G'
+        4. See error or unexpected result
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually occurred instead.
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform / Environment
+      options:
+        - "Web Browser (Chrome / Chromium)"
+        - "Web Browser (Firefox)"
+        - "Web Browser (Safari / WebKit)"
+        - "Web Browser (Edge)"
+        - "Desktop App (Windows NSIS Setup)"
+        - "Desktop App (Windows Portable)"
+        - "Mobile / Tablet Browser"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating System
+      placeholder: "e.g., Windows 11, macOS 15.3, Ubuntu 24.04, iOS 18"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Zenithsui Version
+      placeholder: "e.g., v0.1.0 or Git commit SHA"
+  - type: textarea
+    id: logs
+    attributes:
+      label: Browser Console / Terminal Logs
+      description: Paste any error messages from the browser developer console or terminal output.
+      render: shell
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any other context, screenshots, or screen recordings of the problem.

@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # Maintain dependencies for npm / pnpm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 5
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # Maintain GitHub Actions workflow dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 3
+    groups:
+      actions:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"

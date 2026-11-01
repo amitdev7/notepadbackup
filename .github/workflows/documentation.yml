@@ -1,0 +1,46 @@
+name: Documentation Health
+
+on:
+  push:
+    paths:
+      - "**.md"
+      - "docs/**"
+      - ".github/**"
+  pull_request:
+    paths:
+      - "**.md"
+      - "docs/**"
+      - ".github/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  doc-validation:
+    name: Markdown & Link Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify documentation files exist
+        run: |
+          test -f README.md || (echo "README.md missing" && exit 1)
+          test -f CONTRIBUTING.md || (echo "CONTRIBUTING.md missing" && exit 1)
+          test -f CODE_OF_CONDUCT.md || (echo "CODE_OF_CONDUCT.md missing" && exit 1)
+          test -f SECURITY.md || (echo "SECURITY.md missing" && exit 1)
+          test -f CHANGELOG.md || (echo "CHANGELOG.md missing" && exit 1)
+          test -f docs/ARCHITECTURE.md || (echo "docs/ARCHITECTURE.md missing" && exit 1)
+          test -f docs/DEVELOPMENT.md || (echo "docs/DEVELOPMENT.md missing" && exit 1)
+          echo "All core documentation files verified."
+
+      - name: Verify README links and anchors
+        run: node scripts/verify-readme.mjs

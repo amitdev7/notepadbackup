@@ -1,0 +1,46 @@
+name: "Feature Request"
+description: "Suggest an idea or new capability for Zenithsui."
+title: "[Feature]: "
+labels: ["enhancement", "status: needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We appreciate suggestions! Please explain the problem you are trying to solve and how your proposal fits the local-first, paper-like design philosophy of Zenithsui.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement / User Need
+      description: Is your feature request related to a specific problem or workflow limitation?
+      placeholder: "I'm always frustrated when trying to..."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed feature or improvement clearly.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other workarounds or alternative approaches have you considered?
+  - type: dropdown
+    id: area
+    attributes:
+      label: Target Subsystem
+      options:
+        - "Canvas Engine (Rough.js rendering, geometry, tools)"
+        - "UI / Chrome (Toolbars, docks, inspector, dialogs)"
+        - "Storage & Persistence (IndexedDB, autosave, documents)"
+        - "Collaboration (Cloud share, Wi-Fi LAN, invitations)"
+        - "Academic OS (Syllabus, planner, revision, practice)"
+        - "Desktop App (Electron, native file system, auto-update)"
+        - "Import / Export (Excalidraw, PDF, SVG, PNG)"
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context / Mockups
+      description: Add any screenshots, wireframes, or reference examples.
