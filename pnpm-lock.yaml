@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ybouane/liquidglass':
+        specifier: ^1.0.3
+        version: 1.0.3
       electron-updater:
         specifier: ^6.8.11
         version: 6.8.11
@@ -1187,6 +1190,9 @@ packages:
   '@xmldom/xmldom@0.8.15':
     resolution: {integrity: sha512-/5NV/vDALVFDXgLmfsy9TRCBlKwO2LNBFzpzvb9iIj+jR+eSc6DLYYvVOdivT/jm7MtU6TebYuRmzEOI7w40UA==}
     engines: {node: '>=10.0.0'}
+
+  '@ybouane/liquidglass@1.0.3':
+    resolution: {integrity: sha512-Ro/Q3vaEduvj1yUp/TVz9AYmxY+cYhnBj76eJ/Y9VQoPlRA0DWrKPQufEzrDSYzAWXL3qxiFibi5XQVW/egTnA==}
 
   abbrev@4.0.0:
     resolution: {integrity: sha512-a1wflyaL0tHtJSmLSOVybYhy22vRih4eduhhrkcjgrWGnRfrZtovJ2FRjxuTtkkj47O/baf0R86QU5OuYpz8fA==}
@@ -5067,6 +5073,8 @@ snapshots:
       jose: 5.10.0
 
   '@xmldom/xmldom@0.8.15': {}
+
+  '@ybouane/liquidglass@1.0.3': {}
 
   abbrev@4.0.0: {}
 

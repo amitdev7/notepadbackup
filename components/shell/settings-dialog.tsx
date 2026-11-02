@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils"
 import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
 import { AboutUpdatesTab } from "@/components/shell/about-updates-tab"
+import { LiquidGlassSettingsSection } from "@/components/shell/liquid-glass-preview"
 import {
   Sliders,
   Palette,
@@ -1941,7 +1942,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
           </div>
 
           {/* 6. Animations */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
             <div>
               <span className="font-semibold text-stone-900 dark:text-stone-100 block">Fluid Animations</span>
               <span className="text-[11px] text-stone-500">Smooth panel transitions and spring animations</span>
@@ -1953,6 +1954,9 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
               }
             />
           </div>
+
+          {/* 7. Liquid Glass Materials (ybouane/liquidglass Architecture) */}
+          <LiquidGlassSettingsSection />
         </div>
       )
     }

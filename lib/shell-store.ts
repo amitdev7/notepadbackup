@@ -8,6 +8,7 @@
 
 import { create } from "zustand"
 import { type ClockPreferences, DEFAULT_CLOCK_PREFERENCES } from "@/lib/time/types"
+import { type ShellLiquidGlassPreferences, DEFAULT_LIQUID_GLASS_PREFERENCES } from "@/lib/liquidglass/types"
 
 export type SettingsSectionId =
   | "general"
@@ -279,6 +280,7 @@ export interface ShellPreferences {
   hideMouseKeybind: string
   autoHideMouseInZenMode: boolean
   revealMouseOnMove: boolean
+  liquidGlassSettings: ShellLiquidGlassPreferences
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -316,6 +318,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   hideMouseKeybind: "alt+m",
   autoHideMouseInZenMode: false,
   revealMouseOnMove: true,
+  liquidGlassSettings: DEFAULT_LIQUID_GLASS_PREFERENCES,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -371,6 +374,10 @@ function loadInitialPreferences(): ShellPreferences {
         hideMouseKeybind: typeof parsed.hideMouseKeybind === "string" ? parsed.hideMouseKeybind : "alt+m",
         autoHideMouseInZenMode: parsed.autoHideMouseInZenMode !== undefined ? Boolean(parsed.autoHideMouseInZenMode) : false,
         revealMouseOnMove: parsed.revealMouseOnMove !== undefined ? Boolean(parsed.revealMouseOnMove) : true,
+        liquidGlassSettings: {
+          ...DEFAULT_LIQUID_GLASS_PREFERENCES,
+          ...(parsed.liquidGlassSettings || {}),
+        },
       }
     }
   } catch { }
@@ -431,6 +438,7 @@ interface ShellState {
   setHideMouseKeybind: (keybind: string) => void
   setAutoHideMouseInZenMode: (enabled: boolean) => void
   setRevealMouseOnMove: (enabled: boolean) => void
+  updateLiquidGlassPreferences: (updates: Partial<ShellLiquidGlassPreferences>) => void
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   toggleToolbar: () => void
   toggleDock: () => void
@@ -676,6 +684,15 @@ export const useShellStore = create<ShellState>((set, get) => ({
 
   setRevealMouseOnMove: (revealMouseOnMove) => {
     get().updatePreferences({ revealMouseOnMove })
+  },
+
+  updateLiquidGlassPreferences: (updates) => {
+    set((state) => {
+      const nextSettings = { ...state.preferences.liquidGlassSettings, ...updates }
+      const next = { ...state.preferences, liquidGlassSettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
   },
 
   toggleToolbar: () => {
