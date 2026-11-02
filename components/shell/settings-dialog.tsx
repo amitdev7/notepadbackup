@@ -41,6 +41,7 @@ import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
 import { AboutUpdatesTab } from "@/components/shell/about-updates-tab"
 import { LiquidGlassSettingsSection } from "@/components/shell/liquid-glass-preview"
+import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/lib/i18n"
 import {
   Sliders,
   Palette,
@@ -1576,18 +1577,19 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
           <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
             <div>
-              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Language</span>
-              <span className="text-[11px] text-stone-500">Interface language selection</span>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Language / भाषा</span>
+              <span className="text-[11px] text-stone-500">Interface language selection (Hindi & Hinglish supported)</span>
             </div>
             <select
-              defaultValue="en-US"
-              className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100"
+              value={prefs.language || "en-US"}
+              onChange={(e) => updatePrefs({ language: e.target.value as SupportedLanguage })}
+              className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 cursor-pointer font-sans text-xs"
             >
-              <option value="en-US">English (United States)</option>
-              <option value="en-GB">English (United Kingdom)</option>
-              <option value="es">Español</option>
-              <option value="de">Deutsch</option>
-              <option value="fr">Français</option>
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.id} value={lang.id}>
+                  {lang.nativeName}
+                </option>
+              ))}
             </select>
           </div>
 

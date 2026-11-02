@@ -31,9 +31,11 @@ import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
 import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
 import { kbd } from "@/lib/shortcuts"
+import { useTranslation } from "@/lib/i18n/use-translation"
 import { X } from "@phosphor-icons/react"
 
 export default function Home() {
+  const { t } = useTranslation()
   const hydrated = useSquig((s) => s.hydrated)
   const hydrate = useSquig((s) => s.hydrate)
   const uiHidden = useSquig((s) => s.uiHidden)
@@ -104,7 +106,7 @@ export default function Home() {
           className="group fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full border border-border/40 bg-background/50 py-1.5 pr-2.5 pl-3.5 text-xs text-muted-foreground/75 shadow-sm backdrop-blur-md transition-all duration-300 hover:border-border/80 hover:bg-background/90 hover:text-foreground hover:shadow-md"
         >
           <span className="flex size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[11px] font-medium tracking-tight">Pure Canvas</span>
+          <span className="text-[11px] font-medium tracking-tight">{t("pure_canvas_badge")}</span>
           <span className="text-muted-foreground/30">•</span>
           <kbd className="rounded-md border border-border/60 bg-muted/60 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
             {kbd(zenModeKeybind)}
@@ -114,7 +116,7 @@ export default function Home() {
             onClick={() => setUiHidden(false)}
             className="ml-1 rounded-full p-1 text-muted-foreground/60 hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
             title="Restore Interface (or press Esc)"
-            aria-label="Exit Pure Canvas Mode"
+            aria-label={t("exit_pure_canvas")}
           >
             <X size={12} weight="bold" />
           </button>

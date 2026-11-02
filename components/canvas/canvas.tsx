@@ -31,6 +31,7 @@ import { HANDLES, HANDLE_CURSORS, handleOffset, resizeBounds, scaleNodes, type H
 import { pickAt, pickInRect, pickSoftAt, pickHoverTarget } from "@/lib/canvas/hit-test"
 import { canvasOwnsKeyboard } from "@/lib/canvas/keyboard-owner"
 import { matchesKeybind, kbd } from "@/lib/shortcuts"
+import { t as translate } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
 import { useClipboard } from "@/lib/canvas/use-clipboard"
 import { dropFiles } from "@/lib/clipboard"
@@ -1683,6 +1684,7 @@ export function Canvas() {
 
       // Pure Canvas Mode (Zen Mode) shortcut toggle
       const zenModeKeybind = useShellStore.getState().preferences.zenModeKeybind || "mod+\\"
+      const currentLang = useShellStore.getState().preferences.language || "en-US"
       if (matchesKeybind(e, zenModeKeybind) || (zenModeKeybind !== "mod+\\" && matchesKeybind(e, "mod+\\"))) {
         e.preventDefault()
         const willHide = !s.uiHidden
@@ -1691,9 +1693,9 @@ export function Canvas() {
           if (useShellStore.getState().preferences.autoHideMouseInZenMode) {
             s.setCursorHidden(true)
           }
-          s.setNotice(`Pure Canvas Mode: Press ${kbd(zenModeKeybind)} or Esc to restore interface`)
+          s.setNotice(translate("notice_zen_mode_on", currentLang, { key: kbd(zenModeKeybind) }))
         } else {
-          s.setNotice("Interface restored")
+          s.setNotice(translate("notice_zen_mode_off", currentLang))
         }
         return
       }
@@ -1705,9 +1707,9 @@ export function Canvas() {
         const willHideCursor = !s.cursorHidden
         s.setCursorHidden(willHideCursor)
         if (willHideCursor) {
-          s.setNotice(`Mouse cursor hidden: Press ${kbd(hideMouseKeybind)} or Esc to restore`)
+          s.setNotice(translate("notice_mouse_hidden", currentLang, { key: kbd(hideMouseKeybind) }))
         } else {
-          s.setNotice("Mouse cursor restored")
+          s.setNotice(translate("notice_mouse_restored", currentLang))
         }
         return
       }
@@ -1716,7 +1718,7 @@ export function Canvas() {
         e.preventDefault()
         if (s.uiHidden) s.setUiHidden(false)
         if (s.cursorHidden) s.setCursorHidden(false)
-        s.setNotice("Interface and cursor restored")
+        s.setNotice(translate("notice_interface_restored", currentLang))
         return
       }
 

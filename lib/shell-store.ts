@@ -9,6 +9,7 @@
 import { create } from "zustand"
 import { type ClockPreferences, DEFAULT_CLOCK_PREFERENCES } from "@/lib/time/types"
 import { type ShellLiquidGlassPreferences, DEFAULT_LIQUID_GLASS_PREFERENCES } from "@/lib/liquidglass/types"
+import { type SupportedLanguage } from "@/lib/i18n"
 
 export type SettingsSectionId =
   | "general"
@@ -281,6 +282,7 @@ export interface ShellPreferences {
   autoHideMouseInZenMode: boolean
   revealMouseOnMove: boolean
   liquidGlassSettings: ShellLiquidGlassPreferences
+  language: SupportedLanguage
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -319,6 +321,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   autoHideMouseInZenMode: false,
   revealMouseOnMove: true,
   liquidGlassSettings: DEFAULT_LIQUID_GLASS_PREFERENCES,
+  language: "en-US",
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -378,6 +381,7 @@ function loadInitialPreferences(): ShellPreferences {
           ...DEFAULT_LIQUID_GLASS_PREFERENCES,
           ...(parsed.liquidGlassSettings || {}),
         },
+        language: typeof parsed.language === "string" ? (parsed.language as SupportedLanguage) : "en-US",
       }
     }
   } catch { }

@@ -71,8 +71,23 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import type { DockControlsVisibility } from "@/lib/shell-store"
+import { useTranslation, type TranslationKey } from "@/lib/i18n/use-translation"
 
 // ── Tool definitions ──────────────────────────────────────────────────────────
+
+const TOOL_TRANSLATION_KEYS: Record<string, TranslationKey> = {
+  select: "tool_select",
+  hand: "tool_hand",
+  shape: "tool_shape",
+  draw: "tool_draw",
+  eraser: "tool_eraser",
+  arrow: "tool_arrow",
+  text: "tool_text",
+  sticky: "tool_sticky",
+  frame: "tool_frame",
+  laser: "tool_laser",
+  library: "tool_library",
+}
 
 interface ToolDef {
   id: Tool | "library"
@@ -195,6 +210,7 @@ function MagnifiedDockItem({
 // ── BottomDock ────────────────────────────────────────────────────────────────
 
 export function BottomDock() {
+  const { t } = useTranslation()
   const showDock = useShellStore((s) => s.preferences.showDock)
   const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
   const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
@@ -280,7 +296,7 @@ export function BottomDock() {
           aria-label="Show bottom dock (⌘⇧D)"
           className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:-translate-y-2 transition-all duration-200 apple-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-stone-700 dark:text-stone-300 shadow-md cursor-pointer flex items-center gap-1.5"
         >
-          <span>Show Dock</span>
+          <span>{t("show_dock")}</span>
           <kbd className="font-mono text-[9px] text-stone-400">⌘⇧D</kbd>
         </button>
       </div>
@@ -328,14 +344,15 @@ export function BottomDock() {
               </button>
             </div>
             <div className="grid grid-cols-4 gap-3 pt-4">
-              {visibleTools.map((t) => {
-                const Icon = t.icon
-                const active = isToolActive(t)
+              {visibleTools.map((tDef) => {
+                const Icon = tDef.icon
+                const active = isToolActive(tDef)
+                const label = t(TOOL_TRANSLATION_KEYS[tDef.id]) || tDef.label
                 return (
                   <button
-                    key={t.id}
+                    key={tDef.id}
                     type="button"
-                    onClick={() => handleToolClick(t)}
+                    onClick={() => handleToolClick(tDef)}
                     className={cn(
                       "flex flex-col items-center justify-center p-3 rounded-2xl cursor-pointer tactile-press min-h-[58px]",
                       active
@@ -344,7 +361,7 @@ export function BottomDock() {
                     )}
                   >
                     <Icon size={22} weight={active ? "bold" : "regular"} />
-                    <span className="text-[11px] mt-1.5 truncate max-w-full">{t.label}</span>
+                    <span className="text-[11px] mt-1.5 truncate max-w-full">{label}</span>
                   </button>
                 )
               })}
@@ -378,41 +395,41 @@ export function BottomDock() {
             <DropdownMenuContent align="start" sideOffset={8} className="w-56 font-sans animate-popover-enter">
               {dockControls.menuNewCanvas && (
                 <DropdownMenuItem onClick={() => { window.location.href = "/" }}>
-                  <File size={14} className="mr-2" aria-hidden="true" /> New Canvas
+                  <File size={14} className="mr-2" aria-hidden="true" /> {t("menu_new_canvas")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuOpenRecent && (
                 <DropdownMenuItem onClick={() => setCommandOpen(true)}>
-                  <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open / Recent…
+                  <FolderOpen size={14} className="mr-2" aria-hidden="true" /> {t("menu_open_recent")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem onClick={() => importDoc()}>
-                <FolderOpen size={14} className="mr-2" aria-hidden="true" /> Open Drawing / Universal Sketch…
+                <FolderOpen size={14} className="mr-2" aria-hidden="true" /> {t("menu_open_sketch")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => exportExcalidrawDoc()}>
-                <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> Export as Universal Sketch (.sketch)
+                <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> {t("menu_export_sketch")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
-                <ChartBar size={14} className="mr-2" aria-hidden="true" /> Insert Chart…
+                <ChartBar size={14} className="mr-2" aria-hidden="true" /> {t("menu_insert_chart")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setMermaidDialogOpen(true)}>
-                <TreeStructure size={14} className="mr-2" aria-hidden="true" /> Insert Mermaid Diagram…
+                <TreeStructure size={14} className="mr-2" aria-hidden="true" /> {t("menu_insert_mermaid")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setStatsOpen(!statsOpen)}>
-                <ChartBar size={14} className="mr-2" aria-hidden="true" /> Canvas Stats
+                <ChartBar size={14} className="mr-2" aria-hidden="true" /> {t("menu_canvas_stats")}
               </DropdownMenuItem>
               {(dockControls.menuNewCanvas || dockControls.menuOpenRecent) &&
                 (dockControls.menuShare || dockControls.menuPublishWifi) && <DropdownMenuSeparator />}
 
               {dockControls.menuShare && (
                 <DropdownMenuItem onClick={() => setShareOpen(true)}>
-                  <ShareNetwork size={14} className="mr-2" aria-hidden="true" /> Share…
+                  <ShareNetwork size={14} className="mr-2" aria-hidden="true" /> {t("menu_share")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuPublishWifi && (
                 <DropdownMenuItem onClick={() => useWifiSessionStore.getState().openPublishDialog()}>
-                  <WifiHigh size={14} className="mr-2" aria-hidden="true" /> Publish on Wi-Fi…
+                  <WifiHigh size={14} className="mr-2" aria-hidden="true" /> {t("menu_publish_wifi")}
                 </DropdownMenuItem>
               )}
               {(dockControls.menuShare || dockControls.menuPublishWifi) &&
@@ -422,20 +439,20 @@ export function BottomDock() {
 
               {dockControls.menuVersionHistory && (
                 <DropdownMenuItem onClick={() => setHistoryOpen(true)}>
-                  <ClockCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Version History
+                  <ClockCounterClockwise size={14} className="mr-2" aria-hidden="true" /> {t("menu_version_history")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem onClick={() => useShellStore.getState().setExpiredArchiveOpen(true)}>
-                <Archive size={14} className="mr-2" aria-hidden="true" /> Expired Elements Archive…
+                <Archive size={14} className="mr-2" aria-hidden="true" /> {t("menu_expired_archive")}
               </DropdownMenuItem>
               {dockControls.menuUndo && (
                 <DropdownMenuItem onClick={() => undo()}>
-                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Undo
+                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> {t("menu_undo")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuRedo && (
                 <DropdownMenuItem onClick={() => redo()}>
-                  <ArrowClockwise size={14} className="mr-2" aria-hidden="true" /> Redo
+                  <ArrowClockwise size={14} className="mr-2" aria-hidden="true" /> {t("menu_redo")}
                 </DropdownMenuItem>
               )}
               {(dockControls.menuVersionHistory || dockControls.menuUndo || dockControls.menuRedo) &&
@@ -443,7 +460,7 @@ export function BottomDock() {
 
               {dockControls.menuSettings && (
                 <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
-                  <Gear size={14} className="mr-2" aria-hidden="true" /> Settings…
+                  <Gear size={14} className="mr-2" aria-hidden="true" /> {t("menu_settings")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuSettings &&
@@ -451,12 +468,12 @@ export function BottomDock() {
 
               {hasHomeView && (
                 <DropdownMenuItem onClick={goToHomeView}>
-                  <House size={14} className="mr-2 text-emerald-500" aria-hidden="true" /> Go to Home View
+                  <House size={14} className="mr-2 text-emerald-500" aria-hidden="true" /> {t("menu_home_view")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuResetView && (
                 <DropdownMenuItem onClick={resetViewport}>
-                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> Reset View
+                  <ArrowCounterClockwise size={14} className="mr-2" aria-hidden="true" /> {t("menu_reset_view")}
                 </DropdownMenuItem>
               )}
               {dockControls.menuClearCanvas && (
@@ -464,7 +481,7 @@ export function BottomDock() {
                   onClick={() => { if (window.confirm("Clear all items?")) clearCanvas() }}
                   className="text-red-600 dark:text-red-400"
                 >
-                  <Trash size={14} className="mr-2" aria-hidden="true" /> Clear Canvas
+                  <Trash size={14} className="mr-2" aria-hidden="true" /> {t("menu_clear_canvas")}
                 </DropdownMenuItem>
               )}
               {(dockControls.menuResetView || dockControls.menuClearCanvas) &&
@@ -519,17 +536,18 @@ export function BottomDock() {
         {/* ── Desktop Tool Picker with Magnification Engine (sm:flex) ── */}
         {visibleTools.length > 0 && (
           <div className="hidden sm:flex items-center gap-0.5 shrink-0">
-            {visibleTools.map((t) => {
-              const Icon = t.icon
-              const active = isToolActive(t)
+            {visibleTools.map((tDef) => {
+              const Icon = tDef.icon
+              const active = isToolActive(tDef)
+              const label = t(TOOL_TRANSLATION_KEYS[tDef.id]) || tDef.label
               return (
                 <MagnifiedDockItem
-                  key={t.id}
+                  key={tDef.id}
                   active={active}
-                  onClick={() => handleToolClick(t)}
-                  title={t.label}
-                  shortcut={t.shortcut}
-                  ariaLabel={t.label}
+                  onClick={() => handleToolClick(tDef)}
+                  title={label}
+                  shortcut={tDef.shortcut}
+                  ariaLabel={label}
                   mouseX={mouseX}
                   reducedMotion={reducedMotion}
                   showIndicatorDot={true}
@@ -544,15 +562,16 @@ export function BottomDock() {
         {/* ── Mobile Tool Picker (sm:hidden) ── */}
         {visibleTools.length > 0 && (
           <div className="flex sm:hidden items-center gap-0.5 shrink-0">
-            {mobilePrimaryTools.map((t) => {
-              const Icon = t.icon
-              const active = isToolActive(t)
+            {mobilePrimaryTools.map((tDef) => {
+              const Icon = tDef.icon
+              const active = isToolActive(tDef)
+              const label = t(TOOL_TRANSLATION_KEYS[tDef.id]) || tDef.label
               return (
                 <button
-                  key={t.id}
+                  key={tDef.id}
                   type="button"
-                  onClick={() => handleToolClick(t)}
-                  aria-label={t.label}
+                  onClick={() => handleToolClick(tDef)}
+                  aria-label={label}
                   aria-pressed={active}
                   className={cn(
                     "relative flex items-center justify-center size-8 rounded-xl cursor-pointer tactile-tool",
@@ -570,8 +589,8 @@ export function BottomDock() {
               <button
                 type="button"
                 onClick={() => setMobileDrawerOpen(true)}
-                title="All Tools"
-                aria-label="Open all tools drawer"
+                title={t("all_tools")}
+                aria-label={t("all_tools")}
                 className="flex items-center justify-center size-8 rounded-xl text-stone-500 dark:text-stone-400 hover:bg-stone-200/50 tactile-press"
               >
                 <SquaresFour size={17} aria-hidden="true" />
@@ -592,9 +611,9 @@ export function BottomDock() {
             {dockControls.actionSearch && (
               <MagnifiedDockItem
                 onClick={() => setSearchOpen(true)}
-                title="Find in Canvas"
+                title={t("action_search")}
                 shortcut="⌘F"
-                ariaLabel="Find in canvas (⌘F)"
+                ariaLabel={`${t("action_search")} (⌘F)`}
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
               >
@@ -606,9 +625,9 @@ export function BottomDock() {
             {dockControls.actionStats && (
               <MagnifiedDockItem
                 onClick={() => setStatsOpen(true)}
-                title="Canvas Statistics"
+                title={t("action_stats")}
                 shortcut="⌘/"
-                ariaLabel="Canvas Statistics (⌘/)"
+                ariaLabel={`${t("action_stats")} (⌘/)`}
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
               >
@@ -620,8 +639,8 @@ export function BottomDock() {
             {dockControls.actionPage && (
               <MagnifiedDockItem
                 onClick={togglePagePopover}
-                title="Page & Canvas"
-                ariaLabel="Page settings"
+                title={t("action_page")}
+                ariaLabel={t("action_page")}
                 active={pagePopoverOpen}
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
@@ -635,8 +654,8 @@ export function BottomDock() {
             {dockControls.actionSettings && (
               <MagnifiedDockItem
                 onClick={() => setSettingsOpen(!settingsOpen)}
-                title="Settings"
-                ariaLabel="Settings"
+                title={t("action_settings")}
+                ariaLabel={t("action_settings")}
                 active={settingsOpen}
                 mouseX={mouseX}
                 reducedMotion={reducedMotion}
@@ -658,9 +677,9 @@ export function BottomDock() {
           <div className="hidden sm:flex items-center gap-0.5 shrink-0">
             <MagnifiedDockItem
               onClick={() => zoomBy(1 / 1.2)}
-              title="Zoom Out"
+              title={t("zoom_out")}
               shortcut="-"
-              ariaLabel="Zoom out"
+              ariaLabel={t("zoom_out")}
               mouseX={mouseX}
               reducedMotion={reducedMotion}
             >
@@ -685,15 +704,15 @@ export function BottomDock() {
                 sideOffset={10}
                 className="px-2 py-1 text-xs font-sans rounded-lg shadow-lg border border-stone-200/60 dark:border-white/10 bg-stone-900/90 dark:bg-stone-900/95 text-white backdrop-blur-md z-50 pointer-events-none"
               >
-                Reset to 100%
+                {t("reset_zoom")}
               </TooltipContent>
             </Tooltip>
 
             <MagnifiedDockItem
               onClick={() => zoomBy(1.2)}
-              title="Zoom In"
+              title={t("zoom_in")}
               shortcut="+"
-              ariaLabel="Zoom in"
+              ariaLabel={t("zoom_in")}
               mouseX={mouseX}
               reducedMotion={reducedMotion}
             >

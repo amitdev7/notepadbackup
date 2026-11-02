@@ -32,6 +32,7 @@ import {
   X,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
+import { useTranslation } from "@/lib/i18n/use-translation"
 
 function duplicateStoredDoc(stored: StoredDoc, name: string): StoredDoc {
   return {
@@ -43,6 +44,7 @@ function duplicateStoredDoc(stored: StoredDoc, name: string): StoredDoc {
 }
 
 export function FilesPopover() {
+  const { t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [fileSearch, setFileSearch] = useState("")
@@ -141,7 +143,7 @@ export function FilesPopover() {
           className="text-[var(--ui-accent,#007AFF)] shrink-0 group-hover:scale-110 transition-transform"
           aria-hidden="true"
         />
-        <span>Files</span>
+        <span>{t("files")}</span>
         <CaretDown
           size={10}
           weight="bold"
@@ -169,7 +171,7 @@ export function FilesPopover() {
           {/* Header with New Canvas Action */}
           <div className="flex items-center justify-between pb-2 mb-2 px-1 border-b border-border/60">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-foreground">Canvas Files</span>
+              <span className="font-semibold text-foreground">{t("canvas_files")}</span>
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
                 {files.length}
               </span>
@@ -180,7 +182,7 @@ export function FilesPopover() {
               className="tactile-btn flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[var(--ui-accent,#007AFF)] hover:brightness-95 active:brightness-90 text-white font-semibold text-xs shadow-xs cursor-pointer"
             >
               <Plus size={12} weight="bold" />
-              <span>New Canvas</span>
+              <span>{t("new_canvas")}</span>
             </button>
           </div>
 
@@ -192,7 +194,7 @@ export function FilesPopover() {
                 type="text"
                 value={fileSearch}
                 onChange={(e) => setFileSearch(e.target.value)}
-                placeholder="Search canvases…"
+                placeholder={t("search_files")}
                 className="w-full pl-7 pr-6 py-1.5 rounded-xl text-xs bg-muted/60 border border-border/60 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[var(--ui-accent,#007AFF)]/40"
               />
               {fileSearch && (

@@ -19,10 +19,12 @@ import { ViewMenu } from "@/components/shell/view-menu"
 import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { useSyncStore } from "@/lib/sync/engine"
 import { PencilSimple, Check } from "@phosphor-icons/react"
+import { useTranslation } from "@/lib/i18n/use-translation"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices
   useWifiAutoSync()
+  const { t } = useTranslation()
 
   const fileName = useSquig((s) => s.fileName)
   const setFileName = useSquig((s) => s.setFileName)
@@ -83,7 +85,7 @@ export function TopBar() {
           aria-label="Show top toolbar (⌘⇧T)"
           className="opacity-0 group-hover:opacity-100 -translate-y-2 group-hover:translate-y-2 transition-all duration-200 apple-glass-pill px-3 py-1 rounded-full text-[10px] font-semibold text-stone-700 dark:text-stone-300 shadow-md cursor-pointer flex items-center gap-1.5"
         >
-          <span>Show Toolbar</span>
+          <span>{t("show_toolbar")}</span>
           <kbd className="font-mono text-[9px] text-stone-400">⌘⇧T</kbd>
         </button>
       </div>
@@ -116,8 +118,8 @@ export function TopBar() {
             type="button"
             onClick={() => setIsEditingTitle(true)}
             className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-foreground/90 hover:text-foreground transition-colors truncate cursor-pointer outline-none"
-            title="Click to rename document"
-            aria-label={`Rename document: ${fileName}`}
+            title={t("rename_document")}
+            aria-label={`${t("rename_document")}: ${fileName}`}
           >
             <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
             <PencilSimple
@@ -135,37 +137,37 @@ export function TopBar() {
           className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono select-none px-1"
           title={
             syncStatus === "syncing"
-              ? "Synchronizing changes..."
+              ? t("status_syncing")
               : syncStatus === "synced"
-                ? "All changes saved and synced"
+                ? t("status_saved")
                 : syncStatus === "conflict"
-                  ? "Conflict detected"
+                  ? t("status_conflict")
                   : syncStatus === "error"
-                    ? "Storage or sync error"
-                    : "Saved locally"
+                    ? t("status_error")
+                    : t("status_saved_locally")
           }
           aria-live="polite"
         >
           {syncStatus === "syncing" ? (
             <>
               <span className="size-1.5 rounded-full bg-[var(--ui-accent,#007AFF)] animate-ios-pulse-halo shadow-[0_0_8px_rgba(37,99,235,0.85)]" aria-hidden="true" />
-              <span className="hidden sm:inline text-[var(--ui-accent,#007AFF)]">syncing</span>
+              <span className="hidden sm:inline text-[var(--ui-accent,#007AFF)]">{t("status_syncing")}</span>
             </>
           ) : syncStatus === "conflict" ? (
             <>
               <span className="size-1.5 rounded-full bg-amber-500" aria-hidden="true" />
-              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">conflict</span>
+              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">{t("status_conflict")}</span>
             </>
           ) : syncStatus === "error" ? (
             <>
               <span className="size-1.5 rounded-full bg-destructive" aria-hidden="true" />
-              <span className="text-destructive hidden sm:inline">save error</span>
+              <span className="text-destructive hidden sm:inline">{t("status_error")}</span>
             </>
           ) : justSaved ? (
             <>
               <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] animate-ios-save-halo" aria-hidden="true" />
               <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline-flex items-center gap-0.5">
-                <Check size={10} weight="bold" className="animate-lottie-check" /> saved
+                <Check size={10} weight="bold" className="animate-lottie-check" /> {t("status_saved")}
               </span>
             </>
           ) : (
@@ -193,7 +195,7 @@ export function TopBar() {
 
         {isViewer && (
           <span className="animate-badge-pop px-1.5 py-0.5 rounded-full text-[9px] font-mono font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 uppercase tracking-wider ml-1">
-            Viewer
+            {t("viewer_badge")}
           </span>
         )}
       </div>
