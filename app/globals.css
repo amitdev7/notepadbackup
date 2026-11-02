@@ -639,7 +639,6 @@
 }
 
 .gpu-accelerated {
-  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   will-change: transform, opacity;
 }
@@ -825,9 +824,15 @@
    - Cool Glass Tint Transmission (vec3(0.92, 0.95, 1.05))
    ─────────────────────────────────────────────────────────────────────────── */
 
+.apple-glass-pill:where(:not(.fixed, .absolute, .sticky)),
+.liquid-glass-pill:where(:not(.fixed, .absolute, .sticky)),
+.apple-glass-panel:where(:not(.fixed, .absolute, .sticky)),
+.liquid-glass-panel:where(:not(.fixed, .absolute, .sticky)) {
+  position: relative;
+}
+
 .apple-glass-pill,
 .liquid-glass-pill {
-  position: relative;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.86) 0%, rgba(246, 249, 255, 0.74) 100%);
   backdrop-filter: blur(28px) saturate(200%) brightness(1.02);
   -webkit-backdrop-filter: blur(28px) saturate(200%) brightness(1.02);
@@ -866,7 +871,6 @@
 
 .apple-glass-panel,
 .liquid-glass-panel {
-  position: relative;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.89) 0%, rgba(248, 250, 255, 0.80) 100%);
   backdrop-filter: blur(32px) saturate(200%) brightness(1.02);
   -webkit-backdrop-filter: blur(32px) saturate(200%) brightness(1.02);

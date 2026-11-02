@@ -93,7 +93,7 @@ export function TopBar() {
   return (
     <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
-      <div className="pointer-events-auto flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-[background-color,border-color,box-shadow,opacity] duration-200 gpu-accelerated select-none shadow-xl">
+      <div className="pointer-events-auto relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-[background-color,border-color,box-shadow,opacity] duration-200 select-none shadow-xl">
         {isEditingTitle ? (
           <input
             ref={inputRef}

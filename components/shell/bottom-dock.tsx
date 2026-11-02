@@ -351,18 +351,17 @@ export function BottomDock() {
         </div>
       )}
 
-      {/* ── Main macOS Floating Dock ── */}
-      <nav
-        aria-label="Main dock"
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        className={cn(
-          "fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 z-40",
-          "flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)]",
-          "apple-glass-pill rounded-2xl",
-          "animate-dock-enter gpu-accelerated select-none"
-        )}
-      >
+      {/* ── Main macOS Floating Dock Container ── */}
+      <div className="pointer-events-none fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-0 z-40 flex items-center justify-center px-2 animate-dock-enter">
+        <nav
+          aria-label="Main dock"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={handlePointerLeave}
+          className={cn(
+            "pointer-events-auto relative flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-1 sm:py-1.5 max-w-[calc(100vw-1rem)]",
+            "apple-glass-pill rounded-2xl select-none"
+          )}
+        >
         {/* ── Brand / Workspace Menu ── */}
         {dockControls.brandMenu && (
           <DropdownMenu>
@@ -725,6 +724,7 @@ export function BottomDock() {
           </>
         )}
       </nav>
-    </TooltipProvider>
+    </div>
+  </TooltipProvider>
   )
 }
