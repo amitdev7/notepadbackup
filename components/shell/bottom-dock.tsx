@@ -159,7 +159,7 @@ function MagnifiedDockItem({
               transform: `scale(${scale})`,
             }}
             className={cn(
-              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none transition-all duration-150 active:scale-95",
+              "dock-magnify-item relative flex items-center justify-center size-7 sm:size-8 rounded-xl cursor-pointer select-none outline-none transition-all duration-150 ios-bouncy-press",
               "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/40 focus-visible:outline-none",
               active
                 ? "bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] font-semibold shadow-xs border border-[var(--ui-accent,#007AFF)]/35 shadow-[inset_0_1px_0.5px_rgba(255,255,255,0.7)]"
@@ -167,7 +167,9 @@ function MagnifiedDockItem({
               className
             )}
           >
-            {children}
+            <span className={cn("flex items-center justify-center", active && !reducedMotion && "animate-lottie-bounce")}>
+              {children}
+            </span>
             {showIndicatorDot && active && (
               <span className="dock-active-dot" aria-hidden="true" />
             )}

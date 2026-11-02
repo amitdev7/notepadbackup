@@ -128,7 +128,7 @@ export function FilesPopover() {
         aria-haspopup="true"
         aria-label="Manage canvas files"
         className={cn(
-          "group flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer outline-none shrink-0",
+          "group ios-bouncy-press flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium transition-all select-none cursor-pointer outline-none shrink-0",
           "focus-visible:ring-2 focus-visible:ring-[var(--ui-accent,#007AFF)]/40",
           isOpen
             ? "bg-muted text-foreground shadow-2xs font-semibold"

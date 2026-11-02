@@ -148,7 +148,7 @@ export function TopBar() {
         >
           {syncStatus === "syncing" ? (
             <>
-              <span className="size-1.5 rounded-full bg-[var(--ui-accent,#007AFF)] animate-pulse shadow-[0_0_8px_rgba(37,99,235,0.85)]" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-[var(--ui-accent,#007AFF)] animate-ios-pulse-halo shadow-[0_0_8px_rgba(37,99,235,0.85)]" aria-hidden="true" />
               <span className="hidden sm:inline text-[var(--ui-accent,#007AFF)]">syncing</span>
             </>
           ) : syncStatus === "conflict" ? (
@@ -163,9 +163,9 @@ export function TopBar() {
             </>
           ) : justSaved ? (
             <>
-              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] transition-all" aria-hidden="true" />
+              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] animate-ios-save-halo" aria-hidden="true" />
               <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline-flex items-center gap-0.5">
-                <Check size={10} weight="bold" /> saved
+                <Check size={10} weight="bold" className="animate-lottie-check" /> saved
               </span>
             </>
           ) : (
