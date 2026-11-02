@@ -235,7 +235,11 @@ export function Canvas() {
   const [canvasSize, setCanvasSize] = useState({ w: 1920, h: 1080 })
 
   useEffect(() => {
-    return initExpirationEngine()
+    const cleanupExpiration = initExpirationEngine()
+    return () => {
+      cleanupExpiration()
+      if (revealTimerRef.current) clearTimeout(revealTimerRef.current)
+    }
   }, [])
 
   useEffect(() => {
