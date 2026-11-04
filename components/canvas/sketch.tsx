@@ -364,9 +364,9 @@ export const NodeSketch = memo(function NodeSketch({
       case "shape":
         return `s:${node.shape}:${node.w}:${node.h}:${flip}:${node.fill}:${pen}:${node.roundness ? 1 : 0}:${customColor}`
       case "draw":
-        return `d:${node.points.length}:${node.w}:${node.h}:${flip}:${node.points[0]?.join()}:${node.points.at(-1)?.join()}:${pen}:${customColor}`
+        return `d:${node.points.length}:${node.w}:${node.h}:${flip}:${node.highlighter ? 1 : 0}:${node.points[0]?.join()}:${node.points.at(-1)?.join()}:${pen}:${customColor}`
       case "arrow":
-        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.points.flat().join()}:${pen}:${node.label ?? ""}:${customColor}`
+        return `a:${node.w}:${node.h}:${flip}:${node.head}:${node.routing ?? "straight"}:${node.points.flat().join()}:${pen}:${node.label ?? ""}:${customColor}`
       case "text":
         // w and align place the anchor, so a resize or a realignment is a
         // different set of marks even when the words haven't changed

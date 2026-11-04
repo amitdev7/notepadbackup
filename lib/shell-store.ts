@@ -176,6 +176,7 @@ export interface DockControlsVisibility {
   toolHand: boolean
   toolShape: boolean
   toolDraw: boolean
+  toolHighlighter?: boolean
   toolEraser: boolean
   toolArrow: boolean
   toolText: boolean
@@ -189,6 +190,9 @@ export interface DockControlsVisibility {
   actionStats: boolean
   actionPage: boolean
   actionSettings: boolean
+  actionPresenter?: boolean
+  actionMiniMap?: boolean
+  actionReactions?: boolean
 
   // Dock Modules
   brandMenu: boolean
@@ -215,6 +219,7 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
   toolHand: true,
   toolShape: true,
   toolDraw: true,
+  toolHighlighter: true,
   toolEraser: true,
   toolArrow: true,
   toolText: true,
@@ -227,6 +232,9 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
   actionStats: false,  // Hidden by default
   actionPage: true,
   actionSettings: true,
+  actionPresenter: true,
+  actionMiniMap: true,
+  actionReactions: true,
 
   brandMenu: true,
   zoomControls: true,
@@ -244,6 +252,40 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
   menuResetView: true,
   menuClearCanvas: true,
   menuGithub: true,
+}
+
+export interface AudioHapticsPreferences {
+  enabled: boolean
+  volume: number
+}
+
+export const DEFAULT_AUDIO_HAPTICS: AudioHapticsPreferences = {
+  enabled: true,
+  volume: 0.35,
+}
+
+export interface SmartDrawingPreferences {
+  snapOnHold: boolean
+  holdThresholdMs: number
+}
+
+export const DEFAULT_SMART_DRAWING: SmartDrawingPreferences = {
+  snapOnHold: true,
+  holdThresholdMs: 360,
+}
+
+export interface PresenterPreferences {
+  active: boolean
+  currentFrameIndex: number
+  showSpotlight: boolean
+  spotlightRadius: number
+}
+
+export const DEFAULT_PRESENTER_PREFERENCES: PresenterPreferences = {
+  active: false,
+  currentFrameIndex: 0,
+  showSpotlight: false,
+  spotlightRadius: 150,
 }
 
 export interface ShellPreferences {
@@ -283,6 +325,10 @@ export interface ShellPreferences {
   revealMouseOnMove: boolean
   liquidGlassSettings: ShellLiquidGlassPreferences
   language: SupportedLanguage
+  audioHaptics?: AudioHapticsPreferences
+  smartDrawing?: SmartDrawingPreferences
+  presenterSettings?: PresenterPreferences
+  showMiniMap?: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -322,6 +368,10 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   revealMouseOnMove: true,
   liquidGlassSettings: DEFAULT_LIQUID_GLASS_PREFERENCES,
   language: "en-US",
+  audioHaptics: DEFAULT_AUDIO_HAPTICS,
+  smartDrawing: DEFAULT_SMART_DRAWING,
+  presenterSettings: DEFAULT_PRESENTER_PREFERENCES,
+  showMiniMap: true,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -382,6 +432,19 @@ function loadInitialPreferences(): ShellPreferences {
           ...(parsed.liquidGlassSettings || {}),
         },
         language: typeof parsed.language === "string" ? (parsed.language as SupportedLanguage) : "en-US",
+        audioHaptics: {
+          ...DEFAULT_AUDIO_HAPTICS,
+          ...(parsed.audioHaptics || {}),
+        },
+        smartDrawing: {
+          ...DEFAULT_SMART_DRAWING,
+          ...(parsed.smartDrawing || {}),
+        },
+        presenterSettings: {
+          ...DEFAULT_PRESENTER_PREFERENCES,
+          ...(parsed.presenterSettings || {}),
+        },
+        showMiniMap: parsed.showMiniMap !== undefined ? Boolean(parsed.showMiniMap) : true,
       }
     }
   } catch { }
@@ -415,6 +478,14 @@ interface ShellState {
   // Expired elements archive modal
   expiredArchiveOpen: boolean
 
+  // Interactive Presentation, Spotlight, MiniMap, and Reactions
+  miniMapOpen: boolean
+  presenterActive: boolean
+  presenterSlideIndex: number
+  spotlightActive: boolean
+  spotlightRadius: number
+  reactionsBarOpen: boolean
+
   // App UI Preferences
   preferences: ShellPreferences
 
@@ -432,6 +503,16 @@ interface ShellState {
   setLibraryCategory: (c: string) => void
   setGlobalSearchOpen: (open: boolean) => void
   setExpiredArchiveOpen: (open: boolean) => void
+  toggleMiniMap: () => void
+  setMiniMapOpen: (open: boolean) => void
+  togglePresenter: () => void
+  setPresenterActive: (active: boolean) => void
+  setPresenterSlideIndex: (idx: number) => void
+  toggleSpotlight: () => void
+  setSpotlightActive: (active: boolean) => void
+  setSpotlightRadius: (radius: number) => void
+  toggleReactionsBar: () => void
+  setReactionsBarOpen: (open: boolean) => void
   toggleTemporaryMode: () => void
   setTemporaryMode: (enabled: boolean) => void
   setTemporaryDuration: (durationMs: number) => void
@@ -568,13 +649,20 @@ export const useShellStore = create<ShellState>((set, get) => ({
   globalSearchOpen: false,
   expiredArchiveOpen: false,
 
+  miniMapOpen: true,
+  presenterActive: false,
+  presenterSlideIndex: 0,
+  spotlightActive: false,
+  spotlightRadius: 150,
+  reactionsBarOpen: false,
+
   preferences: loadInitialPreferences(),
 
   setActiveSurface: (activeSurface) => set({ activeSurface }),
   setPagePopoverOpen: (pagePopoverOpen) => set({ pagePopoverOpen }),
   togglePagePopover: () => set((s) => ({ pagePopoverOpen: !s.pagePopoverOpen })),
   setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
-  setSettingsSection: (settingsSection) => set({ settingsSection }),
+  setSettingsSection: (section) => set({ settingsSection: section }),
   setToolsDockOpen: (toolsDockOpen) => set({ toolsDockOpen }),
   setBrandMenuOpen: (brandMenuOpen) => set({ brandMenuOpen }),
   setLibraryOpen: (libraryOpen) => set({ libraryOpen }),
@@ -584,6 +672,17 @@ export const useShellStore = create<ShellState>((set, get) => ({
   setLibraryCategory: (libraryCategory) => set({ libraryCategory }),
   setGlobalSearchOpen: (globalSearchOpen) => set({ globalSearchOpen }),
   setExpiredArchiveOpen: (expiredArchiveOpen) => set({ expiredArchiveOpen }),
+
+  toggleMiniMap: () => set((s) => ({ miniMapOpen: !s.miniMapOpen })),
+  setMiniMapOpen: (miniMapOpen) => set({ miniMapOpen }),
+  togglePresenter: () => set((s) => ({ presenterActive: !s.presenterActive })),
+  setPresenterActive: (presenterActive) => set({ presenterActive }),
+  setPresenterSlideIndex: (presenterSlideIndex) => set({ presenterSlideIndex }),
+  toggleSpotlight: () => set((s) => ({ spotlightActive: !s.spotlightActive })),
+  setSpotlightActive: (spotlightActive) => set({ spotlightActive }),
+  setSpotlightRadius: (spotlightRadius) => set({ spotlightRadius }),
+  toggleReactionsBar: () => set((s) => ({ reactionsBarOpen: !s.reactionsBarOpen })),
+  setReactionsBarOpen: (reactionsBarOpen) => set({ reactionsBarOpen }),
 
   toggleTemporaryMode: () => {
     set((state) => {

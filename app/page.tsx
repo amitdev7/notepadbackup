@@ -26,6 +26,10 @@ import { PdfToCanvasDialog } from "@/components/canvas/pdf-to-canvas-dialog"
 import { CanvasSearch } from "@/components/canvas/canvas-search"
 import { CanvasStats } from "@/components/canvas/canvas-stats"
 import { LaserOverlay } from "@/components/canvas/laser-overlay"
+import { MiniMapOverlay } from "@/components/canvas/minimap-overlay"
+import { PresenterMode } from "@/components/canvas/presenter-mode"
+import { SpotlightOverlay } from "@/components/canvas/spotlight-overlay"
+import { CursorReactions } from "@/components/canvas/cursor-reactions"
 import { ToolPropertiesPanel } from "@/components/canvas/tool-properties-panel"
 import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
@@ -143,6 +147,10 @@ export default function Home() {
       {!uiHidden && searchOpen && <CanvasSearch />}
       {!uiHidden && statsOpen && <CanvasStats />}
       <LaserOverlay />
+      <MiniMapOverlay />
+      <PresenterMode />
+      <SpotlightOverlay />
+      <CursorReactions />
       {!uiHidden && <ToolPropertiesPanel />}
     </main>
   )

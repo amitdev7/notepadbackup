@@ -68,6 +68,16 @@ export type ZenithsuiNetworkMessage =
       selectedNodeIds?: string[]
     }
   | {
+      type: "peer_reaction"
+      peerId: string
+      peerName: string
+      emoji: string
+      x: number
+      y: number
+      id: string
+      createdAt: number
+    }
+  | {
       type: "peer_joined"
       peer: ConnectedPeer
     }

@@ -6,6 +6,7 @@ export type Tool =
   | "select"
   | "shape"
   | "draw"
+  | "highlighter"
   | "text"
   | "arrow"
   | "line"
@@ -168,6 +169,10 @@ export interface DrawNode extends BaseNode, Outlined {
   type: "draw"
   /** freehand points, relative to node origin (0..w, 0..h) */
   points: [number, number][]
+  /** whether this was drawn as a translucent highlighter marker */
+  highlighter?: boolean
+  /** custom stroke width (e.g. for highlighters) */
+  strokeWidth?: number
 }
 
 /**
@@ -213,6 +218,8 @@ export interface ArrowNode extends BaseNode, Outlined {
   startBinding?: ArrowBinding | null
   endBinding?: ArrowBinding | null
   label?: string
+  /** Smart routing mode: straight, smooth curved Bézier, or 90-degree orthogonal elbow */
+  routing?: "straight" | "curved" | "elbow"
 }
 
 /**

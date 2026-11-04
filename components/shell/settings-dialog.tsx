@@ -2365,7 +2365,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
           </div>
 
           {/* 7. Auto-select After Draw */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
             <div>
               <span className="font-semibold text-stone-900 dark:text-stone-100 block">Auto-select After Inking</span>
               <span className="text-[11px] text-stone-500">Automatically switch back to Select tool upon completing stroke</span>
@@ -2373,6 +2373,44 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
             <Switch
               checked={draw.autoSelectAfterDraw}
               onCheckedChange={(checked) => updateDrawSettings({ autoSelectAfterDraw: checked })}
+            />
+          </div>
+
+          {/* 8. Smart Shape Recognition (Snap-on-Hold) */}
+          <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Smart Shape Recognition (Apple Notes Style)</span>
+              <span className="text-[11px] text-stone-500">Auto-correct rough circles, rectangles, triangles, and arrows into crisp vector shapes</span>
+            </div>
+            <Switch
+              checked={prefs.smartDrawing?.snapOnHold !== false}
+              onCheckedChange={(checked) =>
+                updatePrefs({
+                  smartDrawing: {
+                    snapOnHold: checked,
+                    holdThresholdMs: 360,
+                  },
+                })
+              }
+            />
+          </div>
+
+          {/* 9. Audio Haptics & Sound FX */}
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block">Acoustic Feedback & Sound FX</span>
+              <span className="text-[11px] text-stone-500">Synthesized Apple-style tactile audio on tool switches, shape snaps, and slide transitions</span>
+            </div>
+            <Switch
+              checked={prefs.audioHaptics?.enabled !== false}
+              onCheckedChange={(checked) =>
+                updatePrefs({
+                  audioHaptics: {
+                    enabled: checked,
+                    volume: 0.35,
+                  },
+                })
+              }
             />
           </div>
         </div>

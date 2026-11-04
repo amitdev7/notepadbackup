@@ -37,6 +37,7 @@ interface WifiSessionStore {
   stopPublishing: () => Promise<void>
   setPeerRole: (peerId: string, role: PeerRole) => void
   kickPeer: (peerId: string) => void
+  broadcastReaction: (emoji: string, x: number, y: number) => void
 }
 
 let activeSocket: WebSocket | null = null
@@ -135,6 +136,8 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
               set((state) => ({
                 connectedPeers: state.connectedPeers.filter((p) => p.id !== msg.peerId),
               }))
+            } else if (msg.type === "peer_reaction") {
+              window.dispatchEvent(new CustomEvent("zenithsui:peer_reaction", { detail: { emoji: msg.emoji, x: msg.x, y: msg.y } }))
             }
           } catch {
             // Ignore malformed messages
@@ -200,6 +203,25 @@ export const useWifiSessionStore = create<WifiSessionStore>((set, get) => ({
     }))
     if (activeSocket && activeSocket.readyState === WebSocket.OPEN) {
       activeSocket.send(JSON.stringify({ type: "kick_peer", peerId }))
+    }
+  },
+
+  broadcastReaction: (emoji: string, x: number, y: number) => {
+    if (activeSocket && activeSocket.readyState === (typeof WebSocket !== "undefined" ? WebSocket.OPEN : 1)) {
+      try {
+        activeSocket.send(
+          JSON.stringify({
+            type: "peer_reaction",
+            peerId: "host",
+            peerName: "Host",
+            emoji,
+            x,
+            y,
+            id: Math.random().toString(36).slice(2, 9),
+            createdAt: Date.now(),
+          })
+        )
+      } catch {}
     }
   },
 }))

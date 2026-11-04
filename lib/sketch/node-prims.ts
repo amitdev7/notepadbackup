@@ -76,11 +76,39 @@ export function basePrims(node: SquigNode): Prim[] {
     }
     case "draw":
       // freehand is already the user's own line — barely roughen it with smooth curve fitting
+      if (node.highlighter) {
+        return [
+          {
+            t: "poly",
+            pts: node.points,
+            curve: true,
+            o: {
+              ...outline(node, node.strokeWidth ?? 20, { roughness: 0.1 }),
+              customStroke: node.color ?? "#FACC15",
+            },
+          },
+        ]
+      }
       return [{ t: "poly", pts: node.points, curve: true, o: outline(node, 1.9, { roughness: 0.2 }) }]
     case "arrow": {
       const [[x1, y1], [x2, y2]] = node.points
       const o = outline(node, 1.6)
-      const out: Prim[] = [{ t: "line", x1, y1, x2, y2, o }]
+      const out: Prim[] = []
+
+      if (node.routing === "curved") {
+        const dx = x2 - x1
+        const dy = y2 - y1
+        const length = Math.hypot(dx, dy)
+        const bend = Math.min(length * 0.22, 40)
+        const mx = (x1 + x2) / 2 - (dy / (length || 1)) * bend
+        const my = (y1 + y2) / 2 + (dx / (length || 1)) * bend
+        out.push({ t: "poly", pts: [[x1, y1], [mx, my], [x2, y2]], curve: true, o })
+      } else if (node.routing === "elbow") {
+        const midX = (x1 + x2) / 2
+        out.push({ t: "poly", pts: [[x1, y1], [midX, y1], [midX, y2], [x2, y2]], o })
+      } else {
+        out.push({ t: "line", x1, y1, x2, y2, o })
+      }
       if (node.head) {
         const a = Math.atan2(y2 - y1, x2 - x1)
         const L = 12

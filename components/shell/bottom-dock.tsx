@@ -53,7 +53,12 @@ import {
   House,
   Check,
   X,
+  PaintBrushBroad,
+  Presentation,
+  Compass,
+  Smiley,
 } from "@phosphor-icons/react"
+import { audioFx } from "@/lib/canvas/audio-fx"
 import { ViewMenu } from "@/components/shell/view-menu"
 import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
@@ -80,6 +85,7 @@ const TOOL_TRANSLATION_KEYS: Record<string, TranslationKey> = {
   hand: "tool_hand",
   shape: "tool_shape",
   draw: "tool_draw",
+  highlighter: "tool_highlighter",
   eraser: "tool_eraser",
   arrow: "tool_arrow",
   text: "tool_text",
@@ -102,6 +108,7 @@ const ALL_TOOLS: ToolDef[] = [
   { id: "hand", label: "Hand (Pan)", icon: Hand, shortcut: "H", prefKey: "toolHand" },
   { id: "shape", label: "Shape", icon: Rectangle, shortcut: "R", prefKey: "toolShape" },
   { id: "draw", label: "Draw", icon: PencilLine, shortcut: "P", prefKey: "toolDraw" },
+  { id: "highlighter", label: "Highlighter", icon: PaintBrushBroad, shortcut: "M", prefKey: "toolHighlighter" },
   { id: "eraser", label: "Eraser", icon: Eraser, shortcut: "E", prefKey: "toolEraser" },
   { id: "arrow", label: "Arrow", icon: ArrowRight, shortcut: "A", prefKey: "toolArrow" },
   { id: "text", label: "Text", icon: TextT, shortcut: "T", prefKey: "toolText" },
@@ -255,6 +262,12 @@ export function BottomDock() {
   const pagePopoverOpen = useShellStore((s) => s.pagePopoverOpen)
   const setSettingsOpen = useShellStore((s) => s.setSettingsOpen)
   const settingsOpen = useShellStore((s) => s.settingsOpen)
+  const presenterActive = useShellStore((s) => s.presenterActive)
+  const setPresenterActive = useShellStore((s) => s.setPresenterActive)
+  const miniMapOpen = useShellStore((s) => s.miniMapOpen)
+  const toggleMiniMap = useShellStore((s) => s.toggleMiniMap)
+  const reactionsBarOpen = useShellStore((s) => s.reactionsBarOpen)
+  const toggleReactionsBar = useShellStore((s) => s.toggleReactionsBar)
 
   // Cursor proximity tracking for macOS magnification
   const [mouseX, setMouseX] = useState<number | null>(null)
@@ -270,6 +283,7 @@ export function BottomDock() {
   }, [])
 
   const handleToolClick = (t: ToolDef) => {
+    audioFx.playToolSwitch()
     if (t.id === "library") {
       setPanel(panel === "components" || panel === "blocks" ? null : "components")
     } else {
@@ -307,6 +321,9 @@ export function BottomDock() {
   const hasQuickActions =
     dockControls.actionSearch ||
     dockControls.actionStats ||
+    dockControls.actionPresenter ||
+    dockControls.actionMiniMap ||
+    dockControls.actionReactions ||
     dockControls.actionPage ||
     dockControls.actionSettings
 
@@ -632,6 +649,60 @@ export function BottomDock() {
                 reducedMotion={reducedMotion}
               >
                 <ChartBar size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Presenter Mode */}
+            {dockControls.actionPresenter && (
+              <MagnifiedDockItem
+                onClick={() => {
+                  setPresenterActive(!presenterActive)
+                  audioFx.playToolSwitch()
+                }}
+                title={t("action_presenter") || "Present"}
+                ariaLabel={t("action_presenter") || "Present"}
+                active={presenterActive}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={true}
+              >
+                <Presentation size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Mini-Map Radar Toggle */}
+            {dockControls.actionMiniMap && (
+              <MagnifiedDockItem
+                onClick={() => {
+                  toggleMiniMap()
+                  audioFx.playToolSwitch()
+                }}
+                title={t("action_minimap") || "Mini-Map (⌘M)"}
+                ariaLabel={t("action_minimap") || "Mini-Map (⌘M)"}
+                active={miniMapOpen}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={true}
+              >
+                <Compass size={16} aria-hidden="true" />
+              </MagnifiedDockItem>
+            )}
+
+            {/* Live Emoji Reactions */}
+            {dockControls.actionReactions && (
+              <MagnifiedDockItem
+                onClick={() => {
+                  toggleReactionsBar()
+                  audioFx.playToolSwitch()
+                }}
+                title={t("action_reactions") || "Reactions"}
+                ariaLabel={t("action_reactions") || "Reactions"}
+                active={reactionsBarOpen}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={true}
+              >
+                <Smiley size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
 

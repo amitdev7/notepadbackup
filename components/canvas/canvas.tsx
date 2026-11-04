@@ -24,6 +24,8 @@ import { screenToWorld } from "@/lib/types"
 import { flushPendingViewportSave } from "@/lib/canvas/viewport-memory"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
 import { smoothPoints, pointsToSmoothSvgPath } from "@/lib/canvas/stroke-smoothing"
+import { recognizeShape } from "@/lib/canvas/shape-recognizer"
+import { audioFx } from "@/lib/canvas/audio-fx"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
 import { useSpacebarPan } from "@/lib/canvas/use-spacebar-pan"
@@ -841,30 +843,97 @@ export function Canvas() {
 
     if (g.kind === "draw") {
       if (g.points.length > 2) {
+        const isHighlighter = s.tool === "highlighter"
         const drawPrefs = useShellStore.getState().preferences.drawSettings
-        const smoothedPoints = smoothPoints(g.points, drawPrefs?.smoothing ?? "medium")
-        const xs = smoothedPoints.map((p) => p[0])
-        const ys = smoothedPoints.map((p) => p[1])
-        const x = Math.min(...xs)
-        const y = Math.min(...ys)
-        const w = Math.max(Math.max(...xs) - x, 2)
-        const h = Math.max(Math.max(...ys) - y, 2)
+        const snapEnabled = useShellStore.getState().preferences.smartDrawing?.snapOnHold !== false
         const customColor = s.activeStyle.strokeColor || (drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined)
-        s.addNode(
-          {
-            type: "draw",
-            x,
-            y,
-            w,
-            h,
-            points: smoothedPoints.map((p) => [p[0] - x, p[1] - y] as [number, number]),
-            stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
-            dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
-            color: customColor,
-            opacity: s.activeStyle.opacity,
-          } as Omit<SquigNode, "id" | "seed">,
-          { select: false, checkpoint: false }
-        )
+
+        // Geometric shape recognition (Apple Notes / GoodNotes style)
+        const recognized = snapEnabled && !isHighlighter ? recognizeShape(g.points) : null
+
+        if (recognized) {
+          audioFx.playShapeSnap()
+          if (recognized.kind === "shape") {
+            s.addNode(
+              {
+                type: "shape",
+                shape: recognized.shape,
+                x: recognized.x,
+                y: recognized.y,
+                w: recognized.w,
+                h: recognized.h,
+                roundness: recognized.roundness,
+                fill: s.activeStyle.fill ?? "none",
+                stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
+                dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
+                color: customColor,
+                opacity: s.activeStyle.opacity,
+              } as Omit<SquigNode, "id" | "seed">,
+              { select: true, checkpoint: false }
+            )
+          } else if (recognized.kind === "arrow" || recognized.kind === "line") {
+            s.addNode(
+              {
+                type: "arrow",
+                x: recognized.x,
+                y: recognized.y,
+                w: recognized.w,
+                h: recognized.h,
+                points: recognized.points,
+                head: recognized.head,
+                stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
+                dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
+                color: customColor,
+                opacity: s.activeStyle.opacity,
+              } as Omit<SquigNode, "id" | "seed">,
+              { select: true, checkpoint: false }
+            )
+          }
+        } else {
+          const smoothedPoints = smoothPoints(g.points, drawPrefs?.smoothing ?? "medium")
+          const xs = smoothedPoints.map((p) => p[0])
+          const ys = smoothedPoints.map((p) => p[1])
+          const x = Math.min(...xs)
+          const y = Math.min(...ys)
+          const w = Math.max(Math.max(...xs) - x, 2)
+          const h = Math.max(Math.max(...ys) - y, 2)
+
+          if (isHighlighter) {
+            s.addNode(
+              {
+                type: "draw",
+                x,
+                y,
+                w,
+                h,
+                points: smoothedPoints.map((p) => [p[0] - x, p[1] - y] as [number, number]),
+                highlighter: true,
+                strokeWidth: 22,
+                stroke: "heavy",
+                color: customColor || "#FACC15",
+                opacity: 42,
+              } as Omit<SquigNode, "id" | "seed">,
+              { select: false, checkpoint: false }
+            )
+          } else {
+            s.addNode(
+              {
+                type: "draw",
+                x,
+                y,
+                w,
+                h,
+                points: smoothedPoints.map((p) => [p[0] - x, p[1] - y] as [number, number]),
+                stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
+                dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
+                color: customColor,
+                opacity: s.activeStyle.opacity,
+              } as Omit<SquigNode, "id" | "seed">,
+              { select: false, checkpoint: false }
+            )
+          }
+        }
+
         if (drawPrefs?.autoSelectAfterDraw) {
           s.setTool("select")
         }
@@ -1285,7 +1354,7 @@ export function Canvas() {
         return
       }
 
-      if (tool === "draw") {
+      if (tool === "draw" || tool === "highlighter") {
         s.checkpoint()
         beginGesture({ kind: "draw", ...common, points: [[wx, wy]] }, e)
         return
@@ -2127,7 +2196,8 @@ export function Canvas() {
               <g
                 key={id}
                 transform={`translate(${n.x} ${n.y})`}
-                opacity={n.opacity !== undefined ? n.opacity / 100 : undefined}
+                opacity={n.opacity !== undefined ? n.opacity / 100 : (n.type === "draw" && n.highlighter ? 0.42 : undefined)}
+                style={n.type === "draw" && n.highlighter ? { mixBlendMode: "multiply" } : undefined}
               >
                 <NodeSketch node={n} hiddenText={id === editingId ? editing?.hidden : undefined} />
               </g>
@@ -2137,10 +2207,12 @@ export function Canvas() {
             <path
               d={pointsToSmoothSvgPath(livePoints)}
               fill="none"
-              stroke="var(--sq-ink)"
-              strokeWidth={2 / v.zoom < 2 ? 2 : 2 / v.zoom}
+              stroke={tool === "highlighter" ? "#FACC15" : "var(--sq-ink)"}
+              strokeWidth={tool === "highlighter" ? 20 : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)}
               strokeLinecap="round"
               strokeLinejoin="round"
+              opacity={tool === "highlighter" ? 0.45 : 1}
+              style={tool === "highlighter" ? { mixBlendMode: "multiply" } : undefined}
             />
           )}
           {placingDef && cursor && !isCursorEffectivelyHidden && (
