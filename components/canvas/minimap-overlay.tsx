@@ -4,24 +4,45 @@
 // Zenithsui Frosted Glass Mini-Map & Radar Navigation Overlay
 //
 // Features:
-// 1. Apple-inspired frosted glass capsule docked at bottom-right.
+// 1. Apple-inspired frosted glass capsule with 4-corner dockable positioning
+//    (Bottom-Right, Bottom-Left, Top-Right, Top-Left).
 // 2. Real-time miniature vector rendering of canvas elements.
 // 3. Highlighted viewport rectangle reflecting current camera position.
 // 4. Interactive click-to-pan and drag-to-navigate with boundary clamping.
 // 5. Collapsible toggle with keyboard shortcut (⌘M).
+// 6. Header drag-to-snap to nearest corner and quick corner quadrant picker (⇧⌘M).
 // ---------------------------------------------------------------------------
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { useSquig } from "@/lib/store"
-import { useShellStore } from "@/lib/shell-store"
+import { useShellStore, type MiniMapPosition } from "@/lib/shell-store"
 import { audioFx } from "@/lib/canvas/audio-fx"
 import { cn } from "@/lib/utils"
-import { Compass, CaretDown, CaretUp, CornersOut } from "@phosphor-icons/react"
+import { Compass, CaretDown, CaretUp, CornersOut, SquaresFour, Check } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 
 const MAP_WIDTH = 190
 const MAP_HEIGHT = 125
 const PADDING = 140
+
+const POSITION_CLASSES: Record<MiniMapPosition, string> = {
+  "bottom-right": "bottom-20 right-4",
+  "bottom-left": "bottom-20 left-4",
+  "top-right": "top-16 right-4",
+  "top-left": "top-16 left-4",
+}
+
+const CORNER_OPTIONS: Array<{
+  id: MiniMapPosition
+  label: string
+  shortLabel: string
+  arrow: string
+}> = [
+  { id: "top-left", label: "Top-Left", shortLabel: "TL", arrow: "↖" },
+  { id: "top-right", label: "Top-Right", shortLabel: "TR", arrow: "↗" },
+  { id: "bottom-left", label: "Bottom-Left", shortLabel: "BL", arrow: "↙" },
+  { id: "bottom-right", label: "Bottom-Right", shortLabel: "BR", arrow: "↘" },
+]
 
 export function MiniMapOverlay() {
   const nodes = useSquig((s) => s.nodes)
@@ -31,12 +52,19 @@ export function MiniMapOverlay() {
   const resetViewport = useSquig((s) => s.resetViewport)
   const showMiniMap = useShellStore((s) => s.miniMapOpen)
   const toggleMiniMap = useShellStore((s) => s.toggleMiniMap)
+  const miniMapPosition = useShellStore((s) => s.preferences.miniMapPosition || "bottom-right")
+  const setMiniMapPosition = useShellStore((s) => s.setMiniMapPosition)
+  const cycleMiniMapPosition = useShellStore((s) => s.cycleMiniMapPosition)
   const uiHidden = useSquig((s) => s.uiHidden)
 
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
+  const [showPositionPicker, setShowPositionPicker] = useState(false)
+  const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null)
+
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const dragStartRef = useRef<{ startX: number; startY: number } | null>(null)
 
   // Calculate world bounding box covering all nodes
   const worldBounds = useMemo(() => {
@@ -206,39 +234,143 @@ export function MiniMapOverlay() {
     } catch {}
   }
 
-  // Keyboard shortcut (⌘M) to toggle mini-map
+  // Header dragging to dynamically reposition & snap to nearest corner
+  const onHeaderPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if ((e.target as HTMLElement).closest("button")) return
+    dragStartRef.current = { startX: e.clientX, startY: e.clientY }
+    ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+  }
+
+  const onHeaderPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStartRef.current) return
+    const dx = e.clientX - dragStartRef.current.startX
+    const dy = e.clientY - dragStartRef.current.startY
+    setDragOffset({ x: dx, y: dy })
+  }
+
+  const onHeaderPointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStartRef.current) return
+    try {
+      ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+    } catch {}
+
+    const el = containerRef.current
+    if (el) {
+      const rect = el.getBoundingClientRect()
+      const cx = rect.left + rect.width / 2
+      const cy = rect.top + rect.height / 2
+      const isLeft = cx < window.innerWidth / 2
+      const isTop = cy < window.innerHeight / 2
+      const targetPos: MiniMapPosition = isTop
+        ? isLeft
+          ? "top-left"
+          : "top-right"
+        : isLeft
+        ? "bottom-left"
+        : "bottom-right"
+
+      if (targetPos !== miniMapPosition) {
+        setMiniMapPosition(targetPos)
+        audioFx.playToolSwitch()
+      }
+    }
+
+    dragStartRef.current = null
+    setDragOffset(null)
+  }
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!showPositionPicker) return
+    const onDocClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowPositionPicker(false)
+      }
+    }
+    window.addEventListener("mousedown", onDocClick)
+    return () => window.removeEventListener("mousedown", onDocClick)
+  }, [showPositionPicker])
+
+  // Keyboard shortcut (⌘M toggle, ⇧⌘M cycle position)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "m" && !e.shiftKey && !e.altKey) {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "m" && !e.altKey) {
         e.preventDefault()
-        toggleMiniMap()
+        if (e.shiftKey) {
+          cycleMiniMapPosition()
+        } else {
+          toggleMiniMap()
+        }
         audioFx.playToolSwitch()
       }
     }
     window.addEventListener("keydown", handler)
     return () => window.removeEventListener("keydown", handler)
-  }, [toggleMiniMap])
+  }, [toggleMiniMap, cycleMiniMapPosition])
 
   if (uiHidden || !showMiniMap) return null
+
+  const posClass = POSITION_CLASSES[miniMapPosition] || POSITION_CLASSES["bottom-right"]
+  const isTop = miniMapPosition.startsWith("top")
+  const isRight = miniMapPosition.endsWith("right")
 
   return (
     <div
       ref={containerRef}
       className={cn(
-        "fixed bottom-20 right-4 z-30 select-none apple-glass-pill rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 transition-all duration-200 overflow-hidden",
+        "fixed z-30 select-none apple-glass-pill rounded-2xl shadow-2xl border border-white/20 dark:border-white/10 transition-all duration-200 overflow-visible",
+        posClass,
+        dragOffset ? "transition-none shadow-3xl ring-2 ring-blue-500/40" : "",
         isCollapsed ? "p-1.5" : "p-2.5"
       )}
       style={{
         backdropFilter: "blur(24px) saturate(190%)",
         WebkitBackdropFilter: "blur(24px) saturate(190%)",
+        transform: dragOffset ? `translate3d(${dragOffset.x}px, ${dragOffset.y}px, 0)` : undefined,
       }}
     >
-      <div className="flex items-center justify-between pb-1.5 px-1 border-b border-white/10 text-stone-600 dark:text-stone-300 text-xs font-semibold">
+      {/* Mini-Map Header Bar (Draggable to move between corners) */}
+      <div
+        onPointerDown={onHeaderPointerDown}
+        onPointerMove={onHeaderPointerMove}
+        onPointerUp={onHeaderPointerUp}
+        className="flex items-center justify-between pb-1.5 px-1 border-b border-white/10 text-stone-600 dark:text-stone-300 text-xs font-semibold cursor-grab active:cursor-grabbing"
+      >
         <div className="flex items-center gap-1.5">
-          <Compass size={13} className="text-blue-500" />
+          <Compass size={13} className="text-blue-500 shrink-0" />
           <span className="text-[11px] font-sans tracking-tight">Mini-Map</span>
         </div>
+
         <div className="flex items-center gap-1">
+          {/* Change Position Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowPositionPicker(!showPositionPicker)
+              audioFx.playToolSwitch()
+            }}
+            title={`Dock position: ${miniMapPosition.replace("-", " ")} (Click to change, ${kbd("mod+shift+m")} to cycle)`}
+            className={cn(
+              "px-1.5 py-0.5 rounded-md text-[10px] font-mono font-bold tracking-wider transition-colors cursor-pointer flex items-center gap-0.5",
+              showPositionPicker
+                ? "bg-blue-600 text-white shadow-xs"
+                : "bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 text-stone-600 dark:text-stone-300"
+            )}
+          >
+            <SquaresFour size={11} weight="bold" />
+            <span>
+              {miniMapPosition === "bottom-right"
+                ? "BR"
+                : miniMapPosition === "bottom-left"
+                ? "BL"
+                : miniMapPosition === "top-right"
+                ? "TR"
+                : "TL"}
+            </span>
+          </button>
+
+          {/* Reset Zoom & Fit Content */}
           <button
             type="button"
             onClick={() => {
@@ -250,6 +382,8 @@ export function MiniMapOverlay() {
           >
             <CornersOut size={12} />
           </button>
+
+          {/* Collapse / Expand */}
           <button
             type="button"
             onClick={() => {
@@ -264,6 +398,65 @@ export function MiniMapOverlay() {
         </div>
       </div>
 
+      {/* Position Selection Popover */}
+      {showPositionPicker && (
+        <div
+          className={cn(
+            "absolute z-40 p-2.5 apple-glass-panel rounded-2xl shadow-2xl border border-white/20 dark:border-white/15 bg-background/95 backdrop-blur-2xl animate-popover-enter select-none",
+            isTop ? "top-full mt-2" : "bottom-full mb-2",
+            isRight ? "right-0" : "left-0"
+          )}
+        >
+          <div className="flex items-center justify-between pb-2 mb-2 border-b border-border/50 text-[11px] font-semibold text-foreground px-0.5">
+            <span>Mini-Map Position</span>
+            <button
+              type="button"
+              onClick={() => {
+                cycleMiniMapPosition()
+                audioFx.playToolSwitch()
+              }}
+              className="text-[10px] text-blue-500 hover:underline cursor-pointer font-normal flex items-center gap-1"
+            >
+              Cycle ({kbd("mod+shift+m")})
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-1.5 w-48">
+            {CORNER_OPTIONS.map((c) => {
+              const isCurrent = miniMapPosition === c.id
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    setMiniMapPosition(c.id)
+                    setShowPositionPicker(false)
+                    audioFx.playToolSwitch()
+                  }}
+                  className={cn(
+                    "flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer border",
+                    isCurrent
+                      ? "bg-blue-600 text-white font-semibold border-blue-600 shadow-sm"
+                      : "bg-muted/60 hover:bg-muted border-border/60 text-foreground"
+                  )}
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span className="text-xs font-mono font-bold opacity-80">{c.arrow}</span>
+                    <span>{c.label}</span>
+                  </span>
+                  {isCurrent && <Check size={13} weight="bold" />}
+                </button>
+              )
+            })}
+          </div>
+
+          <p className="mt-2 text-[10px] text-muted-foreground leading-tight px-0.5 text-center">
+            💡 Tip: You can also drag the header to drop it in any corner!
+          </p>
+        </div>
+      )}
+
+      {/* Mini-Map Canvas Body */}
       {!isCollapsed && (
         <div className="pt-2 relative">
           <canvas

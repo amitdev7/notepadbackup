@@ -3052,6 +3052,23 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                   onCheckedChange={setShowPage}
                 />
               </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Mini-Map Dock Position</span>
+                  <span className="text-[11px] text-stone-500">Choose which corner the floating radar mini-map anchors to (draggable)</span>
+                </div>
+                <select
+                  value={prefs.miniMapPosition || "bottom-right"}
+                  onChange={(e) => useShellStore.getState().setMiniMapPosition(e.target.value as any)}
+                  className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-medium text-xs cursor-pointer"
+                >
+                  <option value="bottom-right">Bottom-Right (Default ↘)</option>
+                  <option value="bottom-left">Bottom-Left (↙)</option>
+                  <option value="top-right">Top-Right (↗)</option>
+                  <option value="top-left">Top-Left (↖)</option>
+                </select>
+              </div>
             </div>
           </div>
 

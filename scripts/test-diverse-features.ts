@@ -152,11 +152,25 @@ assert(store.preferences.dockControls.actionPresenter === true, "actionPresenter
 assert(store.preferences.dockControls.actionMiniMap === true, "actionMiniMap should be enabled by default")
 assert(store.preferences.dockControls.actionReactions === true, "actionReactions should be enabled by default")
 
-// MiniMap toggle
+// MiniMap toggle & 4-corner dock positioning
 const initMiniMap = store.miniMapOpen
 store.toggleMiniMap()
 assert.strictEqual(useShellStore.getState().miniMapOpen, !initMiniMap, "toggleMiniMap toggles miniMapOpen")
 store.setMiniMapOpen(initMiniMap)
+
+// MiniMap position controls
+assert.strictEqual(store.preferences.miniMapPosition ?? "bottom-right", "bottom-right", "miniMapPosition defaults to bottom-right")
+store.setMiniMapPosition("top-left")
+assert.strictEqual(useShellStore.getState().preferences.miniMapPosition, "top-left", "setMiniMapPosition updates to top-left")
+store.setMiniMapPosition("bottom-right")
+store.cycleMiniMapPosition() // bottom-right -> bottom-left
+assert.strictEqual(useShellStore.getState().preferences.miniMapPosition, "bottom-left", "cycleMiniMapPosition cycles to bottom-left")
+store.cycleMiniMapPosition() // bottom-left -> top-left
+assert.strictEqual(useShellStore.getState().preferences.miniMapPosition, "top-left", "cycleMiniMapPosition cycles to top-left")
+store.cycleMiniMapPosition() // top-left -> top-right
+assert.strictEqual(useShellStore.getState().preferences.miniMapPosition, "top-right", "cycleMiniMapPosition cycles to top-right")
+store.cycleMiniMapPosition() // top-right -> bottom-right
+assert.strictEqual(useShellStore.getState().preferences.miniMapPosition, "bottom-right", "cycleMiniMapPosition cycles back to bottom-right")
 
 // Presenter Mode toggle
 assert.strictEqual(store.presenterActive, false, "presenterActive defaults to false")

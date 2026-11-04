@@ -221,6 +221,12 @@ function Palette() {
       { id: "toggle-toolbar-viewmenu", label: "Toggle View Menu in Toolbar", section: "View", keywords: "view zoom menu compass toolbar top", icon: CompassIcon, run: () => useShellStore.getState().toggleToolbarViewMenu() },
       { id: "toggle-dock-viewmenu", label: "Toggle View Menu in Dock", section: "View", keywords: "view zoom menu compass dock bottom", icon: CompassIcon, run: () => useShellStore.getState().toggleDockViewMenu() },
       { id: "toggle-dock-zoom", label: "Toggle Zoom Stepper in Dock", section: "View", keywords: "zoom in out stepper dock buttons", icon: MagnifyingGlassPlusIcon, run: () => useShellStore.getState().toggleZoomControls() },
+      { id: "toggle-minimap", label: "Toggle Mini-Map", hint: kbd("mod+m"), section: "View", keywords: "radar overview map navigation compass", icon: CompassIcon, run: () => useShellStore.getState().toggleMiniMap() },
+      { id: "cycle-minimap-pos", label: "Cycle Mini-Map Position", hint: kbd("mod+shift+m"), section: "View", keywords: "minimap corner move position dock top bottom left right", icon: SquaresFourIcon, run: () => useShellStore.getState().cycleMiniMapPosition() },
+      { id: "minimap-pos-br", label: "Mini-Map: Move to Bottom-Right", section: "View", keywords: "minimap corner bottom right dock", icon: SquaresFourIcon, run: () => useShellStore.getState().setMiniMapPosition("bottom-right") },
+      { id: "minimap-pos-bl", label: "Mini-Map: Move to Bottom-Left", section: "View", keywords: "minimap corner bottom left dock", icon: SquaresFourIcon, run: () => useShellStore.getState().setMiniMapPosition("bottom-left") },
+      { id: "minimap-pos-tr", label: "Mini-Map: Move to Top-Right", section: "View", keywords: "minimap corner top right dock", icon: SquaresFourIcon, run: () => useShellStore.getState().setMiniMapPosition("top-right") },
+      { id: "minimap-pos-tl", label: "Mini-Map: Move to Top-Left", section: "View", keywords: "minimap corner top left dock", icon: SquaresFourIcon, run: () => useShellStore.getState().setMiniMapPosition("top-left") },
       { id: "keys", label: "Keyboard shortcuts", hint: kbd("shift+/"), section: "View", keywords: "hotkeys help cheat sheet", icon: KeyboardIcon, run: () => st().setShortcutsOpen(true) },
       { id: "canvas-stats", label: "Canvas & Element Stats…", hint: kbd("shift+alt+s"), section: "View", keywords: "metrics count vertices dimensions info inspector", icon: BoundingBoxIcon, run: () => st().setStatsOpen(!st().statsOpen) },
 

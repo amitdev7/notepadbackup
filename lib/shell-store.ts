@@ -288,6 +288,8 @@ export const DEFAULT_PRESENTER_PREFERENCES: PresenterPreferences = {
   spotlightRadius: 150,
 }
 
+export type MiniMapPosition = "bottom-right" | "bottom-left" | "top-right" | "top-left"
+
 export interface ShellPreferences {
   themeMode: ThemeMode
   uiDensity: UIDensity
@@ -329,6 +331,7 @@ export interface ShellPreferences {
   smartDrawing?: SmartDrawingPreferences
   presenterSettings?: PresenterPreferences
   showMiniMap?: boolean
+  miniMapPosition?: MiniMapPosition
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -372,6 +375,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   smartDrawing: DEFAULT_SMART_DRAWING,
   presenterSettings: DEFAULT_PRESENTER_PREFERENCES,
   showMiniMap: true,
+  miniMapPosition: "bottom-right",
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -445,6 +449,10 @@ function loadInitialPreferences(): ShellPreferences {
           ...(parsed.presenterSettings || {}),
         },
         showMiniMap: parsed.showMiniMap !== undefined ? Boolean(parsed.showMiniMap) : true,
+        miniMapPosition:
+          parsed.miniMapPosition && ["bottom-right", "bottom-left", "top-right", "top-left"].includes(parsed.miniMapPosition)
+            ? (parsed.miniMapPosition as MiniMapPosition)
+            : "bottom-right",
       }
     }
   } catch { }
@@ -525,6 +533,8 @@ interface ShellState {
   setRevealMouseOnMove: (enabled: boolean) => void
   updateLiquidGlassPreferences: (updates: Partial<ShellLiquidGlassPreferences>) => void
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
+  setMiniMapPosition: (position: MiniMapPosition) => void
+  cycleMiniMapPosition: () => void
   toggleToolbar: () => void
   toggleDock: () => void
   toggleToolbarViewMenu: () => void
@@ -793,6 +803,26 @@ export const useShellStore = create<ShellState>((set, get) => ({
     set((state) => {
       const nextSettings = { ...state.preferences.liquidGlassSettings, ...updates }
       const next = { ...state.preferences, liquidGlassSettings: nextSettings }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setMiniMapPosition: (position: MiniMapPosition) => {
+    set((state) => {
+      const next = { ...state.preferences, miniMapPosition: position }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  cycleMiniMapPosition: () => {
+    set((state) => {
+      const order: MiniMapPosition[] = ["bottom-right", "bottom-left", "top-left", "top-right"]
+      const current = state.preferences.miniMapPosition || "bottom-right"
+      const currentIndex = order.indexOf(current)
+      const nextPosition = order[(currentIndex + 1) % order.length]
+      const next = { ...state.preferences, miniMapPosition: nextPosition }
       savePreferences(next)
       return { preferences: next }
     })
