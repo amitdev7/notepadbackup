@@ -42,6 +42,7 @@ import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
 import { AboutUpdatesTab } from "@/components/shell/about-updates-tab"
 import { LiquidGlassSettingsSection } from "@/components/shell/liquid-glass-preview"
 import { SUPPORTED_LANGUAGES, type SupportedLanguage } from "@/lib/i18n"
+import { renderLaserTrail, type LaserPoint } from "@/lib/canvas/laser-ribbon"
 import {
   Sliders,
   Palette,
@@ -290,7 +291,7 @@ function LaserTestPad({
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const isDownRef = useRef(false)
   const [interacted, setInteracted] = useState(false)
-  const pointsRef = useRef<{ x: number; y: number; t: number }[]>([])
+  const pointsRef = useRef<LaserPoint[]>([])
   const animRef = useRef<number | null>(null)
 
   useEffect(() => {
@@ -305,45 +306,19 @@ function LaserTestPad({
       pointsRef.current = pointsRef.current.filter((p) => now - p.t < durationMs)
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-      const pts = pointsRef.current
-
-      if (pts.length > 1) {
-        ctx.lineCap = "round"
-        ctx.lineJoin = "round"
-        const [r, g, b] = hexToRgb(color)
-        const glowBlur =
-          glowIntensity === "none" ? 0 : glowIntensity === "subtle" ? 4 : glowIntensity === "vibrant" ? 10 : 20
-
-        for (let i = 1; i < pts.length; i++) {
-          const p0 = pts[i - 1]
-          const p1 = pts[i]
-          const age = now - p1.t
-          const progress = Math.min(1, Math.max(0, age / durationMs))
-          const alpha = 1 - progress
-
-          ctx.beginPath()
-          ctx.moveTo(p0.x, p0.y)
-          ctx.lineTo(p1.x, p1.y)
-          ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha * 0.95})`
-          ctx.lineWidth = Math.max(1.5, width * (1 - progress * 0.6))
-          if (glowBlur > 0) {
-            ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.8)`
-            ctx.shadowBlur = glowBlur * (1 - progress)
-          } else {
-            ctx.shadowBlur = 0
-          }
-          ctx.stroke()
-        }
-
-        if (pulseDot && pts.length > 0) {
-          const head = pts[pts.length - 1]
-          ctx.beginPath()
-          ctx.arc(head.x, head.y, Math.max(2.5, width * 0.75), 0, Math.PI * 2)
-          ctx.fillStyle = `rgb(${r}, ${g}, ${b})`
-          ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 1)`
-          ctx.shadowBlur = glowBlur * 1.5
-          ctx.fill()
-        }
+      if (pointsRef.current.length > 0) {
+        renderLaserTrail(
+          ctx,
+          pointsRef.current,
+          {
+            color,
+            width,
+            glowIntensity,
+            durationMs,
+            pulseDot,
+          },
+          now
+        )
       }
 
       animRef.current = requestAnimationFrame(render)
@@ -369,11 +344,19 @@ function LaserTestPad({
   const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDownRef.current) return
     const rect = e.currentTarget.getBoundingClientRect()
-    pointsRef.current.push({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-      t: performance.now(),
-    })
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const now = performance.now()
+    const pts = pointsRef.current
+    if (pts.length > 0) {
+      const last = pts[pts.length - 1]
+      const dx = x - last.x
+      const dy = y - last.y
+      if (dx * dx + dy * dy < 6.25 && now - last.t < 16) {
+        return
+      }
+    }
+    pointsRef.current.push({ x, y, t: now })
   }
 
   const onPointerUp = () => {

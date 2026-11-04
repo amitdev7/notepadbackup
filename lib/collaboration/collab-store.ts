@@ -65,6 +65,7 @@ interface CollabStore {
   updatePeerCursorChat: (peerId: string, text: string) => void
   broadcastCursor: (x: number, y: number) => void
   broadcastSelection: (nodeIds: string[]) => void
+  broadcastReaction: (emoji: string, x: number, y: number) => void
   startCursorChat: (initialChar?: string) => void
   updateCursorChatDraft: (text: string) => void
   commitCursorChat: (text?: string) => void
@@ -237,6 +238,19 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
         type: "selection_change",
         peerId: get().selfId,
         nodeIds,
+        timestamp: Date.now(),
+      })
+    }
+  },
+
+  broadcastReaction: (emoji: string, x: number, y: number) => {
+    if (transportSender) {
+      transportSender({
+        type: "peer_reaction",
+        peerId: get().selfId,
+        emoji,
+        x,
+        y,
         timestamp: Date.now(),
       })
     }

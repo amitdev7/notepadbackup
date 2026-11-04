@@ -31,7 +31,7 @@ export function FollowModeIndicator() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-stone-900/90 border border-stone-200/70 dark:border-stone-800/70 shadow-xl backdrop-blur-xl animate-popover-enter select-none"
+      className="fixed bottom-24 sm:bottom-20 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/90 dark:bg-stone-900/90 border border-stone-200/70 dark:border-stone-800/70 shadow-xl backdrop-blur-xl animate-popover-enter select-none max-w-[calc(100vw-2rem)]"
     >
       <span
         style={{ backgroundColor: followedPeer.color }}

@@ -147,6 +147,7 @@ console.log("  ✓ Disconnected peer cleanly unmounted from roster")
 console.log("\n7. Testing Database Connection Telemetry Invariants:")
 assert.equal(typeof store.checkDatabaseHealth, "function", "checkDatabaseHealth must exist")
 assert.equal(typeof store.saveActiveDocumentToDatabase, "function", "saveActiveDocumentToDatabase must exist")
+assert.equal(typeof store.broadcastReaction, "function", "broadcastReaction must exist")
 console.log("  ✓ Database actions and telemetry handlers verified")
 
 console.log("\n============================================================")

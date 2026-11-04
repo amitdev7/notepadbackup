@@ -200,14 +200,20 @@ export function traceRibbonPath(ctx: CanvasRenderingContext2D, ribbon: RibbonCon
   ctx.lineTo(left[n - 1].x, left[n - 1].y)
 
   // 3. Smooth rounded head cap around the pointer tip
-  const headNx = left[n - 1].x - head.x
-  const headNy = left[n - 1].y - head.y
-  // Forward tangent at head
-  const headTx = -headNy
-  const headTy = headNx
-  const tipX = head.x + headTx
-  const tipY = head.y + headTy
-  ctx.quadraticCurveTo(tipX, tipY, right[n - 1].x, right[n - 1].y)
+  const normX = (left[n - 1].x - right[n - 1].x) / 2
+  const normY = (left[n - 1].y - right[n - 1].y) / 2
+  const radius = Math.hypot(normX, normY)
+  const fwdX = radius > 1e-4 ? normY / radius : 0
+  const fwdY = radius > 1e-4 ? -normX / radius : 0
+  const kHead = 0.5522847 * radius
+  ctx.bezierCurveTo(
+    left[n - 1].x + fwdX * kHead,
+    left[n - 1].y + fwdY * kHead,
+    right[n - 1].x + fwdX * kHead,
+    right[n - 1].y + fwdY * kHead,
+    right[n - 1].x,
+    right[n - 1].y
+  )
 
   // 4. Trace right edge in reverse from head to tail with midpoint quadratic curves
   for (let i = n - 1; i > 0; i--) {
@@ -220,14 +226,20 @@ export function traceRibbonPath(ctx: CanvasRenderingContext2D, ribbon: RibbonCon
   ctx.lineTo(right[0].x, right[0].y)
 
   // 5. Smooth rounded tail cap closing back to left[0]
-  const tailNx = left[0].x - tail.x
-  const tailNy = left[0].y - tail.y
-  // Backward tangent at tail
-  const tailTx = tailNy
-  const tailTy = -tailNx
-  const tailTipX = tail.x + tailTx
-  const tailTipY = tail.y + tailTy
-  ctx.quadraticCurveTo(tailTipX, tailTipY, left[0].x, left[0].y)
+  const tailNormX = (left[0].x - right[0].x) / 2
+  const tailNormY = (left[0].y - right[0].y) / 2
+  const tailRadius = Math.hypot(tailNormX, tailNormY)
+  const bwdX = tailRadius > 1e-4 ? -tailNormY / tailRadius : 0
+  const bwdY = tailRadius > 1e-4 ? tailNormX / tailRadius : 0
+  const kTail = 0.5522847 * tailRadius
+  ctx.bezierCurveTo(
+    right[0].x + bwdX * kTail,
+    right[0].y + bwdY * kTail,
+    left[0].x + bwdX * kTail,
+    left[0].y + bwdY * kTail,
+    left[0].x,
+    left[0].y
+  )
 
   ctx.closePath()
 }

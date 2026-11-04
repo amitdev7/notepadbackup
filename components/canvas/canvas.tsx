@@ -204,6 +204,7 @@ export function Canvas() {
   const viewport = useSquig((s) => s.viewport)
   const tool = useSquig((s) => s.tool)
   const grid = useSquig((s) => s.grid)
+  const activeStyle = useSquig((s) => s.activeStyle)
 
   const placing = useSquig((s) => s.placing)
   const placingDrag = useSquig((s) => s.placingDrag)
@@ -2228,11 +2229,27 @@ export function Canvas() {
             <path
               d={pointsToSmoothSvgPath(livePoints)}
               fill="none"
-              stroke={tool === "highlighter" ? "#FACC15" : "var(--sq-ink)"}
-              strokeWidth={tool === "highlighter" ? 20 : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)}
+              stroke={
+                tool === "highlighter"
+                  ? (activeStyle.strokeColor || "#FACC15")
+                  : (activeStyle.strokeColor || "var(--sq-ink)")
+              }
+              strokeWidth={
+                tool === "highlighter"
+                  ? 20
+                  : activeStyle.strokeWidth === "heavy"
+                    ? 3.8
+                    : activeStyle.strokeWidth === "light"
+                      ? 1.4
+                      : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
+              }
               strokeLinecap="round"
               strokeLinejoin="round"
-              opacity={tool === "highlighter" ? 0.45 : 1}
+              opacity={
+                tool === "highlighter"
+                  ? 0.45
+                  : (activeStyle.opacity !== undefined ? activeStyle.opacity / 100 : 1)
+              }
               style={tool === "highlighter" ? { mixBlendMode: "multiply" } : undefined}
             />
           )}

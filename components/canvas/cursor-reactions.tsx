@@ -14,6 +14,7 @@ import { useState, useEffect, useCallback, useRef } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
+import { useCollabStore } from "@/lib/collaboration/collab-store"
 import { audioFx } from "@/lib/canvas/audio-fx"
 import { cn } from "@/lib/utils"
 import { Sparkle, Smiley, X } from "@phosphor-icons/react"
@@ -80,12 +81,13 @@ export function CursorReactions() {
 
     setParticles((prev) => [...prev, ...newParticles])
 
-    // Broadcast reaction to peers over LAN Wi-Fi session if active
+    // Broadcast reaction to peers over LAN Wi-Fi & Realtime Collab channels
     try {
       const wifiStore = useWifiSessionStore.getState()
       if (wifiStore.session && typeof wifiStore.broadcastReaction === "function") {
         wifiStore.broadcastReaction(emoji, x, y)
       }
+      useCollabStore.getState().broadcastReaction(emoji, x, y)
     } catch {}
   }, [])
 

@@ -103,7 +103,7 @@ export function PresenceAvatars() {
       <DropdownMenuContent
         align="center"
         sideOffset={8}
-        className="w-80 p-3 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border border-stone-200/70 dark:border-stone-800/70 shadow-2xl space-y-3"
+        className="w-[calc(100vw-1.5rem)] max-w-xs sm:w-80 p-3 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border border-stone-200/70 dark:border-stone-800/70 shadow-2xl space-y-3 max-h-[85vh] overflow-y-auto"
       >
         {/* Header */}
         <div className="flex items-center justify-between pb-2 border-b border-border/50">

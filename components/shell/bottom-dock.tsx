@@ -12,7 +12,7 @@
 //    compact drawer sheet on mobile viewports (<640px).
 // ---------------------------------------------------------------------------
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
 import { useWifiSessionStore } from "@/lib/lan/session"
@@ -293,10 +293,25 @@ export function BottomDock() {
     setMobileDrawerOpen(false)
   }
 
-  const isToolActive = (t: ToolDef): boolean => {
+  const isToolActive = useCallback((t: ToolDef): boolean => {
     if (t.id === "library") return panel === "components" || panel === "blocks"
     return tool === t.id && panel === null
-  }
+  }, [tool, panel])
+
+  const visibleTools = useMemo(
+    () => ALL_TOOLS.filter((t) => dockControls[t.prefKey]),
+    [dockControls]
+  )
+
+  // Mobile slice: primary tools for narrow screen dock (always ensures active tool is visible)
+  const mobilePrimaryTools = useMemo<ToolDef[]>(() => {
+    const top4 = visibleTools.slice(0, 4)
+    const activeTool = visibleTools.find((t: ToolDef) => isToolActive(t))
+    if (activeTool && !top4.some((t: ToolDef) => t.id === activeTool.id)) {
+      return [...top4.slice(0, 3), activeTool]
+    }
+    return top4
+  }, [visibleTools, isToolActive])
 
   if (!showDock) {
     return (
@@ -317,7 +332,6 @@ export function BottomDock() {
     )
   }
 
-  const visibleTools = ALL_TOOLS.filter((t) => dockControls[t.prefKey])
   const hasQuickActions =
     dockControls.actionSearch ||
     dockControls.actionStats ||
@@ -335,9 +349,6 @@ export function BottomDock() {
     showDockViewMenu
 
   if (!hasAnyContent) return null
-
-  // Mobile slice: primary tools for narrow screen dock
-  const mobilePrimaryTools = visibleTools.slice(0, 4)
 
   return (
     <TooltipProvider delay={150}>

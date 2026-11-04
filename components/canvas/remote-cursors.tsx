@@ -26,13 +26,17 @@ export const RemoteCursors = memo(function RemoteCursors() {
 
   const { x: vpX, y: vpY, zoom } = viewport
 
-  // Track local client mouse position for cursor chat anchor
+  // Track local client mouse/touch position for cursor chat anchor
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
+    const handlePointer = (e: PointerEvent) => {
       setLocalMousePos({ x: e.clientX, y: e.clientY })
     }
-    window.addEventListener("pointermove", handlePointerMove)
-    return () => window.removeEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointermove", handlePointer)
+    window.addEventListener("pointerdown", handlePointer)
+    return () => {
+      window.removeEventListener("pointermove", handlePointer)
+      window.removeEventListener("pointerdown", handlePointer)
+    }
   }, [])
 
   // Focus input when cursor chat opens
@@ -114,7 +118,7 @@ export const RemoteCursors = memo(function RemoteCursors() {
 
       {/* 2. Remote Cursors with Name Tag & Speech Bubbles */}
       {peerList.map((peer) => {
-        if (!peer.cursor) return null
+        if (!peer.cursor || typeof peer.cursor.x !== "number" || typeof peer.cursor.y !== "number" || isNaN(peer.cursor.x) || isNaN(peer.cursor.y)) return null
         const screenX = peer.cursor.x * zoom + vpX
         const screenY = peer.cursor.y * zoom + vpY
 
@@ -194,10 +198,10 @@ export const RemoteCursors = memo(function RemoteCursors() {
         <div
           style={{
             position: "absolute",
-            left: localMousePos.x + 12,
-            top: localMousePos.y - 42,
+            left: Math.min(Math.max(16, localMousePos.x + 12), (typeof window !== "undefined" ? window.innerWidth - 270 : 600)),
+            top: Math.max(16, localMousePos.y - 44),
           }}
-          className="pointer-events-auto z-40 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 dark:bg-stone-900/95 border border-[var(--ui-accent,#007AFF)]/50 shadow-2xl backdrop-blur-xl animate-popover-enter"
+          className="pointer-events-auto z-40 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 dark:bg-stone-900/95 border border-[var(--ui-accent,#007AFF)]/50 shadow-2xl backdrop-blur-xl animate-popover-enter max-w-[calc(100vw-2rem)]"
         >
           <ChatTeardropText size={14} weight="bold" className="text-[var(--ui-accent,#007AFF)] shrink-0" />
           <input
