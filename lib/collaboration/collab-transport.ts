@@ -13,11 +13,12 @@ import type { CollabMessage, CollabPeer } from "./types"
 import type { RealtimeChannel } from "@supabase/supabase-js"
 
 export function useCollabTransport() {
-  const docId = useSquig((s) => s.docId)
+  const docId = useSquig((s) => s.cloudDocId || s.docId)
   const user = useAuthStore((s) => s.user)
   const broadcastChannelRef = useRef<BroadcastChannel | null>(null)
   const supabaseChannelRef = useRef<RealtimeChannel | null>(null)
   const isApplyingRemoteRef = useRef(false)
+  const lastPolledAtRef = useRef<number>(0)
 
   // 1. Initialize Transport & Self Identity
   useEffect(() => {
@@ -61,8 +62,9 @@ export function useCollabTransport() {
           }
           break
 
-        case "node_mutation":
-          if (msg.docId === useSquig.getState().docId && !isApplyingRemoteRef.current) {
+        case "node_mutation": {
+          const currentDocId = useSquig.getState().cloudDocId || useSquig.getState().docId
+          if (msg.docId === currentDocId && !isApplyingRemoteRef.current) {
             isApplyingRemoteRef.current = true
             useSquig.setState({
               nodes: msg.nodes,
@@ -73,6 +75,7 @@ export function useCollabTransport() {
             }, 80)
           }
           break
+        }
       }
     }
 
@@ -164,14 +167,14 @@ export function useCollabTransport() {
 
     // Register active transport sender
     const sendMessage = (msg: CollabMessage) => {
-      // 1. Broadcast locally
+      // 1. Broadcast locally (same machine / multi-tab)
       if (broadcastChannelRef.current) {
         try {
           broadcastChannelRef.current.postMessage(msg)
         } catch { }
       }
 
-      // 2. Broadcast via Supabase
+      // 2. Broadcast via Supabase if configured
       if (supabaseChannelRef.current) {
         try {
           supabaseChannelRef.current.send({
@@ -180,6 +183,15 @@ export function useCollabTransport() {
             payload: msg,
           })
         } catch { }
+      } else if (typeof window !== "undefined") {
+        // 3. Fallback: Broadcast via HTTP route across remote networks
+        if (msg.type !== "cursor_move") {
+          fetch(`/api/collab/${docId}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: msg }),
+          }).catch(() => {})
+        }
       }
     }
 
@@ -202,16 +214,58 @@ export function useCollabTransport() {
 
     // Periodic heartbeat & stale peer cleanup (every 4 seconds)
     const heartbeatTimer = setInterval(() => {
+      const currentName = useCollabStore.getState().selfName
+      const currentColor = useCollabStore.getState().selfColor
+      const activePeer: CollabPeer = {
+        ...selfPeer,
+        name: currentName,
+        color: currentColor,
+        lastActive: Date.now(),
+      }
       sendMessage({
         type: "peer_presence",
-        peer: {
-          ...selfPeer,
-          name: useCollabStore.getState().selfName,
-          lastActive: Date.now(),
-        },
+        peer: activePeer,
       })
+      if (!isSupabaseConfigured() && typeof window !== "undefined") {
+        fetch(`/api/collab/${docId}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ peer: activePeer }),
+        }).catch(() => {})
+      }
       useCollabStore.getState().cleanupStalePeers()
     }, 4000)
+
+    // HTTP polling fallback for cross-network collaboration when Supabase Realtime is absent
+    let httpPollTimer: ReturnType<typeof setInterval> | null = null
+    if (!isSupabaseConfigured() && typeof window !== "undefined") {
+      const pollCollab = async () => {
+        try {
+          const currentSelf = useCollabStore.getState()
+          const res = await fetch(
+            `/api/collab/${docId}?since=${lastPolledAtRef.current}&peerId=${currentSelf.selfId}`
+          )
+          if (res.ok) {
+            const data = await res.json()
+            lastPolledAtRef.current = data.timestamp || Date.now()
+            if (Array.isArray(data.peers)) {
+              for (const p of data.peers) {
+                if (p.id !== currentSelf.selfId) {
+                  store.setPeer(p)
+                }
+              }
+            }
+            if (Array.isArray(data.messages)) {
+              for (const m of data.messages) {
+                handleIncomingMessage(m)
+              }
+            }
+          }
+        } catch { }
+      }
+      void pollCollab()
+      httpPollTimer = setInterval(pollCollab, 2000)
+    }
 
     // Check database health on mount & every 45s
     void store.checkDatabaseHealth()
@@ -223,6 +277,7 @@ export function useCollabTransport() {
     return () => {
       clearInterval(heartbeatTimer)
       clearInterval(dbPollTimer)
+      if (httpPollTimer) clearInterval(httpPollTimer)
       sendMessage({ type: "peer_leave", peerId: store.selfId })
 
       if (broadcastChannelRef.current) {

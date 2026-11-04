@@ -62,7 +62,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
   const [password, setPassword] = useState("")
   const [allowExport, setAllowExport] = useState(true)
   const [allowDuplicate, setAllowDuplicate] = useState(true)
-  const [expiration, setExpiration] = useState<string>("never") // never, 3600, 86400, 604800, 2592000
+  const [expiration, setExpiration] = useState<string>("604800") // max 7 days: 3600, 43200, 86400, 259200, 604800
 
   // Direct email invite state
   const [inviteEmails, setInviteEmails] = useState("")
@@ -138,33 +138,85 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
     }, 2500)
   }
 
-  // Create cryptographic share link
+  // Create cryptographic share link (auto-saves canvas if not yet in cloud)
   const handleCreateLink = async () => {
-    if (!cloudDocId) {
-      setError("Please save document to cloud first.")
-      return
-    }
-
     setLoading(true)
     setError(null)
-    try {
-      const expiresInSec =
-        expiration === "never" ? null : parseInt(expiration, 10)
+    setNotice("Preparing secure share link...")
 
-      const result = await createShareLinkAction(cloudDocId, {
-        permission,
-        name: linkLabel.trim() || null,
-        password: requirePassword ? password : null,
-        expiresInSeconds: expiresInSec,
-        allowExport,
-        allowDuplicate,
-      })
+    let targetDocId: string = cloudDocId || useSquig.getState().docId
+    if (!cloudDocId) {
+      try {
+        const squig = useSquig.getState()
+        const saveRes = await fetch("/api/documents", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            docId: squig.docId,
+            name: fileName || "Shared Canvas",
+            document_json: {
+              nodes: squig.nodes,
+              order: squig.order,
+              look: { grid: squig.grid, theme: "paper" },
+            },
+          }),
+        })
+        const saveData = await saveRes.json()
+        if (saveData.ok && saveData.data?.id) {
+          targetDocId = saveData.data.id
+          squig.setCloudDocId(targetDocId)
+        } else {
+          squig.setCloudDocId(targetDocId)
+        }
+      } catch {
+        targetDocId = useSquig.getState().docId
+        useSquig.getState().setCloudDocId(targetDocId)
+      }
+    }
+
+    try {
+      // Maximum 7 days strictly enforced to save storage (604,800 seconds)
+      const requestedSec = parseInt(expiration, 10)
+      const expiresInSec = Math.min(Math.max(60, Number.isFinite(requestedSec) ? requestedSec : 604800), 604800)
+
+      let result: any = null
+      try {
+        result = await createShareLinkAction(targetDocId, {
+          permission,
+          name: linkLabel.trim() || null,
+          password: requirePassword ? password : null,
+          expiresInSeconds: expiresInSec,
+          allowExport,
+          allowDuplicate,
+        })
+      } catch {
+        // Direct API route fallback
+        const res = await fetch("/api/share", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            documentId: targetDocId,
+            permission,
+            name: linkLabel.trim() || null,
+            password: requirePassword ? password : null,
+            expiresInSeconds: expiresInSec,
+            allowExport,
+            allowDuplicate,
+          }),
+        })
+        const data = await res.json()
+        if (data.ok && data.data) {
+          result = data.data
+        } else {
+          throw new Error(data.error || "Failed to create share link")
+        }
+      }
 
       const fullUrl = `${window.location.origin}${result.shareUrl}`
       setActiveCreatedUrl(fullUrl)
       setLinks((prev) => [result.link, ...prev])
-      setNotice("Share link created successfully")
-      setTimeout(() => setNotice(null), 3000)
+      setNotice("Share link created! Auto-expires in 7 days to conserve storage.")
+      setTimeout(() => setNotice(null), 3500)
     } catch (err: any) {
       setError(err.message || "Failed to create share link")
     } finally {
@@ -453,19 +505,22 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
                     </select>
                   </div>
                   <div>
-                    <span className="text-[11px] text-muted-foreground block mb-1">Expiration</span>
+                    <span className="text-[11px] text-muted-foreground block mb-1">Expiration (Max 7 Days)</span>
                     <select
                       value={expiration}
                       onChange={(e) => setExpiration(e.target.value)}
                       aria-label="Link Expiration"
-                      className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring"
+                      className="w-full rounded-md border border-input bg-background px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring font-medium"
                     >
-                      <option value="never">Never expires</option>
-                      <option value="3600">1 hour</option>
-                      <option value="86400">1 day</option>
-                      <option value="604800">7 days</option>
-                      <option value="2592000">30 days</option>
+                      <option value="3600">1 Hour (Quick Review)</option>
+                      <option value="43200">12 Hours (Half Day)</option>
+                      <option value="86400">1 Day (24 Hours)</option>
+                      <option value="259200">3 Days (Team Sprint)</option>
+                      <option value="604800">7 Days (Maximum - Auto Cleaned)</option>
                     </select>
+                    <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 block">
+                      ⚡ Automatically deleted after max 7 days to save database storage.
+                    </span>
                   </div>
                 </div>
 
@@ -517,26 +572,58 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
                   <Button
                     onClick={handleCreateLink}
                     disabled={isOffline || loading || (requirePassword && !password)}
-                    className="w-full h-8 text-xs font-mono"
+                    className="w-full h-8 text-xs font-mono font-semibold"
                   >
-                    Generate Secure Link
+                    {loading ? "Creating Link..." : "Generate Secure Link (Max 7 Days)"}
                   </Button>
                 </div>
 
                 {activeCreatedUrl && (
-                  <div className="mt-2 p-2.5 rounded-md border border-primary/30 bg-primary/5 flex items-center justify-between">
-                    <span className="text-xs font-mono truncate text-primary mr-2">
-                      {activeCreatedUrl}
-                    </span>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleCopy(activeCreatedUrl, "active")}
-                      className="h-7 text-xs font-mono shrink-0"
-                    >
-                      {copiedLink === "active" ? <Check size={14} className="text-emerald-500 mr-1" /> : <Copy size={14} className="mr-1" />}
-                      Copy
-                    </Button>
+                  <div className="mt-3 p-3 rounded-xl border border-emerald-500/40 bg-emerald-500/5 space-y-2 animate-popover-enter">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                        <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Live Link Ready (Any Network)
+                      </span>
+                      <span className="text-[10px] font-mono text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-full">
+                        Auto-deletes in 7 days
+                      </span>
+                    </div>
+
+                    <div className="p-2 rounded-lg bg-background/80 border border-border/60 flex items-center justify-between gap-2">
+                      <span className="text-xs font-mono truncate text-foreground select-all">
+                        {activeCreatedUrl}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="default"
+                        onClick={() => handleCopy(activeCreatedUrl, "active")}
+                        className="h-7 text-xs font-mono shrink-0 font-semibold"
+                      >
+                        {copiedLink === "active" ? <Check size={14} className="mr-1" /> : <Copy size={14} className="mr-1" />}
+                        {copiedLink === "active" ? "Copied!" : "Copy Link"}
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1 text-[11px]">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const text = `Join my live canvas on Zenithsui: ${activeCreatedUrl}`
+                          window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, "_blank")
+                        }}
+                        className="px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors text-stone-700 dark:text-stone-300 font-sans cursor-pointer flex items-center gap-1"
+                      >
+                        Share via WhatsApp
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowQr(showQr ? null : activeCreatedUrl)}
+                        className="px-2.5 py-1 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors text-stone-700 dark:text-stone-300 font-sans cursor-pointer flex items-center gap-1"
+                      >
+                        {showQr ? "Hide QR" : "Show QR Code"}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

@@ -25,21 +25,34 @@ export async function createShareLinkAction(
     allowDuplicate?: boolean
   }
 ) {
-  const supabase = await getSupabaseServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  let userId = `guest_${documentId.slice(0, 8)}`
+  try {
+    const supabase = await getSupabaseServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
+      userId = user.id
+      const authorized = await canShare(documentId, user.id)
+      if (!authorized) throw new Error("Permission denied")
+    }
+  } catch (err: any) {
+    if (err?.message === "Permission denied") throw err
+    // Guest fallback
+  }
 
-  if (!user) throw new Error("Authentication required")
-
-  const authorized = await canShare(documentId, user.id)
-  if (!authorized) throw new Error("Permission denied")
+  const safeExpires = options.expiresInSeconds
+    ? Math.min(Math.max(60, options.expiresInSeconds), 604800)
+    : 604800
 
   const result = await createShareLink({
     documentId,
-    userId: user.id,
+    userId,
     ...options,
+    expiresInSeconds: safeExpires,
   })
 
-  revalidatePath(`/dashboard`)
+  try {
+    revalidatePath(`/dashboard`)
+  } catch {}
   return result
 }
 

@@ -253,6 +253,9 @@ export function Canvas() {
   }, [selection])
 
   useEffect(() => {
+    // Immediately broadcast live node changes to connected collaboration peers
+    useCollabStore.getState().broadcastNodes(nodes, order)
+
     const dbSettings = useShellStore.getState().preferences?.databaseSettings
     if (!dbSettings?.enabled || dbSettings.storageMode === "local") return
 

@@ -11,16 +11,18 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "Missing documentId" }, { status: 400 })
   }
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 })
-  }
-
-  const authorized = await canShare(documentId, user.id)
-  if (!authorized) {
-    return NextResponse.json({ ok: false, error: "Permission denied" }, { status: 403 })
+    if (user) {
+      const authorized = await canShare(documentId, user.id)
+      if (!authorized) {
+        return NextResponse.json({ ok: false, error: "Permission denied" }, { status: 403 })
+      }
+    }
+  } catch {
+    // Offline / guest mode
   }
 
   const links = await listShareLinks(documentId)
@@ -36,25 +38,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Missing documentId" }, { status: 400 })
     }
 
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 })
+    let userId = `guest_${documentId.slice(0, 8)}`
+    try {
+      const supabase = await createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        userId = user.id
+        const authorized = await canShare(documentId, user.id)
+        if (!authorized) {
+          return NextResponse.json({ ok: false, error: "Permission denied" }, { status: 403 })
+        }
+      }
+    } catch {
+      // Guest / local mode
     }
 
-    const authorized = await canShare(documentId, user.id)
-    if (!authorized) {
-      return NextResponse.json({ ok: false, error: "Permission denied" }, { status: 403 })
-    }
+    // Maximum 7 days expiration strictly enforced for database storage conservation
+    const safeExpiresInSeconds = expiresInSeconds
+      ? Math.min(Math.max(60, Number(expiresInSeconds)), 604800)
+      : 604800
 
     const result = await createShareLink({
       documentId,
-      userId: user.id,
+      userId,
       permission: permission === "edit" ? "edit" : "view",
       name,
       password,
-      expiresInSeconds,
+      expiresInSeconds: safeExpiresInSeconds,
       expiresAtDate,
       allowExport,
       allowDuplicate,

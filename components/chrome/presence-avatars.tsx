@@ -80,12 +80,16 @@ export function PresenceAvatars() {
           ))}
         </div>
 
-        {/* Peer Count Badge */}
-        {peerList.length > 0 && (
-          <span className="text-[10px] font-bold font-mono text-emerald-600 dark:text-emerald-400">
-            +{peerList.length}
+        {/* Live Members Online Count */}
+        <span className="flex items-center gap-1 text-[11px] font-medium font-sans text-stone-700 dark:text-stone-300 ml-0.5">
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+          <span className="hidden sm:inline font-sans">
+            {totalUsersCount} {totalUsersCount === 1 ? "Member Online" : "Members Online"}
           </span>
-        )}
+          <span className="sm:hidden font-mono text-[10px] font-bold">
+            {totalUsersCount}
+          </span>
+        </span>
 
         {/* Database indicator dot */}
         <div

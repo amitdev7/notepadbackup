@@ -58,6 +58,8 @@ interface CollabStore {
 
   // Actions
   setSelfName: (name: string) => void
+  setSelfColor: (color: string) => void
+  setSelfProfile: (name: string, color?: string) => void
   setPeer: (peer: CollabPeer) => void
   removePeer: (peerId: string) => void
   updatePeerCursor: (peerId: string, x: number, y: number) => void
@@ -66,6 +68,7 @@ interface CollabStore {
   broadcastCursor: (x: number, y: number) => void
   broadcastSelection: (nodeIds: string[]) => void
   broadcastReaction: (emoji: string, x: number, y: number) => void
+  broadcastNodes: (nodes: Record<string, any>, order: string[]) => void
   startCursorChat: (initialChar?: string) => void
   updateCursorChatDraft: (text: string) => void
   commitCursorChat: (text?: string) => void
@@ -100,6 +103,17 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
 
   setSelfName: (name: string) => {
     set({ selfName: name })
+  },
+
+  setSelfColor: (color: string) => {
+    set({ selfColor: color })
+  },
+
+  setSelfProfile: (name: string, color?: string) => {
+    set((state) => ({
+      selfName: name || state.selfName,
+      selfColor: color || state.selfColor,
+    }))
   },
 
   setPeer: (peer: CollabPeer) => {
@@ -251,6 +265,21 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
         emoji,
         x,
         y,
+        timestamp: Date.now(),
+      })
+    }
+  },
+
+  broadcastNodes: (nodes: Record<string, any>, order: string[]) => {
+    if (transportSender) {
+      const docId = useSquig.getState().cloudDocId || useSquig.getState().docId
+      transportSender({
+        type: "node_mutation",
+        peerId: get().selfId,
+        docId,
+        nodes,
+        order,
+        version: Date.now(),
         timestamp: Date.now(),
       })
     }
