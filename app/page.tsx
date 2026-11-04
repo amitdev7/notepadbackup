@@ -30,6 +30,9 @@ import { MiniMapOverlay } from "@/components/canvas/minimap-overlay"
 import { PresenterMode } from "@/components/canvas/presenter-mode"
 import { SpotlightOverlay } from "@/components/canvas/spotlight-overlay"
 import { CursorReactions } from "@/components/canvas/cursor-reactions"
+import { RemoteCursors } from "@/components/canvas/remote-cursors"
+import { FollowModeIndicator } from "@/components/canvas/follow-mode-indicator"
+import { useCollabTransport } from "@/lib/collaboration/collab-transport"
 import { ToolPropertiesPanel } from "@/components/canvas/tool-properties-panel"
 import { useAuthStore } from "@/lib/auth-store"
 import { syncThemeToDOM, useShellStore } from "@/lib/shell-store"
@@ -39,6 +42,7 @@ import { useTranslation } from "@/lib/i18n/use-translation"
 import { X } from "@phosphor-icons/react"
 
 export default function Home() {
+  useCollabTransport()
   const { t } = useTranslation()
   const hydrated = useSquig((s) => s.hydrated)
   const hydrate = useSquig((s) => s.hydrate)
@@ -151,6 +155,8 @@ export default function Home() {
       <PresenterMode />
       <SpotlightOverlay />
       <CursorReactions />
+      <RemoteCursors />
+      <FollowModeIndicator />
       {!uiHidden && <ToolPropertiesPanel />}
     </main>
   )

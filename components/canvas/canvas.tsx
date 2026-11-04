@@ -57,6 +57,7 @@ import { StatsDialog } from "@/components/dialogs/stats-dialog"
 import { SmartHoverNote } from "./smart-hover-note"
 import { TemporaryCountdownOverlay } from "./temporary-countdown-overlay"
 import { initExpirationEngine } from "@/lib/canvas/expiration-manager"
+import { useCollabStore } from "@/lib/collaboration/collab-store"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
@@ -244,6 +245,22 @@ export function Canvas() {
       if (revealTimerRef.current) clearTimeout(revealTimerRef.current)
     }
   }, [])
+
+  // ── Real-Time Interactive Live Collaboration & Database Sync ───────────
+  useEffect(() => {
+    useCollabStore.getState().broadcastSelection(selection)
+  }, [selection])
+
+  useEffect(() => {
+    const dbSettings = useShellStore.getState().preferences?.databaseSettings
+    if (!dbSettings?.enabled || dbSettings.storageMode === "local") return
+
+    const timer = setTimeout(() => {
+      void useCollabStore.getState().saveActiveDocumentToDatabase()
+    }, dbSettings.syncIntervalMs || 4000)
+
+    return () => clearTimeout(timer)
+  }, [nodes, order])
 
   useEffect(() => {
     const updateSize = () => {
@@ -1604,6 +1621,10 @@ export function Canvas() {
         // different geometry than the hit test is just a lie
         const cur = st()
         const [wx, wy] = toWorld({ clientX, clientY })
+
+        // Broadcast live cursor position to collaborators
+        useCollabStore.getState().broadcastCursor(wx, wy)
+
         const hard = pickAt(cur.nodes, cur.order, wx, wy, cur.viewport.zoom)
         const id = hard ?? pickSoftAt(cur.nodes, cur.order, wx, wy)
 

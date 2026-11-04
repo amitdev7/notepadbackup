@@ -15,6 +15,7 @@ import { useSquig } from "@/lib/store"
 import { useWifiAutoSync } from "@/lib/lan/auto-sync"
 import { useShellStore } from "@/lib/shell-store"
 import { FilesPopover } from "@/components/chrome/files-popover"
+import { PresenceAvatars } from "@/components/chrome/presence-avatars"
 import { ViewMenu } from "@/components/shell/view-menu"
 import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { useSyncStore } from "@/lib/sync/engine"
@@ -177,6 +178,9 @@ export function TopBar() {
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
+
+        <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
+        <PresenceAvatars />
 
         {/* Real-Time Clock & Location Detection */}
         {showTimeInTopBar && (
