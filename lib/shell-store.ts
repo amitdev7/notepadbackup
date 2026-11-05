@@ -289,6 +289,8 @@ export const DEFAULT_PRESENTER_PREFERENCES: PresenterPreferences = {
 }
 
 export type MiniMapPosition = "bottom-right" | "bottom-left" | "top-right" | "top-left"
+export type LibraryPosition = "center" | "right" | "left"
+export type LibrarySize = "standard" | "wide"
 
 export interface ShellPreferences {
   themeMode: ThemeMode
@@ -332,6 +334,8 @@ export interface ShellPreferences {
   presenterSettings?: PresenterPreferences
   showMiniMap?: boolean
   miniMapPosition?: MiniMapPosition
+  libraryPosition?: LibraryPosition
+  librarySize?: LibrarySize
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -376,6 +380,8 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   presenterSettings: DEFAULT_PRESENTER_PREFERENCES,
   showMiniMap: true,
   miniMapPosition: "bottom-right",
+  libraryPosition: "center",
+  librarySize: "standard",
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -453,6 +459,14 @@ function loadInitialPreferences(): ShellPreferences {
           parsed.miniMapPosition && ["bottom-right", "bottom-left", "top-right", "top-left"].includes(parsed.miniMapPosition)
             ? (parsed.miniMapPosition as MiniMapPosition)
             : "bottom-right",
+        libraryPosition:
+          parsed.libraryPosition && ["center", "right", "left"].includes(parsed.libraryPosition)
+            ? (parsed.libraryPosition as LibraryPosition)
+            : "center",
+        librarySize:
+          parsed.librarySize && ["standard", "wide"].includes(parsed.librarySize)
+            ? (parsed.librarySize as LibrarySize)
+            : "standard",
       }
     }
   } catch { }
@@ -535,6 +549,9 @@ interface ShellState {
   updateClockPreferences: (updates: Partial<ClockPreferences>) => void
   setMiniMapPosition: (position: MiniMapPosition) => void
   cycleMiniMapPosition: () => void
+  setLibraryPosition: (position: LibraryPosition) => void
+  setLibrarySize: (size: LibrarySize) => void
+  cycleLibraryPosition: () => void
   toggleToolbar: () => void
   toggleDock: () => void
   toggleToolbarViewMenu: () => void
@@ -823,6 +840,34 @@ export const useShellStore = create<ShellState>((set, get) => ({
       const currentIndex = order.indexOf(current)
       const nextPosition = order[(currentIndex + 1) % order.length]
       const next = { ...state.preferences, miniMapPosition: nextPosition }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setLibraryPosition: (position: LibraryPosition) => {
+    set((state) => {
+      const next = { ...state.preferences, libraryPosition: position }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setLibrarySize: (size: LibrarySize) => {
+    set((state) => {
+      const next = { ...state.preferences, librarySize: size }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  cycleLibraryPosition: () => {
+    set((state) => {
+      const order: LibraryPosition[] = ["center", "right", "left"]
+      const current = state.preferences.libraryPosition || "center"
+      const currentIndex = order.indexOf(current)
+      const nextPosition = order[(currentIndex + 1) % order.length]
+      const next = { ...state.preferences, libraryPosition: nextPosition }
       savePreferences(next)
       return { preferences: next }
     })

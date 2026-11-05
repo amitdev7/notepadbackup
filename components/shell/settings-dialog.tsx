@@ -3069,6 +3069,22 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                   <option value="top-left">Top-Left (↖)</option>
                 </select>
               </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-medium text-xs text-stone-900 dark:text-stone-100 block">Library Panel Position</span>
+                  <span className="text-[11px] text-stone-500">Choose default layout: Center Spotlight dialog or docked Side Drawer</span>
+                </div>
+                <select
+                  value={prefs.libraryPosition || "center"}
+                  onChange={(e) => useShellStore.getState().setLibraryPosition(e.target.value as any)}
+                  className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 font-medium text-xs cursor-pointer"
+                >
+                  <option value="center">Center Spotlight (Floating ◫)</option>
+                  <option value="right">Right Drawer (Docked ◨)</option>
+                  <option value="left">Left Drawer (Docked ◧)</option>
+                </select>
+              </div>
             </div>
           </div>
 
