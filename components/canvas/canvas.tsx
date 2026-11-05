@@ -2168,7 +2168,7 @@ export function Canvas() {
       : tool === "eraser"
         ? "crosshair"
         : tool === "laser"
-          ? "crosshair"
+          ? "none"
           : placing || tool === "shape" || tool === "arrow" || tool === "line" || tool === "text" || tool === "sticky" || tool === "frame" || tool === "embed"
             ? "var(--cursor-crosshair, crosshair)"
             : tool === "draw"

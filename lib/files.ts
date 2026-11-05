@@ -192,8 +192,14 @@ export function loadPrefs(): Prefs {
   }
 }
 
-export function savePrefs(p: Prefs) {
-  writeJSON(PREFS_KEY, p)
+export function savePrefs(p: Partial<Prefs>) {
+  const current = loadPrefs()
+  const merged: Prefs = {
+    ...current,
+    ...p,
+    look: p.look ? { ...current.look, ...p.look } : current.look,
+  }
+  writeJSON(PREFS_KEY, merged)
 }
 
 /**

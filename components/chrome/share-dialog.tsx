@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useSquig } from "@/lib/store"
 import { useAuthStore } from "@/lib/auth-store"
 import { Button } from "@/components/ui/button"
@@ -102,11 +102,12 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Ensure the document has a synchronized document ID across cloud & memory
   const ensureTargetDocId = useCallback(async (): Promise<string> => {
-    let currentId = cloudDocId || useSquig.getState().cloudDocId
-    if (currentId) return currentId
+    const squig = useSquig.getState()
+    const existingId = cloudDocId || squig.cloudDocId
+    if (existingId) return existingId
 
+    let currentId: string = squig.docId || "doc-1"
     try {
-      const squig = useSquig.getState()
       const saveRes = await fetch("/api/documents", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -122,14 +123,14 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
       })
       const saveData = await saveRes.json()
       if (saveData.ok && saveData.data?.id) {
-        currentId = saveData.data.id
+        currentId = String(saveData.data.id)
       } else {
-        currentId = squig.docId
+        currentId = squig.docId || "doc-1"
       }
       squig.setCloudDocId(currentId)
       return currentId
     } catch {
-      const fallbackId = useSquig.getState().docId
+      const fallbackId = useSquig.getState().docId || "doc-1"
       useSquig.getState().setCloudDocId(fallbackId)
       return fallbackId
     }

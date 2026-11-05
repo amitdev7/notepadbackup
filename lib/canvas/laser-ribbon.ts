@@ -44,9 +44,9 @@ export function hexToRgb(hex: string): [number, number, number] {
 
 /**
  * Prunes adjacent points that are closer than minDist pixels,
- * preventing mousemove event clustering and bead stacking.
+ * preventing mousemove event clustering while preserving fine precision.
  */
-export function decimateLaserPoints(pts: readonly LaserPoint[], minDist = 2.5): LaserPoint[] {
+export function decimateLaserPoints(pts: readonly LaserPoint[], minDist = 1.0): LaserPoint[] {
   if (pts.length <= 2) return pts.map((p) => ({ ...p }))
   const out: LaserPoint[] = [{ ...pts[0] }]
   const minDistSq = minDist * minDist
@@ -66,31 +66,48 @@ export function decimateLaserPoints(pts: readonly LaserPoint[], minDist = 2.5): 
 }
 
 /**
- * Chaikin corner-cutting algorithm.
- * Replaces each segment between Pi and Pi+1 with two points at 25% and 75%,
- * interpolating spatial coordinates and timestamps smoothly.
+ * Smooths laser trajectory using Catmull-Rom spline interpolation.
+ * Unlike Chaikin corner-cutting which cuts corners inward by up to 25%,
+ * Catmull-Rom guarantees that the curve passes EXACTLY through every
+ * recorded sample point, ensuring 100% geometric accuracy.
  */
-export function smoothLaserPoints(pts: readonly LaserPoint[]): LaserPoint[] {
+export function smoothLaserPoints(pts: readonly LaserPoint[], subdivisions = 4): LaserPoint[] {
   if (pts.length <= 2) return pts.map((p) => ({ ...p }))
+  const n = pts.length
   const out: LaserPoint[] = [{ ...pts[0] }]
 
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i]
-    const p1 = pts[i + 1]
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = i > 0 ? pts[i - 1] : pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = i < n - 2 ? pts[i + 2] : p2
 
-    out.push({
-      x: 0.75 * p0.x + 0.25 * p1.x,
-      y: 0.75 * p0.y + 0.25 * p1.y,
-      t: 0.75 * p0.t + 0.25 * p1.t,
-    })
-    out.push({
-      x: 0.25 * p0.x + 0.75 * p1.x,
-      y: 0.25 * p0.y + 0.75 * p1.y,
-      t: 0.25 * p0.t + 0.75 * p1.t,
-    })
+    for (let s = 1; s <= subdivisions; s++) {
+      const u = s / subdivisions
+      const u2 = u * u
+      const u3 = u2 * u
+
+      // Catmull-Rom spline formulation: passes exactly through p1 (u=0) and p2 (u=1)
+      const x = 0.5 * (
+        2 * p1.x +
+        (-p0.x + p2.x) * u +
+        (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 +
+        (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3
+      )
+
+      const y = 0.5 * (
+        2 * p1.y +
+        (-p0.y + p2.y) * u +
+        (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 +
+        (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3
+      )
+
+      const t = p1.t + (p2.t - p1.t) * u
+
+      out.push({ x, y, t })
+    }
   }
 
-  out.push({ ...pts[pts.length - 1] })
   return out
 }
 
@@ -251,7 +268,9 @@ export function renderLaserTrail(
   ctx: CanvasRenderingContext2D,
   rawPoints: readonly LaserPoint[],
   settings: LaserRenderOptions,
-  now = performance.now()
+  now = performance.now(),
+  currentCursor?: { x: number; y: number } | null,
+  isPointerDown = false
 ): void {
   const trailLifetime = settings.durationMs || 850
   const baseWidth = Math.max(3, settings.width || 6)
@@ -267,89 +286,74 @@ export function renderLaserTrail(
 
   // 1. Filter out expired points
   const activePoints = rawPoints.filter((p) => now - p.t < trailLifetime)
-  if (activePoints.length === 0) return
 
-  // Overall fade alpha as the entire stroke ages
-  const newestAge = now - activePoints[activePoints.length - 1].t
-  const overallAlpha = Math.max(0.05, Math.min(1, 1 - newestAge / trailLifetime))
+  // 2. Multi-point trail: Decimate -> Smooth via Catmull-Rom -> Ribbon Mesh
+  if (activePoints.length >= 2) {
+    const decimated = decimateLaserPoints(activePoints, 1.0)
+    const smoothed = smoothLaserPoints(decimated)
+    const outerRibbon = computeLaserRibbon(smoothed, baseWidth, trailLifetime, now)
 
-  // 2. Single point: render crisp glowing laser dot
-  if (activePoints.length === 1) {
-    const p = activePoints[0]
-    const dotRadius = Math.max(3, baseWidth * 0.6)
+    if (outerRibbon) {
+      ctx.save()
 
-    ctx.save()
-    ctx.beginPath()
-    ctx.arc(p.x, p.y, dotRadius, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${overallAlpha * 0.95})`
-    if (glowFactor > 0) {
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${overallAlpha * 0.95})`
-      ctx.shadowBlur = glowFactor * 1.2
-    }
-    ctx.fill()
-
-    ctx.beginPath()
-    ctx.arc(p.x, p.y, dotRadius * 0.45, 0, Math.PI * 2)
-    ctx.fillStyle = `rgba(255, 255, 255, ${overallAlpha * 0.95})`
-    ctx.shadowBlur = 0
-    ctx.fill()
-    ctx.restore()
-    return
-  }
-
-  // 3. Multi-point trail: Decimate -> Smooth -> Ribbon Mesh
-  const decimated = decimateLaserPoints(activePoints, 2.5)
-  const smoothed = smoothLaserPoints(decimated)
-  const outerRibbon = computeLaserRibbon(smoothed, baseWidth, trailLifetime, now)
-
-  if (!outerRibbon) return
-
-  ctx.save()
-
-  // Layer 1: Outer Neon Ink Glow
-  traceRibbonPath(ctx, outerRibbon)
-  ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${overallAlpha * 0.92})`
-  if (glowFactor > 0) {
-    ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${overallAlpha * 0.95})`
-    ctx.shadowBlur = glowFactor
-  } else {
-    ctx.shadowBlur = 0
-  }
-  ctx.fill()
-
-  // Layer 2: Inner Bright Hot Core (35% width, white tint)
-  const innerRibbon = computeLaserRibbon(smoothed, baseWidth * 0.36, trailLifetime, now)
-  if (innerRibbon) {
-    traceRibbonPath(ctx, innerRibbon)
-    ctx.fillStyle = `rgba(255, 255, 255, ${overallAlpha * 0.88})`
-    ctx.shadowBlur = 0
-    ctx.fill()
-  }
-
-  // Layer 3: Dynamic Pulse Dot at tip reticle (when active and enabled)
-  if (settings.pulseDot && activePoints.length > 0) {
-    const last = activePoints[activePoints.length - 1]
-    const age = now - last.t
-    if (age < 300) {
-      const pulse = Math.sin(now * 0.012) * 0.12 + 0.88
-      const tipRadius = Math.max(3.5, (baseWidth / 2) * 1.25 * pulse)
-
-      ctx.beginPath()
-      ctx.arc(last.x, last.y, tipRadius, 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${overallAlpha})`
+      // Layer 1: Outer Neon Ink Glow
+      traceRibbonPath(ctx, outerRibbon)
+      ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 0.92)`
       if (glowFactor > 0) {
-        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, ${overallAlpha})`
-        ctx.shadowBlur = glowFactor * 1.4
+        ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.95)`
+        ctx.shadowBlur = glowFactor
+      } else {
+        ctx.shadowBlur = 0
       }
       ctx.fill()
 
-      ctx.beginPath()
-      ctx.arc(last.x, last.y, Math.max(1.5, tipRadius * 0.45), 0, Math.PI * 2)
-      ctx.fillStyle = `rgba(255, 255, 255, ${overallAlpha})`
-      ctx.shadowBlur = 0
-      ctx.fill()
+      // Layer 2: Inner Bright Hot Core (36% width, white tint)
+      const innerRibbon = computeLaserRibbon(smoothed, baseWidth * 0.36, trailLifetime, now)
+      if (innerRibbon) {
+        traceRibbonPath(ctx, innerRibbon)
+        ctx.fillStyle = `rgba(255, 255, 255, 0.92)`
+        ctx.shadowBlur = 0
+        ctx.fill()
+      }
+
+      ctx.restore()
     }
   }
 
-  ctx.restore()
+  // 3. Dynamic Precision Laser Reticle Dot at pointer position
+  const targetPoint = currentCursor || (activePoints.length > 0 ? activePoints[activePoints.length - 1] : null)
+  if (targetPoint && settings.pulseDot) {
+    ctx.save()
+    const pulse = Math.sin(now * 0.012) * 0.12 + 0.88
+    const dotRadius = Math.max(3.5, (baseWidth / 2) * 1.25 * pulse)
+
+    // Outer glow halo
+    ctx.beginPath()
+    ctx.arc(targetPoint.x, targetPoint.y, dotRadius, 0, Math.PI * 2)
+    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, 1)`
+    if (glowFactor > 0) {
+      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 1)`
+      ctx.shadowBlur = glowFactor * 1.4
+    }
+    ctx.fill()
+
+    // Inner bright hot core
+    ctx.beginPath()
+    ctx.arc(targetPoint.x, targetPoint.y, Math.max(1.8, dotRadius * 0.48), 0, Math.PI * 2)
+    ctx.fillStyle = "#FFFFFF"
+    ctx.shadowBlur = 0
+    ctx.fill()
+
+    // When hovering without drag, render a fine concentric targeting reticle ring
+    if (!isPointerDown) {
+      ctx.beginPath()
+      ctx.arc(targetPoint.x, targetPoint.y, dotRadius * 1.6, 0, Math.PI * 2)
+      ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.55)`
+      ctx.lineWidth = 1.2
+      ctx.shadowBlur = 0
+      ctx.stroke()
+    }
+
+    ctx.restore()
+  }
 }

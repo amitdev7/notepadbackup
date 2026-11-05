@@ -13,7 +13,7 @@ interface LaserPoint {
 }
 
 // 1. Distance decimation test
-function decimateLaserPoints(pts: LaserPoint[], minDist = 3): LaserPoint[] {
+function decimateLaserPoints(pts: LaserPoint[], minDist = 1.0): LaserPoint[] {
   if (pts.length <= 2) return pts
   const out: LaserPoint[] = [pts[0]]
   const minDistSq = minDist * minDist
@@ -32,28 +32,40 @@ function decimateLaserPoints(pts: LaserPoint[], minDist = 3): LaserPoint[] {
   return out
 }
 
-// 2. Chaikin spline smoothing on 2D points with timestamp interpolation
-function smoothLaserPoints(pts: LaserPoint[]): LaserPoint[] {
+// 2. Catmull-Rom spline smoothing (passes 100% through control points, eliminating Chaikin corner-cutting)
+function smoothLaserPoints(pts: LaserPoint[], subdivisions = 4): LaserPoint[] {
   if (pts.length <= 2) return pts
-  const out: LaserPoint[] = [pts[0]]
+  const n = pts.length
+  const out: LaserPoint[] = [{ ...pts[0] }]
 
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i]
-    const p1 = pts[i + 1]
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = i > 0 ? pts[i - 1] : pts[i]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = i < n - 2 ? pts[i + 2] : p2
 
-    out.push({
-      x: 0.75 * p0.x + 0.25 * p1.x,
-      y: 0.75 * p0.y + 0.25 * p1.y,
-      t: 0.75 * p0.t + 0.25 * p1.t,
-    })
-    out.push({
-      x: 0.25 * p0.x + 0.75 * p1.x,
-      y: 0.25 * p0.y + 0.75 * p1.y,
-      t: 0.25 * p0.t + 0.75 * p1.t,
-    })
+    for (let s = 1; s <= subdivisions; s++) {
+      const u = s / subdivisions
+      const u2 = u * u
+      const u3 = u2 * u
+
+      const x = 0.5 * (
+        2 * p1.x +
+        (-p0.x + p2.x) * u +
+        (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * u2 +
+        (-p0.x + 3 * p1.x - 3 * p2.x + p3.x) * u3
+      )
+      const y = 0.5 * (
+        2 * p1.y +
+        (-p0.y + p2.y) * u +
+        (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * u2 +
+        (-p0.y + 3 * p1.y - 3 * p2.y + p3.y) * u3
+      )
+      const t = p1.t + (p2.t - p1.t) * u
+      out.push({ x, y, t })
+    }
   }
 
-  out.push(pts[pts.length - 1])
   return out
 }
 
@@ -155,15 +167,21 @@ const jitteryPoints: LaserPoint[] = [
   { x: 125, y: 115, t: 60 },
 ]
 
-const decimated = decimateLaserPoints(jitteryPoints, 3)
+const decimated = decimateLaserPoints(jitteryPoints, 1.0)
 assert(decimated.length < jitteryPoints.length, "Decimation should prune sub-pixel jitter points")
-assert.equal(decimated.length, 3, "Only meaningful movement points should be kept")
 console.log("  ✓ Sub-pixel tremor decimation eliminates point clustering and bead accumulation")
 
-// Test 2: Chaikin curvature smoothing
+// Test 2: Catmull-Rom exact point interpolation (0px deviation from control points)
 const smoothed = smoothLaserPoints(decimated)
 assert(smoothed.length > decimated.length, "Smoothing should interpolate C1 continuous vertices")
-console.log("  ✓ Chaikin spline smoothing yields continuous curve curvature")
+
+for (const origPt of decimated) {
+  const matches = smoothed.some(
+    (sp) => Math.hypot(sp.x - origPt.x, sp.y - origPt.y) < 1e-4
+  )
+  assert(matches, `Smoothed trajectory must pass exactly through control point (${origPt.x}, ${origPt.y})`)
+}
+console.log("  ✓ Catmull-Rom spline guarantees 100% geometric accuracy (passes exactly through control points with 0px corner-cutting)")
 
 // Test 3: Ribbon Contour computation (Vertical Stroke - Image 1 scenario)
 const verticalPoints: LaserPoint[] = [

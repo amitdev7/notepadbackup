@@ -22,11 +22,13 @@ export function LaserOverlay() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const pointsRef = useRef<LaserPoint[]>([])
   const isDownRef = useRef(false)
+  const pointerPosRef = useRef<{ x: number; y: number } | null>(null)
   const animFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
     if (tool !== "laser") {
       pointsRef.current = []
+      pointerPosRef.current = null
       const canvas = canvasRef.current
       if (canvas) {
         const ctx = canvas.getContext("2d")
@@ -63,12 +65,10 @@ export function LaserOverlay() {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      if (pointsRef.current.length > 0) {
-        ctx.save()
-        ctx.scale(dpr, dpr)
-        renderLaserTrail(ctx, pointsRef.current, settings, now)
-        ctx.restore()
-      }
+      ctx.save()
+      ctx.scale(dpr, dpr)
+      renderLaserTrail(ctx, pointsRef.current, settings, now, pointerPosRef.current, isDownRef.current)
+      ctx.restore()
 
       animFrameRef.current = requestAnimationFrame(render)
     }
@@ -78,40 +78,62 @@ export function LaserOverlay() {
     function onPointerDown(e: PointerEvent) {
       if (e.button !== 0) return
       isDownRef.current = true
-      pointsRef.current.push({ x: e.clientX, y: e.clientY, t: performance.now() })
+      const rect = canvas?.getBoundingClientRect()
+      const x = e.clientX - (rect?.left || 0)
+      const y = e.clientY - (rect?.top || 0)
+      pointerPosRef.current = { x, y }
+      pointsRef.current.push({ x, y, t: performance.now() })
     }
 
     function onPointerMove(e: PointerEvent) {
-      if (!isDownRef.current) return
       const now = performance.now()
-      const x = e.clientX
-      const y = e.clientY
-      const pts = pointsRef.current
-      if (pts.length > 0) {
-        const last = pts[pts.length - 1]
-        const dx = x - last.x
-        const dy = y - last.y
-        // Filter out sub-pixel jitter (<2.5px within 16ms) to prevent point bunching
-        if (dx * dx + dy * dy < 6.25 && now - last.t < 16) {
-          return
+      const rect = canvas?.getBoundingClientRect()
+      const offsetX = rect ? rect.left : 0
+      const offsetY = rect ? rect.top : 0
+
+      // Extract all high-precision sub-sample events from hardware digitizer/mouse
+      const events = typeof e.getCoalescedEvents === "function" ? e.getCoalescedEvents() : [e]
+      for (const ev of events) {
+        const x = ev.clientX - offsetX
+        const y = ev.clientY - offsetY
+        pointerPosRef.current = { x, y }
+
+        if (isDownRef.current) {
+          const pts = pointsRef.current
+          if (pts.length > 0) {
+            const last = pts[pts.length - 1]
+            const dx = x - last.x
+            const dy = y - last.y
+            // Only skip duplicate points at virtually identical coordinates (<0.5px within 4ms)
+            if (dx * dx + dy * dy < 0.25 && now - last.t < 4) {
+              continue
+            }
+          }
+          pts.push({ x, y, t: now })
         }
       }
-      pts.push({ x, y, t: now })
     }
 
     function onPointerUp() {
       isDownRef.current = false
     }
 
+    function onPointerLeave() {
+      isDownRef.current = false
+      pointerPosRef.current = null
+    }
+
     window.addEventListener("pointerdown", onPointerDown, { passive: true })
     window.addEventListener("pointermove", onPointerMove, { passive: true })
     window.addEventListener("pointerup", onPointerUp, { passive: true })
+    window.addEventListener("pointerleave", onPointerLeave, { passive: true })
 
     return () => {
       window.removeEventListener("resize", resize)
       window.removeEventListener("pointerdown", onPointerDown)
       window.removeEventListener("pointermove", onPointerMove)
       window.removeEventListener("pointerup", onPointerUp)
+      window.removeEventListener("pointerleave", onPointerLeave)
       if (animFrameRef.current) {
         cancelAnimationFrame(animFrameRef.current)
       }
