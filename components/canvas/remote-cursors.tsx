@@ -7,10 +7,12 @@
 import { memo, useEffect, useRef, useState } from "react"
 import { useCollabStore } from "@/lib/collaboration/collab-store"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { unionBounds } from "@/lib/selection"
 import { ChatTeardropText, X } from "@phosphor-icons/react"
 
 export const RemoteCursors = memo(function RemoteCursors() {
+  const liveCollaborationEnabled = useShellStore((s) => s.preferences.liveCollaborationEnabled ?? true)
   const peers = useCollabStore((s) => s.peers)
   const isCursorChatActive = useCollabStore((s) => s.isCursorChatActive)
   const cursorChatDraft = useCollabStore((s) => s.cursorChatDraft)
@@ -69,6 +71,8 @@ export const RemoteCursors = memo(function RemoteCursors() {
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
   }, [isCursorChatActive, startCursorChat, cancelCursorChat])
+
+  if (!liveCollaborationEnabled) return null
 
   const peerList = Object.values(peers).filter((p) => p.cursor !== null)
 

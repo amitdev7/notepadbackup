@@ -3375,9 +3375,39 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
     case "cloud":
       return <CloudSection />
 
-    case "sharing":
+    case "sharing": {
+      const liveCollab = prefs.liveCollaborationEnabled ?? true
       return (
         <div className="space-y-4">
+          <div className="p-3.5 rounded-xl border border-stone-200/80 dark:border-stone-800/80 bg-stone-50/70 dark:bg-stone-900/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-stone-900 dark:text-stone-100 block">Live Collaboration</span>
+                  <span className={cn(
+                    "text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold",
+                    liveCollab
+                      ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+                      : "bg-amber-500/15 text-amber-700 dark:text-amber-300"
+                  )}>
+                    {liveCollab ? "Active" : "Stopped"}
+                  </span>
+                </div>
+                <span className="text-[11px] text-stone-500 block mt-0.5">
+                  {liveCollab
+                    ? "Peers can see live cursor positions, cursor chat, presence avatars, and real-time edits."
+                    : "Live collaboration is stopped. Remote cursors are hidden and edits will not be broadcast."}
+                </span>
+              </div>
+              <Switch
+                checked={liveCollab}
+                onCheckedChange={(val) => {
+                  useShellStore.getState().setLiveCollaborationEnabled(val)
+                }}
+              />
+            </div>
+          </div>
+
           <div className="flex items-center justify-between pb-3 border-b border-stone-200/60 dark:border-stone-800/60">
             <div>
               <span className="font-semibold text-stone-900 dark:text-stone-100 block">Default Share Access</span>
@@ -3385,7 +3415,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
             </div>
             <select
               defaultValue="viewer"
-              className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800"
+              className="px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-xs"
             >
               <option value="viewer">Can View</option>
               <option value="editor">Can Edit</option>
@@ -3403,6 +3433,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
           </div>
         </div>
       )
+    }
 
     case "notifications":
       return (

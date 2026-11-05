@@ -7,6 +7,7 @@
 import { useState } from "react"
 import { useCollabStore } from "@/lib/collaboration/collab-store"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import {
   Users,
   Database,
@@ -18,6 +19,8 @@ import {
   DeviceMobile,
   Desktop,
   Globe,
+  PauseCircle,
+  PlayCircle,
 } from "@phosphor-icons/react"
 import {
   DropdownMenu,
@@ -46,6 +49,48 @@ export function PresenceAvatars() {
   const totalUsersCount = peerList.length + 1 // peers + self
 
   const isDbConnected = Boolean(databaseStatus?.connected)
+  const liveCollaborationEnabled = useShellStore((s) => s.preferences.liveCollaborationEnabled ?? true)
+  const toggleLiveCollaboration = useShellStore((s) => s.toggleLiveCollaboration)
+
+  if (!liveCollaborationEnabled) {
+    return (
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger
+          aria-label="Live Collaboration is Stopped"
+          className="group tactile-press flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-stone-200/60 dark:bg-stone-800/60 hover:bg-stone-300/60 dark:hover:bg-stone-700/60 transition-all select-none cursor-pointer outline-none"
+        >
+          <PauseCircle size={13} className="text-amber-500 shrink-0" />
+          <span className="text-[11px] font-medium text-stone-600 dark:text-stone-400">
+            Collab Off
+          </span>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="center"
+          sideOffset={8}
+          className="w-[calc(100vw-1.5rem)] max-w-xs sm:w-80 p-3.5 rounded-2xl bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl border border-stone-200/70 dark:border-stone-800/70 shadow-2xl space-y-3"
+        >
+          <div className="flex items-center gap-2 text-xs font-semibold text-stone-800 dark:text-stone-200">
+            <PauseCircle size={16} className="text-amber-500" />
+            <span>Live Collaboration Paused</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Remote cursors and live peer synchronization are currently stopped. Your edits are saved locally.
+          </p>
+          <Button
+            size="sm"
+            onClick={() => {
+              toggleLiveCollaboration()
+              setIsOpen(false)
+            }}
+            className="w-full h-8 text-xs font-semibold gap-1.5 rounded-xl bg-[var(--ui-accent,#007AFF)] text-white"
+          >
+            <PlayCircle size={15} weight="bold" />
+            Start Live Collaboration
+          </Button>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    )
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>

@@ -7,6 +7,7 @@
 import { create } from "zustand"
 import { useAuthStore } from "../auth-store"
 import { useSquig } from "../store"
+import { useShellStore } from "../shell-store"
 import {
   type CollabPeer,
   type CollabMessage,
@@ -231,6 +232,7 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
   },
 
   broadcastCursor: (x: number, y: number) => {
+    if (useShellStore.getState().preferences.liveCollaborationEnabled === false) return
     const now = Date.now()
     if (now - lastBroadcastCursorTime < 35) return // 30Hz throttle to conserve bandwidth
     lastBroadcastCursorTime = now
@@ -247,6 +249,7 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
   },
 
   broadcastSelection: (nodeIds: string[]) => {
+    if (useShellStore.getState().preferences.liveCollaborationEnabled === false) return
     if (transportSender) {
       transportSender({
         type: "selection_change",
@@ -258,6 +261,7 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
   },
 
   broadcastReaction: (emoji: string, x: number, y: number) => {
+    if (useShellStore.getState().preferences.liveCollaborationEnabled === false) return
     if (transportSender) {
       transportSender({
         type: "peer_reaction",
@@ -271,6 +275,7 @@ export const useCollabStore = create<CollabStore>((set, get) => ({
   },
 
   broadcastNodes: (nodes: Record<string, any>, order: string[]) => {
+    if (useShellStore.getState().preferences.liveCollaborationEnabled === false) return
     if (transportSender) {
       const docId = useSquig.getState().cloudDocId || useSquig.getState().docId
       transportSender({

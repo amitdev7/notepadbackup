@@ -139,9 +139,22 @@ export function saveFile(doc: StoredDoc): FileMeta[] {
   writeIndex(index)
   try {
     localStorage.setItem("zenithsui:active_doc_id", doc.id)
+    localStorage.setItem("zenithsui:canvas_backup:v1", JSON.stringify(doc))
   } catch {}
 
   return index
+}
+
+/** Fail-safe canvas recovery backup */
+export function readCanvasBackup(): StoredDoc | null {
+  const doc = readJSON("zenithsui:canvas_backup:v1") as StoredDoc | null
+  if (!doc || typeof doc !== "object" || !doc.nodes || !Array.isArray(doc.order)) return null
+  return {
+    ...doc,
+    name: typeof doc.name === "string" ? doc.name : "untitled scribbles",
+    look: doc.look ? knownLook(doc.look, DEFAULT_LOOK) : undefined,
+    viewState: doc.viewState ? sanitizeViewState(doc.viewState) : undefined,
+  }
 }
 
 export function deleteFile(id: string): FileMeta[] {

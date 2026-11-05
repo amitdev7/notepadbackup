@@ -25,6 +25,7 @@ import {
   loadPrefs,
   migrateLegacyDoc,
   readFile,
+  readCanvasBackup,
   saveFile,
   savePrefs,
   type FileMeta,
@@ -476,10 +477,31 @@ function wearLook(set: (partial: Partial<SquigState>) => void, look: Look) {
   applyLook(look)
 }
 
-/** Every edit calls this; the drawer only gets written once the hand rests. */
+/** Every edit calls this; the drawer gets written once the hand rests, and fail-safe backup writes immediately. */
 function scheduleSave(get: () => SquigState) {
   if (get().effectiveRole === "viewer") return
   dirty = true
+
+  // Immediately persist fail-safe snapshot to localStorage so sudden tab close, reload or navigation never loses work
+  try {
+    const s = get()
+    if (s.order.length > 0 && typeof window !== "undefined") {
+      localStorage.setItem("zenithsui:active_doc_id", s.docId)
+      localStorage.setItem(
+        "zenithsui:canvas_backup:v1",
+        JSON.stringify({
+          id: s.docId,
+          name: s.fileName,
+          nodes: s.nodes,
+          order: s.order,
+          updatedAt: Date.now(),
+          look: lookOf(s),
+          viewState: s.viewState,
+        })
+      )
+    }
+  } catch {}
+
   if (saveTimer) clearTimeout(saveTimer)
   saveTimer = setTimeout(() => flushSave(get), SAVE_DEBOUNCE_MS)
 }
@@ -1153,8 +1175,29 @@ export const useSquig = create<SquigState>((set, get) => ({
       ? activeIdCandidate
       : (activeIdCandidate || files[0]?.id)
 
-    const doc = wanted ? readFile(wanted) : null
-    const clean = sanitize(doc?.nodes, doc?.order)
+    let doc = wanted ? readFile(wanted) : null
+    let clean = sanitize(doc?.nodes, doc?.order)
+
+    // Bulletproof Fail-safe 1: If current doc is empty, check fail-safe backup slot
+    const backup = readCanvasBackup()
+    if (backup && backup.order && backup.order.length > 0) {
+      if (clean.order.length === 0 || (backup.updatedAt && backup.updatedAt >= (doc?.updatedAt || 0) && backup.order.length >= clean.order.length)) {
+        doc = backup
+        clean = sanitize(backup.nodes, backup.order)
+      }
+    }
+
+    // Bulletproof Fail-safe 2: If still empty, scan existing file drawer for any previously drawn canvas
+    if (clean.order.length === 0 && files.length > 0) {
+      for (const f of files) {
+        const candidate = readFile(f.id)
+        if (candidate && candidate.order && candidate.order.length > 0) {
+          doc = candidate
+          clean = sanitize(candidate.nodes, candidate.order)
+          break
+        }
+      }
+    }
 
     let initialShowPage = true
     try {

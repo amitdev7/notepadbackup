@@ -336,6 +336,7 @@ export interface ShellPreferences {
   miniMapPosition?: MiniMapPosition
   libraryPosition?: LibraryPosition
   librarySize?: LibrarySize
+  liveCollaborationEnabled?: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -382,6 +383,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   miniMapPosition: "bottom-right",
   libraryPosition: "center",
   librarySize: "standard",
+  liveCollaborationEnabled: true,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -467,6 +469,8 @@ function loadInitialPreferences(): ShellPreferences {
           parsed.librarySize && ["standard", "wide"].includes(parsed.librarySize)
             ? (parsed.librarySize as LibrarySize)
             : "standard",
+        liveCollaborationEnabled:
+          parsed.liveCollaborationEnabled !== undefined ? Boolean(parsed.liveCollaborationEnabled) : true,
       }
     }
   } catch { }
@@ -552,6 +556,8 @@ interface ShellState {
   setLibraryPosition: (position: LibraryPosition) => void
   setLibrarySize: (size: LibrarySize) => void
   cycleLibraryPosition: () => void
+  setLiveCollaborationEnabled: (enabled: boolean) => void
+  toggleLiveCollaboration: () => void
   toggleToolbar: () => void
   toggleDock: () => void
   toggleToolbarViewMenu: () => void
@@ -868,6 +874,23 @@ export const useShellStore = create<ShellState>((set, get) => ({
       const currentIndex = order.indexOf(current)
       const nextPosition = order[(currentIndex + 1) % order.length]
       const next = { ...state.preferences, libraryPosition: nextPosition }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setLiveCollaborationEnabled: (enabled: boolean) => {
+    set((state) => {
+      const next = { ...state.preferences, liveCollaborationEnabled: enabled }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleLiveCollaboration: () => {
+    set((state) => {
+      const current = state.preferences.liveCollaborationEnabled ?? true
+      const next = { ...state.preferences, liveCollaborationEnabled: !current }
       savePreferences(next)
       return { preferences: next }
     })

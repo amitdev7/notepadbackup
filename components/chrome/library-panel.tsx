@@ -440,7 +440,7 @@ export function LibraryPanel() {
         <div
           onClick={handleClose}
           aria-hidden="true"
-          className="fixed inset-0 bg-stone-950/20 dark:bg-black/50 backdrop-blur-[2px] z-[44] animate-fade-in"
+          className="fixed inset-0 bg-stone-950/45 dark:bg-black/65 backdrop-blur-sm z-[44] animate-fade-in"
         />
       )}
 
@@ -452,15 +452,15 @@ export function LibraryPanel() {
         className={cn(
           "fixed z-[45] flex flex-col font-sans select-none",
           "rounded-2xl border border-stone-200/90 dark:border-stone-800/90",
-          "bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-2xl shadow-2xl shadow-stone-950/20 dark:shadow-black/70",
+          "bg-white/95 dark:bg-[#18181B]/95 backdrop-blur-2xl shadow-2xl shadow-stone-950/25 dark:shadow-black/70",
           "overflow-hidden transition-all duration-200 ease-out",
           // Layout Positioning
           position === "center" && [
-            "left-1/2 -translate-x-1/2 top-16 sm:top-20",
+            "left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2",
             size === "wide"
-              ? "w-[96vw] sm:w-[860px] md:w-[980px] xl:w-[1100px]"
-              : "w-[94vw] sm:w-[680px] md:w-[760px] lg:w-[820px]",
-            "max-h-[min(82vh,760px)] animate-modal-enter",
+              ? "w-[95vw] sm:w-[860px] md:w-[980px] xl:w-[1100px] max-w-[1100px]"
+              : "w-[94vw] sm:w-[740px] md:w-[820px] lg:w-[880px] max-w-[920px]",
+            "max-h-[min(82vh,740px)] animate-modal-enter",
           ],
           position === "right" && [
             "right-3 sm:right-5 top-16 bottom-20",
