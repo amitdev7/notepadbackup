@@ -49,11 +49,13 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
     if (isText && !value.trim()) {
       s.removeNodes([node.id])
       s.setEditing(null)
+      s.saveNow()
       return
     }
     if (value === target.value) {
       // nothing changed — don't spend an undo step saying so
       s.setEditing(null)
+      s.saveNow()
       return
     }
     s.checkpoint()
@@ -72,6 +74,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       } as Partial<SquigNode>)
     }
     s.setEditing(null)
+    s.saveNow()
   }
 
   // kept current so the outside-press listener always calls the latest commit

@@ -100,19 +100,57 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
     }
   }, [])
 
+  // Ensure the document has a synchronized document ID across cloud & memory
+  const ensureTargetDocId = useCallback(async (): Promise<string> => {
+    let currentId = cloudDocId || useSquig.getState().cloudDocId
+    if (currentId) return currentId
+
+    try {
+      const squig = useSquig.getState()
+      const saveRes = await fetch("/api/documents", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          docId: squig.docId,
+          name: fileName || "Shared Canvas",
+          document_json: {
+            nodes: squig.nodes,
+            order: squig.order,
+            look: { grid: squig.grid, theme: "paper" },
+          },
+        }),
+      })
+      const saveData = await saveRes.json()
+      if (saveData.ok && saveData.data?.id) {
+        currentId = saveData.data.id
+      } else {
+        currentId = squig.docId
+      }
+      squig.setCloudDocId(currentId)
+      return currentId
+    } catch {
+      const fallbackId = useSquig.getState().docId
+      useSquig.getState().setCloudDocId(fallbackId)
+      return fallbackId
+    }
+  }, [cloudDocId, fileName])
+
   // Fetch document share data
   useEffect(() => {
-    if (!isOpen || !cloudDocId) return
+    if (!isOpen) return
 
+    let active = true
     async function loadData() {
+      const docId = await ensureTargetDocId()
+      if (!active || !docId) return
       try {
         const [linksRes, invitesRes] = await Promise.all([
-          fetch(`/api/share?documentId=${cloudDocId}`).then((r) => r.json()),
-          fetch(`/api/invitations?documentId=${cloudDocId}`).then((r) => r.json()),
+          fetch(`/api/share?documentId=${docId}`).then((r) => r.json()),
+          fetch(`/api/invitations?documentId=${docId}`).then((r) => r.json()),
         ])
 
-        if (linksRes.ok) setLinks(linksRes.data || [])
-        if (invitesRes.ok) setInvitations(invitesRes.data || [])
+        if (active && linksRes.ok) setLinks(linksRes.data || [])
+        if (active && invitesRes.ok) setInvitations(invitesRes.data || [])
       } catch {
         // Fallback for offline or unauthenticated mode
       }
@@ -122,9 +160,10 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
     return () => {
+      active = false
       document.body.style.overflow = prevOverflow
     }
-  }, [isOpen, cloudDocId])
+  }, [isOpen, ensureTargetDocId])
 
   if (!isOpen) return null
 
@@ -144,35 +183,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
     setError(null)
     setNotice("Preparing secure share link...")
 
-    let targetDocId: string = cloudDocId || useSquig.getState().docId
-    if (!cloudDocId) {
-      try {
-        const squig = useSquig.getState()
-        const saveRes = await fetch("/api/documents", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            docId: squig.docId,
-            name: fileName || "Shared Canvas",
-            document_json: {
-              nodes: squig.nodes,
-              order: squig.order,
-              look: { grid: squig.grid, theme: "paper" },
-            },
-          }),
-        })
-        const saveData = await saveRes.json()
-        if (saveData.ok && saveData.data?.id) {
-          targetDocId = saveData.data.id
-          squig.setCloudDocId(targetDocId)
-        } else {
-          squig.setCloudDocId(targetDocId)
-        }
-      } catch {
-        targetDocId = useSquig.getState().docId
-        useSquig.getState().setCloudDocId(targetDocId)
-      }
-    }
+    const targetDocId = await ensureTargetDocId()
 
     try {
       // Maximum 7 days strictly enforced to save storage (604,800 seconds)
@@ -226,7 +237,7 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Send invitations
   const handleSendInvites = async () => {
-    if (!cloudDocId) return
+    const targetDocId = await ensureTargetDocId()
 
     const parsed = parseEmailList(inviteEmails)
     if (parsed.length === 0) {
@@ -237,10 +248,30 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
     setLoading(true)
     setError(null)
     try {
-      const results = await createInvitationsAction(cloudDocId, parsed, inviteRole)
-      setInvitations((prev) => [...results.map((r) => r.invitation), ...prev])
+      let results: any = null
+      try {
+        results = await createInvitationsAction(targetDocId, parsed, inviteRole)
+      } catch {
+        // Direct API route fallback
+        const res = await fetch("/api/invitations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            documentId: targetDocId,
+            emails: parsed,
+            role: inviteRole,
+          }),
+        })
+        const data = await res.json()
+        if (data.ok && data.data) {
+          results = data.data
+        } else {
+          throw new Error(data.error?.message || data.error || "Failed to send invitations")
+        }
+      }
+      setInvitations((prev) => [...(Array.isArray(results) ? results.map((r: any) => r.invitation || r) : []), ...prev])
       setInviteEmails("")
-      setNotice(`Sent ${results.length} invitation(s)`)
+      setNotice(`Sent ${Array.isArray(results) ? results.length : 1} invitation(s)`)
       setTimeout(() => setNotice(null), 3000)
     } catch (err: any) {
       setError(err.message || "Failed to send invitations")
@@ -251,10 +282,10 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Rotate a link
   const handleRotateLink = async (linkId: string) => {
-    if (!cloudDocId) return
+    const targetDocId = await ensureTargetDocId()
     setLoading(true)
     try {
-      const rotated = await rotateShareLinkAction(cloudDocId, linkId)
+      const rotated = await rotateShareLinkAction(targetDocId, linkId)
       setLinks((prev) => prev.map((l) => (l.id === linkId ? rotated.link : l)))
       setNotice("Link rotated; previous URL is now invalid")
       setTimeout(() => setNotice(null), 3000)
@@ -267,10 +298,10 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Revoke a link
   const handleRevokeLink = async (linkId: string) => {
-    if (!cloudDocId) return
+    const targetDocId = await ensureTargetDocId()
     setLoading(true)
     try {
-      await revokeShareLinkAction(cloudDocId, linkId)
+      await revokeShareLinkAction(targetDocId, linkId)
       setLinks((prev) =>
         prev.map((l) => (l.id === linkId ? { ...l, is_active: false, revoked_at: new Date().toISOString() } : l))
       )
@@ -285,12 +316,12 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Revoke all links
   const handleRevokeAll = async () => {
-    if (!cloudDocId) return
+    const targetDocId = await ensureTargetDocId()
     if (!confirm("Are you sure you want to revoke ALL share links? All existing shared links will immediately stop working.")) return
 
     setLoading(true)
     try {
-      await revokeAllShareLinksAction(cloudDocId)
+      await revokeAllShareLinksAction(targetDocId)
       setLinks((prev) => prev.map((l) => ({ ...l, is_active: false, revoked_at: new Date().toISOString() })))
       setNotice("All share links have been revoked")
       setTimeout(() => setNotice(null), 3000)
@@ -303,15 +334,15 @@ export function ShareDialog({ isOpen, onClose, cloudDocId }: ShareDialogProps) {
 
   // Public publishing toggle
   const handleTogglePublish = async () => {
-    if (!cloudDocId) return
+    const targetDocId = await ensureTargetDocId()
     setLoading(true)
     try {
       if (isPublic) {
-        await unpublishDocumentAction(cloudDocId)
+        await unpublishDocumentAction(targetDocId)
         setIsPublic(false)
         setNotice("Document unpublished from the public web")
       } else {
-        const res = await publishDocumentAction(cloudDocId, publicSlug || null, publicRole)
+        const res = await publishDocumentAction(targetDocId, publicSlug || null, publicRole)
         setIsPublic(true)
         setPublicSlug(res.publicSlug)
         setNotice(`Document published at /p/${res.publicSlug}`)

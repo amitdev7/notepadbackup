@@ -19,13 +19,15 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
   const loadDoc = useSquig((s) => s.loadDoc)
   const fileName = useSquig((s) => s.fileName)
 
+  const effectiveDocId = cloudDocId || useSquig((s) => s.cloudDocId || s.docId)
+
   useEffect(() => {
     let active = true
-    if (isOpen && cloudDocId) {
+    if (isOpen && effectiveDocId) {
       queueMicrotask(() => {
         if (active) setLoading(true)
       })
-      listVersionSnapshots(cloudDocId)
+      listVersionSnapshots(effectiveDocId)
         .then((data) => {
           if (active) setVersions(data)
         })
@@ -36,15 +38,15 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
     return () => {
       active = false
     }
-  }, [isOpen, cloudDocId])
+  }, [isOpen, effectiveDocId])
 
   if (!isOpen) return null
 
   const handleRestore = async (version: DocumentVersionRecord) => {
-    if (!cloudDocId) return
+    if (!effectiveDocId) return
     setRestoringId(version.id)
     try {
-      const snapshot = await restoreVersionSnapshot(cloudDocId, version.id)
+      const snapshot = await restoreVersionSnapshot(effectiveDocId, version.id)
       loadDoc(
         JSON.stringify({
           fileName: fileName || "Untitled",

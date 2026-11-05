@@ -33,6 +33,9 @@ import {
   saveLocalDocument,
   softDeleteLocalDocument,
   getLocalDocument,
+  listLocalDocuments,
+  setActiveDocumentId,
+  getActiveDocumentId,
 } from "./storage/documents"
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
@@ -516,6 +519,7 @@ function flushSave(get: () => SquigState, force = false) {
 
   // Synchronize durably to IndexedDB (zenithsui-db v1)
   if (typeof window !== "undefined") {
+    setActiveDocumentId(s.docId).catch(() => {})
     saveLocalDocument({
       id: s.docId,
       name: s.fileName,
@@ -542,11 +546,14 @@ function flushSave(get: () => SquigState, force = false) {
       if (
         dbSettings?.enabled &&
         dbSettings?.storageMode !== "local" &&
-        auth.state === "authenticated" &&
-        s.cloudDocId
+        auth.state === "authenticated"
       ) {
+        const cloudId = s.cloudDocId || s.docId
+        if (!s.cloudDocId) {
+          useSquig.setState({ cloudDocId: cloudId })
+        }
         import("./sync/queue").then(({ enqueueMutation }) => {
-          enqueueMutation(s.cloudDocId!, "upsert_document", 1, {
+          enqueueMutation(cloudId, "upsert_document", 1, {
             name: s.fileName,
             documentJson: {
               nodes: s.nodes,
@@ -583,7 +590,7 @@ function watchWindow(get: () => SquigState) {
   watching = true
   const save = () => {
     flushPendingViewportSave()
-    flushSave(get)
+    flushSave(get, true)
   }
   window.addEventListener("beforeunload", save)
   window.addEventListener("pagehide", save)
@@ -1127,11 +1134,25 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
 
   hydrate: () => {
+    // Canvas root on home is always owner — editing/saving is never blocked
+    set({ effectiveRole: "owner" })
+
     migrateLegacyDoc(() => nanoid(8))
     const prefs = loadPrefs()
     const files = listFiles()
-    // last file open wins; failing that, the most recent one we have
-    const wanted = prefs.activeId && files.some((f) => f.id === prefs.activeId) ? prefs.activeId : files[0]?.id
+
+    let activeIdCandidate = prefs.activeId
+    if (!activeIdCandidate && typeof window !== "undefined") {
+      try {
+        activeIdCandidate = localStorage.getItem("zenithsui:active_doc_id")
+      } catch {}
+    }
+
+    // last file open wins; failing that, active candidate or the most recent one in drawer
+    const wanted = activeIdCandidate && files.some((f) => f.id === activeIdCandidate)
+      ? activeIdCandidate
+      : (activeIdCandidate || files[0]?.id)
+
     const doc = wanted ? readFile(wanted) : null
     const clean = sanitize(doc?.nodes, doc?.order)
 
@@ -1141,7 +1162,8 @@ export const useSquig = create<SquigState>((set, get) => ({
       if (sp !== null) initialShowPage = sp === "true"
     } catch { }
 
-    const targetDocId = doc?.id ?? nanoid(8)
+    const hasLocalNodes = clean.order.length > 0
+    const targetDocId = doc?.id ?? wanted ?? nanoid(8)
     const nodesList = clean.order.map((id) => clean.nodes[id]).filter(Boolean)
     const vs = doc?.viewState ? sanitizeViewState(doc.viewState) : getViewState(targetDocId)
     const resolved = resolveOpeningViewport(targetDocId, nodesList)
@@ -1161,8 +1183,12 @@ export const useSquig = create<SquigState>((set, get) => ({
       files,
       contextRow: prefs.contextRow,
       showPage: initialShowPage,
-      hydrated: true,
+      hydrated: hasLocalNodes, // Instant 0ms boot if LocalStorage has nodes; otherwise await IndexedDB check
     })
+
+    if (hasLocalNodes) {
+      wearLook(set, doc?.look ?? prefs.look)
+    }
 
     if (typeof window !== "undefined") {
       loadViewStateAsync(targetDocId).then((loadedVs) => {
@@ -1170,11 +1196,75 @@ export const useSquig = create<SquigState>((set, get) => ({
           set({ viewState: loadedVs })
         }
       }).catch(() => {})
+
+      // Dual-tier IndexedDB fallback & freshness check
+      Promise.all([
+        getActiveDocumentId(),
+        listLocalDocuments(),
+      ]).then(async ([idbActiveId, idbDocs]) => {
+        const idbTargetId = idbActiveId || wanted || activeIdCandidate || idbDocs[0]?.id
+        const idbRecord = idbTargetId
+          ? (await getLocalDocument(idbTargetId)) || idbDocs[0]
+          : idbDocs[0]
+
+        if (idbRecord?.doc) {
+          const currentCount = Object.keys(get().nodes).length
+          const idbCount = Object.keys(idbRecord.doc.nodes || {}).length
+
+          const shouldRestoreFromIdb =
+            (currentCount === 0 && idbCount > 0) ||
+            (idbRecord.id === targetDocId && idbRecord.updatedAt > (doc?.updatedAt || 0) && idbCount >= currentCount)
+
+          if (shouldRestoreFromIdb) {
+            const cleanIdb = sanitize(idbRecord.doc.nodes, idbRecord.doc.order)
+            const idbNodesList = cleanIdb.order.map((id) => cleanIdb.nodes[id]).filter(Boolean)
+            const idbVs = idbRecord.viewState ? sanitizeViewState(idbRecord.viewState) : getViewState(idbRecord.id)
+            const idbResolved = resolveOpeningViewport(idbRecord.id, idbNodesList)
+
+            set({
+              docId: idbRecord.id,
+              fileName: idbRecord.name || "untitled scribbles",
+              nodes: cleanIdb.nodes,
+              order: cleanIdb.order,
+              viewport: idbResolved.viewport,
+              viewState: idbVs,
+              hydrated: true,
+            })
+
+            wearLook(set, doc?.look ?? prefs.look)
+
+            // Re-sync back to LocalStorage drawer
+            try {
+              const updatedFiles = saveFile({
+                id: idbRecord.id,
+                name: idbRecord.name,
+                nodes: cleanIdb.nodes,
+                order: cleanIdb.order,
+                updatedAt: idbRecord.updatedAt,
+                viewState: idbVs,
+              })
+              savePrefs({ activeId: idbRecord.id })
+              set({ files: updatedFiles })
+            } catch {}
+          }
+        }
+
+        if (!get().hydrated) {
+          set({ hydrated: true })
+          wearLook(set, doc?.look ?? prefs.look)
+        }
+      }).catch((err) => {
+        console.warn("[storage] IndexedDB hydration check failed:", err)
+        if (!get().hydrated) {
+          set({ hydrated: true })
+          wearLook(set, doc?.look ?? prefs.look)
+        }
+      })
+    } else {
+      set({ hydrated: true })
+      wearLook(set, doc?.look ?? prefs.look)
     }
-    // the document's own look, or — for one saved before looks existed — the
-    // last look this browser was set to
-    wearLook(set, doc?.look ?? prefs.look)
-    // what we just read is, by definition, what the drawer already holds
+
     dirty = false
     watchWindow(get)
   },

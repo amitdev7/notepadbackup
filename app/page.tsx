@@ -67,10 +67,17 @@ export default function Home() {
   const statsOpen = useSquig((s) => s.statsOpen)
 
   useEffect(() => {
+    useSquig.getState().setEffectiveRole("owner")
     hydrate()
     syncThemeToDOM(useShellStore.getState().preferences.themeMode)
     useAuthStore.getState().initialize()
     migrateLocalStorageToIndexedDB()
+
+    const onExit = () => {
+      useSquig.getState().saveNow()
+    }
+    window.addEventListener("beforeunload", onExit)
+    window.addEventListener("pagehide", onExit)
 
     // Register desktop close handshake to flush unsaved changes
     if (typeof window !== "undefined" && window.zenithsuiDesktop) {
@@ -78,7 +85,16 @@ export default function Home() {
         console.log("[Zenithsui] Desktop shutdown requested. Flushing pending canvas saves...")
         useSquig.getState().saveNow()
       })
-      return cleanup
+      return () => {
+        window.removeEventListener("beforeunload", onExit)
+        window.removeEventListener("pagehide", onExit)
+        cleanup()
+      }
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", onExit)
+      window.removeEventListener("pagehide", onExit)
     }
   }, [hydrate])
 

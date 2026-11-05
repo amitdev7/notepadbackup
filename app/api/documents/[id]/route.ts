@@ -97,10 +97,32 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
         if (body.name) updates.name = body.name
         if (body.documentJson) updates.document_json = body.documentJson
 
-        await supabase
+        const { data: updatedRows } = await supabase
           .from("documents")
           .update(updates)
           .eq("id", id)
+          .select("id")
+
+        if (!updatedRows || updatedRows.length === 0) {
+          // Document does not exist in Supabase yet — create it and assign ownership
+          await supabase.from("documents").upsert({
+            id,
+            name: body.name || "Untitled Drawing",
+            document_json: body.documentJson || body.document_json || { nodes: {}, order: [] },
+            schema_version: 1,
+            revision: 1,
+            created_by: user.id,
+            updated_by: user.id,
+            updated_at: new Date().toISOString(),
+          }, { onConflict: "id" })
+
+          await supabase.from("document_members").upsert({
+            document_id: id,
+            user_id: user.id,
+            role: "owner",
+            created_by: user.id,
+          }, { onConflict: "document_id,user_id" })
+        }
       } catch {
         // Fallback
       }

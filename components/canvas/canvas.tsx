@@ -1100,6 +1100,11 @@ export function Canvas() {
       flushPendingViewportSave()
     }
 
+    // Immediately flush finished stroke or modification to disk (0ms delay)
+    if (g.kind === "draw" || g.kind === "create" || g.kind === "move" || g.kind === "resize") {
+      s.saveNow()
+    }
+
     teardownGesture()
   }, [st, stopAutoPan, teardownGesture, updateGesture])
 

@@ -120,13 +120,27 @@ export function saveFile(doc: StoredDoc): FileMeta[] {
   for (const old of index.slice(MAX_FILES)) drop(fileKey(old.id))
   index = index.slice(0, MAX_FILES)
 
-  const stored = writeJSON(fileKey(doc.id), doc)
+  let stored = writeJSON(fileKey(doc.id), doc)
   if (!stored) {
-    console.warn(
-      `[storage] LocalStorage quota reached for document ${doc.id}. Document is preserved in index; full payload stored in IndexedDB.`
-    )
+    // LocalStorage quota reached: progressively drop older documents from LocalStorage
+    // (all previous documents remain safely preserved in IndexedDB)
+    for (let i = index.length - 1; i >= 1; i--) {
+      drop(fileKey(index[i].id))
+      stored = writeJSON(fileKey(doc.id), doc)
+      if (stored) break
+    }
+    if (!stored) {
+      console.warn(
+        `[storage] LocalStorage quota reached for document ${doc.id}. Document is preserved in index; full payload stored in IndexedDB.`
+      )
+    }
   }
+
   writeIndex(index)
+  try {
+    localStorage.setItem("zenithsui:active_doc_id", doc.id)
+  } catch {}
+
   return index
 }
 

@@ -136,4 +136,39 @@ export async function duplicateLocalDocument(id: string): Promise<StoredLocalDoc
   return clone
 }
 
+/**
+ * Persists the user's active document ID into IndexedDB APP_STATE
+ * so even if LocalStorage quota is hit or cleared, the active file is restored.
+ */
+export async function setActiveDocumentId(id: string): Promise<void> {
+  if (typeof window === "undefined" || !id) return
+  try {
+    await withTransaction(STORES.APP_STATE, "readwrite", (tx) => {
+      tx.objectStore(STORES.APP_STATE).put({ key: "active_document_id", value: id, updatedAt: Date.now() })
+    })
+  } catch {
+    // Non-blocking fallback
+  }
+}
+
+/**
+ * Retrieves the user's active document ID from IndexedDB APP_STATE.
+ */
+export async function getActiveDocumentId(): Promise<string | null> {
+  if (typeof window === "undefined") return null
+  try {
+    const db = await openZenithsuiDb()
+    return new Promise((resolve) => {
+      const tx = db.transaction(STORES.APP_STATE, "readonly")
+      const store = tx.objectStore(STORES.APP_STATE)
+      const req = store.get("active_document_id")
+      req.onsuccess = () => resolve(req.result?.value || null)
+      req.onerror = () => resolve(null)
+    })
+  } catch {
+    return null
+  }
+}
+
+
 
