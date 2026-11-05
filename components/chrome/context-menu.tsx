@@ -48,6 +48,8 @@ import {
   TextTIcon,
   TrashIcon,
   DownloadSimple,
+  ArrowSquareOut,
+  ArrowsClockwise,
   ChartBar as ChartBarIcon,
   Sparkle as SparkleIcon,
   Eye,
@@ -66,8 +68,9 @@ import {
   expireNodeNow,
 } from "@/lib/canvas/expiration-manager"
 import { downloadDocument } from "@/lib/storage/document-assets"
+import { downloadMediaAsset } from "@/lib/media/media-assets"
 import { exportExcalidrawDoc } from "@/lib/file-io"
-import type { DocumentNode } from "@/lib/types"
+import type { DocumentNode, MediaNode, EmbedNode } from "@/lib/types"
 
 interface Item {
   label: string
@@ -175,6 +178,46 @@ export function CanvasContextMenu() {
             ]
             : []),
         ]
+        : []),
+      ...(one && one.type === "media"
+        ? [
+            {
+              label: "Download original file",
+              icon: DownloadSimple,
+              run: () => {
+                void downloadMediaAsset(one as MediaNode)
+              },
+            } as Entry,
+            {
+              label: "Replace media…",
+              icon: ArrowsClockwise,
+              run: () => {
+                st().setInsertMediaDialog({ open: true, initialTab: (one as MediaNode).mediaKind })
+              },
+            } as Entry,
+          ]
+        : []),
+      ...(one && one.type === "embed"
+        ? [
+            {
+              label: "Open in new tab",
+              icon: ArrowSquareOut,
+              run: () => {
+                window.open((one as EmbedNode).url, "_blank", "noopener,noreferrer")
+              },
+            } as Entry,
+            {
+              label: "Change embed link…",
+              icon: LinkSimpleIcon,
+              run: () => {
+                const newUrl = window.prompt("Enter new embed URL:", (one as EmbedNode).url)
+                if (newUrl && newUrl.trim()) {
+                  st().checkpoint()
+                  st().updateNodes({ [one.id]: { url: newUrl.trim(), embedUrl: newUrl.trim() } })
+                }
+              },
+            } as Entry,
+          ]
         : []),
 
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },

@@ -202,12 +202,46 @@ export function basePrims(node: SquigNode): Prim[] {
       ]
     }
     case "embed": {
+      const providerLabel = node.provider ? node.provider.toUpperCase() : "WEB EMBED"
       return [
         { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
-        { t: "rect", x: 0, y: 0, w: node.w, h: 24, r: 4, o: { fill: "shade", fillColor: "faint" } },
-        { t: "text", x: 8, y: 16, text: node.title || "Web Embed", size: 11, bold: true },
-        { t: "text", x: 8, y: Math.max(36, node.h / 2), text: node.url, size: 9 },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: providerLabel, size: 10, bold: true },
+        { t: "line", x1: 0, y1: 26, x2: node.w, y2: 26, o: { stroke: "faint" } },
+        { t: "text", x: 12, y: 44, text: node.title || node.url, size: 11, bold: true },
+        { t: "text", x: 12, y: 60, text: node.url, size: 9 },
       ]
+    }
+    case "media": {
+      const isVideo = node.mediaKind === "video"
+      const out: Prim[] = [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: isVideo ? "VIDEO PLAYER" : "AUDIO TRACK", size: 10, bold: true },
+        { t: "text", x: node.w - 8, y: 17, text: node.duration ? `${Math.floor(node.duration / 60)}:${Math.floor(node.duration % 60).toString().padStart(2, "0")}` : "", size: 9, align: "right" },
+        { t: "line", x1: 0, y1: 26, x2: node.w, y2: 26, o: { stroke: "faint" } },
+      ]
+      if (isVideo) {
+        const stageH = Math.max(40, node.h - 32)
+        const d = Math.min(node.w, stageH) * 0.2
+        const cx = node.w / 2
+        const cy = 26 + stageH / 2
+        out.push(
+          { t: "ellipse", x: cx - d / 2, y: cy - d / 2, w: d, h: d, o: { fill: "shade", fillColor: "faint" } },
+          { t: "line", x1: 12, y1: node.h - 8, x2: node.w - 12, y2: node.h - 8, o: { stroke: "faint", strokeWidth: 2 } },
+          { t: "line", x1: 12, y1: node.h - 8, x2: 12 + (node.w - 24) * 0.35, y2: node.h - 8, o: { stroke: "ink", strokeWidth: 2.4 } }
+        )
+      } else {
+        const waveY = node.h / 2 + 10
+        const barCount = Math.min(32, Math.max(8, Math.floor((node.w - 40) / 8)))
+        const step = (node.w - 40) / barCount
+        for (let i = 0; i < barCount; i++) {
+          const barH = 6 + 18 * Math.abs(Math.sin(i * 0.5))
+          const bx = 20 + i * step
+          out.push({ t: "line", x1: bx, y1: waveY - barH / 2, x2: bx, y2: waveY + barH / 2, o: { stroke: i < barCount * 0.4 ? "ink" : "faint", strokeWidth: 2 } })
+        }
+      }
+      return out
     }
   }
 }

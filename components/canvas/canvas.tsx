@@ -19,7 +19,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react"
 
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
-import type { SquigNode, TextNode, DocumentNode, FillTone } from "@/lib/types"
+import type { SquigNode, TextNode, DocumentNode, MediaNode, EmbedNode, FillTone } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { flushPendingViewportSave } from "@/lib/canvas/viewport-memory"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
@@ -51,6 +51,9 @@ import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
 import { InteractivePaperWishlist } from "./interactive-paper-wishlist"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
+import { MediaCanvasItem } from "./media-canvas-item"
+import { EmbedCanvasItem } from "./embed-canvas-item"
+import { InsertMediaDialog } from "@/components/media/insert-media-dialog"
 import { PerfHud } from "./perf-hud"
 import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
@@ -345,11 +348,11 @@ export function Canvas() {
     return next
   }, [order, nodes, viewport.x, viewport.y, viewport.zoom, selection, editingId, perfSettings?.viewportCulling, perfSettings?.cullingBuffer, canvasSize.w, canvasSize.h])
 
-  // Pre-filter only interactive HTML nodes (documents, interactive components)
+  // Pre-filter only interactive HTML nodes (documents, interactive components, media, embeds)
   const visibleInteractiveOrder = useMemo(() => {
     return visibleOrder.filter((id) => {
       const type = nodes[id]?.type
-      return type === "document" || type === "component"
+      return type === "document" || type === "component" || type === "media" || type === "embed"
     })
   }, [visibleOrder, nodes])
 
@@ -1423,15 +1426,11 @@ export function Canvas() {
       }
       if (tool === "embed") {
         e.preventDefault()
-        const id = s.addNode({
-          type: "embed",
-          url: "https://zenithsui.com",
-          title: "Web Embed",
-          x: Math.round(wx),
-          y: Math.round(wy),
-          w: 320,
-          h: 200,
-        } as Omit<SquigNode, "id" | "seed">)
+        s.setInsertMediaDialog({
+          open: true,
+          initialTab: "embed",
+          at: [Math.round(wx), Math.round(wy)],
+        })
         s.setTool("select")
         return
       }
@@ -2312,6 +2311,50 @@ export function Canvas() {
             )
           }
 
+          if (n.type === "media") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <MediaCanvasItem
+                  node={n as MediaNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
+          if (n.type === "embed") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <EmbedCanvasItem
+                  node={n as EmbedNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
           if (n.type === "component") {
             const def = getDef(n.kind)
             const Component = INTERACTIVE_COMPONENTS[n.kind]
@@ -2432,6 +2475,7 @@ export function Canvas() {
       <ChartDialog />
       <MermaidDialog />
       <StatsDialog />
+      <InsertMediaDialog />
     </div>
   )
 }

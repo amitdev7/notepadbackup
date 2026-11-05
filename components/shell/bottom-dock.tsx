@@ -48,6 +48,7 @@ import {
   Flashlight,
   MagnifyingGlass,
   ChartBar,
+  VideoCamera,
   TreeStructure,
   DownloadSimple,
   SquaresFour,
@@ -439,6 +440,9 @@ export function BottomDock() {
                 <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> {t("menu_export_sketch")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => useSquig.getState().setInsertMediaDialog({ open: true })}>
+                <VideoCamera size={14} className="mr-2 text-orange-500" aria-hidden="true" /> Insert Media (Video, Audio, Embed)…
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
                 <ChartBar size={14} className="mr-2" aria-hidden="true" /> {t("menu_insert_chart")}
               </DropdownMenuItem>
@@ -649,6 +653,20 @@ export function BottomDock() {
                 <MagnifyingGlass size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
+
+            {/* Insert Media (Video, Audio, Embed) */}
+            <MagnifiedDockItem
+              onClick={() => {
+                useSquig.getState().setInsertMediaDialog({ open: true })
+                audioFx.playToolSwitch()
+              }}
+              title="Insert Media (Video, Audio, Embed)"
+              ariaLabel="Insert Media"
+              mouseX={mouseX}
+              reducedMotion={reducedMotion}
+            >
+              <VideoCamera size={16} aria-hidden="true" />
+            </MagnifiedDockItem>
 
             {/* Canvas Stats (⌘/) */}
             {dockControls.actionStats && (

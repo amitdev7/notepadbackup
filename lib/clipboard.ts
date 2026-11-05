@@ -18,8 +18,10 @@ import { decodeNodes, encodeNodes, payloadFromHtml, payloadHtml, wordsOf } from 
 import { useSquig } from "./store"
 import { measureTextWidth } from "./canvas/text-metrics"
 import { fitTextBox } from "./canvas/text-reflow"
-import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode } from "./types"
+import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode, type MediaNode, type EmbedNode } from "./types"
 import { saveDocumentAsset } from "./storage/document-assets"
+import { saveMediaAsset } from "./media/media-assets"
+import { parseMediaUrl } from "./media/provider-registry"
 import {
   isExcalidrawDocument,
   isExcalidrawClipboard,
@@ -337,6 +339,50 @@ function textNodeFrom(text: string, at: [number, number]): TextNode | null {
 
 // -- putting it down --------------------------------------------------------
 
+const MEDIA_EXTS = new Set([
+  "mp4", "webm", "mov", "m4v", "ogv", "mkv",
+  "mp3", "wav", "ogg", "oga", "opus", "m4a", "aac", "flac", "weba"
+])
+
+function isMediaFile(file: File): boolean {
+  if (file.type.startsWith("video/") || file.type.startsWith("audio/")) return true
+  const ext = file.name.split(".").pop()?.toLowerCase() || ""
+  return MEDIA_EXTS.has(ext)
+}
+
+export async function mediaNodeFrom(file: File): Promise<MediaNode | null> {
+  try {
+    const res = await saveMediaAsset(file, file.name)
+    const isVid = res.mediaKind === "video"
+    const w = isVid ? 560 : 380
+    const h = isVid ? (res.naturalW && res.naturalH ? Math.round((560 * res.naturalH) / res.naturalW) : 315) : 120
+    return {
+      id: nanoid(8),
+      seed: Math.floor(Math.random() * 2 ** 31),
+      type: "media",
+      mediaKind: res.mediaKind,
+      source: { kind: "local", assetId: res.assetId },
+      name: res.name,
+      mimeType: res.mimeType,
+      sizeBytes: res.sizeBytes,
+      duration: res.duration,
+      naturalW: res.naturalW,
+      naturalH: res.naturalH,
+      posterUrl: res.posterUrl,
+      waveform: res.waveform,
+      x: 0,
+      y: 0,
+      w,
+      h,
+      controls: true,
+      playbackRate: 1,
+    }
+  } catch (err) {
+    console.warn("[clipboard] Error processing media file:", err)
+    return null
+  }
+}
+
 /** Where a paste lands when the pointer has never been over the canvas. */
 function viewportCentre(): [number, number] {
   const v = useSquig.getState().viewport
@@ -351,6 +397,7 @@ interface Incoming {
   text?: string | null
   images: Blob[]
   documents?: File[]
+  mediaFiles?: File[]
 }
 
 /**
@@ -422,14 +469,82 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
         }
       }
     }
+
+    // Check if text is a media URL (YouTube, Vimeo, Spotify, SoundCloud, or Direct Video/Audio)
+    const parsedMedia = parseMediaUrl(c.text.trim())
+    if (parsedMedia) {
+      const [px, py] = at ?? viewportCentre()
+      if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
+        const isVid = parsedMedia.provider === "direct-video"
+        const w = isVid ? 560 : 380
+        const h = isVid ? 315 : 120
+        const node: Omit<MediaNode, "id" | "seed"> = {
+          type: "media",
+          mediaKind: isVid ? "video" : "audio",
+          source: { kind: "direct-url", url: parsedMedia.normalizedUrl },
+          name: parsedMedia.title || (isVid ? "Direct Video" : "Direct Audio"),
+          mimeType: isVid ? "video/mp4" : "audio/mpeg",
+          x: Math.round(px - w / 2),
+          y: Math.round(py - h / 2),
+          w,
+          h,
+          controls: true,
+          playbackRate: 1,
+        }
+        const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+        s.setSelection([id])
+        s.setNotice(`Pasted ${isVid ? "video" : "audio"} on canvas`)
+        return true
+      } else {
+        let w = 560
+        let h = 315
+        if (parsedMedia.provider === "spotify") {
+          w = 380
+          h = parsedMedia.aspectRatio && parsedMedia.aspectRatio < 1 ? 380 : 152
+        } else if (parsedMedia.provider === "soundcloud") {
+          w = 400
+          h = 166
+        }
+        const node: Omit<EmbedNode, "id" | "seed"> = {
+          type: "embed",
+          url: parsedMedia.originalUrl,
+          embedUrl: parsedMedia.embedUrl,
+          title: parsedMedia.title,
+          provider: parsedMedia.provider as EmbedNode["provider"],
+          mediaCategory: parsedMedia.mediaCategory,
+          aspectRatio: parsedMedia.aspectRatio,
+          thumbnailUrl: parsedMedia.thumbnailUrl,
+          authorName: parsedMedia.authorName,
+          x: Math.round(px - w / 2),
+          y: Math.round(py - h / 2),
+          w,
+          h,
+          allowFullscreen: true,
+          providerData: parsedMedia.providerData,
+        }
+        const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+        s.setSelection([id])
+        s.setNotice(`Pasted ${parsedMedia.title || "embed"} on canvas`)
+        return true
+      }
+    }
   }
 
-  const hasFiles = (c.images && c.images.length > 0) || (c.documents && c.documents.length > 0)
+  const hasFiles =
+    (c.images && c.images.length > 0) ||
+    (c.documents && c.documents.length > 0) ||
+    (c.mediaFiles && c.mediaFiles.length > 0)
   if (hasFiles) {
-    const made: (ImageNode | DocumentNode)[] = []
+    const made: (ImageNode | DocumentNode | MediaNode)[] = []
     for (const blob of c.images) {
       const node = await imageNodeFrom(blob, blob instanceof File ? blob.name : undefined)
       if (node) made.push(node)
+    }
+    if (c.mediaFiles?.length) {
+      for (const m of c.mediaFiles) {
+        const node = await mediaNodeFrom(m)
+        if (node) made.push(node)
+      }
     }
     if (c.documents?.length) {
       for (const doc of c.documents) {
@@ -485,39 +600,42 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
   return false
 }
 
-/** Files on a paste or a drop, categorized into images and documents. */
-function filesIn(dt: DataTransfer): { images: Blob[]; documents: File[] } {
+/** Files on a paste or a drop, categorized into images, media, and documents. */
+function filesIn(dt: DataTransfer): { images: Blob[]; mediaFiles: File[]; documents: File[] } {
   const images: Blob[] = []
+  const mediaFiles: File[] = []
   const documents: File[] = []
+
+  const categorize = (file: File) => {
+    if (file.type.startsWith("image/")) {
+      images.push(file)
+    } else if (isMediaFile(file)) {
+      mediaFiles.push(file)
+    } else {
+      documents.push(file)
+    }
+  }
 
   if (dt.items && dt.items.length) {
     for (const item of Array.from(dt.items)) {
       if (item.kind !== "file") continue
       const file = item.getAsFile()
-      if (!file) continue
-      if (file.type.startsWith("image/")) {
-        images.push(file)
-      } else {
-        documents.push(file)
-      }
+      if (file) categorize(file)
     }
   } else if (dt.files && dt.files.length) {
     for (const file of Array.from(dt.files)) {
-      if (file.type.startsWith("image/")) {
-        images.push(file)
-      } else {
-        documents.push(file)
-      }
+      categorize(file)
     }
   }
 
-  return { images, documents }
+  return { images, mediaFiles, documents }
 }
 
 /** Drop desktop files directly onto canvas at world coordinates. */
 export async function dropFiles(files: File[], at: [number, number]): Promise<boolean> {
   const s = useSquig.getState()
   const images: Blob[] = []
+  const mediaFiles: File[] = []
   const documents: File[] = []
 
   for (const file of files) {
@@ -557,20 +675,20 @@ export async function dropFiles(files: File[], at: [number, number]): Promise<bo
       }
     } else if (file.type.startsWith("image/")) {
       images.push(file)
+    } else if (isMediaFile(file)) {
+      mediaFiles.push(file)
     } else {
       documents.push(file)
     }
   }
 
-  return place({ images, documents }, at)
+  return place({ images, mediaFiles, documents }, at)
 }
 
 /** Handle a real paste event. Returns whether anything landed. */
 export function pasteFrom(dt: DataTransfer, at?: [number, number]): Promise<boolean> {
-  // everything comes off the DataTransfer now: it is only alive for this turn
-  // of the event loop, and placing a picture takes several
-  const { images, documents } = filesIn(dt)
-  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, documents }, at)
+  const { images, mediaFiles, documents } = filesIn(dt)
+  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, mediaFiles, documents }, at)
 }
 
 /**

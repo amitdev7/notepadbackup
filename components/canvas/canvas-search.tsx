@@ -15,6 +15,8 @@ import {
   ArrowsClockwise,
   Globe,
   Shapes,
+  VideoCamera,
+  SpeakerHigh,
 } from "@phosphor-icons/react"
 import { useSquig } from "@/lib/store"
 import type { SquigNode } from "@/lib/types"
@@ -56,8 +58,14 @@ function getNodeSearchInfo(node: SquigNode): { title: string; subtitle: string; 
     case "embed":
       return {
         title: (node as { title?: string; url?: string }).title || (node as { url?: string }).url || "Embed",
-        subtitle: (node as { url?: string }).url || "Web Embed",
+        subtitle: `${(node as { provider?: string }).provider ? (node as { provider?: string }).provider!.toUpperCase() + " · " : ""}${(node as { url?: string }).url || "Web Embed"}`,
         icon: Globe,
+      }
+    case "media":
+      return {
+        title: (node as { name?: string }).name || "Media Player",
+        subtitle: `${(node as { mediaKind?: string }).mediaKind === "video" ? "Video" : "Audio"} (${Math.round(node.w)}×${Math.round(node.h)})`,
+        icon: ((node as { mediaKind?: string }).mediaKind === "video" ? VideoCamera : SpeakerHigh) as typeof TextT,
       }
     case "component":
       return {

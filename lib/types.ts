@@ -319,10 +319,55 @@ export interface FrameNode extends BaseNode {
   name: string
 }
 
+export type MediaKind = "video" | "audio"
+
+export type MediaSource =
+  | {
+      kind: "local"
+      assetId: string
+    }
+  | {
+      kind: "direct-url"
+      url: string
+    }
+
+export interface MediaNode extends BaseNode {
+  type: "media"
+  mediaKind: MediaKind
+  source: MediaSource
+  name: string
+  mimeType: string
+  sizeBytes?: number
+  duration?: number
+  naturalW?: number
+  naturalH?: number
+  posterAssetId?: string
+  posterUrl?: string
+  controls?: boolean
+  loop?: boolean
+  muted?: boolean
+  playbackRate?: number
+  volume?: number
+  waveform?: number[]
+  status?: "ready" | "uploading" | "local" | "syncing" | "error"
+  metadata?: Record<string, unknown>
+}
+
+export type EmbedProvider = "youtube" | "vimeo" | "spotify" | "soundcloud" | "generic"
+export type EmbedMediaCategory = "video" | "audio" | "web"
+
 export interface EmbedNode extends BaseNode {
   type: "embed"
   url: string
   title?: string
+  embedUrl?: string
+  provider?: EmbedProvider
+  mediaCategory?: EmbedMediaCategory
+  aspectRatio?: number
+  thumbnailUrl?: string
+  authorName?: string
+  allowFullscreen?: boolean
+  providerData?: Record<string, unknown>
 }
 
 export type SquigNode =
@@ -336,6 +381,7 @@ export type SquigNode =
   | StickyNoteNode
   | FrameNode
   | EmbedNode
+  | MediaNode
 
 export interface Viewport {
   x: number

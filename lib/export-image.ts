@@ -113,6 +113,13 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
     }
   }
 
+  if (node.type === "media" && node.posterUrl && /^data:image\//i.test(node.posterUrl)) {
+    const stageH = Math.max(40, node.h - 32)
+    out.push(
+      `<image href="${esc(node.posterUrl)}" x="4" y="28" width="${node.w - 8}" height="${stageH - 4}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`
+    )
+  }
+
   for (const p of paths) {
     out.push(
       `<path d="${esc(p.d)}" stroke="${resolve(p.stroke)}" stroke-width="${p.strokeWidth}" fill="${resolve(p.fill)}"` +

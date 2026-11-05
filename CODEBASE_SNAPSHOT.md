@@ -1134,7 +1134,7 @@ Run all tests via: `pnpm test`.
 | `README.md` | 537 | 30248 | Core README.md module | `README` |
 | `components.json` | 26 | 518 | Core components.json module | `components` |
 | `eslint.config.mjs` | 41 | 953 | Core eslint.config.mjs module | `eslint.config` |
-| `next-env.d.ts` | 7 | 257 | Core next-env.d.ts module | `next-env.d` |
+| `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 57 | 1924 | Core next.config.ts module | `next.config` |
 | `package.json` | 72 | 7082 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
@@ -1169,9 +1169,9 @@ Run all tests via: `pnpm test`.
 | `lib/shell-store.ts` | 1131 | 35438 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 285 | 9521 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
-| `lib/store.ts` | 1975 | 69127 | Core store.ts module | `store` |
+| `lib/store.ts` | 1983 | 69692 | Core store.ts module | `store` |
 | `lib/theme.ts` | 317 | 9599 | Core theme.ts module | `theme` |
-| `lib/types.ts` | 463 | 14299 | Core types.ts module | `types` |
+| `lib/types.ts` | 509 | 15354 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
 | `lib/workspace.ts` | 621 | 17662 | Core workspace.ts module | `workspace` |
 | `lib/canvas/arrow-binding.ts` | 269 | 7200 | Core arrow-binding.ts module | `arrow-binding` |
@@ -1193,25 +1193,27 @@ Run all tests via: `pnpm test`.
 | `lib/canvas/viewport-memory.ts` | 416 | 12818 | Core viewport-memory.ts module | `viewport-memory` |
 | `lib/worker-bridge.ts` | 149 | 4066 | Core worker-bridge.ts module | `worker-bridge` |
 | `public/workers/canvas-worker.js` | 74 | 2362 | Core canvas-worker.js module | `canvas-worker` |
-| `components/canvas/sketch.tsx` | 463 | 16700 | Core sketch.tsx module | `sketch` |
+| `components/canvas/sketch.tsx` | 465 | 16822 | Core sketch.tsx module | `sketch` |
 | `lib/sketch/doodle.ts` | 45 | 8497 | Core doodle.ts module | `doodle` |
 | `lib/sketch/icons.ts` | 104 | 2953 | Core icons.ts module | `icons` |
 | `lib/sketch/kit.ts` | 239 | 8996 | Core kit.ts module | `kit` |
-| `lib/sketch/node-prims.ts` | 225 | 9193 | Core node-prims.ts module | `node-prims` |
+| `lib/sketch/node-prims.ts` | 259 | 11233 | Core node-prims.ts module | `node-prims` |
 | `lib/sketch/phosphor-paths.ts` | 182 | 66464 | Core phosphor-paths.ts module | `phosphor-paths` |
 | `lib/sketch/text-layout.ts` | 47 | 1941 | Core text-layout.ts module | `text-layout` |
-| `components/canvas/canvas-search.tsx` | 259 | 8790 | Core canvas-search.tsx module | `canvas-search` |
+| `components/canvas/canvas-search.tsx` | 267 | 9310 | Core canvas-search.tsx module | `canvas-search` |
 | `components/canvas/canvas-stats.tsx` | 235 | 8101 | Core canvas-stats.tsx module | `canvas-stats` |
-| `components/canvas/canvas.tsx` | 2606 | 97203 | Core canvas.tsx module | `canvas` |
+| `components/canvas/canvas.tsx` | 2650 | 98577 | Core canvas.tsx module | `canvas` |
 | `components/canvas/context-row.tsx` | 198 | 8298 | Core context-row.tsx module | `context-row` |
 | `components/canvas/cursor-reactions.tsx` | 212 | 7582 | Core cursor-reactions.tsx module | `cursor-reactions` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25329 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
+| `components/canvas/embed-canvas-item.tsx` | 221 | 7677 | Core embed-canvas-item.tsx module | `embed-canvas-item` |
 | `components/canvas/empty-canvas.tsx` | 87 | 2986 | Core empty-canvas.tsx module | `empty-canvas` |
 | `components/canvas/follow-mode-indicator.tsx` | 60 | 2413 | Core follow-mode-indicator.tsx module | `follow-mode-indicator` |
 | `components/canvas/interactive-paper-wishlist.tsx` | 769 | 32865 | Core interactive-paper-wishlist.tsx module | `interactive-paper-wishlist` |
 | `components/canvas/laser-overlay.tsx` | 154 | 5106 | Core laser-overlay.tsx module | `laser-overlay` |
 | `components/canvas/liquid-glass-icons.tsx` | 332 | 14762 | Core liquid-glass-icons.tsx module | `liquid-glass-icons` |
+| `components/canvas/media-canvas-item.tsx` | 623 | 23293 | Core media-canvas-item.tsx module | `media-canvas-item` |
 | `components/canvas/minimap-overlay.tsx` | 480 | 17881 | Core minimap-overlay.tsx module | `minimap-overlay` |
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17768 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
@@ -1238,12 +1240,12 @@ Run all tests via: `pnpm test`.
 | `lib/storage/document-assets.ts` | 491 | 14993 | Core document-assets.ts module | `document-assets` |
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
-| `components/chrome/command-palette.tsx` | 461 | 28627 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 363 | 13860 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/command-palette.tsx` | 467 | 29685 | Core command-palette.tsx module | `command-palette` |
+| `components/chrome/context-menu.tsx` | 406 | 15316 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/expired-elements-dialog.tsx` | 542 | 22044 | Core expired-elements-dialog.tsx module | `expired-elements-dialog` |
 | `components/chrome/files-popover.tsx` | 360 | 14676 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3105 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 1735 | 69551 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 1923 | 76175 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 821 | 33240 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15825 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1257,7 +1259,7 @@ Run all tests via: `pnpm test`.
 | `components/dialogs/mermaid-dialog.tsx` | 191 | 8876 | Core mermaid-dialog.tsx module | `mermaid-dialog` |
 | `components/dialogs/stats-dialog.tsx` | 113 | 5361 | Core stats-dialog.tsx module | `stats-dialog` |
 | `components/shell/about-updates-tab.tsx` | 664 | 29720 | Core about-updates-tab.tsx module | `about-updates-tab` |
-| `components/shell/bottom-dock.tsx` | 835 | 36432 | Core bottom-dock.tsx module | `bottom-dock` |
+| `components/shell/bottom-dock.tsx` | 853 | 37244 | Core bottom-dock.tsx module | `bottom-dock` |
 | `components/shell/liquid-glass-preview.tsx` | 263 | 11548 | Core liquid-glass-preview.tsx module | `liquid-glass-preview` |
 | `components/shell/page-popover.tsx` | 315 | 11988 | Core page-popover.tsx module | `page-popover` |
 | `components/shell/settings-dialog.tsx` | 3658 | 170738 | Core settings-dialog.tsx module | `settings-dialog` |
@@ -1349,9 +1351,9 @@ Run all tests via: `pnpm test`.
 | `app/api/share/route.ts` | 103 | 3341 | Core route.ts module | `route` |
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
-| `lib/clipboard-payload.ts` | 271 | 10681 | Core clipboard-payload.ts module | `clipboard-payload` |
-| `lib/clipboard.ts` | 630 | 21648 | Core clipboard.ts module | `clipboard` |
-| `lib/export-image.ts` | 404 | 15843 | Core export-image.ts module | `export-image` |
+| `lib/clipboard-payload.ts` | 305 | 12374 | Core clipboard-payload.ts module | `clipboard-payload` |
+| `lib/clipboard.ts` | 748 | 25746 | Core clipboard.ts module | `clipboard` |
+| `lib/export-image.ts` | 411 | 16158 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 64 | 2285 | Core file-io.ts module | `file-io` |
 | `lib/files.ts` | 266 | 8975 | Core files.ts module | `files` |
 | `lib/storage/db.ts` | 118 | 3745 | Core db.ts module | `db` |
@@ -1453,6 +1455,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-library-performance-and-positioning.ts` | 121 | 5021 | Core test-library-performance-and-positioning.ts module | `test-library-performance-and-positioning` |
 | `scripts/test-link-creation-and-expiration.ts` | 97 | 3995 | Core test-link-creation-and-expiration.ts module | `test-link-creation-and-expiration` |
 | `scripts/test-liquid-glass.ts` | 110 | 5404 | Core test-liquid-glass.ts module | `test-liquid-glass` |
+| `scripts/test-multimedia-system.ts` | 200 | 10404 | Core test-multimedia-system.ts module | `test-multimedia-system` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-paper-wishlist.ts` | 84 | 3854 | Core test-paper-wishlist.ts module | `test-paper-wishlist` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -1592,6 +1595,7 @@ Run all tests via: `pnpm test`.
 | `assets/branding/README.md` | 54 | 2398 | Core README.md module | `README` |
 | `assets/branding/logo/zenithsui-logo.svg` | 8 | 4937 | Core zenithsui-logo.svg module | `zenithsui-logo` |
 | `assets/branding/social-preview/zenithsui-social-preview.svg` | 187 | 10001 | Core zenithsui-social-preview.svg module | `zenithsui-social-preview` |
+| `components/media/insert-media-dialog.tsx` | 433 | 17170 | Core insert-media-dialog.tsx module | `insert-media-dialog` |
 | `dist-electron/ipc.js` | 117 | 4920 | Core ipc.js module | `ipc` |
 | `dist-electron/ipc.js.map` | 1 | 4474 | Core ipc.js.map module | `ipc.js` |
 | `dist-electron/main.js` | 175 | 6327 | Core main.js module | `main` |
@@ -1622,6 +1626,16 @@ Run all tests via: `pnpm test`.
 | `lib/i18n/use-translation.ts` | 32 | 1012 | Core use-translation.ts module | `use-translation` |
 | `lib/liquidglass/types.ts` | 199 | 5558 | Core types.ts module | `types` |
 | `lib/liquidglass/use-liquid-glass.ts` | 119 | 3172 | Core use-liquid-glass.ts module | `use-liquid-glass` |
+| `lib/media/media-assets.ts` | 399 | 12478 | Core media-assets.ts module | `media-assets` |
+| `lib/media/media-validation.ts` | 237 | 7043 | Core media-validation.ts module | `media-validation` |
+| `lib/media/playback-coordinator.ts` | 63 | 1647 | Core playback-coordinator.ts module | `playback-coordinator` |
+| `lib/media/provider-registry.ts` | 99 | 2893 | Core provider-registry.ts module | `provider-registry` |
+| `lib/media/providers/generic.ts` | 50 | 1384 | Core generic.ts module | `generic` |
+| `lib/media/providers/soundcloud.ts` | 62 | 2095 | Core soundcloud.ts module | `soundcloud` |
+| `lib/media/providers/spotify.ts` | 70 | 2101 | Core spotify.ts module | `spotify` |
+| `lib/media/providers/vimeo.ts` | 68 | 1973 | Core vimeo.ts module | `vimeo` |
+| `lib/media/providers/youtube.ts` | 107 | 3492 | Core youtube.ts module | `youtube` |
+| `lib/media/types.ts` | 71 | 1735 | Core types.ts module | `types` |
 | `lib/storage/expired-archive.ts` | 230 | 7276 | Core expired-archive.ts module | `expired-archive` |
 | `lib/time/time-service.ts` | 544 | 18058 | Core time-service.ts module | `time-service` |
 | `lib/time/types.ts` | 83 | 1948 | Core types.ts module | `types` |
@@ -2459,12 +2473,12 @@ export default eslintConfig;
 
 - **Path**: `next-env.d.ts`
 - **Lines**: 7
-- **Size**: 257 bytes
+- **Size**: 253 bytes
 
 ```tsx
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
-import "./.next/dev/types/routes.d.ts";
+import "./.next/types/routes.d.ts";
 
 // NOTE: This file should not be edited
 // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
@@ -8477,8 +8491,8 @@ export function generateUniqueSlug(
 ### File: `lib/store.ts`
 
 - **Path**: `lib/store.ts`
-- **Lines**: 1975
-- **Size**: 69127 bytes
+- **Lines**: 1983
+- **Size**: 69692 bytes
 
 ```tsx
 "use client"
@@ -8672,6 +8686,7 @@ interface SquigState {
   notice: { id: number; text: string } | null
   viewerDoc: DocumentNode | null
   pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
+  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null
   searchOpen: boolean
   statsOpen: boolean
   chartDialogOpen: boolean
@@ -8710,6 +8725,7 @@ interface SquigState {
   setShareOpen: (on: boolean) => void
   setHistoryOpen: (on: boolean) => void
   setSearchOpen: (open: boolean) => void
+  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null) => void
   setStatsOpen: (open: boolean) => void
   setChartDialogOpen: (open: boolean) => void
   setMermaidDialogOpen: (open: boolean) => void
@@ -8847,6 +8863,10 @@ function sanitize(
     if (node.type === "image" && !/^data:image\//i.test(node.src ?? "")) continue
     // a document requires valid name, mimeType, and asset identity
     if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
+    // media requires name, kind, and source
+    if (node.type === "media" && (!node.name || !node.mediaKind || !node.source)) continue
+    // embed requires a valid url
+    if (node.type === "embed" && !node.url) continue
     clean[id] = node
   }
   const seen = new Set<string>()
@@ -9149,6 +9169,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   notice: null,
   viewerDoc: null,
   pdfToCanvasDialog: null,
+  insertMediaDialog: null,
   searchOpen: false,
   statsOpen: false,
   chartDialogOpen: false,
@@ -9280,6 +9301,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
   setViewerDoc: (doc) => set({ viewerDoc: doc }),
   setPdfToCanvasDialog: (dialog) => set({ pdfToCanvasDialog: dialog }),
+  setInsertMediaDialog: (dialog) => set({ insertMediaDialog: dialog }),
   setViewport: (v) => {
     set((s) => ({
       viewport: v,
@@ -10789,8 +10811,8 @@ export function applyLook({ theme, font, paper }: Look) {
 ### File: `lib/types.ts`
 
 - **Path**: `lib/types.ts`
-- **Lines**: 463
-- **Size**: 14299 bytes
+- **Lines**: 509
+- **Size**: 15354 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -11114,10 +11136,55 @@ export interface FrameNode extends BaseNode {
   name: string
 }
 
+export type MediaKind = "video" | "audio"
+
+export type MediaSource =
+  | {
+      kind: "local"
+      assetId: string
+    }
+  | {
+      kind: "direct-url"
+      url: string
+    }
+
+export interface MediaNode extends BaseNode {
+  type: "media"
+  mediaKind: MediaKind
+  source: MediaSource
+  name: string
+  mimeType: string
+  sizeBytes?: number
+  duration?: number
+  naturalW?: number
+  naturalH?: number
+  posterAssetId?: string
+  posterUrl?: string
+  controls?: boolean
+  loop?: boolean
+  muted?: boolean
+  playbackRate?: number
+  volume?: number
+  waveform?: number[]
+  status?: "ready" | "uploading" | "local" | "syncing" | "error"
+  metadata?: Record<string, unknown>
+}
+
+export type EmbedProvider = "youtube" | "vimeo" | "spotify" | "soundcloud" | "generic"
+export type EmbedMediaCategory = "video" | "audio" | "web"
+
 export interface EmbedNode extends BaseNode {
   type: "embed"
   url: string
   title?: string
+  embedUrl?: string
+  provider?: EmbedProvider
+  mediaCategory?: EmbedMediaCategory
+  aspectRatio?: number
+  thumbnailUrl?: string
+  authorName?: string
+  allowFullscreen?: boolean
+  providerData?: Record<string, unknown>
 }
 
 export type SquigNode =
@@ -11131,6 +11198,7 @@ export type SquigNode =
   | StickyNoteNode
   | FrameNode
   | EmbedNode
+  | MediaNode
 
 export interface Viewport {
   x: number
@@ -16565,8 +16633,8 @@ self.onmessage = function (event) {
 ### File: `components/canvas/sketch.tsx`
 
 - **Path**: `components/canvas/sketch.tsx`
-- **Lines**: 463
-- **Size**: 16700 bytes
+- **Lines**: 465
+- **Size**: 16822 bytes
 
 ```tsx
 "use client"
@@ -16957,6 +17025,8 @@ export const NodeSketch = memo(function NodeSketch({
         return `frm:${node.name}:${node.w}:${node.h}:${flip}`
       case "embed":
         return `emb:${node.url}:${node.title ?? ""}:${node.w}:${node.h}:${flip}`
+      case "media":
+        return `med:${node.mediaKind}:${node.name}:${node.w}:${node.h}:${flip}:${node.duration ?? 0}`
     }
   }, [node])
 
@@ -17456,8 +17526,8 @@ export { icon, ICON_NAMES, resolveIconName, type IconName } from "./icons"
 ### File: `lib/sketch/node-prims.ts`
 
 - **Path**: `lib/sketch/node-prims.ts`
-- **Lines**: 225
-- **Size**: 9193 bytes
+- **Lines**: 259
+- **Size**: 11233 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -17664,12 +17734,46 @@ export function basePrims(node: SquigNode): Prim[] {
       ]
     }
     case "embed": {
+      const providerLabel = node.provider ? node.provider.toUpperCase() : "WEB EMBED"
       return [
         { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
-        { t: "rect", x: 0, y: 0, w: node.w, h: 24, r: 4, o: { fill: "shade", fillColor: "faint" } },
-        { t: "text", x: 8, y: 16, text: node.title || "Web Embed", size: 11, bold: true },
-        { t: "text", x: 8, y: Math.max(36, node.h / 2), text: node.url, size: 9 },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: providerLabel, size: 10, bold: true },
+        { t: "line", x1: 0, y1: 26, x2: node.w, y2: 26, o: { stroke: "faint" } },
+        { t: "text", x: 12, y: 44, text: node.title || node.url, size: 11, bold: true },
+        { t: "text", x: 12, y: 60, text: node.url, size: 9 },
       ]
+    }
+    case "media": {
+      const isVideo = node.mediaKind === "video"
+      const out: Prim[] = [
+        { t: "rect", x: 0, y: 0, w: node.w, h: node.h, r: 6, o: { stroke: "ink", fill: "solid", fillColor: "paper" } },
+        { t: "rect", x: 0, y: 0, w: node.w, h: 26, r: 4, o: { fill: "shade", fillColor: "faint" } },
+        { t: "text", x: 8, y: 17, text: isVideo ? "VIDEO PLAYER" : "AUDIO TRACK", size: 10, bold: true },
+        { t: "text", x: node.w - 8, y: 17, text: node.duration ? `${Math.floor(node.duration / 60)}:${Math.floor(node.duration % 60).toString().padStart(2, "0")}` : "", size: 9, align: "right" },
+        { t: "line", x1: 0, y1: 26, x2: node.w, y2: 26, o: { stroke: "faint" } },
+      ]
+      if (isVideo) {
+        const stageH = Math.max(40, node.h - 32)
+        const d = Math.min(node.w, stageH) * 0.2
+        const cx = node.w / 2
+        const cy = 26 + stageH / 2
+        out.push(
+          { t: "ellipse", x: cx - d / 2, y: cy - d / 2, w: d, h: d, o: { fill: "shade", fillColor: "faint" } },
+          { t: "line", x1: 12, y1: node.h - 8, x2: node.w - 12, y2: node.h - 8, o: { stroke: "faint", strokeWidth: 2 } },
+          { t: "line", x1: 12, y1: node.h - 8, x2: 12 + (node.w - 24) * 0.35, y2: node.h - 8, o: { stroke: "ink", strokeWidth: 2.4 } }
+        )
+      } else {
+        const waveY = node.h / 2 + 10
+        const barCount = Math.min(32, Math.max(8, Math.floor((node.w - 40) / 8)))
+        const step = (node.w - 40) / barCount
+        for (let i = 0; i < barCount; i++) {
+          const barH = 6 + 18 * Math.abs(Math.sin(i * 0.5))
+          const bx = 20 + i * step
+          out.push({ t: "line", x1: bx, y1: waveY - barH / 2, x2: bx, y2: waveY + barH / 2, o: { stroke: i < barCount * 0.4 ? "ink" : "faint", strokeWidth: 2 } })
+        }
+      }
+      return out
     }
   }
 }
@@ -17944,8 +18048,8 @@ export function textAnchorX(align: TextAlign | undefined, w: number): number {
 ### File: `components/canvas/canvas-search.tsx`
 
 - **Path**: `components/canvas/canvas-search.tsx`
-- **Lines**: 259
-- **Size**: 8790 bytes
+- **Lines**: 267
+- **Size**: 9310 bytes
 
 ```tsx
 "use client"
@@ -17965,6 +18069,8 @@ import {
   ArrowsClockwise,
   Globe,
   Shapes,
+  VideoCamera,
+  SpeakerHigh,
 } from "@phosphor-icons/react"
 import { useSquig } from "@/lib/store"
 import type { SquigNode } from "@/lib/types"
@@ -18006,8 +18112,14 @@ function getNodeSearchInfo(node: SquigNode): { title: string; subtitle: string; 
     case "embed":
       return {
         title: (node as { title?: string; url?: string }).title || (node as { url?: string }).url || "Embed",
-        subtitle: (node as { url?: string }).url || "Web Embed",
+        subtitle: `${(node as { provider?: string }).provider ? (node as { provider?: string }).provider!.toUpperCase() + " · " : ""}${(node as { url?: string }).url || "Web Embed"}`,
         icon: Globe,
+      }
+    case "media":
+      return {
+        title: (node as { name?: string }).name || "Media Player",
+        subtitle: `${(node as { mediaKind?: string }).mediaKind === "video" ? "Video" : "Audio"} (${Math.round(node.w)}×${Math.round(node.h)})`,
+        icon: ((node as { mediaKind?: string }).mediaKind === "video" ? VideoCamera : SpeakerHigh) as typeof TextT,
       }
     case "component":
       return {
@@ -18458,8 +18570,8 @@ export function CanvasStats() {
 ### File: `components/canvas/canvas.tsx`
 
 - **Path**: `components/canvas/canvas.tsx`
-- **Lines**: 2606
-- **Size**: 97203 bytes
+- **Lines**: 2650
+- **Size**: 98577 bytes
 
 ```tsx
 "use client"
@@ -18483,7 +18595,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, memo } from "react"
 
 import { useSquig } from "@/lib/store"
 import { useShellStore } from "@/lib/shell-store"
-import type { SquigNode, TextNode, DocumentNode, FillTone } from "@/lib/types"
+import type { SquigNode, TextNode, DocumentNode, MediaNode, EmbedNode, FillTone } from "@/lib/types"
 import { screenToWorld } from "@/lib/types"
 import { flushPendingViewportSave } from "@/lib/canvas/viewport-memory"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
@@ -18515,6 +18627,9 @@ import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
 import { InteractivePaperWishlist } from "./interactive-paper-wishlist"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
+import { MediaCanvasItem } from "./media-canvas-item"
+import { EmbedCanvasItem } from "./embed-canvas-item"
+import { InsertMediaDialog } from "@/components/media/insert-media-dialog"
 import { PerfHud } from "./perf-hud"
 import { ChartDialog } from "@/components/dialogs/chart-dialog"
 import { MermaidDialog } from "@/components/dialogs/mermaid-dialog"
@@ -18809,11 +18924,11 @@ export function Canvas() {
     return next
   }, [order, nodes, viewport.x, viewport.y, viewport.zoom, selection, editingId, perfSettings?.viewportCulling, perfSettings?.cullingBuffer, canvasSize.w, canvasSize.h])
 
-  // Pre-filter only interactive HTML nodes (documents, interactive components)
+  // Pre-filter only interactive HTML nodes (documents, interactive components, media, embeds)
   const visibleInteractiveOrder = useMemo(() => {
     return visibleOrder.filter((id) => {
       const type = nodes[id]?.type
-      return type === "document" || type === "component"
+      return type === "document" || type === "component" || type === "media" || type === "embed"
     })
   }, [visibleOrder, nodes])
 
@@ -19887,15 +20002,11 @@ export function Canvas() {
       }
       if (tool === "embed") {
         e.preventDefault()
-        const id = s.addNode({
-          type: "embed",
-          url: "https://zenithsui.com",
-          title: "Web Embed",
-          x: Math.round(wx),
-          y: Math.round(wy),
-          w: 320,
-          h: 200,
-        } as Omit<SquigNode, "id" | "seed">)
+        s.setInsertMediaDialog({
+          open: true,
+          initialTab: "embed",
+          at: [Math.round(wx), Math.round(wy)],
+        })
         s.setTool("select")
         return
       }
@@ -20776,6 +20887,50 @@ export function Canvas() {
             )
           }
 
+          if (n.type === "media") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <MediaCanvasItem
+                  node={n as MediaNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
+          if (n.type === "embed") {
+            return (
+              <div
+                key={id}
+                data-interactive-node={id}
+                className="absolute pointer-events-auto"
+                style={{
+                  left: n.x,
+                  top: n.y,
+                  width: n.w,
+                  height: n.h,
+                }}
+              >
+                <EmbedCanvasItem
+                  node={n as EmbedNode}
+                  selected={selection.includes(id)}
+                  zoom={v.zoom}
+                />
+              </div>
+            )
+          }
+
           if (n.type === "component") {
             const def = getDef(n.kind)
             const Component = INTERACTIVE_COMPONENTS[n.kind]
@@ -20896,6 +21051,7 @@ export function Canvas() {
       <ChartDialog />
       <MermaidDialog />
       <StatsDialog />
+      <InsertMediaDialog />
     </div>
   )
 }
@@ -22885,6 +23041,237 @@ function renderInline(text: string): React.ReactNode {
 
 ---
 
+### File: `components/canvas/embed-canvas-item.tsx`
+
+- **Path**: `components/canvas/embed-canvas-item.tsx`
+- **Lines**: 221
+- **Size**: 7677 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Canvas — First-Class Interactive Embed Node Component
+//
+// Real embedded players for YouTube, Vimeo, Spotify, SoundCloud, and Web embeds
+// with secure sandboxing, provider-specific iframe permissions, drag handles,
+// iframe reload, open in new tab, and fallback cards for restricted sites.
+// ---------------------------------------------------------------------------
+
+import { useState, useRef, useMemo, useCallback } from "react"
+import type { EmbedNode } from "@/lib/types"
+import { useSquig } from "@/lib/store"
+import {
+  YoutubeLogo,
+  SpotifyLogo,
+  Globe,
+  ArrowSquareOut,
+  ArrowsClockwise,
+  Trash,
+  Play,
+  Lock,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+function getProviderIcon(provider?: string) {
+  switch (provider) {
+    case "youtube":
+      return <YoutubeLogo size={15} weight="fill" className="text-red-500 shrink-0" />
+    case "spotify":
+      return <SpotifyLogo size={15} weight="fill" className="text-emerald-500 shrink-0" />
+    case "vimeo":
+      return <Play size={14} weight="fill" className="text-sky-400 shrink-0" />
+    case "soundcloud":
+      return <Play size={14} weight="fill" className="text-orange-500 shrink-0" />
+    default:
+      return <Globe size={14} weight="bold" className="text-[var(--sq-ink)] shrink-0" />
+  }
+}
+
+export function EmbedCanvasItem({
+  node,
+  selected,
+  zoom,
+}: {
+  node: EmbedNode
+  selected: boolean
+  zoom: number
+}) {
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [iframeKey, setIframeKey] = useState(0)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [titleDraft, setTitleDraft] = useState(node.title || node.url)
+  const [isBlocked, setIsBlocked] = useState(false)
+
+  const provider = node.provider || "generic"
+  const embedUrl = node.embedUrl || node.url
+
+  const handleReload = useCallback(() => {
+    setIframeKey((k) => k + 1)
+    setIsBlocked(false)
+  }, [])
+
+  const handleOpenExternal = useCallback(() => {
+    window.open(node.url, "_blank", "noopener,noreferrer")
+  }, [node.url])
+
+  const commitTitle = () => {
+    setIsEditingTitle(false)
+    const trimmed = titleDraft.trim()
+    if (trimmed && trimmed !== node.title) {
+      useSquig.getState().updateNodes({ [node.id]: { title: trimmed } })
+    } else {
+      setTitleDraft(node.title || node.url)
+    }
+  }
+
+  // Provider-specific iframe permissions & sandbox policies
+  const iframeAttrs = useMemo(() => {
+    if (provider === "youtube" || provider === "vimeo") {
+      return {
+        allow: "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share",
+        allowFullScreen: true,
+      }
+    }
+    if (provider === "spotify") {
+      return {
+        allow: "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture",
+        allowFullScreen: true,
+      }
+    }
+    if (provider === "soundcloud") {
+      return {
+        allow: "autoplay",
+        allowFullScreen: false,
+      }
+    }
+    // Generic website sandbox
+    return {
+      sandbox: "allow-scripts allow-same-origin allow-forms allow-popups",
+      allowFullScreen: true,
+    }
+  }, [provider])
+
+  return (
+    <div
+      className={cn(
+        "group relative flex flex-col w-full h-full select-none rounded-lg overflow-hidden border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-md transition-shadow",
+        selected && "ring-2 ring-[var(--sq-ink)] ring-offset-1 shadow-lg"
+      )}
+      style={{
+        boxShadow: selected
+          ? "0 0 0 1px var(--sq-ink), 4px 4px 0px rgba(0,0,0,0.08)"
+          : "2px 2px 0px rgba(0,0,0,0.06)",
+      }}
+    >
+      {/* 1. Header Bar with Drag Handle */}
+      <div
+        data-node-drag-handle="true"
+        className="h-8 px-2.5 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/60 text-xs cursor-grab active:cursor-grabbing shrink-0 z-10"
+      >
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[70%]">
+          {getProviderIcon(provider)}
+
+          {isEditingTitle ? (
+            <input
+              type="text"
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              onBlur={commitTitle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitTitle()
+                if (e.key === "Escape") {
+                  setTitleDraft(node.title || node.url)
+                  setIsEditingTitle(false)
+                }
+              }}
+              autoFocus
+              className="bg-[var(--sq-paper)] border border-[var(--sq-border)] px-1.5 py-0.5 rounded text-[11px] font-bold outline-none text-[var(--sq-ink)] w-full"
+            />
+          ) : (
+            <span
+              onDoubleClick={(e) => {
+                e.stopPropagation()
+                setIsEditingTitle(true)
+              }}
+              className="truncate font-bold text-[11px] text-[var(--sq-ink)] hover:underline cursor-text"
+              title="Double click to rename"
+            >
+              {node.title || node.url}
+            </span>
+          )}
+        </div>
+
+        {/* Action icons */}
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={handleReload}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Reload embed"
+          >
+            <ArrowsClockwise size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={handleOpenExternal}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Open original link in new tab"
+          >
+            <ArrowSquareOut size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              useSquig.getState().removeNodes([node.id])
+            }}
+            className="p-1 rounded hover:bg-red-500/20 text-red-500"
+            title="Delete from canvas"
+          >
+            <Trash size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Live Embed IFrame Container */}
+      <div className="relative flex-1 min-h-0 bg-neutral-900 w-full h-full overflow-hidden">
+        {isBlocked ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] z-10">
+            <Lock size={32} className="text-amber-500 mb-2" />
+            <h4 className="font-bold text-sm">Embedding Restricted by Site</h4>
+            <p className="text-xs text-stone-500 max-w-xs mt-1 mb-3">
+              This website restricts embedded iframe playback due to its security headers (X-Frame-Options or CSP).
+            </p>
+            <button
+              type="button"
+              onClick={handleOpenExternal}
+              className="px-4 py-1.5 bg-[var(--sq-ink)] text-[var(--sq-paper)] rounded-full text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition"
+            >
+              <span>Open in New Tab</span>
+              <ArrowSquareOut size={13} />
+            </button>
+          </div>
+        ) : (
+          <iframe
+            key={iframeKey}
+            ref={iframeRef}
+            src={embedUrl}
+            title={node.title || "Embedded Content"}
+            className="w-full h-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            {...iframeAttrs}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
 ### File: `components/canvas/empty-canvas.tsx`
 
 - **Path**: `components/canvas/empty-canvas.tsx`
@@ -24332,6 +24719,639 @@ export function LiquidGlassCardIcon({
       )
     }
   }
+}
+```
+
+---
+
+### File: `components/canvas/media-canvas-item.tsx`
+
+- **Path**: `components/canvas/media-canvas-item.tsx`
+- **Lines**: 623
+- **Size**: 23293 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Canvas — First-Class Interactive Media Node Component
+//
+// Real HTML5 Video & Audio players with custom risograph/glass controls,
+// authentic waveform scrubbing, offline IndexedDB persistence, drag handle,
+// speed switcher, fullscreen, PiP, download, and playback coordination.
+// ---------------------------------------------------------------------------
+
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
+import type { MediaNode } from "@/lib/types"
+import { useSquig } from "@/lib/store"
+import {
+  getMediaObjectUrl,
+  downloadMediaAsset,
+  saveMediaAsset,
+} from "@/lib/media/media-assets"
+import { playbackCoordinator } from "@/lib/media/playback-coordinator"
+import {
+  Play,
+  Pause,
+  SpeakerHigh,
+  SpeakerSimpleX,
+  CornersOut,
+  PictureInPicture,
+  ArrowsClockwise,
+  DownloadSimple,
+  Trash,
+  VideoCamera,
+  MusicNotes,
+  Repeat,
+  WarningCircle,
+  CircleNotch,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2]
+
+function formatTime(seconds: number): string {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00"
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, "0")}`
+}
+
+export function MediaCanvasItem({
+  node,
+  selected,
+  zoom,
+}: {
+  node: MediaNode
+  selected: boolean
+  zoom: number
+}) {
+  const isVideo = node.mediaKind === "video"
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const audioRef = useRef<HTMLAudioElement>(null)
+
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(node.duration || 0)
+  const [volume, setVolume] = useState(node.volume ?? 1)
+  const [isMuted, setIsMuted] = useState(node.muted ?? false)
+  const [isLooping, setIsLooping] = useState(node.loop ?? false)
+  const [playbackRate, setPlaybackRate] = useState(node.playbackRate ?? 1)
+  const [showControls, setShowControls] = useState(true)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [titleDraft, setTitleDraft] = useState(node.name)
+
+  // 1. Resolve media source URL (local IndexedDB vs direct URL)
+  useEffect(() => {
+    let cancelled = false
+    setIsLoading(true)
+    setLoadError(false)
+
+    async function resolveSource() {
+      if (node.source.kind === "local") {
+        const url = await getMediaObjectUrl(node.source.assetId)
+        if (!cancelled) {
+          if (url) {
+            setMediaUrl(url)
+            setIsLoading(false)
+          } else {
+            setLoadError(true)
+            setIsLoading(false)
+          }
+        }
+      } else if (node.source.kind === "direct-url") {
+        if (!cancelled) {
+          setMediaUrl(node.source.url)
+          setIsLoading(false)
+        }
+      }
+    }
+
+    resolveSource()
+
+    return () => {
+      cancelled = true
+    }
+  }, [node.source])
+
+  // 2. Playback coordinator listener (pause if another player plays in solo mode)
+  useEffect(() => {
+    return playbackCoordinator.subscribe((activeId) => {
+      if (activeId !== node.id) {
+        if (videoRef.current && !videoRef.current.paused) {
+          videoRef.current.pause()
+        }
+        if (audioRef.current && !audioRef.current.paused) {
+          audioRef.current.pause()
+        }
+        setIsPlaying(false)
+      }
+    })
+  }, [node.id])
+
+  // 3. Media element event listeners
+  const mediaEl = isVideo ? videoRef.current : audioRef.current
+
+  const handlePlayPause = useCallback(() => {
+    const el = isVideo ? videoRef.current : audioRef.current
+    if (!el) return
+
+    if (el.paused) {
+      el.play()
+        .then(() => {
+          setIsPlaying(true)
+          playbackCoordinator.notifyPlay(node.id)
+        })
+        .catch((err) => {
+          console.warn("[MediaCanvasItem] Playback error:", err)
+        })
+    } else {
+      el.pause()
+      setIsPlaying(false)
+      playbackCoordinator.notifyPause(node.id)
+    }
+  }, [isVideo, node.id])
+
+  const handleTimeUpdate = useCallback(() => {
+    const el = isVideo ? videoRef.current : audioRef.current
+    if (el) {
+      setCurrentTime(el.currentTime)
+    }
+  }, [isVideo])
+
+  const handleLoadedMetadata = useCallback(() => {
+    const el = isVideo ? videoRef.current : audioRef.current
+    if (el && Number.isFinite(el.duration) && el.duration > 0) {
+      setDuration(el.duration)
+      // Save duration back to store if missing
+      if (!node.duration) {
+        useSquig.getState().updateNodes({ [node.id]: { duration: el.duration } })
+      }
+    }
+  }, [isVideo, node.duration, node.id])
+
+  const handleSeek = useCallback(
+    (time: number) => {
+      const el = isVideo ? videoRef.current : audioRef.current
+      if (el) {
+        el.currentTime = Math.max(0, Math.min(duration, time))
+        setCurrentTime(el.currentTime)
+      }
+    },
+    [duration, isVideo]
+  )
+
+  const handleVolumeChange = useCallback(
+    (newVol: number) => {
+      const el = isVideo ? videoRef.current : audioRef.current
+      if (el) {
+        el.volume = Math.max(0, Math.min(1, newVol))
+        setVolume(el.volume)
+        if (el.volume > 0 && isMuted) {
+          el.muted = false
+          setIsMuted(false)
+        }
+      }
+    },
+    [isMuted, isVideo]
+  )
+
+  const handleToggleMute = useCallback(() => {
+    const el = isVideo ? videoRef.current : audioRef.current
+    if (el) {
+      el.muted = !el.muted
+      setIsMuted(el.muted)
+    }
+  }, [isVideo])
+
+  const handleToggleLoop = useCallback(() => {
+    const next = !isLooping
+    setIsLooping(next)
+    const el = isVideo ? videoRef.current : audioRef.current
+    if (el) el.loop = next
+    useSquig.getState().updateNodes({ [node.id]: { loop: next } })
+  }, [isLooping, isVideo, node.id])
+
+  const handleRateChange = useCallback(
+    (rate: number) => {
+      setPlaybackRate(rate)
+      const el = isVideo ? videoRef.current : audioRef.current
+      if (el) el.playbackRate = rate
+      useSquig.getState().updateNodes({ [node.id]: { playbackRate: rate } })
+    },
+    [isVideo, node.id]
+  )
+
+  const handleFullscreen = useCallback(() => {
+    if (videoRef.current) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch(() => {})
+      } else {
+        videoRef.current.requestFullscreen().catch(() => {})
+      }
+    }
+  }, [])
+
+  const handlePictureInPicture = useCallback(() => {
+    if (videoRef.current && "requestPictureInPicture" in videoRef.current) {
+      if (document.pictureInPictureElement) {
+        document.exitPictureInPicture().catch(() => {})
+      } else {
+        videoRef.current.requestPictureInPicture().catch(() => {})
+      }
+    }
+  }, [])
+
+  // File replacement
+  const handleFilePicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      setIsLoading(true)
+      const res = await saveMediaAsset(file, file.name)
+      useSquig.getState().updateNodes({
+        [node.id]: {
+          name: res.name,
+          mimeType: res.mimeType,
+          sizeBytes: res.sizeBytes,
+          duration: res.duration,
+          naturalW: res.naturalW,
+          naturalH: res.naturalH,
+          posterUrl: res.posterUrl,
+          waveform: res.waveform,
+          source: { kind: "local", assetId: res.assetId },
+        },
+      })
+      setMediaUrl(res.localUrl)
+      setIsLoading(false)
+      useSquig.getState().setNotice(`Replaced media with "${res.name}"`)
+    } catch (err) {
+      setIsLoading(false)
+      useSquig.getState().setNotice(`Failed to replace media: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  const commitTitle = () => {
+    setIsEditingTitle(false)
+    const trimmed = titleDraft.trim()
+    if (trimmed && trimmed !== node.name) {
+      useSquig.getState().updateNodes({ [node.id]: { name: trimmed } })
+    } else {
+      setTitleDraft(node.name)
+    }
+  }
+
+  // Waveform bars
+  const waveformBars = useMemo(() => {
+    if (node.waveform && node.waveform.length > 0) return node.waveform
+    return Array.from({ length: 36 }, (_, i) => 0.25 + 0.75 * Math.abs(Math.sin(i * 0.45)))
+  }, [node.waveform])
+
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0
+
+  return (
+    <div
+      className={cn(
+        "group relative flex flex-col w-full h-full select-none rounded-lg overflow-hidden border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-md transition-shadow",
+        selected && "ring-2 ring-[var(--sq-ink)] ring-offset-1 shadow-lg"
+      )}
+      style={{
+        boxShadow: selected
+          ? "0 0 0 1px var(--sq-ink), 4px 4px 0px rgba(0,0,0,0.08)"
+          : "2px 2px 0px rgba(0,0,0,0.06)",
+      }}
+    >
+      <input type="file" ref={fileInputRef} onChange={handleFilePicked} className="hidden" accept={isVideo ? "video/*" : "audio/*"} />
+
+      {/* 1. Header Bar with Drag Handle */}
+      <div
+        data-node-drag-handle="true"
+        className="h-8 px-2.5 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/60 text-xs cursor-grab active:cursor-grabbing shrink-0 z-10"
+      >
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[65%]">
+          {isVideo ? (
+            <VideoCamera size={14} className="shrink-0 text-[var(--sq-ink)]" weight="bold" />
+          ) : (
+            <MusicNotes size={14} className="shrink-0 text-[var(--sq-ink)]" weight="bold" />
+          )}
+
+          {isEditingTitle ? (
+            <input
+              type="text"
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              onBlur={commitTitle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitTitle()
+                if (e.key === "Escape") {
+                  setTitleDraft(node.name)
+                  setIsEditingTitle(false)
+                }
+              }}
+              autoFocus
+              className="bg-[var(--sq-paper)] border border-[var(--sq-border)] px-1.5 py-0.5 rounded text-[11px] font-bold outline-none text-[var(--sq-ink)] w-full"
+            />
+          ) : (
+            <span
+              onDoubleClick={(e) => {
+                e.stopPropagation()
+                setIsEditingTitle(true)
+              }}
+              className="truncate font-bold text-[11px] text-[var(--sq-ink)] hover:underline cursor-text"
+              title="Double click to rename"
+            >
+              {node.name}
+            </span>
+          )}
+
+          {duration > 0 && (
+            <span className="text-[10px] font-mono text-stone-500 shrink-0 ml-1">
+              ({formatTime(duration)})
+            </span>
+          )}
+        </div>
+
+        {/* Action icons */}
+        <div className="flex items-center gap-1 shrink-0">
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              fileInputRef.current?.click()
+            }}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Replace media file"
+          >
+            <ArrowsClockwise size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              void downloadMediaAsset(node)
+            }}
+            className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+            title="Download original file"
+          >
+            <DownloadSimple size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              useSquig.getState().removeNodes([node.id])
+            }}
+            className="p-1 rounded hover:bg-red-500/20 text-red-500"
+            title="Delete from canvas"
+          >
+            <Trash size={12} />
+          </button>
+        </div>
+      </div>
+
+      {/* 2. Media Player Stage */}
+      <div className="relative flex-1 min-h-0 bg-black/90 flex items-center justify-center overflow-hidden">
+        {isLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--sq-paper)] text-[var(--sq-ink)] z-20">
+            <CircleNotch size={24} className="animate-spin text-stone-500" />
+            <span className="text-xs font-semibold">Loading media…</span>
+          </div>
+        )}
+
+        {loadError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center bg-[var(--sq-paper)] text-stone-600 dark:text-stone-300 z-20">
+            <WarningCircle size={28} className="text-amber-500 mb-1" />
+            <span className="text-xs font-bold">Media asset missing or unplayable</span>
+            <p className="text-[11px] text-stone-400 mt-1">The local file may have been moved or cleared.</p>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-2.5 px-3 py-1 bg-[var(--sq-ink)] text-[var(--sq-paper)] rounded-full text-[11px] font-semibold"
+            >
+              Relink File
+            </button>
+          </div>
+        )}
+
+        {/* Video Mode */}
+        {isVideo && mediaUrl && (
+          <div className="relative w-full h-full flex items-center justify-center group/video">
+            <video
+              ref={videoRef}
+              src={mediaUrl}
+              poster={node.posterUrl}
+              playsInline
+              loop={isLooping}
+              muted={isMuted}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              className="max-w-full max-h-full object-contain cursor-pointer"
+              onClick={handlePlayPause}
+            />
+
+            {/* Play/Pause Overlay Button in Center */}
+            {!isPlaying && !isLoading && (
+              <button
+                type="button"
+                onClick={handlePlayPause}
+                className="absolute inset-auto p-4 rounded-full bg-black/60 hover:bg-black/80 text-white shadow-xl backdrop-blur-xs transition-transform transform active:scale-95"
+                title="Play video"
+              >
+                <Play size={28} weight="fill" className="translate-x-0.5" />
+              </button>
+            )}
+
+            {/* Video Controls Bar Overlay */}
+            {showControls && (
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-2.5 flex flex-col gap-1.5 opacity-90 group-hover/video:opacity-100 transition-opacity text-white text-xs z-10">
+                {/* Seek Bar */}
+                <div
+                  className="relative w-full h-2 bg-white/20 hover:h-2.5 rounded-full cursor-pointer transition-all flex items-center"
+                  onClick={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    const pos = (e.clientX - rect.left) / rect.width
+                    handleSeek(pos * duration)
+                  }}
+                >
+                  <div className="h-full bg-orange-500 rounded-full" style={{ width: `${progressPercent}%` }} />
+                  <div
+                    className="absolute size-3 bg-white rounded-full shadow-sm -translate-x-1.5"
+                    style={{ left: `${progressPercent}%` }}
+                  />
+                </div>
+
+                {/* Controls Row */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={handlePlayPause} className="hover:text-orange-400 p-1">
+                      {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
+                    </button>
+                    <span className="font-mono text-[10px] text-white/80">
+                      {formatTime(currentTime)} / {formatTime(duration)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {/* Volume */}
+                    <div className="flex items-center gap-1 group/vol">
+                      <button type="button" onClick={handleToggleMute} className="hover:text-orange-400 p-1">
+                        {isMuted || volume === 0 ? <SpeakerSimpleX size={16} /> : <SpeakerHigh size={16} />}
+                      </button>
+                      <input
+                        type="range"
+                        min={0}
+                        max={1}
+                        step={0.05}
+                        value={isMuted ? 0 : volume}
+                        onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                        className="w-12 h-1 accent-orange-500 cursor-pointer"
+                        title="Volume"
+                      />
+                    </div>
+
+                    {/* Speed Selector */}
+                    <select
+                      value={playbackRate}
+                      onChange={(e) => handleRateChange(parseFloat(e.target.value))}
+                      className="bg-black/40 border border-white/20 rounded px-1 py-0.5 text-[10px] text-white outline-none cursor-pointer"
+                      title="Playback Speed"
+                    >
+                      {PLAYBACK_RATES.map((r) => (
+                        <option key={r} value={r} className="bg-stone-900 text-white">
+                          {r}×
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Loop */}
+                    <button
+                      type="button"
+                      onClick={handleToggleLoop}
+                      className={cn("p-1 rounded hover:text-orange-400", isLooping && "text-orange-400")}
+                      title="Loop"
+                    >
+                      <Repeat size={16} weight={isLooping ? "bold" : "regular"} />
+                    </button>
+
+                    {/* PiP */}
+                    {"pictureInPictureEnabled" in document && (
+                      <button type="button" onClick={handlePictureInPicture} className="hover:text-orange-400 p-1" title="Picture in Picture">
+                        <PictureInPicture size={16} />
+                      </button>
+                    )}
+
+                    {/* Fullscreen */}
+                    <button type="button" onClick={handleFullscreen} className="hover:text-orange-400 p-1" title="Fullscreen">
+                      <CornersOut size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Audio Mode */}
+        {!isVideo && mediaUrl && (
+          <div className="w-full h-full p-4 flex flex-col justify-between bg-[var(--sq-paper)] text-[var(--sq-ink)]">
+            <audio
+              ref={audioRef}
+              src={mediaUrl}
+              loop={isLooping}
+              muted={isMuted}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              className="hidden"
+            />
+
+            {/* Audio Info & Play Button */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handlePlayPause}
+                className="size-11 rounded-full bg-[var(--sq-ink)] text-[var(--sq-paper)] flex items-center justify-center shrink-0 shadow-md hover:scale-105 active:scale-95 transition-transform"
+                title={isPlaying ? "Pause" : "Play"}
+              >
+                {isPlaying ? <Pause size={18} weight="fill" /> : <Play size={18} weight="fill" className="translate-x-0.5" />}
+              </button>
+
+              <div className="flex-1 min-w-0">
+                <span className="font-bold text-sm block truncate">{node.name}</span>
+                <span className="text-[11px] font-mono text-stone-500">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </span>
+              </div>
+
+              {/* Volume & Speed Controls */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button type="button" onClick={handleToggleMute} className="p-1.5 rounded hover:bg-[var(--sq-shade)]">
+                  {isMuted || volume === 0 ? <SpeakerSimpleX size={15} /> : <SpeakerHigh size={15} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleLoop}
+                  className={cn("p-1.5 rounded hover:bg-[var(--sq-shade)]", isLooping && "text-orange-500")}
+                  title="Loop audio"
+                >
+                  <Repeat size={15} weight={isLooping ? "bold" : "regular"} />
+                </button>
+                <select
+                  value={playbackRate}
+                  onChange={(e) => handleRateChange(parseFloat(e.target.value))}
+                  className="bg-[var(--sq-shade)] border border-[var(--sq-border)] rounded px-1.5 py-0.5 text-[10px] font-mono text-[var(--sq-ink)]"
+                  title="Playback Speed"
+                >
+                  {PLAYBACK_RATES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}×
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Interactive Waveform Bar Visualizer */}
+            <div className="my-auto pt-2">
+              <div
+                className="flex items-center gap-[2px] h-12 w-full cursor-pointer px-1 py-1 rounded bg-[var(--sq-shade)]/30 hover:bg-[var(--sq-shade)]/50 transition-colors"
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect()
+                  const pos = (e.clientX - rect.left) / rect.width
+                  handleSeek(pos * duration)
+                }}
+                title="Click anywhere on waveform to seek"
+              >
+                {waveformBars.map((amp, idx) => {
+                  const barProgress = (idx / waveformBars.length) * 100
+                  const isPast = barProgress <= progressPercent
+                  const heightPx = Math.max(4, Math.round(amp * 40))
+                  return (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "flex-1 rounded-full transition-all duration-75",
+                        isPast ? "bg-orange-500" : "bg-stone-300 dark:bg-stone-700"
+                      )}
+                      style={{ height: `${heightPx}px` }}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 ```
 
@@ -32628,8 +33648,8 @@ export function AlignRow({ count, className }: { count: number; className?: stri
 ### File: `components/chrome/command-palette.tsx`
 
 - **Path**: `components/chrome/command-palette.tsx`
-- **Lines**: 461
-- **Size**: 28627 bytes
+- **Lines**: 467
+- **Size**: 29685 bytes
 
 ```tsx
 "use client"
@@ -32688,6 +33708,8 @@ import {
   KeyboardIcon,
   ShareNetwork as ShareNetworkIcon,
   Globe as GlobeIcon,
+  VideoCamera as VideoCameraIcon,
+  MusicNotes as MusicNotesIcon,
   Gear as GearIcon,
   Sparkle as SparkleIcon,
   Books as BooksIcon,
@@ -32791,6 +33813,10 @@ function Palette() {
       { id: "arrow", label: "Arrow", hint: kbd("a"), section: "Tools", keywords: "line connector point", icon: ArrowUpRightIcon, run: () => { st().setArrowHead(true); st().setTool("arrow") } },
       { id: "insert-chart", label: "Insert Chart (Bar, Line, Radar)…", section: "Tools", keywords: "chart bar line radar graph data spreadsheet table", icon: SparkleIcon, run: () => st().setChartDialogOpen(true) },
       { id: "insert-mermaid", label: "Insert Mermaid Diagram…", section: "Tools", keywords: "mermaid diagram flowchart sequence process map", icon: SparkleIcon, run: () => st().setMermaidDialogOpen(true) },
+      { id: "insert-media", label: "Insert Media (Video, Audio, Embed)…", section: "Tools", keywords: "video audio youtube spotify soundcloud vimeo player media upload", icon: VideoCameraIcon, run: () => st().setInsertMediaDialog({ open: true }) },
+      { id: "insert-video", label: "Insert Video (YouTube, Vimeo, MP4)…", section: "Tools", keywords: "video youtube vimeo mp4 webm movie film player", icon: VideoCameraIcon, run: () => st().setInsertMediaDialog({ open: true, initialTab: "video" }) },
+      { id: "insert-audio", label: "Insert Audio (Spotify, SoundCloud, MP3)…", section: "Tools", keywords: "audio spotify soundcloud mp3 wav music sound podcast voice", icon: MusicNotesIcon, run: () => st().setInsertMediaDialog({ open: true, initialTab: "audio" }) },
+      { id: "insert-embed", label: "Insert Web Embed…", section: "Tools", keywords: "embed website iframe link url web", icon: GlobeIcon, run: () => st().setInsertMediaDialog({ open: true, initialTab: "embed" }) },
       { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
       { id: "toggle-temporary-mode", label: "Toggle Temporary Mode", section: "Tools", keywords: "temporary expire timer ephemeral auto-delete vanish countdown", icon: TimerIcon, run: () => useShellStore.getState().toggleTemporaryMode() },
 
@@ -33099,8 +34125,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 363
-- **Size**: 13860 bytes
+- **Lines**: 406
+- **Size**: 15316 bytes
 
 ```tsx
 "use client"
@@ -33153,6 +34179,8 @@ import {
   TextTIcon,
   TrashIcon,
   DownloadSimple,
+  ArrowSquareOut,
+  ArrowsClockwise,
   ChartBar as ChartBarIcon,
   Sparkle as SparkleIcon,
   Eye,
@@ -33171,8 +34199,9 @@ import {
   expireNodeNow,
 } from "@/lib/canvas/expiration-manager"
 import { downloadDocument } from "@/lib/storage/document-assets"
+import { downloadMediaAsset } from "@/lib/media/media-assets"
 import { exportExcalidrawDoc } from "@/lib/file-io"
-import type { DocumentNode } from "@/lib/types"
+import type { DocumentNode, MediaNode, EmbedNode } from "@/lib/types"
 
 interface Item {
   label: string
@@ -33280,6 +34309,46 @@ export function CanvasContextMenu() {
             ]
             : []),
         ]
+        : []),
+      ...(one && one.type === "media"
+        ? [
+            {
+              label: "Download original file",
+              icon: DownloadSimple,
+              run: () => {
+                void downloadMediaAsset(one as MediaNode)
+              },
+            } as Entry,
+            {
+              label: "Replace media…",
+              icon: ArrowsClockwise,
+              run: () => {
+                st().setInsertMediaDialog({ open: true, initialTab: (one as MediaNode).mediaKind })
+              },
+            } as Entry,
+          ]
+        : []),
+      ...(one && one.type === "embed"
+        ? [
+            {
+              label: "Open in new tab",
+              icon: ArrowSquareOut,
+              run: () => {
+                window.open((one as EmbedNode).url, "_blank", "noopener,noreferrer")
+              },
+            } as Entry,
+            {
+              label: "Change embed link…",
+              icon: LinkSimpleIcon,
+              run: () => {
+                const newUrl = window.prompt("Enter new embed URL:", (one as EmbedNode).url)
+                if (newUrl && newUrl.trim()) {
+                  st().checkpoint()
+                  st().updateNodes({ [one.id]: { url: newUrl.trim(), embedUrl: newUrl.trim() } })
+                }
+              },
+            } as Entry,
+          ]
         : []),
 
       { label: "Bring to front", hint: kbd("far+]"), icon: ArrowLineUpIcon, run: () => st().bringToFront(targets) },
@@ -34484,8 +35553,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 1735
-- **Size**: 69551 bytes
+- **Lines**: 1923
+- **Size**: 76175 bytes
 
 ```tsx
 "use client"
@@ -34507,13 +35576,14 @@ export function InkPicker() {
 import { useMemo, useRef, useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder, MediaNode, EmbedNode } from "@/lib/types"
 import { normalizeFill, DEFAULT_IMAGE_BORDER } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
 import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
+import { downloadMediaAsset, saveMediaAsset } from "@/lib/media/media-assets"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -34533,6 +35603,7 @@ import {
   X,
   DownloadSimple,
   ArrowsClockwise,
+  ArrowSquareOut,
   ArrowCounterClockwise,
   SquaresFour,
   Lock,
@@ -34806,6 +35877,8 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
   const documents = selected.filter((n): n is DocumentNode => n.type === "document")
+  const mediaNodes = selected.filter((n): n is MediaNode => n.type === "media")
+  const embedNodes = selected.filter((n): n is EmbedNode => n.type === "embed")
   const images = selected.filter((n): n is ImageNode => n.type === "image")
   // components draw their own strokes from authored prims — a pen weight set
   // here would have nothing to apply to without rewriting the whole library
@@ -35388,6 +36461,12 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
       {/* --- contextual: document ---------------------------------------- */}
       {documents.length > 0 && <DocumentSection documents={documents} />}
 
+      {/* --- contextual: media ------------------------------------------- */}
+      {mediaNodes.length > 0 && <MediaSection mediaNodes={mediaNodes} />}
+
+      {/* --- contextual: embed ------------------------------------------- */}
+      {embedNodes.length > 0 && <EmbedSection embedNodes={embedNodes} />}
+
       {/* --- universal: hover notes (applicable to any selected node) --- */}
       <HoverNoteSection selected={selected} patch={patch} />
 
@@ -35546,6 +36625,184 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
           </Button>
         </div>
       )}
+    </PanelSection>
+  )
+}
+
+function MediaSection({ mediaNodes }: { mediaNodes: MediaNode[] }) {
+  const st = useSquig.getState
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const node = mediaNodes[0]
+  const isVideo = node.mediaKind === "video"
+
+  const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || mediaNodes.length === 0) return
+    try {
+      const res = await saveMediaAsset(file, file.name)
+      st().updateNodes(
+        Object.fromEntries(
+          mediaNodes.map((m) => [
+            m.id,
+            {
+              name: res.name,
+              mimeType: res.mimeType,
+              sizeBytes: res.sizeBytes,
+              duration: res.duration,
+              naturalW: res.naturalW,
+              naturalH: res.naturalH,
+              posterUrl: res.posterUrl,
+              waveform: res.waveform,
+              source: { kind: "local", assetId: res.assetId },
+            },
+          ])
+        )
+      )
+      st().setNotice(`Replaced media with "${res.name}"`)
+    } catch (err) {
+      st().setNotice(`Failed to replace media: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  return (
+    <PanelSection id="media" title={isVideo ? "Video Player" : "Audio Track"} count={mediaNodes.length > 1 ? mediaNodes.length : undefined}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={isVideo ? "video/*" : "audio/*"}
+        onChange={handleReplace}
+        className="hidden"
+      />
+
+      <StackRow label="Title">
+        <MixedTextField
+          placeholder="Media title…"
+          shared={shared(mediaNodes.map((n) => n.name))}
+          onCommit={(val: string) => {
+            const trimmed = val.trim()
+            if (!trimmed) return
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { name: trimmed }])))
+          }}
+        />
+      </StackRow>
+
+      <Row label="Speed">
+        <select
+          value={node.playbackRate ?? 1}
+          onChange={(e) => {
+            const rate = parseFloat(e.target.value)
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { playbackRate: rate }])))
+          }}
+          className="h-ctl w-24 rounded-chrome-sm border border-border/80 bg-surface px-2 text-label text-ink outline-none"
+        >
+          {[0.5, 0.75, 1, 1.25, 1.5, 2].map((r) => (
+            <option key={r} value={r}>
+              {r}×
+            </option>
+          ))}
+        </select>
+      </Row>
+
+      <Row label="Loop">
+        <Switch
+          checked={Boolean(node.loop)}
+          onCheckedChange={(checked) => {
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { loop: checked }])))
+          }}
+        />
+      </Row>
+
+      <Row label="Muted">
+        <Switch
+          checked={Boolean(node.muted)}
+          onCheckedChange={(checked) => {
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { muted: checked }])))
+          }}
+        />
+      </Row>
+
+      <div className="flex items-center gap-1.5 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => mediaNodes.forEach((m) => downloadMediaAsset(m))}
+          title="Download original file"
+        >
+          <DownloadSimple className="size-3" /> Download
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => fileInputRef.current?.click()}
+          title="Replace media file"
+        >
+          <ArrowsClockwise className="size-3" /> Replace
+        </Button>
+      </div>
+    </PanelSection>
+  )
+}
+
+function EmbedSection({ embedNodes }: { embedNodes: EmbedNode[] }) {
+  const st = useSquig.getState
+  const node = embedNodes[0]
+
+  return (
+    <PanelSection id="embed" title="Web Embed" count={embedNodes.length > 1 ? embedNodes.length : undefined}>
+      <StackRow label="Title">
+        <MixedTextField
+          placeholder="Embed title…"
+          shared={shared(embedNodes.map((n) => n.title || ""))}
+          onCommit={(val: string) => {
+            const trimmed = val.trim()
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { title: trimmed || undefined }])))
+          }}
+        />
+      </StackRow>
+
+      <StackRow label="URL">
+        <div className="flex items-center gap-1.5">
+          <input
+            type="text"
+            readOnly
+            value={node.url}
+            className="h-ctl flex-1 rounded-chrome-sm border border-border/80 bg-surface px-2 text-label text-muted truncate outline-none select-all"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl px-2 rounded-chrome-sm text-label"
+            onClick={() => window.open(node.url, "_blank", "noopener,noreferrer")}
+            title="Open in new tab"
+          >
+            <ArrowSquareOut className="size-3.5" />
+          </Button>
+        </div>
+      </StackRow>
+
+      <div className="pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl w-full rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => {
+            const newUrl = window.prompt("Enter new embed URL:", node.url)
+            if (newUrl && newUrl.trim()) {
+              st().checkpoint()
+              st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { url: newUrl.trim(), embedUrl: newUrl.trim() }])))
+            }
+          }}
+        >
+          <ArrowsClockwise className="size-3" /> Change URL…
+        </Button>
+      </div>
     </PanelSection>
   )
 }
@@ -39788,8 +41045,8 @@ export function AboutUpdatesTab() {
 ### File: `components/shell/bottom-dock.tsx`
 
 - **Path**: `components/shell/bottom-dock.tsx`
-- **Lines**: 835
-- **Size**: 36432 bytes
+- **Lines**: 853
+- **Size**: 37244 bytes
 
 ```tsx
 "use client"
@@ -39842,6 +41099,7 @@ import {
   Flashlight,
   MagnifyingGlass,
   ChartBar,
+  VideoCamera,
   TreeStructure,
   DownloadSimple,
   SquaresFour,
@@ -40233,6 +41491,9 @@ export function BottomDock() {
                 <DownloadSimple size={14} className="mr-2" aria-hidden="true" /> {t("menu_export_sketch")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => useSquig.getState().setInsertMediaDialog({ open: true })}>
+                <VideoCamera size={14} className="mr-2 text-orange-500" aria-hidden="true" /> Insert Media (Video, Audio, Embed)…
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
                 <ChartBar size={14} className="mr-2" aria-hidden="true" /> {t("menu_insert_chart")}
               </DropdownMenuItem>
@@ -40443,6 +41704,20 @@ export function BottomDock() {
                 <MagnifyingGlass size={16} aria-hidden="true" />
               </MagnifiedDockItem>
             )}
+
+            {/* Insert Media (Video, Audio, Embed) */}
+            <MagnifiedDockItem
+              onClick={() => {
+                useSquig.getState().setInsertMediaDialog({ open: true })
+                audioFx.playToolSwitch()
+              }}
+              title="Insert Media (Video, Audio, Embed)"
+              ariaLabel="Insert Media"
+              mouseX={mouseX}
+              reducedMotion={reducedMotion}
+            >
+              <VideoCamera size={16} aria-hidden="true" />
+            </MagnifiedDockItem>
 
             {/* Canvas Stats (⌘/) */}
             {dockControls.actionStats && (
@@ -62988,8 +64263,8 @@ export const config = {
 ### File: `lib/clipboard-payload.ts`
 
 - **Path**: `lib/clipboard-payload.ts`
-- **Lines**: 271
-- **Size**: 10681 bytes
+- **Lines**: 305
+- **Size**: 12374 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -63009,7 +64284,8 @@ export const config = {
 // Kept free of the store and the DOM so it can be tested on its own.
 // ---------------------------------------------------------------------------
 
-import type { SquigNode, TextNode, DocumentNode } from "./types"
+import type { SquigNode, TextNode, DocumentNode, MediaNode, EmbedNode } from "./types"
+import { isSafeMediaUrl } from "./media/media-validation"
 
 const PAYLOAD_VERSION = 1
 /** the attribute the HTML carrier hides the payload in */
@@ -63071,8 +64347,16 @@ export function payloadFromHtml(html: string | null | undefined): string | null 
 /** The words in a selection, in document order — what `text/plain` carries. */
 export function wordsOf(nodes: readonly SquigNode[]): string {
   return nodes
-    .filter((n): n is TextNode | DocumentNode => n.type === "text" || n.type === "document")
-    .map((n) => (n.type === "text" ? n.text : (n.name || "Document")))
+    .filter((n): n is TextNode | DocumentNode | MediaNode | EmbedNode => 
+      n.type === "text" || n.type === "document" || n.type === "media" || n.type === "embed"
+    )
+    .map((n) => {
+      if (n.type === "text") return n.text
+      if (n.type === "document") return n.name || "Document"
+      if (n.type === "media") return n.name || (n.mediaKind === "video" ? "Video" : "Audio")
+      if (n.type === "embed") return n.title || n.url || "Web Embed"
+      return ""
+    })
     .filter(Boolean)
     .join("\n")
 }
@@ -63090,6 +64374,7 @@ const NODE_TYPES = new Set([
   "sticky",
   "frame",
   "embed",
+  "media",
 ])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
@@ -63139,8 +64424,22 @@ export function validNode(v: unknown): SquigNode | null {
       if (!str(n.name)) return null
       break
     case "embed":
-      if (!str(n.url)) return null
+      if (!str(n.url) || !isSafeMediaUrl(n.url)) return null
       break
+    case "media": {
+      const mn = n as MediaNode
+      if (!str(mn.mediaKind) || (mn.mediaKind !== "video" && mn.mediaKind !== "audio")) return null
+      if (!str(mn.name) || !mn.name.trim()) return null
+      if (!mn.source || typeof mn.source !== "object") return null
+      if (mn.source.kind === "local") {
+        if (!str(mn.source.assetId) || !/^[\w-]{1,128}$/.test(mn.source.assetId)) return null
+      } else if (mn.source.kind === "direct-url") {
+        if (!str(mn.source.url) || !isSafeMediaUrl(mn.source.url)) return null
+      } else {
+        return null
+      }
+      break
+    }
     case "image":
       // the only scheme this app ever writes, and the only one it will read:
       // a pasted document has no business pointing the canvas at a URL
@@ -63163,6 +64462,16 @@ export function validNode(v: unknown): SquigNode | null {
     w: Math.max(0, n.w),
     h: Math.max(0, n.h),
   } as SquigNode
+
+  if (out.type === "media") {
+    if (out.posterUrl !== undefined && !(str(out.posterUrl) && /^data:image\/(png|jpeg|webp);/i.test(out.posterUrl))) {
+      delete out.posterUrl
+    }
+    if (out.duration !== undefined && !(num(out.duration) && out.duration >= 0)) delete out.duration
+    if (out.playbackRate !== undefined && !(num(out.playbackRate) && out.playbackRate > 0 && out.playbackRate <= 4)) delete out.playbackRate
+    if (out.volume !== undefined && !(num(out.volume) && out.volume >= 0 && out.volume <= 1)) delete out.volume
+    if (out.waveform !== undefined && !(Array.isArray(out.waveform) && out.waveform.every(num))) delete out.waveform
+  }
 
   if (out.type === "document") {
     // optional references: an unsafe one is dropped, not fatal — the node still
@@ -63269,8 +64578,8 @@ export function safeDocumentSrc(src: string): boolean {
 ### File: `lib/clipboard.ts`
 
 - **Path**: `lib/clipboard.ts`
-- **Lines**: 630
-- **Size**: 21648 bytes
+- **Lines**: 748
+- **Size**: 25746 bytes
 
 ```tsx
 "use client"
@@ -63293,8 +64602,10 @@ import { decodeNodes, encodeNodes, payloadFromHtml, payloadHtml, wordsOf } from 
 import { useSquig } from "./store"
 import { measureTextWidth } from "./canvas/text-metrics"
 import { fitTextBox } from "./canvas/text-reflow"
-import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode } from "./types"
+import { screenToWorld, type ImageNode, type DocumentNode, type SquigNode, type TextNode, type MediaNode, type EmbedNode } from "./types"
 import { saveDocumentAsset } from "./storage/document-assets"
+import { saveMediaAsset } from "./media/media-assets"
+import { parseMediaUrl } from "./media/provider-registry"
 import {
   isExcalidrawDocument,
   isExcalidrawClipboard,
@@ -63612,6 +64923,50 @@ function textNodeFrom(text: string, at: [number, number]): TextNode | null {
 
 // -- putting it down --------------------------------------------------------
 
+const MEDIA_EXTS = new Set([
+  "mp4", "webm", "mov", "m4v", "ogv", "mkv",
+  "mp3", "wav", "ogg", "oga", "opus", "m4a", "aac", "flac", "weba"
+])
+
+function isMediaFile(file: File): boolean {
+  if (file.type.startsWith("video/") || file.type.startsWith("audio/")) return true
+  const ext = file.name.split(".").pop()?.toLowerCase() || ""
+  return MEDIA_EXTS.has(ext)
+}
+
+export async function mediaNodeFrom(file: File): Promise<MediaNode | null> {
+  try {
+    const res = await saveMediaAsset(file, file.name)
+    const isVid = res.mediaKind === "video"
+    const w = isVid ? 560 : 380
+    const h = isVid ? (res.naturalW && res.naturalH ? Math.round((560 * res.naturalH) / res.naturalW) : 315) : 120
+    return {
+      id: nanoid(8),
+      seed: Math.floor(Math.random() * 2 ** 31),
+      type: "media",
+      mediaKind: res.mediaKind,
+      source: { kind: "local", assetId: res.assetId },
+      name: res.name,
+      mimeType: res.mimeType,
+      sizeBytes: res.sizeBytes,
+      duration: res.duration,
+      naturalW: res.naturalW,
+      naturalH: res.naturalH,
+      posterUrl: res.posterUrl,
+      waveform: res.waveform,
+      x: 0,
+      y: 0,
+      w,
+      h,
+      controls: true,
+      playbackRate: 1,
+    }
+  } catch (err) {
+    console.warn("[clipboard] Error processing media file:", err)
+    return null
+  }
+}
+
 /** Where a paste lands when the pointer has never been over the canvas. */
 function viewportCentre(): [number, number] {
   const v = useSquig.getState().viewport
@@ -63626,6 +64981,7 @@ interface Incoming {
   text?: string | null
   images: Blob[]
   documents?: File[]
+  mediaFiles?: File[]
 }
 
 /**
@@ -63697,14 +65053,82 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
         }
       }
     }
+
+    // Check if text is a media URL (YouTube, Vimeo, Spotify, SoundCloud, or Direct Video/Audio)
+    const parsedMedia = parseMediaUrl(c.text.trim())
+    if (parsedMedia) {
+      const [px, py] = at ?? viewportCentre()
+      if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
+        const isVid = parsedMedia.provider === "direct-video"
+        const w = isVid ? 560 : 380
+        const h = isVid ? 315 : 120
+        const node: Omit<MediaNode, "id" | "seed"> = {
+          type: "media",
+          mediaKind: isVid ? "video" : "audio",
+          source: { kind: "direct-url", url: parsedMedia.normalizedUrl },
+          name: parsedMedia.title || (isVid ? "Direct Video" : "Direct Audio"),
+          mimeType: isVid ? "video/mp4" : "audio/mpeg",
+          x: Math.round(px - w / 2),
+          y: Math.round(py - h / 2),
+          w,
+          h,
+          controls: true,
+          playbackRate: 1,
+        }
+        const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+        s.setSelection([id])
+        s.setNotice(`Pasted ${isVid ? "video" : "audio"} on canvas`)
+        return true
+      } else {
+        let w = 560
+        let h = 315
+        if (parsedMedia.provider === "spotify") {
+          w = 380
+          h = parsedMedia.aspectRatio && parsedMedia.aspectRatio < 1 ? 380 : 152
+        } else if (parsedMedia.provider === "soundcloud") {
+          w = 400
+          h = 166
+        }
+        const node: Omit<EmbedNode, "id" | "seed"> = {
+          type: "embed",
+          url: parsedMedia.originalUrl,
+          embedUrl: parsedMedia.embedUrl,
+          title: parsedMedia.title,
+          provider: parsedMedia.provider as EmbedNode["provider"],
+          mediaCategory: parsedMedia.mediaCategory,
+          aspectRatio: parsedMedia.aspectRatio,
+          thumbnailUrl: parsedMedia.thumbnailUrl,
+          authorName: parsedMedia.authorName,
+          x: Math.round(px - w / 2),
+          y: Math.round(py - h / 2),
+          w,
+          h,
+          allowFullscreen: true,
+          providerData: parsedMedia.providerData,
+        }
+        const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+        s.setSelection([id])
+        s.setNotice(`Pasted ${parsedMedia.title || "embed"} on canvas`)
+        return true
+      }
+    }
   }
 
-  const hasFiles = (c.images && c.images.length > 0) || (c.documents && c.documents.length > 0)
+  const hasFiles =
+    (c.images && c.images.length > 0) ||
+    (c.documents && c.documents.length > 0) ||
+    (c.mediaFiles && c.mediaFiles.length > 0)
   if (hasFiles) {
-    const made: (ImageNode | DocumentNode)[] = []
+    const made: (ImageNode | DocumentNode | MediaNode)[] = []
     for (const blob of c.images) {
       const node = await imageNodeFrom(blob, blob instanceof File ? blob.name : undefined)
       if (node) made.push(node)
+    }
+    if (c.mediaFiles?.length) {
+      for (const m of c.mediaFiles) {
+        const node = await mediaNodeFrom(m)
+        if (node) made.push(node)
+      }
     }
     if (c.documents?.length) {
       for (const doc of c.documents) {
@@ -63760,39 +65184,42 @@ async function place(c: Incoming, at?: [number, number], inPlace = false): Promi
   return false
 }
 
-/** Files on a paste or a drop, categorized into images and documents. */
-function filesIn(dt: DataTransfer): { images: Blob[]; documents: File[] } {
+/** Files on a paste or a drop, categorized into images, media, and documents. */
+function filesIn(dt: DataTransfer): { images: Blob[]; mediaFiles: File[]; documents: File[] } {
   const images: Blob[] = []
+  const mediaFiles: File[] = []
   const documents: File[] = []
+
+  const categorize = (file: File) => {
+    if (file.type.startsWith("image/")) {
+      images.push(file)
+    } else if (isMediaFile(file)) {
+      mediaFiles.push(file)
+    } else {
+      documents.push(file)
+    }
+  }
 
   if (dt.items && dt.items.length) {
     for (const item of Array.from(dt.items)) {
       if (item.kind !== "file") continue
       const file = item.getAsFile()
-      if (!file) continue
-      if (file.type.startsWith("image/")) {
-        images.push(file)
-      } else {
-        documents.push(file)
-      }
+      if (file) categorize(file)
     }
   } else if (dt.files && dt.files.length) {
     for (const file of Array.from(dt.files)) {
-      if (file.type.startsWith("image/")) {
-        images.push(file)
-      } else {
-        documents.push(file)
-      }
+      categorize(file)
     }
   }
 
-  return { images, documents }
+  return { images, mediaFiles, documents }
 }
 
 /** Drop desktop files directly onto canvas at world coordinates. */
 export async function dropFiles(files: File[], at: [number, number]): Promise<boolean> {
   const s = useSquig.getState()
   const images: Blob[] = []
+  const mediaFiles: File[] = []
   const documents: File[] = []
 
   for (const file of files) {
@@ -63832,20 +65259,20 @@ export async function dropFiles(files: File[], at: [number, number]): Promise<bo
       }
     } else if (file.type.startsWith("image/")) {
       images.push(file)
+    } else if (isMediaFile(file)) {
+      mediaFiles.push(file)
     } else {
       documents.push(file)
     }
   }
 
-  return place({ images, documents }, at)
+  return place({ images, mediaFiles, documents }, at)
 }
 
 /** Handle a real paste event. Returns whether anything landed. */
 export function pasteFrom(dt: DataTransfer, at?: [number, number]): Promise<boolean> {
-  // everything comes off the DataTransfer now: it is only alive for this turn
-  // of the event loop, and placing a picture takes several
-  const { images, documents } = filesIn(dt)
-  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, documents }, at)
+  const { images, mediaFiles, documents } = filesIn(dt)
+  return place({ html: dt.getData("text/html"), text: dt.getData("text/plain"), images, mediaFiles, documents }, at)
 }
 
 /**
@@ -63909,8 +65336,8 @@ export async function pasteFromSystem(at?: [number, number], inPlace = false): P
 ### File: `lib/export-image.ts`
 
 - **Path**: `lib/export-image.ts`
-- **Lines**: 404
-- **Size**: 15843 bytes
+- **Lines**: 411
+- **Size**: 16158 bytes
 
 ```tsx
 "use client"
@@ -64026,6 +65453,13 @@ function nodeMarkup(node: SquigNode, resolve: (paint: string) => string, font: s
         `<rect x="0" y="0" width="${node.w}" height="${node.h}" rx="${radius}" ry="${radius}" fill="none" stroke="${esc(bColor)}" stroke-width="${bWidth}" stroke-opacity="${bOpacity}"${dash}${mirror ? ` transform="${esc(mirror)}"` : ""}/>`
       )
     }
+  }
+
+  if (node.type === "media" && node.posterUrl && /^data:image\//i.test(node.posterUrl)) {
+    const stageH = Math.max(40, node.h - 32)
+    out.push(
+      `<image href="${esc(node.posterUrl)}" x="4" y="28" width="${node.w - 8}" height="${stageH - 4}" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`
+    )
   }
 
   for (const p of paths) {
@@ -110055,6 +111489,216 @@ console.log("============================================================")
 
 ---
 
+### File: `scripts/test-multimedia-system.ts`
+
+- **Path**: `scripts/test-multimedia-system.ts`
+- **Lines**: 200
+- **Size**: 10404 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Comprehensive Multimedia System Test Suite
+// Verifies URL Parsing, Provider Detection, Security Validation,
+// Magic Byte Inspection, Node Serialization, Prim Generation, and Coordinator
+// ---------------------------------------------------------------------------
+
+import { parseMediaUrl, getProviderAdapter } from "../lib/media/provider-registry"
+import { isSafeMediaUrl, inferMediaCategory, validateMediaMagicBytes } from "../lib/media/media-validation"
+import { playbackCoordinator } from "../lib/media/playback-coordinator"
+import { validNode, wordsOf } from "../lib/clipboard-payload"
+import { nodePrims } from "../lib/sketch/node-prims"
+import type { MediaNode, EmbedNode } from "../lib/types"
+
+function assert(condition: boolean, msg: string) {
+  if (!condition) {
+    console.error(`❌ ASSERTION FAILED: ${msg}`)
+    process.exit(1)
+  }
+  console.log(`  ✓ ${msg}`)
+}
+
+console.log("=== ZENITHSUI MULTIMEDIA SYSTEM COMPREHENSIVE TEST SUITE ===")
+
+// 1. URL Security & SSRF Protection
+console.log("\n1. Testing URL Security & SSRF Protection...")
+assert(isSafeMediaUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ"), "Legitimate YouTube HTTPS is safe")
+assert(isSafeMediaUrl("https://player.vimeo.com/video/76979871"), "Legitimate Vimeo HTTPS is safe")
+assert(isSafeMediaUrl("https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT"), "Legitimate Spotify HTTPS is safe")
+assert(isSafeMediaUrl("https://soundcloud.com/user/track-name"), "Legitimate SoundCloud HTTPS is safe")
+assert(!isSafeMediaUrl("javascript:alert(1)"), "Rejects javascript: scheme")
+assert(!isSafeMediaUrl("file:///etc/passwd"), "Rejects file: scheme")
+assert(!isSafeMediaUrl("data:text/html,<script>alert(1)</script>"), "Rejects data: text/html scheme")
+assert(!isSafeMediaUrl("http://localhost:3000/media.mp4"), "Rejects localhost loopback")
+assert(!isSafeMediaUrl("http://127.0.0.1:8080/secret"), "Rejects 127.0.0.1 loopback")
+assert(!isSafeMediaUrl("http://169.254.169.254/latest/meta-data"), "Rejects AWS metadata IP")
+assert(!isSafeMediaUrl("http://metadata.google.internal/computeMetadata"), "Rejects GCP metadata hostname")
+assert(!isSafeMediaUrl("http://192.168.1.1/router"), "Rejects private IPv4 192.168.x.x")
+assert(!isSafeMediaUrl("http://10.0.0.5/internal"), "Rejects private IPv4 10.x.x.x")
+
+// 2. YouTube URL Parsing & Normalization
+console.log("\n2. Testing YouTube Provider Adapter...")
+const ytWatch = parseMediaUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=45s")
+assert(ytWatch !== null && ytWatch.provider === "youtube", "Detects standard YouTube watch URL")
+assert(ytWatch?.embedUrl.includes("youtube-nocookie.com/embed/dQw4w9WgXcQ"), "Uses privacy-enhanced embed URL")
+assert(ytWatch?.embedUrl.includes("start=45"), "Correctly preserves timestamp parameter")
+assert(ytWatch?.thumbnailUrl === "https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg", "Extracts official YouTube thumbnail")
+
+const ytShorts = parseMediaUrl("https://youtube.com/shorts/abc123XYZ?feature=share")
+assert(ytShorts !== null && ytShorts.provider === "youtube", "Detects YouTube Shorts URL")
+assert(ytShorts?.embedUrl.includes("abc123XYZ"), "Extracts Shorts video ID")
+
+const ytShortUrl = parseMediaUrl("https://youtu.be/kJQP7kiw5Fk?t=1m30s")
+assert(ytShortUrl !== null && ytShortUrl.provider === "youtube", "Detects youtu.be short URL")
+assert(ytShortUrl?.embedUrl.includes("kJQP7kiw5Fk"), "Extracts short URL video ID")
+assert(ytShortUrl?.embedUrl.includes("start=90"), "Converts 1m30s into start=90 seconds")
+
+// 3. Vimeo Provider Adapter
+console.log("\n3. Testing Vimeo Provider Adapter...")
+const vimeoStandard = parseMediaUrl("https://vimeo.com/76979871")
+assert(vimeoStandard !== null && vimeoStandard.provider === "vimeo", "Detects Vimeo standard video URL")
+assert(vimeoStandard?.embedUrl.includes("player.vimeo.com/video/76979871"), "Constructs official Vimeo embed URL")
+assert(vimeoStandard?.embedUrl.includes("dnt=1"), "Enforces Do Not Track (dnt=1) on Vimeo")
+
+const vimeoUnlisted = parseMediaUrl("https://vimeo.com/76979871/h1a2b3c4")
+assert(vimeoUnlisted !== null && vimeoUnlisted.embedUrl.includes("&h=h1a2b3c4"), "Preserves unlisted Vimeo hash parameter")
+
+// 4. Spotify Provider Adapter
+console.log("\n4. Testing Spotify Provider Adapter...")
+const spotifyTrack = parseMediaUrl("https://open.spotify.com/track/4cOdK2wGLETKBW3PvgPWqT?si=abc123")
+assert(spotifyTrack !== null && spotifyTrack.provider === "spotify", "Detects Spotify track URL")
+assert(spotifyTrack?.mediaCategory === "audio", "Classifies Spotify as audio")
+assert(spotifyTrack?.embedUrl.includes("open.spotify.com/embed/track/4cOdK2wGLETKBW3PvgPWqT"), "Constructs official Spotify embed")
+
+const spotifyPlaylist = parseMediaUrl("https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M")
+assert(spotifyPlaylist !== null && spotifyPlaylist.provider === "spotify", "Detects Spotify playlist URL")
+assert(spotifyPlaylist?.aspectRatio !== undefined && spotifyPlaylist.aspectRatio < 1, "Applies vertical playlist aspect ratio")
+
+// 5. SoundCloud Provider Adapter
+console.log("\n5. Testing SoundCloud Provider Adapter...")
+const scTrack = parseMediaUrl("https://soundcloud.com/artist-name/track-title")
+assert(scTrack !== null && scTrack.provider === "soundcloud", "Detects SoundCloud track URL")
+assert(scTrack?.mediaCategory === "audio", "Classifies SoundCloud as audio")
+assert(scTrack?.embedUrl.includes("w.soundcloud.com/player"), "Constructs official SoundCloud widget URL")
+
+// 6. Direct Video & Audio URLs
+console.log("\n6. Testing Direct Video & Audio URLs...")
+const directVid = parseMediaUrl("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4")
+assert(directVid !== null && directVid.provider === "direct-video", "Detects direct MP4 URL")
+assert(directVid?.mediaCategory === "video", "Categorizes as video")
+
+const directAud = parseMediaUrl("https://example.com/audio/podcast_ep42.mp3")
+assert(directAud !== null && directAud.provider === "direct-audio", "Detects direct MP3 URL")
+assert(directAud?.mediaCategory === "audio", "Categorizes as audio")
+
+// 7. Generic Website Embeds
+console.log("\n7. Testing Generic Web Embed...")
+const genericSite = parseMediaUrl("https://en.wikipedia.org/wiki/Infinite_canvas")
+assert(genericSite !== null && genericSite.provider === "generic", "Detects generic web embed")
+assert(genericSite?.title === "en.wikipedia.org", "Uses clean hostname title")
+
+// 8. Binary Magic Byte Validation
+console.log("\n8. Testing Binary Magic Byte Validation...")
+// Create mock MP4 header (ftyp box)
+const mp4Header = new Uint8Array([
+  0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, // ....ftyp
+  0x6d, 0x70, 0x34, 0x32, 0x00, 0x00, 0x00, 0x00  // mp42....
+])
+const mp4Blob = new Blob([mp4Header], { type: "video/mp4" })
+const mp4Check = await validateMediaMagicBytes(mp4Blob)
+assert(mp4Check.valid && mp4Check.kind === "video", "Validates genuine MP4 magic bytes (ftyp)")
+
+// Create mock WAV header (RIFF....WAVE)
+const wavHeader = new Uint8Array([
+  0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, // RIFF$...
+  0x57, 0x41, 0x56, 0x45, 0x66, 0x6d, 0x74, 0x20  // WAVEfmt 
+])
+const wavBlob = new Blob([wavHeader], { type: "audio/wav" })
+const wavCheck = await validateMediaMagicBytes(wavBlob)
+assert(wavCheck.valid && wavCheck.kind === "audio", "Validates genuine WAV magic bytes (RIFF/WAVE)")
+
+// 9. Node Serialization, Clipboard Validation & Search Words
+console.log("\n9. Testing MediaNode & EmbedNode Serialization & Validation...")
+const sampleMediaNode: MediaNode = {
+  id: "med_1234",
+  seed: 42,
+  type: "media",
+  mediaKind: "video",
+  source: { kind: "local", assetId: "asset_sha256hash123" },
+  name: "Physics_Lecture_Ch3.mp4",
+  mimeType: "video/mp4",
+  sizeBytes: 15420000,
+  duration: 342,
+  naturalW: 1920,
+  naturalH: 1080,
+  controls: true,
+  loop: false,
+  muted: false,
+  playbackRate: 1,
+  x: 100,
+  y: 200,
+  w: 560,
+  h: 315,
+}
+
+const validatedMedia = validNode(sampleMediaNode)
+assert(validatedMedia !== null && validatedMedia.type === "media", "validNode accepts valid MediaNode")
+assert((validatedMedia as MediaNode).name === "Physics_Lecture_Ch3.mp4", "Preserves media filename")
+
+const sampleEmbedNode: EmbedNode = {
+  id: "emb_5678",
+  seed: 99,
+  type: "embed",
+  url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+  embedUrl: "https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ",
+  title: "Rick Astley - Never Gonna Give You Up",
+  provider: "youtube",
+  mediaCategory: "video",
+  x: 300,
+  y: 400,
+  w: 560,
+  h: 315,
+}
+
+const validatedEmbed = validNode(sampleEmbedNode)
+assert(validatedEmbed !== null && validatedEmbed.type === "embed", "validNode accepts valid EmbedNode")
+
+const words = wordsOf([sampleMediaNode, sampleEmbedNode])
+assert(words.includes("Physics_Lecture_Ch3.mp4"), "wordsOf includes media name for search & clipboard")
+assert(words.includes("Rick Astley"), "wordsOf includes embed title for search & clipboard")
+
+// 10. Vector Wireframe Primitives (Export & Minimap Fallback)
+console.log("\n10. Testing Sketch Engine Prims for Media & Embed...")
+const mediaPrims = nodePrims(sampleMediaNode)
+assert(mediaPrims.length >= 5, "Generates vector wireframe prims for video player")
+assert(mediaPrims.some((p) => p.t === "text" && (p as any).text.includes("VIDEO PLAYER")), "Generates video header label")
+
+const embedPrims = nodePrims(sampleEmbedNode)
+assert(embedPrims.length >= 4, "Generates vector wireframe prims for embed node")
+assert(embedPrims.some((p) => p.t === "text" && (p as any).text.includes("YOUTUBE")), "Generates provider badge in wireframe")
+
+// 11. Playback Coordinator
+console.log("\n11. Testing Playback Coordinator...")
+let pausedNotificationCount = 0
+const unsub = playbackCoordinator.subscribe((activeId) => {
+  if (activeId !== "player_1") pausedNotificationCount++
+})
+
+playbackCoordinator.notifyPlay("player_1")
+assert(playbackCoordinator.getActivePlayerId() === "player_1", "Coordinator sets active player")
+
+playbackCoordinator.notifyPlay("player_2")
+assert(pausedNotificationCount === 1, "Solo mode notifies previous player to pause")
+assert(playbackCoordinator.getActivePlayerId() === "player_2", "Switches active player")
+
+playbackCoordinator.pauseAll()
+assert(playbackCoordinator.getActivePlayerId() === null, "pauseAll clears active player")
+unsub()
+
+console.log("\n=== ALL 25 MULTIMEDIA TESTS PASSED! 🎥🎧✨ ===")
+```
+
+---
+
 ### File: `scripts/test-nested-boards.ts`
 
 - **Path**: `scripts/test-nested-boards.ts`
@@ -140403,6 +142047,449 @@ To upload the social preview to the GitHub repository:
 
 ---
 
+### File: `components/media/insert-media-dialog.tsx`
+
+- **Path**: `components/media/insert-media-dialog.tsx`
+- **Lines**: 433
+- **Size**: 17170 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Insert Media Dialog
+//
+// Apple-glass modal with Video, Audio, and Embed tabs, instant URL provider
+// auto-detection, drag-and-drop file upload, live preview, and canvas placement.
+// ---------------------------------------------------------------------------
+
+import { useState, useRef, useEffect, useCallback } from "react"
+import { useSquig } from "@/lib/store"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
+import { saveMediaAsset } from "@/lib/media/media-assets"
+import type { ParsedMediaUrl } from "@/lib/media/types"
+import type { MediaNode, EmbedNode, SquigNode } from "@/lib/types"
+import {
+  VideoCamera,
+  MusicNotes,
+  Globe,
+  UploadSimple,
+  Link,
+  YoutubeLogo,
+  SpotifyLogo,
+  X,
+  CheckCircle,
+  WarningCircle,
+  CircleNotch,
+  Play,
+} from "@phosphor-icons/react"
+import { cn } from "@/lib/utils"
+
+export function InsertMediaDialog() {
+  const dialog = useSquig((s) => s.insertMediaDialog)
+  const setDialog = useSquig((s) => s.setInsertMediaDialog)
+
+  const [activeTab, setActiveTab] = useState<"video" | "audio" | "embed">("video")
+  const [urlInput, setUrlInput] = useState("")
+  const [parsedMedia, setParsedMedia] = useState<ParsedMediaUrl | null>(null)
+  const [isUrlValidating, setIsUrlValidating] = useState(false)
+  const [urlError, setUrlError] = useState<string | null>(null)
+
+  const [isUploading, setIsUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [isDragOver, setIsDragOver] = useState(false)
+
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (dialog?.initialTab) {
+      setActiveTab(dialog.initialTab)
+    }
+  }, [dialog?.initialTab])
+
+  // Reset when dialog opens/closes
+  useEffect(() => {
+    if (dialog?.open) {
+      setUrlInput("")
+      setParsedMedia(null)
+      setUrlError(null)
+      setUploadError(null)
+      setIsUploading(false)
+    }
+  }, [dialog?.open])
+
+  // Instant URL parsing on change
+  useEffect(() => {
+    const trimmed = urlInput.trim()
+    if (!trimmed) {
+      setParsedMedia(null)
+      setUrlError(null)
+      return
+    }
+
+    setIsUrlValidating(true)
+    setUrlError(null)
+
+    const timer = setTimeout(() => {
+      const result = parseMediaUrl(trimmed)
+      setIsUrlValidating(false)
+      if (result) {
+        setParsedMedia(result)
+        setUrlError(null)
+        // Auto-switch tab if user pasted audio into video tab or vice versa
+        if (result.mediaCategory === "audio" && activeTab === "video") {
+          setActiveTab("audio")
+        } else if (result.mediaCategory === "video" && activeTab === "audio") {
+          setActiveTab("video")
+        }
+      } else {
+        setParsedMedia(null)
+        setUrlError("Please enter a valid HTTP/HTTPS video, audio, or embed URL.")
+      }
+    }, 250)
+
+    return () => clearTimeout(timer)
+  }, [urlInput, activeTab])
+
+  const closeDialog = useCallback(() => {
+    setDialog(null)
+  }, [setDialog])
+
+  const getPlacementCoordinates = (): [number, number] => {
+    if (dialog?.at) return dialog.at
+    const v = useSquig.getState().viewport
+    const cx = (window.innerWidth / 2 - v.x) / v.zoom
+    const cy = (window.innerHeight / 2 - v.y) / v.zoom
+    return [Math.round(cx), Math.round(cy)]
+  }
+
+  // Handle URL insertion
+  const handleInsertUrl = () => {
+    if (!parsedMedia) return
+    const [cx, cy] = getPlacementCoordinates()
+    const s = useSquig.getState()
+
+    if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
+      const isVid = parsedMedia.provider === "direct-video"
+      const w = isVid ? 560 : 380
+      const h = isVid ? 315 : 120
+      const node: Omit<MediaNode, "id" | "seed"> = {
+        type: "media",
+        mediaKind: isVid ? "video" : "audio",
+        source: { kind: "direct-url", url: parsedMedia.normalizedUrl },
+        name: parsedMedia.title || (isVid ? "Direct Video" : "Direct Audio"),
+        mimeType: isVid ? "video/mp4" : "audio/mpeg",
+        x: cx - w / 2,
+        y: cy - h / 2,
+        w,
+        h,
+        controls: true,
+        playbackRate: 1,
+      }
+      const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+      s.setSelection([id])
+      s.setNotice(`Inserted ${isVid ? "video" : "audio"} on canvas`)
+    } else {
+      // Third-party embed (YouTube, Vimeo, Spotify, SoundCloud, or Generic)
+      let w = 560
+      let h = 315
+      if (parsedMedia.provider === "spotify") {
+        w = 380
+        h = parsedMedia.aspectRatio && parsedMedia.aspectRatio < 1 ? 380 : 152
+      } else if (parsedMedia.provider === "soundcloud") {
+        w = 400
+        h = 166
+      }
+
+      const node: Omit<EmbedNode, "id" | "seed"> = {
+        type: "embed",
+        url: parsedMedia.originalUrl,
+        embedUrl: parsedMedia.embedUrl,
+        title: parsedMedia.title,
+        provider: parsedMedia.provider as EmbedNode["provider"],
+        mediaCategory: parsedMedia.mediaCategory,
+        aspectRatio: parsedMedia.aspectRatio,
+        thumbnailUrl: parsedMedia.thumbnailUrl,
+        authorName: parsedMedia.authorName,
+        x: cx - w / 2,
+        y: cy - h / 2,
+        w,
+        h,
+        allowFullscreen: true,
+        providerData: parsedMedia.providerData,
+      }
+      const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+      s.setSelection([id])
+      s.setNotice(`Embedded ${parsedMedia.title || "media"} on canvas`)
+    }
+
+    closeDialog()
+  }
+
+  // Handle local file upload
+  const handleFileUpload = async (file: File) => {
+    setIsUploading(true)
+    setUploadError(null)
+    try {
+      const res = await saveMediaAsset(file, file.name)
+      const [cx, cy] = getPlacementCoordinates()
+      const s = useSquig.getState()
+
+      const isVid = res.mediaKind === "video"
+      const w = isVid ? 560 : 380
+      const h = isVid ? (res.naturalW && res.naturalH ? Math.round((560 * res.naturalH) / res.naturalW) : 315) : 120
+
+      const node: Omit<MediaNode, "id" | "seed"> = {
+        type: "media",
+        mediaKind: res.mediaKind,
+        source: { kind: "local", assetId: res.assetId },
+        name: res.name,
+        mimeType: res.mimeType,
+        sizeBytes: res.sizeBytes,
+        duration: res.duration,
+        naturalW: res.naturalW,
+        naturalH: res.naturalH,
+        posterUrl: res.posterUrl,
+        waveform: res.waveform,
+        x: cx - w / 2,
+        y: cy - h / 2,
+        w,
+        h,
+        controls: true,
+        playbackRate: 1,
+      }
+
+      const id = s.addNode(node as Omit<SquigNode, "id" | "seed">)
+      s.setSelection([id])
+      s.setNotice(`Placed ${isVid ? "video" : "audio"} "${res.name}" on canvas`)
+      closeDialog()
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : String(err))
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
+  if (!dialog?.open) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+      <div
+        className="relative w-full max-w-lg rounded-2xl bg-[var(--sq-paper)] border border-[var(--sq-border)] shadow-2xl overflow-hidden flex flex-col text-[var(--sq-ink)] animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="px-5 py-4 border-b border-[var(--sq-border)] flex items-center justify-between bg-[var(--sq-shade)]/30">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-[var(--sq-ink)] text-[var(--sq-paper)]">
+              {activeTab === "video" && <VideoCamera size={18} weight="bold" />}
+              {activeTab === "audio" && <MusicNotes size={18} weight="bold" />}
+              {activeTab === "embed" && <Globe size={18} weight="bold" />}
+            </div>
+            <div>
+              <h3 className="font-bold text-sm tracking-tight">Insert Media</h3>
+              <p className="text-[11px] text-stone-500">Add video, audio, or interactive embeds to canvas</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={closeDialog}
+            className="p-1 rounded-full hover:bg-[var(--sq-shade)] text-stone-500 transition-colors"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="px-5 pt-3 border-b border-[var(--sq-border)]/50 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveTab("video")}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-t-md border-b-2 transition-all",
+              activeTab === "video"
+                ? "border-orange-500 text-orange-500 bg-[var(--sq-shade)]/20"
+                : "border-transparent text-stone-500 hover:text-[var(--sq-ink)]"
+            )}
+          >
+            <VideoCamera size={14} />
+            <span>Video</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("audio")}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-t-md border-b-2 transition-all",
+              activeTab === "audio"
+                ? "border-orange-500 text-orange-500 bg-[var(--sq-shade)]/20"
+                : "border-transparent text-stone-500 hover:text-[var(--sq-ink)]"
+            )}
+          >
+            <MusicNotes size={14} />
+            <span>Audio</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab("embed")}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-t-md border-b-2 transition-all",
+              activeTab === "embed"
+                ? "border-orange-500 text-orange-500 bg-[var(--sq-shade)]/20"
+                : "border-transparent text-stone-500 hover:text-[var(--sq-ink)]"
+            )}
+          >
+            <Globe size={14} />
+            <span>General Embed</span>
+          </button>
+        </div>
+
+        {/* Body Content */}
+        <div className="p-5 flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
+          {/* Section A: URL Input */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-bold text-stone-600 dark:text-stone-300 flex items-center gap-1.5">
+              <Link size={14} />
+              <span>
+                {activeTab === "video" && "YouTube, Vimeo, or Video URL"}
+                {activeTab === "audio" && "Spotify, SoundCloud, or Audio URL"}
+                {activeTab === "embed" && "Website or Embed URL"}
+              </span>
+            </label>
+            <div className="relative flex items-center">
+              <input
+                type="url"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder={
+                  activeTab === "video"
+                    ? "https://www.youtube.com/watch?v=... or .mp4 link"
+                    : activeTab === "audio"
+                    ? "https://open.spotify.com/... or soundcloud.com/..."
+                    : "https://example.com/..."
+                }
+                className="w-full pl-3 pr-9 py-2 rounded-lg border border-[var(--sq-border)] bg-[var(--sq-shade)]/30 text-xs text-[var(--sq-ink)] placeholder:text-stone-400 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+              />
+              {isUrlValidating && (
+                <div className="absolute right-2.5">
+                  <CircleNotch size={14} className="animate-spin text-stone-400" />
+                </div>
+              )}
+            </div>
+
+            {urlError && <p className="text-[11px] text-red-500 flex items-center gap-1 mt-0.5">{urlError}</p>}
+
+            {/* Provider Detected Preview Badge */}
+            {parsedMedia && (
+              <div className="p-3 rounded-lg border border-orange-500/30 bg-orange-500/5 flex items-center justify-between mt-1">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  {parsedMedia.provider === "youtube" && <YoutubeLogo size={22} weight="fill" className="text-red-500 shrink-0" />}
+                  {parsedMedia.provider === "spotify" && <SpotifyLogo size={22} weight="fill" className="text-emerald-500 shrink-0" />}
+                  {parsedMedia.provider === "vimeo" && <Play size={20} weight="fill" className="text-sky-400 shrink-0" />}
+                  {parsedMedia.provider === "soundcloud" && <Play size={20} weight="fill" className="text-orange-500 shrink-0" />}
+                  {(parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") && (
+                    <CheckCircle size={20} weight="fill" className="text-emerald-500 shrink-0" />
+                  )}
+                  {parsedMedia.provider === "generic" && <Globe size={20} weight="bold" className="text-stone-500 shrink-0" />}
+
+                  <div className="min-w-0">
+                    <span className="font-bold text-xs block truncate">{parsedMedia.title || "Media detected"}</span>
+                    <span className="text-[10px] text-stone-500 uppercase tracking-wider font-semibold">
+                      {parsedMedia.provider.replace("-", " ")}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleInsertUrl}
+                  className="px-3.5 py-1.5 rounded-full bg-orange-500 hover:bg-orange-600 text-white font-bold text-xs shadow-xs active:scale-95 transition-all shrink-0"
+                >
+                  Insert
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Section B: Local File Upload (Video & Audio tabs only) */}
+          {activeTab !== "embed" && (
+            <div className="flex flex-col gap-2 pt-2 border-t border-[var(--sq-border)]/50">
+              <label className="text-xs font-bold text-stone-600 dark:text-stone-300 flex items-center gap-1.5">
+                <UploadSimple size={14} />
+                <span>Upload Local {activeTab === "video" ? "Video (MP4, WebM)" : "Audio (MP3, WAV, OGG, M4A)"}</span>
+              </label>
+
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f) void handleFileUpload(f)
+                }}
+                accept={activeTab === "video" ? "video/mp4,video/webm,video/quicktime" : "audio/*"}
+                className="hidden"
+              />
+
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault()
+                  setIsDragOver(true)
+                }}
+                onDragLeave={() => setIsDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  setIsDragOver(false)
+                  const f = e.dataTransfer.files?.[0]
+                  if (f) void handleFileUpload(f)
+                }}
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "p-6 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-all text-center",
+                  isDragOver
+                    ? "border-orange-500 bg-orange-500/10"
+                    : "border-[var(--sq-border)] hover:border-stone-400 bg-[var(--sq-shade)]/20 hover:bg-[var(--sq-shade)]/40"
+                )}
+              >
+                {isUploading ? (
+                  <>
+                    <CircleNotch size={26} className="animate-spin text-orange-500" />
+                    <span className="text-xs font-semibold">Processing & caching media asset…</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-2.5 rounded-full bg-[var(--sq-shade)]/80 text-[var(--sq-ink)]">
+                      <UploadSimple size={20} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold">
+                        Click to browse or drop {activeTab === "video" ? "video" : "audio"} file here
+                      </p>
+                      <p className="text-[10px] text-stone-400 mt-0.5">
+                        {activeTab === "video"
+                          ? "Supports MP4, WebM, MOV up to 250MB"
+                          : "Supports MP3, WAV, M4A, OGG, FLAC up to 100MB"}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {uploadError && (
+                <div className="p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs flex items-center gap-2">
+                  <WarningCircle size={16} className="shrink-0" />
+                  <span>{uploadError}</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+---
+
 ### File: `dist-electron/ipc.js`
 
 - **Path**: `dist-electron/ipc.js`
@@ -144990,6 +147077,1332 @@ export function useLiquidGlass({
     markChanged,
     instance: instanceRef.current,
   }
+}
+```
+
+---
+
+### File: `lib/media/media-assets.ts`
+
+- **Path**: `lib/media/media-assets.ts`
+- **Lines**: 399
+- **Size**: 12478 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Binary Asset Storage & Lifecycle Engine
+// ---------------------------------------------------------------------------
+
+import { openZenithsuiDb, STORES, withTransaction } from "../storage/db"
+import { cacheAssetBlob } from "../cloud/assets"
+import type { MediaNode } from "../types"
+import type { MediaAssetResult } from "./types"
+import {
+  sanitizeMediaFilename,
+  inferMediaCategory,
+  validateMediaMagicBytes,
+  MAX_VIDEO_SIZE_BYTES,
+  MAX_AUDIO_SIZE_BYTES,
+} from "./media-validation"
+
+/** Active ObjectURL cache across current browser session */
+const activeMediaUrls = new Map<string, string>()
+
+/**
+ * Calculates SHA-256 hash using chunked streaming to prevent main thread freezing
+ * or browser out-of-memory errors on large video files.
+ */
+export async function computeChunkedBlobHash(blob: Blob): Promise<string> {
+  // For small files (< 8MB), native arrayBuffer is very fast
+  if (blob.size <= 8 * 1024 * 1024) {
+    const buffer = await blob.arrayBuffer()
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+  }
+
+  // For larger files, sample the header, middle, and tail plus size to construct
+  // an instant high-entropy deterministic content signature without loading 200MB into RAM
+  const headSize = 2 * 1024 * 1024
+  const midStart = Math.floor(blob.size / 2) - 1024 * 1024
+  const tailStart = Math.max(0, blob.size - 2 * 1024 * 1024)
+
+  const headBuf = await blob.slice(0, headSize).arrayBuffer()
+  const midBuf = await blob.slice(midStart, midStart + 2 * 1024 * 1024).arrayBuffer()
+  const tailBuf = await blob.slice(tailStart).arrayBuffer()
+
+  const combined = new Uint8Array(headBuf.byteLength + midBuf.byteLength + tailBuf.byteLength + 8)
+  combined.set(new Uint8Array(headBuf), 0)
+  combined.set(new Uint8Array(midBuf), headBuf.byteLength)
+  combined.set(new Uint8Array(tailBuf), headBuf.byteLength + midBuf.byteLength)
+
+  // Append size bytes
+  const view = new DataView(combined.buffer)
+  view.setBigUint64(combined.byteLength - 8, BigInt(blob.size), true)
+
+  const hashBuffer = await crypto.subtle.digest("SHA-256", combined)
+  return Array.from(new Uint8Array(hashBuffer))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+}
+
+/**
+ * Extracts natural dimensions, duration, and first-frame poster from a video file.
+ */
+async function extractVideoMetadata(
+  videoBlob: Blob
+): Promise<{ duration: number; naturalW: number; naturalH: number; posterUrl?: string }> {
+  if (typeof window === "undefined") {
+    return { duration: 0, naturalW: 640, naturalH: 360 }
+  }
+
+  return new Promise((resolve) => {
+    const video = document.createElement("video")
+    video.preload = "metadata"
+    video.muted = true
+    video.playsInline = true
+
+    const tempUrl = URL.createObjectURL(videoBlob)
+    video.src = tempUrl
+
+    const cleanUp = () => {
+      URL.revokeObjectURL(tempUrl)
+      video.removeAttribute("src")
+      video.load()
+    }
+
+    const timer = setTimeout(() => {
+      cleanUp()
+      resolve({ duration: 0, naturalW: 640, naturalH: 360 })
+    }, 6000)
+
+    video.onloadedmetadata = () => {
+      const duration = Number.isFinite(video.duration) ? video.duration : 0
+      const naturalW = video.videoWidth || 640
+      const naturalH = video.videoHeight || 360
+
+      // Seek to 0.5s or duration/4 to capture representative poster
+      const seekTime = Math.min(0.5, Math.max(0.1, duration / 4))
+      video.currentTime = seekTime
+    }
+
+    video.onseeked = () => {
+      clearTimeout(timer)
+      let posterUrl: string | undefined
+
+      try {
+        const canvas = document.createElement("canvas")
+        const maxW = 480
+        const scale = Math.min(1, maxW / (video.videoWidth || 640))
+        canvas.width = Math.round((video.videoWidth || 640) * scale)
+        canvas.height = Math.round((video.videoHeight || 360) * scale)
+
+        const ctx = canvas.getContext("2d")
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+          posterUrl = canvas.toDataURL("image/jpeg", 0.75)
+        }
+      } catch {
+        // Poster generation might be blocked if cross-origin or canvas error
+      }
+
+      cleanUp()
+      resolve({
+        duration: Number.isFinite(video.duration) ? video.duration : 0,
+        naturalW: video.videoWidth || 640,
+        naturalH: video.videoHeight || 360,
+        posterUrl,
+      })
+    }
+
+    video.onerror = () => {
+      clearTimeout(timer)
+      cleanUp()
+      resolve({ duration: 0, naturalW: 640, naturalH: 360 })
+    }
+  })
+}
+
+/**
+ * Extracts duration and audio waveform peak bars using Web Audio API.
+ */
+async function extractAudioMetadata(
+  audioBlob: Blob
+): Promise<{ duration: number; waveform?: number[] }> {
+  if (typeof window === "undefined") {
+    return { duration: 0 }
+  }
+
+  // 1. Get duration from Audio element
+  const getAudioDuration = (): Promise<number> =>
+    new Promise((resolve) => {
+      const audio = document.createElement("audio")
+      audio.preload = "metadata"
+      const tempUrl = URL.createObjectURL(audioBlob)
+      audio.src = tempUrl
+
+      const cleanup = () => {
+        URL.revokeObjectURL(tempUrl)
+        audio.removeAttribute("src")
+      }
+
+      const timer = setTimeout(() => {
+        cleanup()
+        resolve(0)
+      }, 4000)
+
+      audio.onloadedmetadata = () => {
+        clearTimeout(timer)
+        const dur = Number.isFinite(audio.duration) ? audio.duration : 0
+        cleanup()
+        resolve(dur)
+      }
+
+      audio.onerror = () => {
+        clearTimeout(timer)
+        cleanup()
+        resolve(0)
+      }
+    })
+
+  const duration = await getAudioDuration()
+
+  // 2. Decode audio slice for authentic waveform visualization (up to 36 bars)
+  let waveform: number[] | undefined
+
+  try {
+    const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    if (AudioContextClass) {
+      const audioCtx = new AudioContextClass()
+      // Decode slice up to 4MB for waveform calculation to keep it fast
+      const slice = audioBlob.slice(0, Math.min(audioBlob.size, 4 * 1024 * 1024))
+      const arrayBuffer = await slice.arrayBuffer()
+      const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer)
+
+      const channelData = audioBuffer.getChannelData(0)
+      const barCount = 36
+      const blockSize = Math.floor(channelData.length / barCount)
+      const peaks: number[] = []
+
+      for (let i = 0; i < barCount; i++) {
+        const start = i * blockSize
+        let sum = 0
+        for (let j = 0; j < blockSize; j += 16) {
+          sum += Math.abs(channelData[start + j] || 0)
+        }
+        peaks.push(sum / (blockSize / 16))
+      }
+
+      const maxPeak = Math.max(...peaks, 0.001)
+      waveform = peaks.map((p) => Math.max(0.12, Math.min(1, Math.round((p / maxPeak) * 100) / 100)))
+      await audioCtx.close()
+    }
+  } catch {
+    // If decoding fails, provide a balanced organic waveform fallback
+    waveform = Array.from({ length: 36 }, (_, i) => {
+      return Math.round((0.25 + 0.75 * Math.abs(Math.sin(i * 0.45))) * 100) / 100
+    })
+  }
+
+  return { duration, waveform }
+}
+
+/**
+ * Saves an uploaded or dropped video/audio file to local-first IndexedDB asset storage.
+ */
+export async function saveMediaAsset(
+  file: File | Blob,
+  rawName: string
+): Promise<MediaAssetResult> {
+  const name = sanitizeMediaFilename(rawName)
+  const { mediaKind, mimeType } = inferMediaCategory(name, file.type)
+  const sizeBytes = file.size
+
+  const limit = mediaKind === "video" ? MAX_VIDEO_SIZE_BYTES : MAX_AUDIO_SIZE_BYTES
+  if (sizeBytes > limit) {
+    throw new Error(
+      `${mediaKind === "video" ? "Video" : "Audio"} file exceeds maximum supported size of ${Math.round(
+        limit / (1024 * 1024)
+      )} MB.`
+    )
+  }
+
+  // 1. Binary magic byte validation
+  const validation = await validateMediaMagicBytes(file)
+  if (!validation.valid) {
+    throw new Error("Invalid or unsupported media file format. Please upload a standard MP4, WebM, MP3, WAV, or OGG file.")
+  }
+
+  // 2. Compute stable SHA-256 hash
+  const hash = await computeChunkedBlobHash(file)
+  const assetId = `media_${hash}`
+
+  // 3. Persist to IndexedDB asset storage
+  await cacheAssetBlob(file, assetId)
+
+  // 4. Extract metadata & poster/waveform
+  let duration: number | undefined
+  let naturalW: number | undefined
+  let naturalH: number | undefined
+  let posterUrl: string | undefined
+  let waveform: number[] | undefined
+
+  if (mediaKind === "video") {
+    const vMeta = await extractVideoMetadata(file)
+    duration = vMeta.duration
+    naturalW = vMeta.naturalW
+    naturalH = vMeta.naturalH
+    posterUrl = vMeta.posterUrl
+  } else {
+    const aMeta = await extractAudioMetadata(file)
+    duration = aMeta.duration
+    waveform = aMeta.waveform
+  }
+
+  // 5. Generate and cache active object URL
+  const localUrl = URL.createObjectURL(file)
+  activeMediaUrls.set(assetId, localUrl)
+  activeMediaUrls.set(hash, localUrl)
+
+  return {
+    assetId,
+    hash,
+    name,
+    mediaKind,
+    mimeType: validation.detectedMime || mimeType,
+    sizeBytes,
+    duration,
+    naturalW,
+    naturalH,
+    posterUrl,
+    waveform,
+    localUrl,
+  }
+}
+
+/**
+ * Retrieves the raw Blob for a media asset from IndexedDB.
+ */
+export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> {
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null
+
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+
+  try {
+    const db = await openZenithsuiDb()
+    const tx = db.transaction(STORES.ASSET_BLOBS, "readonly")
+    const store = tx.objectStore(STORES.ASSET_BLOBS)
+
+    return new Promise<Blob | null>((resolve) => {
+      const req = store.get(cleanHash)
+      req.onsuccess = () => {
+        const record = req.result
+        if (record && record.blob) {
+          resolve(record.blob)
+        } else {
+          resolve(null)
+        }
+      }
+      req.onerror = () => resolve(null)
+    })
+  } catch (err) {
+    console.warn("Failed to get media blob:", err)
+    return null
+  }
+}
+
+/**
+ * Retrieves or lazily creates an Object URL for local media playback.
+ * Survives page reloads by restoring from IndexedDB.
+ */
+export async function getMediaObjectUrl(assetIdOrHash: string): Promise<string | null> {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+
+  // Fast path: in-memory cache
+  if (activeMediaUrls.has(assetIdOrHash)) {
+    return activeMediaUrls.get(assetIdOrHash)!
+  }
+  if (activeMediaUrls.has(cleanHash)) {
+    return activeMediaUrls.get(cleanHash)!
+  }
+
+  // Retrieve blob from IndexedDB and create URL
+  const blob = await getMediaBlob(cleanHash)
+  if (!blob) return null
+
+  const url = URL.createObjectURL(blob)
+  activeMediaUrls.set(assetIdOrHash, url)
+  activeMediaUrls.set(cleanHash, url)
+  return url
+}
+
+/**
+ * Triggers a browser file download of the original media file.
+ */
+export async function downloadMediaAsset(node: MediaNode): Promise<void> {
+  let blob: Blob | null = null
+
+  if (node.source.kind === "local") {
+    blob = await getMediaBlob(node.source.assetId)
+  } else if (node.source.kind === "direct-url") {
+    try {
+      const res = await fetch(node.source.url)
+      if (res.ok) blob = await res.blob()
+    } catch {
+      // Fallback: open in new tab
+      window.open(node.source.url, "_blank")
+      return
+    }
+  }
+
+  if (!blob) {
+    if (node.source.kind === "direct-url") {
+      window.open(node.source.url, "_blank")
+    }
+    return
+  }
+
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = node.name || (node.mediaKind === "video" ? "video.mp4" : "audio.mp3")
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+/**
+ * Revokes object URLs when media is removed to prevent memory leaks.
+ */
+export function revokeMediaObjectUrl(assetIdOrHash: string): void {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+  const url = activeMediaUrls.get(assetIdOrHash) || activeMediaUrls.get(cleanHash)
+  if (url) {
+    URL.revokeObjectURL(url)
+    activeMediaUrls.delete(assetIdOrHash)
+    activeMediaUrls.delete(cleanHash)
+  }
+}
+```
+
+---
+
+### File: `lib/media/media-validation.ts`
+
+- **Path**: `lib/media/media-validation.ts`
+- **Lines**: 237
+- **Size**: 7043 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Security Validation & File Inspection
+// ---------------------------------------------------------------------------
+
+import type { MediaKind } from "../types"
+
+export const MAX_VIDEO_SIZE_BYTES = 250 * 1024 * 1024 // 250MB
+export const MAX_AUDIO_SIZE_BYTES = 100 * 1024 * 1024 // 100MB
+
+/**
+ * Sanitizes user-supplied filenames for media items:
+ * Removes path traversal, control chars, null bytes, trims whitespace.
+ */
+export function sanitizeMediaFilename(rawName: string, fallback = "untitled_media"): string {
+  if (!rawName || typeof rawName !== "string") return fallback
+  let clean = rawName.replace(/[\x00-\x1f\x7f]/g, "").trim()
+  clean = clean.replace(/^[./\\]+/, "").replace(/[/\\:]+/g, "_").trim()
+  if (!clean || clean === "." || clean === "..") return fallback
+  if (clean.length > 180) {
+    const ext = clean.split(".").pop() || ""
+    const base = clean.slice(0, 170)
+    clean = ext ? `${base}.${ext}` : base
+  }
+  return clean
+}
+
+/**
+ * Strict URL security validator:
+ * Rejects javascript:, file:, data:, blob:, loopback, private IP ranges, and cloud metadata endpoints.
+ */
+export function isSafeMediaUrl(rawUrl: string): boolean {
+  if (!rawUrl || typeof rawUrl !== "string") return false
+  const trimmed = rawUrl.trim()
+  if (!trimmed) return false
+
+  let parsed: URL
+  try {
+    parsed = new URL(trimmed)
+  } catch {
+    return false
+  }
+
+  // Only allow HTTP/HTTPS
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    return false
+  }
+
+  const hostname = parsed.hostname.toLowerCase().trim()
+
+  // Loopback and internal addresses
+  if (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname === "0.0.0.0" ||
+    hostname.endsWith(".localhost") ||
+    hostname.endsWith(".local") ||
+    hostname.endsWith(".internal")
+  ) {
+    return false
+  }
+
+  // Cloud metadata services
+  if (
+    hostname === "169.254.169.254" ||
+    hostname === "metadata.google.internal" ||
+    hostname === "metadata" ||
+    hostname === "instance-data"
+  ) {
+    return false
+  }
+
+  // Private IPv4 ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 169.254.0.0/16)
+  const ipv4Match = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(hostname)
+  if (ipv4Match) {
+    const [, a, b] = ipv4Match.map(Number)
+    if (a === 10) return false
+    if (a === 172 && b >= 16 && b <= 31) return false
+    if (a === 192 && b === 168) return false
+    if (a === 169 && b === 254) return false
+    if (a === 127) return false
+    if (a === 0) return false
+  }
+
+  return true
+}
+
+/**
+ * Detects whether a file or MIME type belongs to video or audio.
+ */
+export function inferMediaCategory(
+  filename: string,
+  declaredType?: string
+): { mediaKind: MediaKind; mimeType: string; extension: string } {
+  const parts = filename.split(".")
+  const ext = (parts.length > 1 ? parts.pop() || "" : "").toLowerCase()
+
+  const VIDEO_MIME: Record<string, string> = {
+    mp4: "video/mp4",
+    webm: "video/webm",
+    mov: "video/quicktime",
+    m4v: "video/mp4",
+    ogv: "video/ogg",
+    mkv: "video/x-matroska",
+  }
+
+  const AUDIO_MIME: Record<string, string> = {
+    mp3: "audio/mpeg",
+    wav: "audio/wav",
+    ogg: "audio/ogg",
+    oga: "audio/ogg",
+    opus: "audio/opus",
+    m4a: "audio/mp4",
+    aac: "audio/aac",
+    flac: "audio/flac",
+    weba: "audio/webm",
+  }
+
+  if (VIDEO_MIME[ext] || declaredType?.startsWith("video/")) {
+    return {
+      mediaKind: "video",
+      mimeType: declaredType || VIDEO_MIME[ext] || "video/mp4",
+      extension: ext || "mp4",
+    }
+  }
+
+  if (AUDIO_MIME[ext] || declaredType?.startsWith("audio/")) {
+    return {
+      mediaKind: "audio",
+      mimeType: declaredType || AUDIO_MIME[ext] || "audio/mpeg",
+      extension: ext || "mp3",
+    }
+  }
+
+  return {
+    mediaKind: "video",
+    mimeType: declaredType || "video/mp4",
+    extension: ext || "mp4",
+  }
+}
+
+/**
+ * Inspects binary magic bytes for genuine video and audio files:
+ * Prevents disguised executable binaries or corrupted payloads.
+ */
+export async function validateMediaMagicBytes(
+  blob: Blob
+): Promise<{ valid: boolean; detectedMime?: string; kind?: MediaKind }> {
+  // Read first 64 bytes
+  const buffer = await blob.slice(0, 64).arrayBuffer()
+  const bytes = new Uint8Array(buffer)
+
+  if (bytes.length < 4) {
+    return { valid: false }
+  }
+
+  // 1. EBML / WebM / MKV (1A 45 DF A3)
+  if (bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3) {
+    // Check if webm audio or video
+    const str = new TextDecoder().decode(bytes)
+    const isAudio = str.includes("webm") && blob.type.includes("audio")
+    return {
+      valid: true,
+      detectedMime: isAudio ? "audio/webm" : "video/webm",
+      kind: isAudio ? "audio" : "video",
+    }
+  }
+
+  // 2. MP4 / MOV / M4A (contains 'ftyp' at offset 4..12)
+  for (let i = 0; i <= 16; i++) {
+    if (
+      bytes[i] === 0x66 && // 'f'
+      bytes[i + 1] === 0x74 && // 't'
+      bytes[i + 2] === 0x79 && // 'y'
+      bytes[i + 3] === 0x70 // 'p'
+    ) {
+      // Check brand (mp42, isom, M4A , qt  )
+      const brand = String.fromCharCode(bytes[i + 4], bytes[i + 5], bytes[i + 6], bytes[i + 7])
+      const isM4A = brand.includes("M4A") || blob.type.includes("audio")
+      return {
+        valid: true,
+        detectedMime: isM4A ? "audio/mp4" : "video/mp4",
+        kind: isM4A ? "audio" : "video",
+      }
+    }
+  }
+
+  // 3. RIFF / WAV (52 49 46 46 .... 57 41 56 45)
+  if (
+    bytes[0] === 0x52 &&
+    bytes[1] === 0x49 &&
+    bytes[2] === 0x46 &&
+    bytes[3] === 0x46 &&
+    bytes[8] === 0x57 &&
+    bytes[9] === 0x41 &&
+    bytes[10] === 0x56 &&
+    bytes[11] === 0x45
+  ) {
+    return { valid: true, detectedMime: "audio/wav", kind: "audio" }
+  }
+
+  // 4. OggS (4F 67 67 53)
+  if (bytes[0] === 0x4f && bytes[1] === 0x67 && bytes[2] === 0x67 && bytes[3] === 0x53) {
+    const isVideo = blob.type.includes("video")
+    return {
+      valid: true,
+      detectedMime: isVideo ? "video/ogg" : "audio/ogg",
+      kind: isVideo ? "video" : "audio",
+    }
+  }
+
+  // 5. MP3 with ID3v2 tag ('ID3' = 49 44 33)
+  if (bytes[0] === 0x49 && bytes[1] === 0x44 && bytes[2] === 0x33) {
+    return { valid: true, detectedMime: "audio/mpeg", kind: "audio" }
+  }
+
+  // 6. MP3 raw frame sync (FF FB, FF F3, FF F2, FF E3)
+  if (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0) {
+    return { valid: true, detectedMime: "audio/mpeg", kind: "audio" }
+  }
+
+  // 7. FLAC ('fLaC' = 66 4C 61 43)
+  if (bytes[0] === 0x66 && bytes[1] === 0x4c && bytes[2] === 0x61 && bytes[3] === 0x43) {
+    return { valid: true, detectedMime: "audio/flac", kind: "audio" }
+  }
+
+  // Fallback: If browser declared valid video or audio MIME type and file is non-empty
+  if (blob.type.startsWith("video/")) {
+    return { valid: true, detectedMime: blob.type, kind: "video" }
+  }
+  if (blob.type.startsWith("audio/")) {
+    return { valid: true, detectedMime: blob.type, kind: "audio" }
+  }
+
+  return { valid: false }
+}
+```
+
+---
+
+### File: `lib/media/playback-coordinator.ts`
+
+- **Path**: `lib/media/playback-coordinator.ts`
+- **Lines**: 63
+- **Size**: 1647 bytes
+
+```tsx
+"use client"
+
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Playback Coordinator
+// ---------------------------------------------------------------------------
+
+type PlaybackListener = (activeId: string | null) => void
+
+class PlaybackCoordinator {
+  private activePlayerId: string | null = null
+  private listeners: Set<PlaybackListener> = new Set()
+  private soloMode: boolean = true
+
+  constructor() {
+    if (typeof window !== "undefined") {
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          // Pause all media when tab is hidden or backgrounded
+          this.pauseAll()
+        }
+      })
+    }
+  }
+
+  public subscribe(fn: PlaybackListener): () => void {
+    this.listeners.add(fn)
+    return () => this.listeners.delete(fn)
+  }
+
+  public notifyPlay(nodeId: string): void {
+    if (this.soloMode && this.activePlayerId && this.activePlayerId !== nodeId) {
+      // Notify other players to pause
+      this.listeners.forEach((fn) => fn(nodeId))
+    }
+    this.activePlayerId = nodeId
+  }
+
+  public notifyPause(nodeId: string): void {
+    if (this.activePlayerId === nodeId) {
+      this.activePlayerId = null
+    }
+  }
+
+  public pauseAll(): void {
+    this.activePlayerId = null
+    this.listeners.forEach((fn) => fn(null))
+  }
+
+  public setSoloMode(enabled: boolean): void {
+    this.soloMode = enabled
+  }
+
+  public isSoloMode(): boolean {
+    return this.soloMode
+  }
+
+  public getActivePlayerId(): string | null {
+    return this.activePlayerId
+  }
+}
+
+export const playbackCoordinator = new PlaybackCoordinator()
+```
+
+---
+
+### File: `lib/media/provider-registry.ts`
+
+- **Path**: `lib/media/provider-registry.ts`
+- **Lines**: 99
+- **Size**: 2893 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Unified Provider Registry & URL Parser
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "./types"
+import { isSafeMediaUrl } from "./media-validation"
+import { youtubeAdapter } from "./providers/youtube"
+import { vimeoAdapter } from "./providers/vimeo"
+import { spotifyAdapter } from "./providers/spotify"
+import { soundcloudAdapter } from "./providers/soundcloud"
+import { genericAdapter } from "./providers/generic"
+
+const KNOWN_PROVIDERS: MediaProviderAdapter[] = [
+  youtubeAdapter,
+  vimeoAdapter,
+  spotifyAdapter,
+  soundcloudAdapter,
+]
+
+const DIRECT_VIDEO_EXTS = new Set(["mp4", "webm", "mov", "m4v", "ogv", "mkv"])
+const DIRECT_AUDIO_EXTS = new Set(["mp3", "wav", "ogg", "oga", "opus", "m4a", "aac", "flac", "weba"])
+
+/**
+ * Checks if a URL points directly to an audio or video file.
+ */
+function checkDirectMediaFile(url: URL): ParsedMediaUrl | null {
+  const path = url.pathname.toLowerCase()
+  const ext = path.split(".").pop() || ""
+
+  if (DIRECT_VIDEO_EXTS.has(ext)) {
+    const filename = path.split("/").pop() || "Direct Video"
+    return {
+      provider: "direct-video",
+      mediaCategory: "video",
+      originalUrl: url.toString(),
+      normalizedUrl: url.toString(),
+      embedUrl: url.toString(),
+      title: decodeURIComponent(filename),
+      aspectRatio: 16 / 9,
+    }
+  }
+
+  if (DIRECT_AUDIO_EXTS.has(ext)) {
+    const filename = path.split("/").pop() || "Direct Audio"
+    return {
+      provider: "direct-audio",
+      mediaCategory: "audio",
+      originalUrl: url.toString(),
+      normalizedUrl: url.toString(),
+      embedUrl: url.toString(),
+      title: decodeURIComponent(filename),
+      aspectRatio: 380 / 120,
+    }
+  }
+
+  return null
+}
+
+/**
+ * Automatically inspects, classifies, and parses any user-supplied media URL.
+ */
+export function parseMediaUrl(rawUrl: string): ParsedMediaUrl | null {
+  if (!isSafeMediaUrl(rawUrl)) return null
+
+  let url: URL
+  try {
+    url = new URL(rawUrl.trim())
+  } catch {
+    return null
+  }
+
+  // 1. Direct audio/video files
+  const direct = checkDirectMediaFile(url)
+  if (direct) return direct
+
+  // 2. Specialized media providers (YouTube, Vimeo, Spotify, SoundCloud)
+  for (const provider of KNOWN_PROVIDERS) {
+    if (provider.canHandle(url)) {
+      const parsed = provider.parse(url)
+      if (parsed) return parsed
+    }
+  }
+
+  // 3. Fallback to generic web embed
+  if (genericAdapter.canHandle(url)) {
+    return genericAdapter.parse(url)
+  }
+
+  return null
+}
+
+/**
+ * Gets a registered provider adapter by ID.
+ */
+export function getProviderAdapter(id: string): MediaProviderAdapter | undefined {
+  if (id === "generic") return genericAdapter
+  return KNOWN_PROVIDERS.find((p) => p.id === id)
+}
+```
+
+---
+
+### File: `lib/media/providers/generic.ts`
+
+- **Path**: `lib/media/providers/generic.ts`
+- **Lines**: 50
+- **Size**: 1384 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Generic Website Embed Adapter
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "../types"
+import { isSafeMediaUrl } from "../media-validation"
+
+export const genericAdapter: MediaProviderAdapter = {
+  id: "generic",
+  name: "Web Embed",
+
+  canHandle(url: URL): boolean {
+    return isSafeMediaUrl(url.toString())
+  },
+
+  parse(url: URL): ParsedMediaUrl | null {
+    if (!this.canHandle(url)) return null
+
+    const host = url.hostname
+    const displayTitle = host.replace(/^www\./, "")
+
+    return {
+      provider: "generic",
+      mediaCategory: "web",
+      originalUrl: url.toString(),
+      normalizedUrl: url.toString(),
+      embedUrl: url.toString(),
+      title: displayTitle,
+      thumbnailUrl: `https://www.google.com/s2/favicons?domain=${host}&sz=128`,
+      aspectRatio: 16 / 10,
+      providerData: { hostname: host },
+    }
+  },
+
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null {
+    return parsed.embedUrl
+  },
+
+  capabilities: {
+    canSeek: false,
+    canChangeVolume: false,
+    canChangeSpeed: false,
+    canLoop: false,
+    canFullscreen: true,
+    canPictureInPicture: false,
+    canExtractWaveform: false,
+    canCustomControls: false,
+  },
+}
+```
+
+---
+
+### File: `lib/media/providers/soundcloud.ts`
+
+- **Path**: `lib/media/providers/soundcloud.ts`
+- **Lines**: 62
+- **Size**: 2095 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — SoundCloud Provider Adapter
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "../types"
+
+export const soundcloudAdapter: MediaProviderAdapter = {
+  id: "soundcloud",
+  name: "SoundCloud",
+
+  canHandle(url: URL): boolean {
+    const host = url.hostname.toLowerCase()
+    return host === "soundcloud.com" || host === "www.soundcloud.com" || host === "m.soundcloud.com"
+  },
+
+  parse(url: URL): ParsedMediaUrl | null {
+    if (!this.canHandle(url)) return null
+
+    const path = url.pathname.replace(/^\/+/, "")
+    const segments = path.split("/").filter(Boolean)
+
+    if (segments.length < 2) return null
+
+    // Ignore soundcloud internal pages like /search, /upload, /you, etc.
+    const reserved = ["search", "upload", "you", "discover", "stream", "charts", "messages", "settings"]
+    if (reserved.includes(segments[0])) return null
+
+    const isPlaylist = segments.includes("sets")
+    const normalizedUrl = `https://soundcloud.com/${segments.join("/")}`
+    const embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(
+      normalizedUrl
+    )}&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false`
+
+    return {
+      provider: "soundcloud",
+      mediaCategory: "audio",
+      originalUrl: url.toString(),
+      normalizedUrl,
+      embedUrl,
+      title: isPlaylist ? "SoundCloud Playlist" : "SoundCloud Track",
+      authorName: segments[0],
+      aspectRatio: isPlaylist ? 380 / 380 : 380 / 166,
+      providerData: { user: segments[0], isPlaylist },
+    }
+  },
+
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null {
+    return parsed.embedUrl
+  },
+
+  capabilities: {
+    canSeek: true,
+    canChangeVolume: true,
+    canChangeSpeed: false,
+    canLoop: true,
+    canFullscreen: false,
+    canPictureInPicture: false,
+    canExtractWaveform: false,
+    canCustomControls: false,
+  },
+}
+```
+
+---
+
+### File: `lib/media/providers/spotify.ts`
+
+- **Path**: `lib/media/providers/spotify.ts`
+- **Lines**: 70
+- **Size**: 2101 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Spotify Provider Adapter
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "../types"
+
+export const spotifyAdapter: MediaProviderAdapter = {
+  id: "spotify",
+  name: "Spotify",
+
+  canHandle(url: URL): boolean {
+    const host = url.hostname.toLowerCase()
+    return host === "open.spotify.com" || host === "spotify.com" || host === "www.spotify.com"
+  },
+
+  parse(url: URL): ParsedMediaUrl | null {
+    if (!this.canHandle(url)) return null
+
+    const path = url.pathname.replace(/^\/+/, "")
+    const segments = path.split("/").filter(Boolean)
+
+    // Match /track/:id, /album/:id, /playlist/:id, /episode/:id, /show/:id, or /embed/:type/:id
+    let type: string | null = null
+    let id: string | null = null
+
+    if (segments[0] === "embed" && segments.length >= 3) {
+      type = segments[1]
+      id = segments[2]
+    } else if (segments.length >= 2) {
+      type = segments[0]
+      id = segments[1]
+    }
+
+    if (!type || !id) return null
+    if (!["track", "album", "playlist", "episode", "show"].includes(type)) return null
+
+    const normalizedUrl = `https://open.spotify.com/${type}/${id}`
+    const embedUrl = `https://open.spotify.com/embed/${type}/${id}?utm_source=generator&theme=0`
+
+    const isCompact = type === "track"
+
+    return {
+      provider: "spotify",
+      mediaCategory: "audio",
+      originalUrl: url.toString(),
+      normalizedUrl,
+      embedUrl,
+      id,
+      title: `Spotify ${type.charAt(0).toUpperCase() + type.slice(1)}`,
+      aspectRatio: isCompact ? 352 / 152 : 352 / 380,
+      providerData: { type, id },
+    }
+  },
+
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null {
+    return parsed.embedUrl
+  },
+
+  capabilities: {
+    canSeek: false,
+    canChangeVolume: true,
+    canChangeSpeed: false,
+    canLoop: false,
+    canFullscreen: false,
+    canPictureInPicture: false,
+    canExtractWaveform: false,
+    canCustomControls: false,
+  },
+}
+```
+
+---
+
+### File: `lib/media/providers/vimeo.ts`
+
+- **Path**: `lib/media/providers/vimeo.ts`
+- **Lines**: 68
+- **Size**: 1973 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Vimeo Provider Adapter
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "../types"
+
+export const vimeoAdapter: MediaProviderAdapter = {
+  id: "vimeo",
+  name: "Vimeo",
+
+  canHandle(url: URL): boolean {
+    const host = url.hostname.toLowerCase()
+    return host === "vimeo.com" || host === "www.vimeo.com" || host === "player.vimeo.com"
+  },
+
+  parse(url: URL): ParsedMediaUrl | null {
+    if (!this.canHandle(url)) return null
+
+    const path = url.pathname.replace(/^\/+/, "")
+    const segments = path.split("/").filter(Boolean)
+
+    let videoId: string | null = null
+    let unlistedHash: string | null = null
+
+    if (segments[0] === "video" && segments[1]) {
+      videoId = segments[1]
+    } else if (/^\d+$/.test(segments[0])) {
+      videoId = segments[0]
+      if (segments[1]) {
+        unlistedHash = segments[1]
+      }
+    }
+
+    if (!videoId) return null
+
+    const hashParam = unlistedHash || url.searchParams.get("h")
+    const normalizedUrl = `https://vimeo.com/${videoId}${hashParam ? `/${hashParam}` : ""}`
+    const embedUrl = `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0${hashParam ? `&h=${hashParam}` : ""}`
+
+    return {
+      provider: "vimeo",
+      mediaCategory: "video",
+      originalUrl: url.toString(),
+      normalizedUrl,
+      embedUrl,
+      id: videoId,
+      title: "Vimeo Video",
+      aspectRatio: 16 / 9,
+      providerData: { videoId, hash: hashParam },
+    }
+  },
+
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null {
+    return parsed.embedUrl
+  },
+
+  capabilities: {
+    canSeek: true,
+    canChangeVolume: true,
+    canChangeSpeed: true,
+    canLoop: true,
+    canFullscreen: true,
+    canPictureInPicture: true,
+    canExtractWaveform: false,
+    canCustomControls: false,
+  },
+}
+```
+
+---
+
+### File: `lib/media/providers/youtube.ts`
+
+- **Path**: `lib/media/providers/youtube.ts`
+- **Lines**: 107
+- **Size**: 3492 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — YouTube Provider Adapter
+// ---------------------------------------------------------------------------
+
+import type { MediaProviderAdapter, ParsedMediaUrl } from "../types"
+
+function parseYouTubeTimestamp(raw: string | null): number | undefined {
+  if (!raw) return undefined
+  const num = Number(raw)
+  if (!Number.isNaN(num) && num > 0) return Math.floor(num)
+
+  // Parse time formats like "1h30m15s", "2m30s", "45s"
+  let total = 0
+  const hours = /(\d+)\s*h/i.exec(raw)
+  const minutes = /(\d+)\s*m/i.exec(raw)
+  const seconds = /(\d+)\s*s/i.exec(raw)
+
+  if (hours) total += parseInt(hours[1], 10) * 3600
+  if (minutes) total += parseInt(minutes[1], 10) * 60
+  if (seconds) total += parseInt(seconds[1], 10)
+
+  return total > 0 ? total : undefined
+}
+
+export const youtubeAdapter: MediaProviderAdapter = {
+  id: "youtube",
+  name: "YouTube",
+
+  canHandle(url: URL): boolean {
+    const host = url.hostname.toLowerCase()
+    return (
+      host === "youtube.com" ||
+      host === "www.youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "youtu.be" ||
+      host === "youtube-nocookie.com" ||
+      host === "www.youtube-nocookie.com"
+    )
+  },
+
+  parse(url: URL): ParsedMediaUrl | null {
+    if (!this.canHandle(url)) return null
+
+    const host = url.hostname.toLowerCase()
+    const path = url.pathname
+    const search = url.searchParams
+
+    let videoId: string | null = null
+    let listId: string | null = search.get("list")
+
+    if (host === "youtu.be") {
+      videoId = path.slice(1).split("/")[0] || null
+    } else if (path.startsWith("/shorts/")) {
+      videoId = path.replace("/shorts/", "").split("/")[0] || null
+    } else if (path.startsWith("/embed/")) {
+      videoId = path.replace("/embed/", "").split("/")[0] || null
+    } else if (path.startsWith("/watch")) {
+      videoId = search.get("v")
+    } else if (path.startsWith("/playlist")) {
+      listId = search.get("list")
+    }
+
+    if (!videoId && !listId) return null
+
+    const startTime = parseYouTubeTimestamp(search.get("t") || search.get("start"))
+
+    const normalizedUrl = videoId
+      ? `https://www.youtube.com/watch?v=${videoId}${startTime ? `&t=${startTime}s` : ""}`
+      : `https://www.youtube.com/playlist?list=${listId}`
+
+    const embedUrl = videoId
+      ? `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1${startTime ? `&start=${startTime}` : ""}${listId ? `&list=${listId}` : ""}`
+      : `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&enablejsapi=1&rel=0`
+
+    const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : undefined
+
+    return {
+      provider: "youtube",
+      mediaCategory: "video",
+      originalUrl: url.toString(),
+      normalizedUrl,
+      embedUrl,
+      id: videoId || listId || undefined,
+      title: videoId ? "YouTube Video" : "YouTube Playlist",
+      thumbnailUrl,
+      aspectRatio: 16 / 9,
+      startTimeSeconds: startTime,
+      providerData: { videoId, listId },
+    }
+  },
+
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null {
+    return parsed.embedUrl
+  },
+
+  capabilities: {
+    canSeek: true,
+    canChangeVolume: true,
+    canChangeSpeed: true,
+    canLoop: true,
+    canFullscreen: true,
+    canPictureInPicture: true,
+    canExtractWaveform: false,
+    canCustomControls: false, // Provider iframe handles controls
+  },
+}
+```
+
+---
+
+### File: `lib/media/types.ts`
+
+- **Path**: `lib/media/types.ts`
+- **Lines**: 71
+- **Size**: 1735 bytes
+
+```tsx
+// ---------------------------------------------------------------------------
+// Zenithsui Multimedia Canvas System — Core Media Types & Interfaces
+// ---------------------------------------------------------------------------
+
+import type { MediaKind, MediaSource, EmbedProvider, EmbedMediaCategory } from "../types"
+
+export interface MediaCapabilities {
+  canSeek: boolean
+  canChangeVolume: boolean
+  canChangeSpeed: boolean
+  canLoop: boolean
+  canFullscreen: boolean
+  canPictureInPicture: boolean
+  canExtractWaveform: boolean
+  canCustomControls: boolean
+}
+
+export interface ParsedMediaUrl {
+  provider: EmbedProvider | "direct-video" | "direct-audio"
+  mediaCategory: EmbedMediaCategory
+  originalUrl: string
+  normalizedUrl: string
+  embedUrl: string
+  id?: string
+  title?: string
+  authorName?: string
+  thumbnailUrl?: string
+  aspectRatio?: number
+  startTimeSeconds?: number
+  providerData?: Record<string, unknown>
+}
+
+export interface MediaProviderAdapter {
+  id: EmbedProvider
+  name: string
+  canHandle(url: URL): boolean
+  parse(url: URL): ParsedMediaUrl | null
+  buildEmbedUrl(parsed: ParsedMediaUrl): string | null
+  capabilities: MediaCapabilities
+}
+
+export interface MediaAssetResult {
+  assetId: string
+  hash: string
+  name: string
+  mediaKind: MediaKind
+  mimeType: string
+  sizeBytes: number
+  duration?: number
+  naturalW?: number
+  naturalH?: number
+  posterUrl?: string
+  posterAssetId?: string
+  waveform?: number[]
+  localUrl: string
+}
+
+export interface ActivePlayerState {
+  nodeId: string
+  mediaKind: MediaKind
+  isPlaying: boolean
+  currentTime: number
+  duration: number
+  volume: number
+  muted: boolean
+  playbackRate: number
+  isBuffering: boolean
+  hasError: boolean
+  errorMessage?: string
 }
 ```
 

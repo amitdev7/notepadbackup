@@ -17,13 +17,14 @@
 import { useMemo, useRef, useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder, MediaNode, EmbedNode } from "@/lib/types"
 import { normalizeFill, DEFAULT_IMAGE_BORDER } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
 import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
+import { downloadMediaAsset, saveMediaAsset } from "@/lib/media/media-assets"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -43,6 +44,7 @@ import {
   X,
   DownloadSimple,
   ArrowsClockwise,
+  ArrowSquareOut,
   ArrowCounterClockwise,
   SquaresFour,
   Lock,
@@ -316,6 +318,8 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
   const documents = selected.filter((n): n is DocumentNode => n.type === "document")
+  const mediaNodes = selected.filter((n): n is MediaNode => n.type === "media")
+  const embedNodes = selected.filter((n): n is EmbedNode => n.type === "embed")
   const images = selected.filter((n): n is ImageNode => n.type === "image")
   // components draw their own strokes from authored prims — a pen weight set
   // here would have nothing to apply to without rewriting the whole library
@@ -898,6 +902,12 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
       {/* --- contextual: document ---------------------------------------- */}
       {documents.length > 0 && <DocumentSection documents={documents} />}
 
+      {/* --- contextual: media ------------------------------------------- */}
+      {mediaNodes.length > 0 && <MediaSection mediaNodes={mediaNodes} />}
+
+      {/* --- contextual: embed ------------------------------------------- */}
+      {embedNodes.length > 0 && <EmbedSection embedNodes={embedNodes} />}
+
       {/* --- universal: hover notes (applicable to any selected node) --- */}
       <HoverNoteSection selected={selected} patch={patch} />
 
@@ -1056,6 +1066,184 @@ function DocumentSection({ documents }: { documents: DocumentNode[] }) {
           </Button>
         </div>
       )}
+    </PanelSection>
+  )
+}
+
+function MediaSection({ mediaNodes }: { mediaNodes: MediaNode[] }) {
+  const st = useSquig.getState
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const node = mediaNodes[0]
+  const isVideo = node.mediaKind === "video"
+
+  const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || mediaNodes.length === 0) return
+    try {
+      const res = await saveMediaAsset(file, file.name)
+      st().updateNodes(
+        Object.fromEntries(
+          mediaNodes.map((m) => [
+            m.id,
+            {
+              name: res.name,
+              mimeType: res.mimeType,
+              sizeBytes: res.sizeBytes,
+              duration: res.duration,
+              naturalW: res.naturalW,
+              naturalH: res.naturalH,
+              posterUrl: res.posterUrl,
+              waveform: res.waveform,
+              source: { kind: "local", assetId: res.assetId },
+            },
+          ])
+        )
+      )
+      st().setNotice(`Replaced media with "${res.name}"`)
+    } catch (err) {
+      st().setNotice(`Failed to replace media: ${err instanceof Error ? err.message : String(err)}`)
+    }
+  }
+
+  return (
+    <PanelSection id="media" title={isVideo ? "Video Player" : "Audio Track"} count={mediaNodes.length > 1 ? mediaNodes.length : undefined}>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept={isVideo ? "video/*" : "audio/*"}
+        onChange={handleReplace}
+        className="hidden"
+      />
+
+      <StackRow label="Title">
+        <MixedTextField
+          placeholder="Media title…"
+          shared={shared(mediaNodes.map((n) => n.name))}
+          onCommit={(val: string) => {
+            const trimmed = val.trim()
+            if (!trimmed) return
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { name: trimmed }])))
+          }}
+        />
+      </StackRow>
+
+      <Row label="Speed">
+        <select
+          value={node.playbackRate ?? 1}
+          onChange={(e) => {
+            const rate = parseFloat(e.target.value)
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { playbackRate: rate }])))
+          }}
+          className="h-ctl w-24 rounded-chrome-sm border border-border/80 bg-surface px-2 text-label text-ink outline-none"
+        >
+          {[0.5, 0.75, 1, 1.25, 1.5, 2].map((r) => (
+            <option key={r} value={r}>
+              {r}×
+            </option>
+          ))}
+        </select>
+      </Row>
+
+      <Row label="Loop">
+        <Switch
+          checked={Boolean(node.loop)}
+          onCheckedChange={(checked) => {
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { loop: checked }])))
+          }}
+        />
+      </Row>
+
+      <Row label="Muted">
+        <Switch
+          checked={Boolean(node.muted)}
+          onCheckedChange={(checked) => {
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(mediaNodes.map((n) => [n.id, { muted: checked }])))
+          }}
+        />
+      </Row>
+
+      <div className="flex items-center gap-1.5 pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => mediaNodes.forEach((m) => downloadMediaAsset(m))}
+          title="Download original file"
+        >
+          <DownloadSimple className="size-3" /> Download
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl flex-1 rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => fileInputRef.current?.click()}
+          title="Replace media file"
+        >
+          <ArrowsClockwise className="size-3" /> Replace
+        </Button>
+      </div>
+    </PanelSection>
+  )
+}
+
+function EmbedSection({ embedNodes }: { embedNodes: EmbedNode[] }) {
+  const st = useSquig.getState
+  const node = embedNodes[0]
+
+  return (
+    <PanelSection id="embed" title="Web Embed" count={embedNodes.length > 1 ? embedNodes.length : undefined}>
+      <StackRow label="Title">
+        <MixedTextField
+          placeholder="Embed title…"
+          shared={shared(embedNodes.map((n) => n.title || ""))}
+          onCommit={(val: string) => {
+            const trimmed = val.trim()
+            st().checkpoint()
+            st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { title: trimmed || undefined }])))
+          }}
+        />
+      </StackRow>
+
+      <StackRow label="URL">
+        <div className="flex items-center gap-1.5">
+          <input
+            type="text"
+            readOnly
+            value={node.url}
+            className="h-ctl flex-1 rounded-chrome-sm border border-border/80 bg-surface px-2 text-label text-muted truncate outline-none select-all"
+          />
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-ctl px-2 rounded-chrome-sm text-label"
+            onClick={() => window.open(node.url, "_blank", "noopener,noreferrer")}
+            title="Open in new tab"
+          >
+            <ArrowSquareOut className="size-3.5" />
+          </Button>
+        </div>
+      </StackRow>
+
+      <div className="pt-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-ctl w-full rounded-chrome-sm text-label flex items-center justify-center gap-1.5 font-medium"
+          onClick={() => {
+            const newUrl = window.prompt("Enter new embed URL:", node.url)
+            if (newUrl && newUrl.trim()) {
+              st().checkpoint()
+              st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { url: newUrl.trim(), embedUrl: newUrl.trim() }])))
+            }
+          }}
+        >
+          <ArrowsClockwise className="size-3" /> Change URL…
+        </Button>
+      </div>
     </PanelSection>
   )
 }

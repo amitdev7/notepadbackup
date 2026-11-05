@@ -189,6 +189,7 @@ interface SquigState {
   notice: { id: number; text: string } | null
   viewerDoc: DocumentNode | null
   pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
+  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null
   searchOpen: boolean
   statsOpen: boolean
   chartDialogOpen: boolean
@@ -227,6 +228,7 @@ interface SquigState {
   setShareOpen: (on: boolean) => void
   setHistoryOpen: (on: boolean) => void
   setSearchOpen: (open: boolean) => void
+  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null) => void
   setStatsOpen: (open: boolean) => void
   setChartDialogOpen: (open: boolean) => void
   setMermaidDialogOpen: (open: boolean) => void
@@ -364,6 +366,10 @@ function sanitize(
     if (node.type === "image" && !/^data:image\//i.test(node.src ?? "")) continue
     // a document requires valid name, mimeType, and asset identity
     if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
+    // media requires name, kind, and source
+    if (node.type === "media" && (!node.name || !node.mediaKind || !node.source)) continue
+    // embed requires a valid url
+    if (node.type === "embed" && !node.url) continue
     clean[id] = node
   }
   const seen = new Set<string>()
@@ -666,6 +672,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   notice: null,
   viewerDoc: null,
   pdfToCanvasDialog: null,
+  insertMediaDialog: null,
   searchOpen: false,
   statsOpen: false,
   chartDialogOpen: false,
@@ -797,6 +804,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   },
   setViewerDoc: (doc) => set({ viewerDoc: doc }),
   setPdfToCanvasDialog: (dialog) => set({ pdfToCanvasDialog: dialog }),
+  setInsertMediaDialog: (dialog) => set({ insertMediaDialog: dialog }),
   setViewport: (v) => {
     set((s) => ({
       viewport: v,

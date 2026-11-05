@@ -386,6 +386,8 @@ export const NodeSketch = memo(function NodeSketch({
         return `frm:${node.name}:${node.w}:${node.h}:${flip}`
       case "embed":
         return `emb:${node.url}:${node.title ?? ""}:${node.w}:${node.h}:${flip}`
+      case "media":
+        return `med:${node.mediaKind}:${node.name}:${node.w}:${node.h}:${flip}:${node.duration ?? 0}`
     }
   }, [node])
 

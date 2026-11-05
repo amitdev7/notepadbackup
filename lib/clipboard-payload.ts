@@ -15,7 +15,8 @@
 // Kept free of the store and the DOM so it can be tested on its own.
 // ---------------------------------------------------------------------------
 
-import type { SquigNode, TextNode, DocumentNode } from "./types"
+import type { SquigNode, TextNode, DocumentNode, MediaNode, EmbedNode } from "./types"
+import { isSafeMediaUrl } from "./media/media-validation"
 
 const PAYLOAD_VERSION = 1
 /** the attribute the HTML carrier hides the payload in */
@@ -77,8 +78,16 @@ export function payloadFromHtml(html: string | null | undefined): string | null 
 /** The words in a selection, in document order — what `text/plain` carries. */
 export function wordsOf(nodes: readonly SquigNode[]): string {
   return nodes
-    .filter((n): n is TextNode | DocumentNode => n.type === "text" || n.type === "document")
-    .map((n) => (n.type === "text" ? n.text : (n.name || "Document")))
+    .filter((n): n is TextNode | DocumentNode | MediaNode | EmbedNode => 
+      n.type === "text" || n.type === "document" || n.type === "media" || n.type === "embed"
+    )
+    .map((n) => {
+      if (n.type === "text") return n.text
+      if (n.type === "document") return n.name || "Document"
+      if (n.type === "media") return n.name || (n.mediaKind === "video" ? "Video" : "Audio")
+      if (n.type === "embed") return n.title || n.url || "Web Embed"
+      return ""
+    })
     .filter(Boolean)
     .join("\n")
 }
@@ -96,6 +105,7 @@ const NODE_TYPES = new Set([
   "sticky",
   "frame",
   "embed",
+  "media",
 ])
 const num = (v: unknown): v is number => typeof v === "number" && Number.isFinite(v)
 const str = (v: unknown): v is string => typeof v === "string"
@@ -145,8 +155,22 @@ export function validNode(v: unknown): SquigNode | null {
       if (!str(n.name)) return null
       break
     case "embed":
-      if (!str(n.url)) return null
+      if (!str(n.url) || !isSafeMediaUrl(n.url)) return null
       break
+    case "media": {
+      const mn = n as MediaNode
+      if (!str(mn.mediaKind) || (mn.mediaKind !== "video" && mn.mediaKind !== "audio")) return null
+      if (!str(mn.name) || !mn.name.trim()) return null
+      if (!mn.source || typeof mn.source !== "object") return null
+      if (mn.source.kind === "local") {
+        if (!str(mn.source.assetId) || !/^[\w-]{1,128}$/.test(mn.source.assetId)) return null
+      } else if (mn.source.kind === "direct-url") {
+        if (!str(mn.source.url) || !isSafeMediaUrl(mn.source.url)) return null
+      } else {
+        return null
+      }
+      break
+    }
     case "image":
       // the only scheme this app ever writes, and the only one it will read:
       // a pasted document has no business pointing the canvas at a URL
@@ -169,6 +193,16 @@ export function validNode(v: unknown): SquigNode | null {
     w: Math.max(0, n.w),
     h: Math.max(0, n.h),
   } as SquigNode
+
+  if (out.type === "media") {
+    if (out.posterUrl !== undefined && !(str(out.posterUrl) && /^data:image\/(png|jpeg|webp);/i.test(out.posterUrl))) {
+      delete out.posterUrl
+    }
+    if (out.duration !== undefined && !(num(out.duration) && out.duration >= 0)) delete out.duration
+    if (out.playbackRate !== undefined && !(num(out.playbackRate) && out.playbackRate > 0 && out.playbackRate <= 4)) delete out.playbackRate
+    if (out.volume !== undefined && !(num(out.volume) && out.volume >= 0 && out.volume <= 1)) delete out.volume
+    if (out.waveform !== undefined && !(Array.isArray(out.waveform) && out.waveform.every(num))) delete out.waveform
+  }
 
   if (out.type === "document") {
     // optional references: an unsafe one is dropped, not fatal — the node still
