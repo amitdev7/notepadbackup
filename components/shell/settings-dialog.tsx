@@ -60,6 +60,7 @@ import {
   Cpu,
   Info,
   Sparkle,
+  Books,
   X,
   Check,
   ArrowCounterClockwise,
@@ -3105,7 +3106,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
                 { key: "toolSticky", label: "Sticky Notes", icon: Note, shortcut: "S", badge: "Hidden by default" },
                 { key: "toolFrame", label: "Frame", icon: Crop, shortcut: "F", badge: "Hidden by default" },
                 { key: "toolLaser", label: "Laser Pointer", icon: Flashlight, shortcut: "K" },
-                { key: "toolLibrary", label: "Component Library", icon: Sparkle, shortcut: "L" },
+                { key: "toolLibrary", label: "Component Library", icon: Books, shortcut: "L" },
               ].map((item) => {
                 const Icon = item.icon
                 const isChecked = dockControls[item.key as keyof DockControlsVisibility]

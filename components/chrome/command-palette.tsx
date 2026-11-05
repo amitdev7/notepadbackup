@@ -56,6 +56,7 @@ import {
   Globe as GlobeIcon,
   Gear as GearIcon,
   Sparkle as SparkleIcon,
+  Books as BooksIcon,
   SquaresFour as SquaresFourIcon,
   LockSimple as LockSimpleIcon,
   House as HouseIcon,
@@ -159,7 +160,7 @@ function Palette() {
       { id: "lock-selection", label: "Toggle Lock Selection", hint: kbd("mod+l"), section: "Edit", keywords: "lock unlock freeze secure", icon: LockSimpleIcon, disabled: !hasSel, run: () => st().toggleLockSelected() },
       { id: "toggle-temporary-mode", label: "Toggle Temporary Mode", section: "Tools", keywords: "temporary expire timer ephemeral auto-delete vanish countdown", icon: TimerIcon, run: () => useShellStore.getState().toggleTemporaryMode() },
 
-      { id: "lib-all", label: "Open Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: SparkleIcon, run: () => st().setPanel("components") },
+      { id: "lib-all", label: "Open Component Library", hint: kbd("l"), section: "Library", keywords: "components blocks templates library elements wireframes", icon: BooksIcon, run: () => st().setPanel("components") },
 
       { id: "set-all", label: "Open Settings", hint: kbd("mod+,"), section: "Settings", keywords: "preferences options config", icon: GearIcon, run: () => useShellStore.getState().setSettingsOpen(true) },
       { id: "set-appearance", label: "Appearance & Theme Settings", section: "Settings", keywords: "theme dark light accent color ui density", icon: GearIcon, run: () => { useShellStore.getState().setSettingsSection("appearance"); useShellStore.getState().setSettingsOpen(true) } },

@@ -40,6 +40,7 @@ import {
   ArrowClockwise,
   GithubLogo,
   Sparkle,
+  Books,
   Hand,
   Eraser,
   Note,
@@ -115,7 +116,7 @@ const ALL_TOOLS: ToolDef[] = [
   { id: "sticky", label: "Sticky Note", icon: Note, shortcut: "S", prefKey: "toolSticky" },
   { id: "frame", label: "Frame", icon: Crop, shortcut: "F", prefKey: "toolFrame" },
   { id: "laser", label: "Laser Pointer", icon: Flashlight, shortcut: "K", prefKey: "toolLaser" },
-  { id: "library", label: "Library", icon: Sparkle, shortcut: "L", prefKey: "toolLibrary" },
+  { id: "library", label: "Library", icon: Books, shortcut: "L", prefKey: "toolLibrary" },
 ]
 
 // ── Magnified Dock Item Component ─────────────────────────────────────────────

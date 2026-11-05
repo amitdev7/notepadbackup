@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils"
 import {
   MagnifyingGlass as MagnifyingGlassIcon,
   X,
-  Sparkle,
+  Books,
   ArrowsOut,
   ArrowsIn,
   GridFour,
@@ -57,7 +57,7 @@ import {
   Image,
 } from "@phosphor-icons/react"
 
-const BOX_W = 160
+const BOX_W = 176
 const BOX_H = 96
 const DRAG_THRESHOLD = 4
 
@@ -69,7 +69,7 @@ interface CategoryMeta {
 }
 
 const CATEGORIES: CategoryMeta[] = [
-  { id: "All", label: "All Items", icon: Sparkle },
+  { id: "All", label: "All Items", icon: Books },
   { id: "Education", label: "Education & Study", icon: GraduationCap },
   { id: "Buttons", label: "Buttons & CTA", icon: RadioButton },
   { id: "Forms", label: "Forms & Inputs", icon: Textbox },
@@ -150,7 +150,8 @@ const PreviewCard = memo(function PreviewCard({
     return getCachedComponentPrims(def)
   }, [def, isVisible])
 
-  const scale = Math.min((BOX_W - 16) / def.size.w, (BOX_H - 16) / def.size.h, 1)
+  // Proportional scale that ensures small components (like buttons/badges) are clearly visible and wireframe blocks scale gracefully
+  const scale = Math.min((BOX_W - 20) / def.size.w, (BOX_H - 20) / def.size.h, 1.35)
   const ox = (BOX_W - def.size.w * scale) / 2
   const oy = (BOX_H - def.size.h * scale) / 2
 
@@ -205,50 +206,55 @@ const PreviewCard = memo(function PreviewCard({
       }}
       title={`${def.name} (${def.size.w}×${def.size.h}px) — Click to place at center, or drag to canvas`}
       className={cn(
-        "group relative flex flex-col items-center gap-2 rounded-xl border p-2.5 outline-none cursor-pointer text-left select-none",
+        "group relative flex flex-col items-center gap-2 rounded-xl border p-2 outline-none cursor-pointer text-left select-none",
         "transition-all duration-150 ease-out",
-        "bg-white/80 dark:bg-stone-900/80 hover:bg-white dark:hover:bg-stone-850",
+        "bg-white dark:bg-[#18181b] hover:bg-stone-50 dark:hover:bg-[#202025]",
         "border-stone-200/90 dark:border-stone-800/90",
-        "hover:border-[var(--ui-accent,#007AFF)] hover:shadow-md hover:-translate-y-0.5",
-        active && "border-[var(--ui-accent,#007AFF)] bg-[var(--ui-accent,#007AFF)]/10 ring-1 ring-[var(--ui-accent,#007AFF)] shadow-sm"
+        "hover:border-blue-500/60 dark:hover:border-blue-400/60 hover:shadow-lg hover:-translate-y-0.5",
+        active && "border-blue-500 bg-blue-500/10 ring-1 ring-blue-500 shadow-sm"
       )}
     >
-      {/* Thumbnail Stage */}
-      <div className="relative w-full h-[96px] flex items-center justify-center overflow-hidden rounded-lg bg-stone-100/70 dark:bg-stone-950/50 border border-stone-200/60 dark:border-stone-800/60 group-hover:border-stone-300 dark:group-hover:border-stone-700 transition-colors">
-        {/* Subtle grid pattern background */}
+      {/* Thumbnail Stage — Authentic Miniature Canvas Artboard */}
+      <div
+        className="relative w-full h-[104px] flex items-center justify-center overflow-hidden rounded-lg border border-stone-200/80 dark:border-stone-750/70 shadow-2xs group-hover:border-blue-500/50 dark:group-hover:border-blue-400/50 transition-colors"
+        style={{
+          backgroundColor: "var(--sq-paper, #ffffff)",
+        }}
+      >
+        {/* Subtle Canvas Dot Grid Pattern */}
         <div
-          className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06] pointer-events-none"
+          className="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20"
           style={{
-            backgroundImage: "radial-gradient(circle, currentColor 1px, transparent 1px)",
-            backgroundSize: "8px 8px",
+            backgroundImage: "radial-gradient(circle, var(--sq-grid, #e2e2e8) 1px, transparent 1px)",
+            backgroundSize: "10px 10px",
           }}
         />
 
         {isVisible ? (
-          <svg width={BOX_W} height={BOX_H} className="overflow-visible pointer-events-none">
+          <svg width={BOX_W} height={BOX_H} className="overflow-visible pointer-events-none transition-transform duration-200 group-hover:scale-[1.04]">
             <g transform={`translate(${ox} ${oy}) scale(${scale})`}>
               <SketchPrims prims={prims} seed={13} cacheKey={`lib-thumb-${def.kind}`} />
             </g>
           </svg>
         ) : (
-          <div className="flex flex-col items-center justify-center gap-1 text-stone-400 dark:text-stone-600">
-            <Sparkle size={16} className="animate-pulse" />
+          <div className="flex flex-col items-center justify-center gap-1 text-stone-400 dark:text-stone-500">
+            <Books size={16} className="animate-pulse" />
             <span className="text-[10px] font-mono">Loading…</span>
           </div>
         )}
 
         {/* Hover Quick Actions */}
-        <div className="absolute inset-0 bg-stone-900/40 dark:bg-black/50 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 p-2 pointer-events-none">
+        <div className="absolute inset-0 bg-stone-950/45 dark:bg-black/60 backdrop-blur-[1.5px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 p-2 pointer-events-none">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation()
               onPlaceAtCenter()
             }}
-            className="pointer-events-auto h-7 px-2.5 rounded-lg bg-white dark:bg-stone-100 text-stone-900 font-semibold text-[11px] flex items-center gap-1 shadow-md hover:bg-stone-100 dark:hover:bg-white active:scale-95 transition-transform"
-            title="Place at Canvas Center"
+            className="pointer-events-auto h-7 px-3 rounded-lg bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-semibold text-[11px] flex items-center gap-1.5 shadow-md active:scale-95 transition-all cursor-pointer"
+            title="Place directly at Canvas Center"
           >
-            <Plus size={12} weight="bold" />
+            <Plus size={13} weight="bold" />
             <span>Add</span>
           </button>
 
@@ -258,25 +264,33 @@ const PreviewCard = memo(function PreviewCard({
               e.stopPropagation()
               onPick()
             }}
-            className="pointer-events-auto h-7 px-2 rounded-lg bg-black/60 hover:bg-black/80 text-white text-[11px] flex items-center gap-1 shadow-md active:scale-95 transition-transform"
-            title="Click and place anywhere"
+            className="pointer-events-auto h-7 px-2.5 rounded-lg bg-white/95 dark:bg-stone-800 hover:bg-white text-stone-800 dark:text-stone-100 font-medium text-[11px] flex items-center gap-1 shadow-md active:scale-95 transition-all border border-stone-200/60 dark:border-stone-700/60 cursor-pointer"
+            title="Click to stamp anywhere on canvas"
           >
-            <HandGrabbing size={12} />
+            <HandGrabbing size={13} />
             <span>Stamp</span>
           </button>
         </div>
       </div>
 
       {/* Card Metadata */}
-      <div className="w-full flex items-center justify-between gap-1.5 px-0.5">
+      <div className="w-full flex items-center justify-between gap-1.5 px-0.5 mt-0.5">
         <span
-          className="truncate text-xs font-medium text-stone-850 dark:text-stone-200 group-hover:text-stone-950 dark:group-hover:text-white"
+          className="truncate text-xs font-semibold text-stone-850 dark:text-stone-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
           title={def.name}
         >
           {def.name}
         </span>
         <div className="shrink-0 flex items-center gap-1">
-          <span className="text-[9px] px-1.5 py-0.5 rounded bg-stone-200/70 dark:bg-stone-800 text-stone-600 dark:text-stone-400 uppercase font-mono font-medium">
+          <span className="text-[9px] px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800/80 text-stone-500 dark:text-stone-400 font-mono font-medium">
+            {def.size.w}×{def.size.h}
+          </span>
+          <span className={cn(
+            "text-[9px] px-1.5 py-0.5 rounded uppercase font-mono font-semibold",
+            def.category === "blocks"
+              ? "bg-purple-500/15 text-purple-600 dark:text-purple-400"
+              : "bg-blue-500/15 text-blue-600 dark:text-blue-400"
+          )}>
             {tagLabel}
           </span>
         </div>
@@ -477,20 +491,20 @@ export function LibraryPanel() {
         {/* Header Bar */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-stone-200/80 dark:border-stone-800/80">
           <div className="flex items-center gap-2.5">
-            <div className="size-7 rounded-xl bg-[var(--ui-accent,#007AFF)]/15 text-[var(--ui-accent,#007AFF)] flex items-center justify-center font-bold text-xs shadow-xs">
-              <Sparkle size={16} weight="fill" />
+            <div className="size-8 rounded-xl bg-gradient-to-br from-blue-500/15 to-indigo-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/25 flex items-center justify-center font-bold shadow-xs">
+              <Books size={18} weight="fill" />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 leading-tight">
-                  Library
+                  Component & Wireframe Library
                 </h2>
-                <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400">
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono">
                   {total} {total === 1 ? "item" : "items"}
                 </span>
               </div>
               <p className="text-[11px] text-stone-500 dark:text-stone-400">
-                Reusable components, blocks & templates
+                168 UI components, wireframe blocks & study templates
               </p>
             </div>
           </div>
@@ -720,8 +734,8 @@ export function LibraryPanel() {
                     isDrawer
                       ? "grid-cols-1 sm:grid-cols-2"
                       : size === "wide"
-                        ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4"
-                        : "grid-cols-2 sm:grid-cols-3 md:grid-cols-3"
+                        ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5"
+                        : "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
                   )}
                 >
                   {section.defs.map((def, idx) => (
