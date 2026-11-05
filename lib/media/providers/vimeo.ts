@@ -35,7 +35,7 @@ export const vimeoAdapter: MediaProviderAdapter = {
 
     const hashParam = unlistedHash || url.searchParams.get("h")
     const normalizedUrl = `https://vimeo.com/${videoId}${hashParam ? `/${hashParam}` : ""}`
-    const embedUrl = `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0${hashParam ? `&h=${hashParam}` : ""}`
+    const embedUrl = `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0&quality=1080p${hashParam ? `&h=${hashParam}` : ""}`
 
     return {
       provider: "vimeo",

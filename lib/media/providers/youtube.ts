@@ -73,8 +73,8 @@ export const youtubeAdapter: MediaProviderAdapter = {
       : `https://www.youtube.com/playlist?list=${listId}`
 
     const embedUrl = videoId
-      ? `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1${startTime ? `&start=${startTime}` : ""}${listId ? `&list=${listId}` : ""}`
-      : `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&enablejsapi=1&rel=0`
+      ? `https://www.youtube-nocookie.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&controls=0&fs=0&iv_load_policy=3&cc_load_policy=0&vq=hd1080&highres=1&playsinline=1${startTime ? `&start=${startTime}` : ""}${listId ? `&list=${listId}` : ""}`
+      : `https://www.youtube-nocookie.com/embed/videoseries?list=${listId}&enablejsapi=1&rel=0&modestbranding=1&controls=0&fs=0&iv_load_policy=3&cc_load_policy=0&vq=hd1080&highres=1&playsinline=1`
 
     const thumbnailUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : undefined
 

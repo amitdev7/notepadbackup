@@ -33,6 +33,7 @@ import {
   Repeat,
   WarningCircle,
   CircleNotch,
+  Sparkle,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -350,10 +351,33 @@ export function MediaCanvasItem({
               ({formatTime(duration)})
             </span>
           )}
+
+          {isVideo && (
+            <span
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shrink-0 shadow-2xs ml-1"
+              title="Always On: Highest Quality Direct Stream"
+            >
+              <Sparkle size={10} weight="fill" className="text-emerald-500 shrink-0" />
+              <span>HD 1080p</span>
+            </span>
+          )}
         </div>
 
         {/* Action icons */}
         <div className="flex items-center gap-1 shrink-0">
+          {isVideo && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                handleFullscreen()
+              }}
+              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
+              title="Full Screen"
+            >
+              <CornersOut size={12} weight="bold" />
+            </button>
+          )}
           <button
             type="button"
             onClick={(e) => {
@@ -421,6 +445,7 @@ export function MediaCanvasItem({
               ref={videoRef}
               src={mediaUrl}
               poster={node.posterUrl}
+              preload="auto"
               playsInline
               loop={isLooping}
               muted={isMuted}
