@@ -48,6 +48,7 @@ import { ContextRow } from "./context-row"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
+import { InteractivePaperWishlist } from "./interactive-paper-wishlist"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
 import { PerfHud } from "./perf-hud"
@@ -61,6 +62,7 @@ import { useCollabStore } from "@/lib/collaboration/collab-store"
 
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
+  "paper-wishlist": InteractivePaperWishlist,
 }
 
 const MIN_ZOOM = 0.1

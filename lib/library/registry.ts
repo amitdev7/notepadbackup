@@ -38,6 +38,7 @@ export const GROUPS: Record<Category, string[]> = {
 }
 
 import { functionalCalendarDef } from "./defs-functional-calendar"
+import { paperWishlistDef } from "./defs-paper-wishlist"
 
 export interface ComponentDef {
   kind: string
@@ -54,7 +55,7 @@ export interface ComponentDef {
 }
 
 const SOURCES: ComponentDef[][] = [
-  [functionalCalendarDef],
+  [functionalCalendarDef, paperWishlistDef],
   BASIC_DEFS,
   DISPLAY_DEFS,
   NAV_DEFS,
