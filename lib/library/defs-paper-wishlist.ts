@@ -27,6 +27,7 @@ export const DEFAULT_WISHLIST_ITEMS: WishlistItemDef[] = [
     subtext: "weather",
     done: false,
     icon: "matcha",
+    customIconUrl: "/wishlist-stickers/matcha_transparent.png",
   },
   {
     id: "item-2",
@@ -34,6 +35,7 @@ export const DEFAULT_WISHLIST_ITEMS: WishlistItemDef[] = [
     subtext: "(at the Afro Hair & Beauty Live!)",
     done: false,
     icon: "girls",
+    customIconUrl: "/wishlist-stickers/girls_transparent.png",
   },
   {
     id: "item-3",
@@ -41,10 +43,11 @@ export const DEFAULT_WISHLIST_ITEMS: WishlistItemDef[] = [
     subtext: "haircare essentials",
     done: false,
     icon: "shopping",
+    customIconUrl: "/wishlist-stickers/shopping_transparent.png",
   },
 ]
 
-// 5-point star vertex generator
+// 5-point rounded star vertex generator
 function starPts(cx: number, cy: number, rOuter: number, rInner: number, rotDeg = 0): [number, number][] {
   const pts: [number, number][] = []
   const rotRad = (rotDeg * Math.PI) / 180
@@ -56,30 +59,45 @@ function starPts(cx: number, cy: number, rOuter: number, rInner: number, rotDeg 
   return pts
 }
 
-// Torn bottom edge polygon generator
+// 1:1 real torn bottom edge polygon coordinates extracted from photo
+const TORN_BOTTOM_OFFSETS: [number, number][] = [
+  [0.0, 4.0], [2.17, 1.0], [4.33, 5.0], [6.5, 11.0], [8.67, 17.0],
+  [10.84, 25.0], [13.0, 30.0], [15.17, 32.0], [17.34, 37.0], [19.5, 40.0],
+  [21.67, 40.0], [23.84, 40.0], [26.01, 34.0], [28.17, 26.0], [30.34, 28.0],
+  [32.51, 28.0], [34.67, 26.0], [36.84, 25.0], [39.01, 25.0], [41.18, 22.0],
+  [43.34, 13.0], [45.51, 9.0], [47.68, 1.0], [49.85, 1.0], [52.01, 0.0],
+  [54.18, 4.0], [56.35, 7.0], [58.51, 14.0], [60.68, 19.0], [62.85, 16.0],
+  [65.02, 23.0], [67.18, 22.0], [69.35, 18.0], [71.52, 17.0], [73.68, 21.0],
+  [75.85, 23.0], [78.02, 26.0], [80.19, 29.0], [82.35, 28.0], [84.52, 25.0],
+  [86.69, 27.0], [88.85, 27.0], [91.02, 30.0], [93.19, 26.0], [95.36, 26.0],
+  [97.52, 27.0], [100.0, 25.0]
+]
+
+// Torn bottom edge polygon generator (1:1 with photo)
 function tornPaperPoly(w: number, h: number): [number, number][] {
   const pts: [number, number][] = [
-    [0, 4],
-    [w, 4],
-    [w, h - 22],
+    [0, 2],
+    [w, 2],
+    [w, h - 25],
   ]
-  const steps = 24
-  for (let i = steps; i >= 0; i--) {
-    const x = (i / steps) * w
-    const tear = Math.sin(i * 1.6) * 4.5 + Math.cos(i * 2.8) * 3 + (i % 2 === 0 ? 2 : -2)
-    pts.push([x, h - 20 + tear])
+  const maxTearHeight = 30
+  for (let i = TORN_BOTTOM_OFFSETS.length - 1; i >= 0; i--) {
+    const [pctX, distPx] = TORN_BOTTOM_OFFSETS[i]
+    const x = (pctX / 100) * w
+    const tearY = h - (distPx / 40) * maxTearHeight
+    pts.push([x, tearY])
   }
-  pts.push([0, h - 22])
+  pts.push([0, h - 4])
   return pts
 }
 
 export const ACCENT_COLORS: Record<string, string> = {
-  orange: "#FF5A1F",
+  orange: "#FC883F",
   pink: "#EC4899",
   emerald: "#10B981",
   sky: "#0284C7",
   violet: "#8B5CF6",
-  black: "#18181B",
+  black: "#1C1917",
 }
 
 export const paperWishlistDef: ComponentDef = {
@@ -103,7 +121,7 @@ export const paperWishlistDef: ComponentDef = {
     "shopping",
     "matcha",
   ],
-  size: { w: 340, h: 480 },
+  size: { w: 380, h: 500 },
   interactive: true,
   defaults: {
     titleLine1: "bank holiday",

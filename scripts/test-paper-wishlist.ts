@@ -41,11 +41,11 @@ const paper = prims.find((p) => p.t === "poly" && "o" in p && p.o?.customFill ==
 assert(paper, "Must render off-white stationery paper sheet with customFill")
 
 // Verify stars
-const stars = prims.filter((p) => p.t === "poly" && "o" in p && p.o?.customFill === "#FF5A1F")
+const stars = prims.filter((p) => p.t === "poly" && "o" in p && p.o?.customFill === "#FC883F")
 assert(stars.length >= 2, "Must render two orange stars flanking title")
 
 // Verify title text
-const titleText = prims.filter((p) => p.t === "text" && "customColor" in p && p.customColor === "#FF5A1F")
+const titleText = prims.filter((p) => p.t === "text" && "customColor" in p && p.customColor === "#FC883F")
 assert(titleText.some((t) => t.t === "text" && t.text === "bank holiday"), "Must render 'bank holiday' in bold orange")
 assert(titleText.some((t) => t.t === "text" && t.text === "wishlist"), "Must render 'wishlist' in bold orange")
 
