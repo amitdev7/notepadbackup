@@ -156,6 +156,7 @@ export function validNode(v: unknown): SquigNode | null {
       break
     case "embed":
       if (!str(n.url) || !isSafeMediaUrl(n.url)) return null
+      if (n.embedUrl !== undefined && (!str(n.embedUrl) || !isSafeMediaUrl(n.embedUrl))) return null
       break
     case "media": {
       const mn = n as MediaNode

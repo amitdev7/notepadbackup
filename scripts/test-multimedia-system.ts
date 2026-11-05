@@ -6,6 +6,7 @@
 
 import { parseMediaUrl, getProviderAdapter } from "../lib/media/provider-registry"
 import { isSafeMediaUrl, inferMediaCategory, validateMediaMagicBytes } from "../lib/media/media-validation"
+import { acquireMediaObjectUrl, releaseMediaObjectUrl } from "../lib/media/media-assets"
 import { playbackCoordinator } from "../lib/media/playback-coordinator"
 import { validNode, wordsOf } from "../lib/clipboard-payload"
 import { nodePrims } from "../lib/sketch/node-prims"
@@ -196,4 +197,78 @@ playbackCoordinator.pauseAll()
 assert(playbackCoordinator.getActivePlayerId() === null, "pauseAll clears active player")
 unsub()
 
-console.log("\n=== ALL 25 MULTIMEDIA TESTS PASSED! 🎥🎧✨ ===")
+// 12. YouTube Live & Legacy URL Formats
+console.log("\n12. Testing YouTube Live & Legacy URL Formats...")
+const ytLive = parseMediaUrl("https://www.youtube.com/live/liveStream123?feature=share")
+assert(ytLive !== null && ytLive.provider === "youtube", "Detects YouTube /live/ URL")
+assert(ytLive?.embedUrl.includes("liveStream123"), "Extracts live stream video ID")
+
+const ytLegacy = parseMediaUrl("https://youtube.com/v/legacyVid456")
+assert(ytLegacy !== null && ytLegacy.provider === "youtube", "Detects YouTube legacy /v/ URL")
+assert(ytLegacy?.embedUrl.includes("legacyVid456"), "Extracts legacy /v/ video ID")
+
+// 13. Security: Spoofed Extensions and Executable Payload Rejection
+console.log("\n13. Testing Spoofed File Rejection...")
+// Mock EXE payload with 'MZ' header renamed to .mp4
+const exeHeader = new Uint8Array([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00])
+const spoofedExe = new Blob([exeHeader], { type: "video/mp4" })
+const exeCheck = await validateMediaMagicBytes(spoofedExe)
+assert(!exeCheck.valid, "Strictly rejects Windows EXE payload masquerading as video/mp4")
+
+// Mock Shell Script payload with '#!' header renamed to .mp3
+const scriptHeader = new Uint8Array([0x23, 0x21, 0x2f, 0x62, 0x69, 0x6e, 0x2f, 0x73, 0x68])
+const spoofedScript = new Blob([scriptHeader], { type: "audio/mpeg" })
+const scriptCheck = await validateMediaMagicBytes(spoofedScript)
+assert(!scriptCheck.valid, "Strictly rejects shell script payload masquerading as audio/mpeg")
+
+// Mock HTML payload with '<!DOCTYPE' renamed to .mp4
+const htmlHeader = new Uint8Array([0x3c, 0x21, 0x44, 0x4f, 0x43, 0x54, 0x59, 0x50, 0x45])
+const spoofedHtml = new Blob([htmlHeader], { type: "video/mp4" })
+const htmlCheck = await validateMediaMagicBytes(spoofedHtml)
+assert(!htmlCheck.valid, "Strictly rejects HTML document masquerading as video/mp4")
+
+// 14. Security: Unsafe embedUrl in Node Sanitization
+console.log("\n14. Testing Unsafe embedUrl Validation...")
+const maliciousEmbed: EmbedNode = {
+  id: "bad_emb",
+  seed: 123,
+  type: "embed",
+  url: "https://example.com",
+  embedUrl: "javascript:alert(document.cookie)",
+  title: "Malicious Embed",
+  x: 0,
+  y: 0,
+  w: 300,
+  h: 200,
+}
+const cleanedEmbed = validNode(maliciousEmbed)
+assert(cleanedEmbed === null, "Rejects embed node with javascript: embedUrl")
+
+// 15. Object URL Reference Counting
+console.log("\n15. Testing Object URL Reference Counting & Lifecycle...")
+let mockRevoked = false
+const originalRevoke = URL.revokeObjectURL
+URL.revokeObjectURL = (url: string) => {
+  mockRevoked = true
+  originalRevoke(url)
+}
+
+const dummyBlob = new Blob(["test-audio-content"], { type: "audio/mpeg" })
+const u1 = acquireMediaObjectUrl("test_asset_lifecycle", dummyBlob)
+assert(typeof u1 === "string" && u1.startsWith("blob:"), "Creates tracked Object URL")
+
+// Acquire again for duplicate node: should return identical URL and increment count
+const u2 = acquireMediaObjectUrl("test_asset_lifecycle", dummyBlob)
+assert(u1 === u2, "Reuses tracked Object URL across multiple node instances")
+
+// Release first reference: should NOT revoke yet
+mockRevoked = false
+releaseMediaObjectUrl("test_asset_lifecycle")
+assert(!mockRevoked, "Does not revoke while another instance still holds reference")
+
+// Release second reference: should revoke URL
+releaseMediaObjectUrl("test_asset_lifecycle")
+assert(mockRevoked, "Revokes Object URL once reference count drops to zero")
+URL.revokeObjectURL = originalRevoke
+
+console.log("\n=== ALL 36 COMPREHENSIVE MULTIMEDIA TESTS PASSED! 🎥🎧✨ ===")

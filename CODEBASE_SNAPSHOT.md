@@ -1136,7 +1136,7 @@ Run all tests via: `pnpm test`.
 | `eslint.config.mjs` | 41 | 953 | Core eslint.config.mjs module | `eslint.config` |
 | `next-env.d.ts` | 7 | 253 | Core next-env.d.ts module | `next-env.d` |
 | `next.config.ts` | 57 | 1924 | Core next.config.ts module | `next.config` |
-| `package.json` | 72 | 7082 | Core package.json module | `package` |
+| `package.json` | 72 | 7127 | Core package.json module | `package` |
 | `postcss.config.mjs` | 8 | 94 | Core postcss.config.mjs module | `postcss.config` |
 | `setupTests.ts` | 150 | 4307 | Core setupTests.ts module | `setupTests` |
 | `skills-lock.json` | 24 | 789 | Core skills-lock.json module | `skills-lock` |
@@ -1169,7 +1169,7 @@ Run all tests via: `pnpm test`.
 | `lib/shell-store.ts` | 1131 | 35438 | Core shell-store.ts module | `shell-store` |
 | `lib/shortcuts.ts` | 285 | 9521 | Core shortcuts.ts module | `shortcuts` |
 | `lib/slug.ts` | 248 | 5694 | Core slug.ts module | `slug` |
-| `lib/store.ts` | 1983 | 69692 | Core store.ts module | `store` |
+| `lib/store.ts` | 1991 | 70120 | Core store.ts module | `store` |
 | `lib/theme.ts` | 317 | 9599 | Core theme.ts module | `theme` |
 | `lib/types.ts` | 509 | 15354 | Core types.ts module | `types` |
 | `lib/utils.ts` | 49 | 2116 | Core utils.ts module | `utils` |
@@ -1207,13 +1207,13 @@ Run all tests via: `pnpm test`.
 | `components/canvas/cursor-reactions.tsx` | 212 | 7582 | Core cursor-reactions.tsx module | `cursor-reactions` |
 | `components/canvas/document-canvas-item.tsx` | 653 | 22112 | Core document-canvas-item.tsx module | `document-canvas-item` |
 | `components/canvas/document-viewer-modal.tsx` | 711 | 25329 | Core document-viewer-modal.tsx module | `document-viewer-modal` |
-| `components/canvas/embed-canvas-item.tsx` | 221 | 7677 | Core embed-canvas-item.tsx module | `embed-canvas-item` |
+| `components/canvas/embed-canvas-item.tsx` | 230 | 8135 | Core embed-canvas-item.tsx module | `embed-canvas-item` |
 | `components/canvas/empty-canvas.tsx` | 87 | 2986 | Core empty-canvas.tsx module | `empty-canvas` |
 | `components/canvas/follow-mode-indicator.tsx` | 60 | 2413 | Core follow-mode-indicator.tsx module | `follow-mode-indicator` |
 | `components/canvas/interactive-paper-wishlist.tsx` | 769 | 32865 | Core interactive-paper-wishlist.tsx module | `interactive-paper-wishlist` |
 | `components/canvas/laser-overlay.tsx` | 154 | 5106 | Core laser-overlay.tsx module | `laser-overlay` |
 | `components/canvas/liquid-glass-icons.tsx` | 332 | 14762 | Core liquid-glass-icons.tsx module | `liquid-glass-icons` |
-| `components/canvas/media-canvas-item.tsx` | 623 | 23293 | Core media-canvas-item.tsx module | `media-canvas-item` |
+| `components/canvas/media-canvas-item.tsx` | 648 | 24182 | Core media-canvas-item.tsx module | `media-canvas-item` |
 | `components/canvas/minimap-overlay.tsx` | 480 | 17881 | Core minimap-overlay.tsx module | `minimap-overlay` |
 | `components/canvas/pdf-canvas-viewer.tsx` | 655 | 23478 | Core pdf-canvas-viewer.tsx module | `pdf-canvas-viewer` |
 | `components/canvas/pdf-to-canvas-dialog.tsx` | 452 | 17768 | Core pdf-to-canvas-dialog.tsx module | `pdf-to-canvas-dialog` |
@@ -1241,11 +1241,11 @@ Run all tests via: `pnpm test`.
 | `public/pdf.worker.min.mjs` | 29 | 1265413 | Core pdf.worker.min.mjs module | `pdf.worker.min` |
 | `components/chrome/align-row.tsx` | 68 | 2596 | Core align-row.tsx module | `align-row` |
 | `components/chrome/command-palette.tsx` | 467 | 29685 | Core command-palette.tsx module | `command-palette` |
-| `components/chrome/context-menu.tsx` | 406 | 15316 | Core context-menu.tsx module | `context-menu` |
+| `components/chrome/context-menu.tsx` | 429 | 16347 | Core context-menu.tsx module | `context-menu` |
 | `components/chrome/expired-elements-dialog.tsx` | 542 | 22044 | Core expired-elements-dialog.tsx module | `expired-elements-dialog` |
 | `components/chrome/files-popover.tsx` | 360 | 14676 | Core files-popover.tsx module | `files-popover` |
 | `components/chrome/ink-picker.tsx` | 80 | 3105 | Core ink-picker.tsx module | `ink-picker` |
-| `components/chrome/inspector.tsx` | 1923 | 76175 | Core inspector.tsx module | `inspector` |
+| `components/chrome/inspector.tsx` | 1947 | 77188 | Core inspector.tsx module | `inspector` |
 | `components/chrome/library-panel.tsx` | 821 | 33240 | Core library-panel.tsx module | `library-panel` |
 | `components/chrome/link-editor.tsx` | 85 | 2814 | Core link-editor.tsx module | `link-editor` |
 | `components/chrome/mixed-fields.tsx` | 466 | 15825 | Core mixed-fields.tsx module | `mixed-fields` |
@@ -1351,7 +1351,7 @@ Run all tests via: `pnpm test`.
 | `app/api/share/route.ts` | 103 | 3341 | Core route.ts module | `route` |
 | `lib/blob.ts` | 64 | 1709 | Core blob.ts module | `blob` |
 | `proxy.ts` | 16 | 429 | Core proxy.ts module | `proxy` |
-| `lib/clipboard-payload.ts` | 305 | 12374 | Core clipboard-payload.ts module | `clipboard-payload` |
+| `lib/clipboard-payload.ts` | 306 | 12475 | Core clipboard-payload.ts module | `clipboard-payload` |
 | `lib/clipboard.ts` | 748 | 25746 | Core clipboard.ts module | `clipboard` |
 | `lib/export-image.ts` | 411 | 16158 | Core export-image.ts module | `export-image` |
 | `lib/file-io.ts` | 64 | 2285 | Core file-io.ts module | `file-io` |
@@ -1455,7 +1455,7 @@ Run all tests via: `pnpm test`.
 | `scripts/test-library-performance-and-positioning.ts` | 121 | 5021 | Core test-library-performance-and-positioning.ts module | `test-library-performance-and-positioning` |
 | `scripts/test-link-creation-and-expiration.ts` | 97 | 3995 | Core test-link-creation-and-expiration.ts module | `test-link-creation-and-expiration` |
 | `scripts/test-liquid-glass.ts` | 110 | 5404 | Core test-liquid-glass.ts module | `test-liquid-glass` |
-| `scripts/test-multimedia-system.ts` | 200 | 10404 | Core test-multimedia-system.ts module | `test-multimedia-system` |
+| `scripts/test-multimedia-system.ts` | 275 | 13946 | Core test-multimedia-system.ts module | `test-multimedia-system` |
 | `scripts/test-nested-boards.ts` | 1 | 0 | Core test-nested-boards.ts module | `test-nested-boards` |
 | `scripts/test-paper-wishlist.ts` | 84 | 3854 | Core test-paper-wishlist.ts module | `test-paper-wishlist` |
 | `scripts/test-pdf-service.ts` | 93 | 3197 | Core test-pdf-service.ts module | `test-pdf-service` |
@@ -1595,7 +1595,7 @@ Run all tests via: `pnpm test`.
 | `assets/branding/README.md` | 54 | 2398 | Core README.md module | `README` |
 | `assets/branding/logo/zenithsui-logo.svg` | 8 | 4937 | Core zenithsui-logo.svg module | `zenithsui-logo` |
 | `assets/branding/social-preview/zenithsui-social-preview.svg` | 187 | 10001 | Core zenithsui-social-preview.svg module | `zenithsui-social-preview` |
-| `components/media/insert-media-dialog.tsx` | 433 | 17170 | Core insert-media-dialog.tsx module | `insert-media-dialog` |
+| `components/media/insert-media-dialog.tsx` | 507 | 19674 | Core insert-media-dialog.tsx module | `insert-media-dialog` |
 | `dist-electron/ipc.js` | 117 | 4920 | Core ipc.js module | `ipc` |
 | `dist-electron/ipc.js.map` | 1 | 4474 | Core ipc.js.map module | `ipc.js` |
 | `dist-electron/main.js` | 175 | 6327 | Core main.js module | `main` |
@@ -1626,15 +1626,15 @@ Run all tests via: `pnpm test`.
 | `lib/i18n/use-translation.ts` | 32 | 1012 | Core use-translation.ts module | `use-translation` |
 | `lib/liquidglass/types.ts` | 199 | 5558 | Core types.ts module | `types` |
 | `lib/liquidglass/use-liquid-glass.ts` | 119 | 3172 | Core use-liquid-glass.ts module | `use-liquid-glass` |
-| `lib/media/media-assets.ts` | 399 | 12478 | Core media-assets.ts module | `media-assets` |
-| `lib/media/media-validation.ts` | 237 | 7043 | Core media-validation.ts module | `media-validation` |
+| `lib/media/media-assets.ts` | 457 | 14708 | Core media-assets.ts module | `media-assets` |
+| `lib/media/media-validation.ts` | 271 | 8186 | Core media-validation.ts module | `media-validation` |
 | `lib/media/playback-coordinator.ts` | 63 | 1647 | Core playback-coordinator.ts module | `playback-coordinator` |
 | `lib/media/provider-registry.ts` | 99 | 2893 | Core provider-registry.ts module | `provider-registry` |
 | `lib/media/providers/generic.ts` | 50 | 1384 | Core generic.ts module | `generic` |
 | `lib/media/providers/soundcloud.ts` | 62 | 2095 | Core soundcloud.ts module | `soundcloud` |
 | `lib/media/providers/spotify.ts` | 70 | 2101 | Core spotify.ts module | `spotify` |
 | `lib/media/providers/vimeo.ts` | 68 | 1973 | Core vimeo.ts module | `vimeo` |
-| `lib/media/providers/youtube.ts` | 107 | 3492 | Core youtube.ts module | `youtube` |
+| `lib/media/providers/youtube.ts` | 111 | 3704 | Core youtube.ts module | `youtube` |
 | `lib/media/types.ts` | 71 | 1735 | Core types.ts module | `types` |
 | `lib/storage/expired-archive.ts` | 230 | 7276 | Core expired-archive.ts module | `expired-archive` |
 | `lib/time/time-service.ts` | 544 | 18058 | Core time-service.ts module | `time-service` |
@@ -2557,7 +2557,7 @@ export default nextConfig;
 
 - **Path**: `package.json`
 - **Lines**: 72
-- **Size**: 7082 bytes
+- **Size**: 7127 bytes
 
 ```json
 {
@@ -2579,7 +2579,7 @@ export default nextConfig;
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-hover-notes.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-viewport-memory.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clock-location.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-image-border-text-zoom.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-temporary-elements.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-desktop-updater.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-zen-mode-keybind.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-liquid-glass.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-ios-lottie-animations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-i18n-languages.ts && node --experimental-strip-types scripts/test-laser-smoothing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-diverse-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-interactive-collaboration.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-link-creation-and-expiration.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-bulletproof-persistence.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-library-performance-and-positioning.ts",
+    "test": "node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-geometry.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-selection.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clipboard.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-text.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-database.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-sync.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-lan.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-regression.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-permissions.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-sharing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-invitations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase2-public.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-analytics.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-syllabus.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-planner.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-guardian.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-academic-db.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-revision.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-practice.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-phase3-recommender.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-student-hub.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-functional-calendar.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-attachments.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-pdf-service.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-parity.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-production-hardening.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-canvas-full-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-wifi-auto-sync-consent.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-asset-proxy-security.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-document-switching-race.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-hover-notes.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-viewport-memory.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-clock-location.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-image-border-text-zoom.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-temporary-elements.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-desktop-updater.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-zen-mode-keybind.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-liquid-glass.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-ios-lottie-animations.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-i18n-languages.ts && node --experimental-strip-types scripts/test-laser-smoothing.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-diverse-features.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-interactive-collaboration.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-link-creation-and-expiration.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-bulletproof-persistence.ts && node --experimental-strip-types --import ./scripts/register-loader.mjs scripts/test-library-performance-and-positioning.ts && npx tsx scripts/test-multimedia-system.ts",
     "desktop:compile": "tsc -p tsconfig.electron.json",
     "desktop:dev": "node scripts/start-desktop-dev.mjs",
     "desktop:build": "pnpm build && pnpm desktop:compile && node scripts/prepare-standalone.mjs",
@@ -8491,8 +8491,8 @@ export function generateUniqueSlug(
 ### File: `lib/store.ts`
 
 - **Path**: `lib/store.ts`
-- **Lines**: 1983
-- **Size**: 69692 bytes
+- **Lines**: 1991
+- **Size**: 70120 bytes
 
 ```tsx
 "use client"
@@ -8535,6 +8535,7 @@ import {
   setActiveDocumentId,
   getActiveDocumentId,
 } from "./storage/documents"
+import { isSafeMediaUrl } from "./media/media-validation"
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
 import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./canvas-core/index"
@@ -8686,7 +8687,7 @@ interface SquigState {
   notice: { id: number; text: string } | null
   viewerDoc: DocumentNode | null
   pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
-  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null
+  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number]; replaceNodeId?: string } | null
   searchOpen: boolean
   statsOpen: boolean
   chartDialogOpen: boolean
@@ -8725,7 +8726,7 @@ interface SquigState {
   setShareOpen: (on: boolean) => void
   setHistoryOpen: (on: boolean) => void
   setSearchOpen: (open: boolean) => void
-  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null) => void
+  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number]; replaceNodeId?: string } | null) => void
   setStatsOpen: (open: boolean) => void
   setChartDialogOpen: (open: boolean) => void
   setMermaidDialogOpen: (open: boolean) => void
@@ -8864,9 +8865,16 @@ function sanitize(
     // a document requires valid name, mimeType, and asset identity
     if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
     // media requires name, kind, and source
-    if (node.type === "media" && (!node.name || !node.mediaKind || !node.source)) continue
-    // embed requires a valid url
-    if (node.type === "embed" && !node.url) continue
+    if (node.type === "media") {
+      if (!node.name || !node.mediaKind || !node.source) continue
+      if (node.source.kind === "direct-url" && !isSafeMediaUrl(node.source.url)) continue
+      if (node.source.kind === "local" && !/^[\w-]{1,128}$/.test(node.source.assetId)) continue
+    }
+    // embed requires a safe and valid url
+    if (node.type === "embed") {
+      if (!node.url || !isSafeMediaUrl(node.url)) continue
+      if (node.embedUrl && !isSafeMediaUrl(node.embedUrl)) continue
+    }
     clean[id] = node
   }
   const seen = new Set<string>()
@@ -23044,8 +23052,8 @@ function renderInline(text: string): React.ReactNode {
 ### File: `components/canvas/embed-canvas-item.tsx`
 
 - **Path**: `components/canvas/embed-canvas-item.tsx`
-- **Lines**: 221
-- **Size**: 7677 bytes
+- **Lines**: 230
+- **Size**: 8135 bytes
 
 ```tsx
 "use client"
@@ -23206,6 +23214,14 @@ export function EmbedCanvasItem({
         <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
+            onClick={() => setIsBlocked((b) => !b)}
+            className={cn("p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]", isBlocked && "text-amber-500")}
+            title={isBlocked ? "Show embedded iframe" : "Switch to fallback preview card"}
+          >
+            <Lock size={12} weight={isBlocked ? "bold" : "regular"} />
+          </button>
+          <button
+            type="button"
             onClick={handleReload}
             className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
             title="Reload embed"
@@ -23261,6 +23277,7 @@ export function EmbedCanvasItem({
             className="w-full h-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
+            onError={() => setIsBlocked(true)}
             {...iframeAttrs}
           />
         )}
@@ -24727,8 +24744,8 @@ export function LiquidGlassCardIcon({
 ### File: `components/canvas/media-canvas-item.tsx`
 
 - **Path**: `components/canvas/media-canvas-item.tsx`
-- **Lines**: 623
-- **Size**: 23293 bytes
+- **Lines**: 648
+- **Size**: 24182 bytes
 
 ```tsx
 "use client"
@@ -24748,6 +24765,7 @@ import {
   getMediaObjectUrl,
   downloadMediaAsset,
   saveMediaAsset,
+  releaseMediaObjectUrl,
 } from "@/lib/media/media-assets"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
 import {
@@ -24836,8 +24854,18 @@ export function MediaCanvasItem({
 
     return () => {
       cancelled = true
+      if (node.source.kind === "local") {
+        releaseMediaObjectUrl(node.source.assetId)
+      }
     }
   }, [node.source])
+
+  // Ensure coordinator is updated on unmount
+  useEffect(() => {
+    return () => {
+      playbackCoordinator.notifyPause(node.id)
+    }
+  }, [node.id])
 
   // 2. Playback coordinator listener (pause if another player plays in solo mode)
   useEffect(() => {
@@ -24948,22 +24976,20 @@ export function MediaCanvasItem({
   )
 
   const handleFullscreen = useCallback(() => {
-    if (videoRef.current) {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {})
-      } else {
-        videoRef.current.requestFullscreen().catch(() => {})
-      }
+    if (typeof document === "undefined" || !videoRef.current) return
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {})
+    } else {
+      videoRef.current.requestFullscreen().catch(() => {})
     }
   }, [])
 
   const handlePictureInPicture = useCallback(() => {
-    if (videoRef.current && "requestPictureInPicture" in videoRef.current) {
-      if (document.pictureInPictureElement) {
-        document.exitPictureInPicture().catch(() => {})
-      } else {
-        videoRef.current.requestPictureInPicture().catch(() => {})
-      }
+    if (typeof document === "undefined" || !videoRef.current || !("requestPictureInPicture" in videoRef.current)) return
+    if (document.pictureInPictureElement) {
+      document.exitPictureInPicture().catch(() => {})
+    } else {
+      videoRef.current.requestPictureInPicture().catch(() => {})
     }
   }, [])
 
@@ -25150,6 +25176,14 @@ export function MediaCanvasItem({
               muted={isMuted}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false)
+                playbackCoordinator.notifyPause(node.id)
+              }}
+              onError={() => {
+                setLoadError(true)
+                setIsLoading(false)
+              }}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               className="max-w-full max-h-full object-contain cursor-pointer"
@@ -25241,7 +25275,7 @@ export function MediaCanvasItem({
                     </button>
 
                     {/* PiP */}
-                    {"pictureInPictureEnabled" in document && (
+                    {typeof document !== "undefined" && "pictureInPictureEnabled" in document && (
                       <button type="button" onClick={handlePictureInPicture} className="hover:text-orange-400 p-1" title="Picture in Picture">
                         <PictureInPicture size={16} />
                       </button>
@@ -25268,6 +25302,14 @@ export function MediaCanvasItem({
               muted={isMuted}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false)
+                playbackCoordinator.notifyPause(node.id)
+              }}
+              onError={() => {
+                setLoadError(true)
+                setIsLoading(false)
+              }}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               className="hidden"
@@ -34125,8 +34167,8 @@ function DefThumb({ def }: { def: ComponentDef }) {
 ### File: `components/chrome/context-menu.tsx`
 
 - **Path**: `components/chrome/context-menu.tsx`
-- **Lines**: 406
-- **Size**: 15316 bytes
+- **Lines**: 429
+- **Size**: 16347 bytes
 
 ```tsx
 "use client"
@@ -34200,6 +34242,7 @@ import {
 } from "@/lib/canvas/expiration-manager"
 import { downloadDocument } from "@/lib/storage/document-assets"
 import { downloadMediaAsset } from "@/lib/media/media-assets"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { exportExcalidrawDoc } from "@/lib/file-io"
 import type { DocumentNode, MediaNode, EmbedNode } from "@/lib/types"
 
@@ -34323,7 +34366,11 @@ export function CanvasContextMenu() {
               label: "Replace media…",
               icon: ArrowsClockwise,
               run: () => {
-                st().setInsertMediaDialog({ open: true, initialTab: (one as MediaNode).mediaKind })
+                st().setInsertMediaDialog({
+                  open: true,
+                  initialTab: (one as MediaNode).mediaKind,
+                  replaceNodeId: one.id,
+                })
               },
             } as Entry,
           ]
@@ -34343,8 +34390,26 @@ export function CanvasContextMenu() {
               run: () => {
                 const newUrl = window.prompt("Enter new embed URL:", (one as EmbedNode).url)
                 if (newUrl && newUrl.trim()) {
-                  st().checkpoint()
-                  st().updateNodes({ [one.id]: { url: newUrl.trim(), embedUrl: newUrl.trim() } })
+                  const parsed = parseMediaUrl(newUrl.trim())
+                  if (parsed) {
+                    st().checkpoint()
+                    st().updateNodes({
+                      [one.id]: {
+                        url: parsed.originalUrl,
+                        embedUrl: parsed.embedUrl,
+                        title: parsed.title,
+                        provider: parsed.provider as EmbedNode["provider"],
+                        mediaCategory: parsed.mediaCategory,
+                        aspectRatio: parsed.aspectRatio,
+                        thumbnailUrl: parsed.thumbnailUrl,
+                        authorName: parsed.authorName,
+                        providerData: parsed.providerData,
+                      },
+                    })
+                    st().setNotice(`Updated embed to "${parsed.title || parsed.originalUrl}"`)
+                  } else {
+                    st().setNotice("Invalid or restricted URL. Please enter a valid HTTP/HTTPS URL.")
+                  }
                 }
               },
             } as Entry,
@@ -35553,8 +35618,8 @@ export function InkPicker() {
 ### File: `components/chrome/inspector.tsx`
 
 - **Path**: `components/chrome/inspector.tsx`
-- **Lines**: 1923
-- **Size**: 76175 bytes
+- **Lines**: 1947
+- **Size**: 77188 bytes
 
 ```tsx
 "use client"
@@ -35584,6 +35649,7 @@ import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
 import { downloadMediaAsset, saveMediaAsset } from "@/lib/media/media-assets"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -36795,8 +36861,31 @@ function EmbedSection({ embedNodes }: { embedNodes: EmbedNode[] }) {
           onClick={() => {
             const newUrl = window.prompt("Enter new embed URL:", node.url)
             if (newUrl && newUrl.trim()) {
-              st().checkpoint()
-              st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { url: newUrl.trim(), embedUrl: newUrl.trim() }])))
+              const parsed = parseMediaUrl(newUrl.trim())
+              if (parsed) {
+                st().checkpoint()
+                st().updateNodes(
+                  Object.fromEntries(
+                    embedNodes.map((n) => [
+                      n.id,
+                      {
+                        url: parsed.originalUrl,
+                        embedUrl: parsed.embedUrl,
+                        title: parsed.title,
+                        provider: parsed.provider as EmbedNode["provider"],
+                        mediaCategory: parsed.mediaCategory,
+                        aspectRatio: parsed.aspectRatio,
+                        thumbnailUrl: parsed.thumbnailUrl,
+                        authorName: parsed.authorName,
+                        providerData: parsed.providerData,
+                      },
+                    ])
+                  )
+                )
+                st().setNotice(`Updated embed to "${parsed.title || parsed.originalUrl}"`)
+              } else {
+                st().setNotice("Invalid or restricted URL. Please enter a valid HTTP/HTTPS URL.")
+              }
             }
           }}
         >
@@ -64263,8 +64352,8 @@ export const config = {
 ### File: `lib/clipboard-payload.ts`
 
 - **Path**: `lib/clipboard-payload.ts`
-- **Lines**: 305
-- **Size**: 12374 bytes
+- **Lines**: 306
+- **Size**: 12475 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -64425,6 +64514,7 @@ export function validNode(v: unknown): SquigNode | null {
       break
     case "embed":
       if (!str(n.url) || !isSafeMediaUrl(n.url)) return null
+      if (n.embedUrl !== undefined && (!str(n.embedUrl) || !isSafeMediaUrl(n.embedUrl))) return null
       break
     case "media": {
       const mn = n as MediaNode
@@ -111492,8 +111582,8 @@ console.log("============================================================")
 ### File: `scripts/test-multimedia-system.ts`
 
 - **Path**: `scripts/test-multimedia-system.ts`
-- **Lines**: 200
-- **Size**: 10404 bytes
+- **Lines**: 275
+- **Size**: 13946 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -111504,6 +111594,7 @@ console.log("============================================================")
 
 import { parseMediaUrl, getProviderAdapter } from "../lib/media/provider-registry"
 import { isSafeMediaUrl, inferMediaCategory, validateMediaMagicBytes } from "../lib/media/media-validation"
+import { acquireMediaObjectUrl, releaseMediaObjectUrl } from "../lib/media/media-assets"
 import { playbackCoordinator } from "../lib/media/playback-coordinator"
 import { validNode, wordsOf } from "../lib/clipboard-payload"
 import { nodePrims } from "../lib/sketch/node-prims"
@@ -111694,7 +111785,81 @@ playbackCoordinator.pauseAll()
 assert(playbackCoordinator.getActivePlayerId() === null, "pauseAll clears active player")
 unsub()
 
-console.log("\n=== ALL 25 MULTIMEDIA TESTS PASSED! 🎥🎧✨ ===")
+// 12. YouTube Live & Legacy URL Formats
+console.log("\n12. Testing YouTube Live & Legacy URL Formats...")
+const ytLive = parseMediaUrl("https://www.youtube.com/live/liveStream123?feature=share")
+assert(ytLive !== null && ytLive.provider === "youtube", "Detects YouTube /live/ URL")
+assert(ytLive?.embedUrl.includes("liveStream123"), "Extracts live stream video ID")
+
+const ytLegacy = parseMediaUrl("https://youtube.com/v/legacyVid456")
+assert(ytLegacy !== null && ytLegacy.provider === "youtube", "Detects YouTube legacy /v/ URL")
+assert(ytLegacy?.embedUrl.includes("legacyVid456"), "Extracts legacy /v/ video ID")
+
+// 13. Security: Spoofed Extensions and Executable Payload Rejection
+console.log("\n13. Testing Spoofed File Rejection...")
+// Mock EXE payload with 'MZ' header renamed to .mp4
+const exeHeader = new Uint8Array([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00])
+const spoofedExe = new Blob([exeHeader], { type: "video/mp4" })
+const exeCheck = await validateMediaMagicBytes(spoofedExe)
+assert(!exeCheck.valid, "Strictly rejects Windows EXE payload masquerading as video/mp4")
+
+// Mock Shell Script payload with '#!' header renamed to .mp3
+const scriptHeader = new Uint8Array([0x23, 0x21, 0x2f, 0x62, 0x69, 0x6e, 0x2f, 0x73, 0x68])
+const spoofedScript = new Blob([scriptHeader], { type: "audio/mpeg" })
+const scriptCheck = await validateMediaMagicBytes(spoofedScript)
+assert(!scriptCheck.valid, "Strictly rejects shell script payload masquerading as audio/mpeg")
+
+// Mock HTML payload with '<!DOCTYPE' renamed to .mp4
+const htmlHeader = new Uint8Array([0x3c, 0x21, 0x44, 0x4f, 0x43, 0x54, 0x59, 0x50, 0x45])
+const spoofedHtml = new Blob([htmlHeader], { type: "video/mp4" })
+const htmlCheck = await validateMediaMagicBytes(spoofedHtml)
+assert(!htmlCheck.valid, "Strictly rejects HTML document masquerading as video/mp4")
+
+// 14. Security: Unsafe embedUrl in Node Sanitization
+console.log("\n14. Testing Unsafe embedUrl Validation...")
+const maliciousEmbed: EmbedNode = {
+  id: "bad_emb",
+  seed: 123,
+  type: "embed",
+  url: "https://example.com",
+  embedUrl: "javascript:alert(document.cookie)",
+  title: "Malicious Embed",
+  x: 0,
+  y: 0,
+  w: 300,
+  h: 200,
+}
+const cleanedEmbed = validNode(maliciousEmbed)
+assert(cleanedEmbed === null, "Rejects embed node with javascript: embedUrl")
+
+// 15. Object URL Reference Counting
+console.log("\n15. Testing Object URL Reference Counting & Lifecycle...")
+let mockRevoked = false
+const originalRevoke = URL.revokeObjectURL
+URL.revokeObjectURL = (url: string) => {
+  mockRevoked = true
+  originalRevoke(url)
+}
+
+const dummyBlob = new Blob(["test-audio-content"], { type: "audio/mpeg" })
+const u1 = acquireMediaObjectUrl("test_asset_lifecycle", dummyBlob)
+assert(typeof u1 === "string" && u1.startsWith("blob:"), "Creates tracked Object URL")
+
+// Acquire again for duplicate node: should return identical URL and increment count
+const u2 = acquireMediaObjectUrl("test_asset_lifecycle", dummyBlob)
+assert(u1 === u2, "Reuses tracked Object URL across multiple node instances")
+
+// Release first reference: should NOT revoke yet
+mockRevoked = false
+releaseMediaObjectUrl("test_asset_lifecycle")
+assert(!mockRevoked, "Does not revoke while another instance still holds reference")
+
+// Release second reference: should revoke URL
+releaseMediaObjectUrl("test_asset_lifecycle")
+assert(mockRevoked, "Revokes Object URL once reference count drops to zero")
+URL.revokeObjectURL = originalRevoke
+
+console.log("\n=== ALL 36 COMPREHENSIVE MULTIMEDIA TESTS PASSED! 🎥🎧✨ ===")
 ```
 
 ---
@@ -142050,8 +142215,8 @@ To upload the social preview to the GitHub repository:
 ### File: `components/media/insert-media-dialog.tsx`
 
 - **Path**: `components/media/insert-media-dialog.tsx`
-- **Lines**: 433
-- **Size**: 17170 bytes
+- **Lines**: 507
+- **Size**: 19674 bytes
 
 ```tsx
 "use client"
@@ -142155,6 +142320,16 @@ export function InsertMediaDialog() {
     setDialog(null)
   }, [setDialog])
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!dialog?.open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeDialog()
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [dialog?.open, closeDialog])
+
   const getPlacementCoordinates = (): [number, number] => {
     if (dialog?.at) return dialog.at
     const v = useSquig.getState().viewport
@@ -142166,8 +142341,43 @@ export function InsertMediaDialog() {
   // Handle URL insertion
   const handleInsertUrl = () => {
     if (!parsedMedia) return
-    const [cx, cy] = getPlacementCoordinates()
     const s = useSquig.getState()
+
+    if (dialog?.replaceNodeId) {
+      if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
+        const isVid = parsedMedia.provider === "direct-video"
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            type: "media",
+            mediaKind: isVid ? "video" : "audio",
+            source: { kind: "direct-url", url: parsedMedia.normalizedUrl },
+            name: parsedMedia.title || (isVid ? "Direct Video" : "Direct Audio"),
+            mimeType: isVid ? "video/mp4" : "audio/mpeg",
+          },
+        })
+        s.setNotice(`Replaced media with "${parsedMedia.title}"`)
+      } else {
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            type: "embed",
+            url: parsedMedia.originalUrl,
+            embedUrl: parsedMedia.embedUrl,
+            title: parsedMedia.title,
+            provider: parsedMedia.provider as EmbedNode["provider"],
+            mediaCategory: parsedMedia.mediaCategory,
+            aspectRatio: parsedMedia.aspectRatio,
+            thumbnailUrl: parsedMedia.thumbnailUrl,
+            authorName: parsedMedia.authorName,
+            providerData: parsedMedia.providerData,
+          },
+        })
+        s.setNotice(`Updated embed link to "${parsedMedia.title || parsedMedia.originalUrl}"`)
+      }
+      closeDialog()
+      return
+    }
+
+    const [cx, cy] = getPlacementCoordinates()
 
     if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
       const isVid = parsedMedia.provider === "direct-video"
@@ -142232,8 +142442,28 @@ export function InsertMediaDialog() {
     setUploadError(null)
     try {
       const res = await saveMediaAsset(file, file.name)
-      const [cx, cy] = getPlacementCoordinates()
       const s = useSquig.getState()
+
+      if (dialog?.replaceNodeId) {
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            name: res.name,
+            mimeType: res.mimeType,
+            sizeBytes: res.sizeBytes,
+            duration: res.duration,
+            naturalW: res.naturalW,
+            naturalH: res.naturalH,
+            posterUrl: res.posterUrl,
+            waveform: res.waveform,
+            source: { kind: "local", assetId: res.assetId },
+          },
+        })
+        s.setNotice(`Replaced media with "${res.name}"`)
+        closeDialog()
+        return
+      }
+
+      const [cx, cy] = getPlacementCoordinates()
 
       const isVid = res.mediaKind === "video"
       const w = isVid ? 560 : 380
@@ -142273,7 +142503,10 @@ export function InsertMediaDialog() {
   if (!dialog?.open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+    <div
+      onClick={closeDialog}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
+    >
       <div
         className="relative w-full max-w-lg rounded-2xl bg-[var(--sq-paper)] border border-[var(--sq-border)] shadow-2xl overflow-hidden flex flex-col text-[var(--sq-ink)] animate-scale-in"
         onClick={(e) => e.stopPropagation()}
@@ -142360,6 +142593,12 @@ export function InsertMediaDialog() {
                 type="url"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && parsedMedia) {
+                    e.preventDefault()
+                    handleInsertUrl()
+                  }
+                }}
                 placeholder={
                   activeTab === "video"
                     ? "https://www.youtube.com/watch?v=... or .mp4 link"
@@ -147085,8 +147324,8 @@ export function useLiquidGlass({
 ### File: `lib/media/media-assets.ts`
 
 - **Path**: `lib/media/media-assets.ts`
-- **Lines**: 399
-- **Size**: 12478 bytes
+- **Lines**: 457
+- **Size**: 14708 bytes
 
 ```tsx
 "use client"
@@ -147096,7 +147335,6 @@ export function useLiquidGlass({
 // ---------------------------------------------------------------------------
 
 import { openZenithsuiDb, STORES, withTransaction } from "../storage/db"
-import { cacheAssetBlob } from "../cloud/assets"
 import type { MediaNode } from "../types"
 import type { MediaAssetResult } from "./types"
 import {
@@ -147109,6 +147347,8 @@ import {
 
 /** Active ObjectURL cache across current browser session */
 const activeMediaUrls = new Map<string, string>()
+const mediaUrlRefCounts = new Map<string, number>()
+const inMemoryMediaBlobCache = new Map<string, Blob>()
 
 /**
  * Calculates SHA-256 hash using chunked streaming to prevent main thread freezing
@@ -147340,8 +147580,28 @@ export async function saveMediaAsset(
   const hash = await computeChunkedBlobHash(file)
   const assetId = `media_${hash}`
 
-  // 3. Persist to IndexedDB asset storage
-  await cacheAssetBlob(file, assetId)
+  // 3. Persist to IndexedDB asset storage with exact chunked hash as primary key
+  const record = {
+    hash,
+    assetId,
+    blob: file,
+    mimeType: validation.detectedMime || mimeType,
+    createdAt: Date.now(),
+  }
+
+  // Update in-memory blob cache
+  inMemoryMediaBlobCache.set(assetId, file)
+  inMemoryMediaBlobCache.set(hash, file)
+
+  if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
+    try {
+      await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
+        tx.objectStore(STORES.ASSET_BLOBS).put(record)
+      })
+    } catch (err) {
+      console.warn("[media-assets] Failed to persist asset to IndexedDB:", err)
+    }
+  }
 
   // 4. Extract metadata & poster/waveform
   let duration: number | undefined
@@ -147362,10 +147622,8 @@ export async function saveMediaAsset(
     waveform = aMeta.waveform
   }
 
-  // 5. Generate and cache active object URL
-  const localUrl = URL.createObjectURL(file)
-  activeMediaUrls.set(assetId, localUrl)
-  activeMediaUrls.set(hash, localUrl)
+  // 5. Generate and track active object URL with reference counting
+  const localUrl = acquireMediaObjectUrl(assetId, file)
 
   return {
     assetId,
@@ -147384,12 +147642,56 @@ export async function saveMediaAsset(
 }
 
 /**
- * Retrieves the raw Blob for a media asset from IndexedDB.
+ * Tracks and acquires an Object URL for local media, incrementing its reference count.
+ */
+export function acquireMediaObjectUrl(assetIdOrHash: string, blob: Blob): string {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+  if (activeMediaUrls.has(assetIdOrHash)) {
+    mediaUrlRefCounts.set(cleanHash, (mediaUrlRefCounts.get(cleanHash) || 0) + 1)
+    return activeMediaUrls.get(assetIdOrHash)!
+  }
+  if (activeMediaUrls.has(cleanHash)) {
+    mediaUrlRefCounts.set(cleanHash, (mediaUrlRefCounts.get(cleanHash) || 0) + 1)
+    return activeMediaUrls.get(cleanHash)!
+  }
+  const url = URL.createObjectURL(blob)
+  activeMediaUrls.set(assetIdOrHash, url)
+  activeMediaUrls.set(cleanHash, url)
+  mediaUrlRefCounts.set(cleanHash, 1)
+  return url
+}
+
+/**
+ * Releases an Object URL reference, revoking it from memory once count reaches zero.
+ */
+export function releaseMediaObjectUrl(assetIdOrHash: string): void {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+  const count = (mediaUrlRefCounts.get(cleanHash) || 1) - 1
+  if (count <= 0) {
+    const url = activeMediaUrls.get(assetIdOrHash) || activeMediaUrls.get(cleanHash)
+    if (url) {
+      try {
+        URL.revokeObjectURL(url)
+      } catch {}
+    }
+    activeMediaUrls.delete(assetIdOrHash)
+    activeMediaUrls.delete(cleanHash)
+    mediaUrlRefCounts.delete(cleanHash)
+  } else {
+    mediaUrlRefCounts.set(cleanHash, count)
+  }
+}
+
+/**
+ * Retrieves the raw Blob for a media asset from Memory or IndexedDB.
  */
 export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> {
-  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null
-
   const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+
+  if (inMemoryMediaBlobCache.has(assetIdOrHash)) return inMemoryMediaBlobCache.get(assetIdOrHash)!
+  if (inMemoryMediaBlobCache.has(cleanHash)) return inMemoryMediaBlobCache.get(cleanHash)!
+
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null
 
   try {
     const db = await openZenithsuiDb()
@@ -147401,6 +147703,8 @@ export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> 
       req.onsuccess = () => {
         const record = req.result
         if (record && record.blob) {
+          inMemoryMediaBlobCache.set(assetIdOrHash, record.blob)
+          inMemoryMediaBlobCache.set(cleanHash, record.blob)
           resolve(record.blob)
         } else {
           resolve(null)
@@ -147421,22 +147725,21 @@ export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> 
 export async function getMediaObjectUrl(assetIdOrHash: string): Promise<string | null> {
   const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
 
-  // Fast path: in-memory cache
+  // Fast path: in-memory active URL
   if (activeMediaUrls.has(assetIdOrHash)) {
-    return activeMediaUrls.get(assetIdOrHash)!
+    const blob = inMemoryMediaBlobCache.get(cleanHash) || new Blob()
+    return acquireMediaObjectUrl(assetIdOrHash, blob)
   }
   if (activeMediaUrls.has(cleanHash)) {
-    return activeMediaUrls.get(cleanHash)!
+    const blob = inMemoryMediaBlobCache.get(cleanHash) || new Blob()
+    return acquireMediaObjectUrl(cleanHash, blob)
   }
 
-  // Retrieve blob from IndexedDB and create URL
+  // Retrieve blob from IndexedDB and create tracked URL
   const blob = await getMediaBlob(cleanHash)
   if (!blob) return null
 
-  const url = URL.createObjectURL(blob)
-  activeMediaUrls.set(assetIdOrHash, url)
-  activeMediaUrls.set(cleanHash, url)
-  return url
+  return acquireMediaObjectUrl(assetIdOrHash, blob)
 }
 
 /**
@@ -147479,13 +147782,7 @@ export async function downloadMediaAsset(node: MediaNode): Promise<void> {
  * Revokes object URLs when media is removed to prevent memory leaks.
  */
 export function revokeMediaObjectUrl(assetIdOrHash: string): void {
-  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
-  const url = activeMediaUrls.get(assetIdOrHash) || activeMediaUrls.get(cleanHash)
-  if (url) {
-    URL.revokeObjectURL(url)
-    activeMediaUrls.delete(assetIdOrHash)
-    activeMediaUrls.delete(cleanHash)
-  }
+  releaseMediaObjectUrl(assetIdOrHash)
 }
 ```
 
@@ -147494,8 +147791,8 @@ export function revokeMediaObjectUrl(assetIdOrHash: string): void {
 ### File: `lib/media/media-validation.ts`
 
 - **Path**: `lib/media/media-validation.ts`
-- **Lines**: 237
-- **Size**: 7043 bytes
+- **Lines**: 271
+- **Size**: 8186 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -147654,9 +147951,29 @@ export async function validateMediaMagicBytes(
     return { valid: false }
   }
 
+  // Reject known executable, script, and HTML signatures immediately
+  if (bytes[0] === 0x4d && bytes[1] === 0x5a) {
+    // Windows PE / EXE / DLL ("MZ")
+    return { valid: false }
+  }
+  if (bytes[0] === 0x7f && bytes[1] === 0x45 && bytes[2] === 0x4c && bytes[3] === 0x46) {
+    // Linux ELF binary
+    return { valid: false }
+  }
+  if (bytes[0] === 0x23 && bytes[1] === 0x21) {
+    // Shebang script ("#!")
+    return { valid: false }
+  }
+  if (
+    (bytes[0] === 0x3c && bytes[1] === 0x21) || // "<!" (<!DOCTYPE / <!--)
+    (bytes[0] === 0x3c && bytes[1] === 0x3f) || // "<?" (<?xml / <?php)
+    (bytes[0] === 0x3c && (bytes[1] === 0x68 || bytes[1] === 0x48)) // "<h" / "<H" (<html)
+  ) {
+    return { valid: false }
+  }
+
   // 1. EBML / WebM / MKV (1A 45 DF A3)
   if (bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3) {
-    // Check if webm audio or video
     const str = new TextDecoder().decode(bytes)
     const isAudio = str.includes("webm") && blob.type.includes("audio")
     return {
@@ -147724,7 +148041,21 @@ export async function validateMediaMagicBytes(
     return { valid: true, detectedMime: "audio/flac", kind: "audio" }
   }
 
-  // Fallback: If browser declared valid video or audio MIME type and file is non-empty
+  // If declared as standard media type (mp4, webm, wav, mp3, ogg, flac) but didn't match signatures above, reject as spoofed
+  if (
+    blob.type === "video/mp4" ||
+    blob.type === "video/webm" ||
+    blob.type === "audio/wav" ||
+    blob.type === "audio/x-wav" ||
+    blob.type === "audio/mpeg" ||
+    blob.type === "audio/mp3" ||
+    blob.type === "audio/ogg" ||
+    blob.type === "audio/flac"
+  ) {
+    return { valid: false }
+  }
+
+  // Fallback only for uncommon browser-supported audio/video streams (e.g. m4a/aac without ftyp, amr)
   if (blob.type.startsWith("video/")) {
     return { valid: true, detectedMime: blob.type, kind: "video" }
   }
@@ -148213,8 +148544,8 @@ export const vimeoAdapter: MediaProviderAdapter = {
 ### File: `lib/media/providers/youtube.ts`
 
 - **Path**: `lib/media/providers/youtube.ts`
-- **Lines**: 107
-- **Size**: 3492 bytes
+- **Lines**: 111
+- **Size**: 3704 bytes
 
 ```tsx
 // ---------------------------------------------------------------------------
@@ -148271,8 +148602,12 @@ export const youtubeAdapter: MediaProviderAdapter = {
       videoId = path.slice(1).split("/")[0] || null
     } else if (path.startsWith("/shorts/")) {
       videoId = path.replace("/shorts/", "").split("/")[0] || null
+    } else if (path.startsWith("/live/")) {
+      videoId = path.replace("/live/", "").split("/")[0] || null
     } else if (path.startsWith("/embed/")) {
       videoId = path.replace("/embed/", "").split("/")[0] || null
+    } else if (path.startsWith("/v/")) {
+      videoId = path.replace("/v/", "").split("/")[0] || null
     } else if (path.startsWith("/watch")) {
       videoId = search.get("v")
     } else if (path.startsWith("/playlist")) {

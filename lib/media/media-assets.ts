@@ -5,7 +5,6 @@
 // ---------------------------------------------------------------------------
 
 import { openZenithsuiDb, STORES, withTransaction } from "../storage/db"
-import { cacheAssetBlob } from "../cloud/assets"
 import type { MediaNode } from "../types"
 import type { MediaAssetResult } from "./types"
 import {
@@ -18,6 +17,8 @@ import {
 
 /** Active ObjectURL cache across current browser session */
 const activeMediaUrls = new Map<string, string>()
+const mediaUrlRefCounts = new Map<string, number>()
+const inMemoryMediaBlobCache = new Map<string, Blob>()
 
 /**
  * Calculates SHA-256 hash using chunked streaming to prevent main thread freezing
@@ -249,8 +250,28 @@ export async function saveMediaAsset(
   const hash = await computeChunkedBlobHash(file)
   const assetId = `media_${hash}`
 
-  // 3. Persist to IndexedDB asset storage
-  await cacheAssetBlob(file, assetId)
+  // 3. Persist to IndexedDB asset storage with exact chunked hash as primary key
+  const record = {
+    hash,
+    assetId,
+    blob: file,
+    mimeType: validation.detectedMime || mimeType,
+    createdAt: Date.now(),
+  }
+
+  // Update in-memory blob cache
+  inMemoryMediaBlobCache.set(assetId, file)
+  inMemoryMediaBlobCache.set(hash, file)
+
+  if (typeof window !== "undefined" && typeof indexedDB !== "undefined") {
+    try {
+      await withTransaction(STORES.ASSET_BLOBS, "readwrite", (tx) => {
+        tx.objectStore(STORES.ASSET_BLOBS).put(record)
+      })
+    } catch (err) {
+      console.warn("[media-assets] Failed to persist asset to IndexedDB:", err)
+    }
+  }
 
   // 4. Extract metadata & poster/waveform
   let duration: number | undefined
@@ -271,10 +292,8 @@ export async function saveMediaAsset(
     waveform = aMeta.waveform
   }
 
-  // 5. Generate and cache active object URL
-  const localUrl = URL.createObjectURL(file)
-  activeMediaUrls.set(assetId, localUrl)
-  activeMediaUrls.set(hash, localUrl)
+  // 5. Generate and track active object URL with reference counting
+  const localUrl = acquireMediaObjectUrl(assetId, file)
 
   return {
     assetId,
@@ -293,12 +312,56 @@ export async function saveMediaAsset(
 }
 
 /**
- * Retrieves the raw Blob for a media asset from IndexedDB.
+ * Tracks and acquires an Object URL for local media, incrementing its reference count.
+ */
+export function acquireMediaObjectUrl(assetIdOrHash: string, blob: Blob): string {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+  if (activeMediaUrls.has(assetIdOrHash)) {
+    mediaUrlRefCounts.set(cleanHash, (mediaUrlRefCounts.get(cleanHash) || 0) + 1)
+    return activeMediaUrls.get(assetIdOrHash)!
+  }
+  if (activeMediaUrls.has(cleanHash)) {
+    mediaUrlRefCounts.set(cleanHash, (mediaUrlRefCounts.get(cleanHash) || 0) + 1)
+    return activeMediaUrls.get(cleanHash)!
+  }
+  const url = URL.createObjectURL(blob)
+  activeMediaUrls.set(assetIdOrHash, url)
+  activeMediaUrls.set(cleanHash, url)
+  mediaUrlRefCounts.set(cleanHash, 1)
+  return url
+}
+
+/**
+ * Releases an Object URL reference, revoking it from memory once count reaches zero.
+ */
+export function releaseMediaObjectUrl(assetIdOrHash: string): void {
+  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+  const count = (mediaUrlRefCounts.get(cleanHash) || 1) - 1
+  if (count <= 0) {
+    const url = activeMediaUrls.get(assetIdOrHash) || activeMediaUrls.get(cleanHash)
+    if (url) {
+      try {
+        URL.revokeObjectURL(url)
+      } catch {}
+    }
+    activeMediaUrls.delete(assetIdOrHash)
+    activeMediaUrls.delete(cleanHash)
+    mediaUrlRefCounts.delete(cleanHash)
+  } else {
+    mediaUrlRefCounts.set(cleanHash, count)
+  }
+}
+
+/**
+ * Retrieves the raw Blob for a media asset from Memory or IndexedDB.
  */
 export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> {
-  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null
-
   const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
+
+  if (inMemoryMediaBlobCache.has(assetIdOrHash)) return inMemoryMediaBlobCache.get(assetIdOrHash)!
+  if (inMemoryMediaBlobCache.has(cleanHash)) return inMemoryMediaBlobCache.get(cleanHash)!
+
+  if (typeof window === "undefined" || typeof indexedDB === "undefined") return null
 
   try {
     const db = await openZenithsuiDb()
@@ -310,6 +373,8 @@ export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> 
       req.onsuccess = () => {
         const record = req.result
         if (record && record.blob) {
+          inMemoryMediaBlobCache.set(assetIdOrHash, record.blob)
+          inMemoryMediaBlobCache.set(cleanHash, record.blob)
           resolve(record.blob)
         } else {
           resolve(null)
@@ -330,22 +395,21 @@ export async function getMediaBlob(assetIdOrHash: string): Promise<Blob | null> 
 export async function getMediaObjectUrl(assetIdOrHash: string): Promise<string | null> {
   const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
 
-  // Fast path: in-memory cache
+  // Fast path: in-memory active URL
   if (activeMediaUrls.has(assetIdOrHash)) {
-    return activeMediaUrls.get(assetIdOrHash)!
+    const blob = inMemoryMediaBlobCache.get(cleanHash) || new Blob()
+    return acquireMediaObjectUrl(assetIdOrHash, blob)
   }
   if (activeMediaUrls.has(cleanHash)) {
-    return activeMediaUrls.get(cleanHash)!
+    const blob = inMemoryMediaBlobCache.get(cleanHash) || new Blob()
+    return acquireMediaObjectUrl(cleanHash, blob)
   }
 
-  // Retrieve blob from IndexedDB and create URL
+  // Retrieve blob from IndexedDB and create tracked URL
   const blob = await getMediaBlob(cleanHash)
   if (!blob) return null
 
-  const url = URL.createObjectURL(blob)
-  activeMediaUrls.set(assetIdOrHash, url)
-  activeMediaUrls.set(cleanHash, url)
-  return url
+  return acquireMediaObjectUrl(assetIdOrHash, blob)
 }
 
 /**
@@ -388,11 +452,5 @@ export async function downloadMediaAsset(node: MediaNode): Promise<void> {
  * Revokes object URLs when media is removed to prevent memory leaks.
  */
 export function revokeMediaObjectUrl(assetIdOrHash: string): void {
-  const cleanHash = assetIdOrHash.replace(/^media_|^asset_/, "").replace(/^asset:\/\//, "")
-  const url = activeMediaUrls.get(assetIdOrHash) || activeMediaUrls.get(cleanHash)
-  if (url) {
-    URL.revokeObjectURL(url)
-    activeMediaUrls.delete(assetIdOrHash)
-    activeMediaUrls.delete(cleanHash)
-  }
+  releaseMediaObjectUrl(assetIdOrHash)
 }

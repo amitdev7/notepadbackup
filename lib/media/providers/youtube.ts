@@ -52,8 +52,12 @@ export const youtubeAdapter: MediaProviderAdapter = {
       videoId = path.slice(1).split("/")[0] || null
     } else if (path.startsWith("/shorts/")) {
       videoId = path.replace("/shorts/", "").split("/")[0] || null
+    } else if (path.startsWith("/live/")) {
+      videoId = path.replace("/live/", "").split("/")[0] || null
     } else if (path.startsWith("/embed/")) {
       videoId = path.replace("/embed/", "").split("/")[0] || null
+    } else if (path.startsWith("/v/")) {
+      videoId = path.replace("/v/", "").split("/")[0] || null
     } else if (path.startsWith("/watch")) {
       videoId = search.get("v")
     } else if (path.startsWith("/playlist")) {

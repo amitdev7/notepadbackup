@@ -25,6 +25,7 @@ import { scaleNodes, MIN_SIZE } from "@/lib/canvas/transform"
 import { fitTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { downloadDocument, saveDocumentAsset } from "@/lib/storage/document-assets"
 import { downloadMediaAsset, saveMediaAsset } from "@/lib/media/media-assets"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { VariantControl } from "./variant-controls"
 import { MixedNumberField, MixedSwitch, MixedTextField } from "./mixed-fields"
 import { AlignRow } from "./align-row"
@@ -1236,8 +1237,31 @@ function EmbedSection({ embedNodes }: { embedNodes: EmbedNode[] }) {
           onClick={() => {
             const newUrl = window.prompt("Enter new embed URL:", node.url)
             if (newUrl && newUrl.trim()) {
-              st().checkpoint()
-              st().updateNodes(Object.fromEntries(embedNodes.map((n) => [n.id, { url: newUrl.trim(), embedUrl: newUrl.trim() }])))
+              const parsed = parseMediaUrl(newUrl.trim())
+              if (parsed) {
+                st().checkpoint()
+                st().updateNodes(
+                  Object.fromEntries(
+                    embedNodes.map((n) => [
+                      n.id,
+                      {
+                        url: parsed.originalUrl,
+                        embedUrl: parsed.embedUrl,
+                        title: parsed.title,
+                        provider: parsed.provider as EmbedNode["provider"],
+                        mediaCategory: parsed.mediaCategory,
+                        aspectRatio: parsed.aspectRatio,
+                        thumbnailUrl: parsed.thumbnailUrl,
+                        authorName: parsed.authorName,
+                        providerData: parsed.providerData,
+                      },
+                    ])
+                  )
+                )
+                st().setNotice(`Updated embed to "${parsed.title || parsed.originalUrl}"`)
+              } else {
+                st().setNotice("Invalid or restricted URL. Please enter a valid HTTP/HTTPS URL.")
+              }
             }
           }}
         >

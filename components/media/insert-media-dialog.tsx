@@ -99,6 +99,16 @@ export function InsertMediaDialog() {
     setDialog(null)
   }, [setDialog])
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!dialog?.open) return
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeDialog()
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [dialog?.open, closeDialog])
+
   const getPlacementCoordinates = (): [number, number] => {
     if (dialog?.at) return dialog.at
     const v = useSquig.getState().viewport
@@ -110,8 +120,43 @@ export function InsertMediaDialog() {
   // Handle URL insertion
   const handleInsertUrl = () => {
     if (!parsedMedia) return
-    const [cx, cy] = getPlacementCoordinates()
     const s = useSquig.getState()
+
+    if (dialog?.replaceNodeId) {
+      if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
+        const isVid = parsedMedia.provider === "direct-video"
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            type: "media",
+            mediaKind: isVid ? "video" : "audio",
+            source: { kind: "direct-url", url: parsedMedia.normalizedUrl },
+            name: parsedMedia.title || (isVid ? "Direct Video" : "Direct Audio"),
+            mimeType: isVid ? "video/mp4" : "audio/mpeg",
+          },
+        })
+        s.setNotice(`Replaced media with "${parsedMedia.title}"`)
+      } else {
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            type: "embed",
+            url: parsedMedia.originalUrl,
+            embedUrl: parsedMedia.embedUrl,
+            title: parsedMedia.title,
+            provider: parsedMedia.provider as EmbedNode["provider"],
+            mediaCategory: parsedMedia.mediaCategory,
+            aspectRatio: parsedMedia.aspectRatio,
+            thumbnailUrl: parsedMedia.thumbnailUrl,
+            authorName: parsedMedia.authorName,
+            providerData: parsedMedia.providerData,
+          },
+        })
+        s.setNotice(`Updated embed link to "${parsedMedia.title || parsedMedia.originalUrl}"`)
+      }
+      closeDialog()
+      return
+    }
+
+    const [cx, cy] = getPlacementCoordinates()
 
     if (parsedMedia.provider === "direct-video" || parsedMedia.provider === "direct-audio") {
       const isVid = parsedMedia.provider === "direct-video"
@@ -176,8 +221,28 @@ export function InsertMediaDialog() {
     setUploadError(null)
     try {
       const res = await saveMediaAsset(file, file.name)
-      const [cx, cy] = getPlacementCoordinates()
       const s = useSquig.getState()
+
+      if (dialog?.replaceNodeId) {
+        s.updateNodes({
+          [dialog.replaceNodeId]: {
+            name: res.name,
+            mimeType: res.mimeType,
+            sizeBytes: res.sizeBytes,
+            duration: res.duration,
+            naturalW: res.naturalW,
+            naturalH: res.naturalH,
+            posterUrl: res.posterUrl,
+            waveform: res.waveform,
+            source: { kind: "local", assetId: res.assetId },
+          },
+        })
+        s.setNotice(`Replaced media with "${res.name}"`)
+        closeDialog()
+        return
+      }
+
+      const [cx, cy] = getPlacementCoordinates()
 
       const isVid = res.mediaKind === "video"
       const w = isVid ? 560 : 380
@@ -217,7 +282,10 @@ export function InsertMediaDialog() {
   if (!dialog?.open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in">
+    <div
+      onClick={closeDialog}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-fade-in"
+    >
       <div
         className="relative w-full max-w-lg rounded-2xl bg-[var(--sq-paper)] border border-[var(--sq-border)] shadow-2xl overflow-hidden flex flex-col text-[var(--sq-ink)] animate-scale-in"
         onClick={(e) => e.stopPropagation()}
@@ -304,6 +372,12 @@ export function InsertMediaDialog() {
                 type="url"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && parsedMedia) {
+                    e.preventDefault()
+                    handleInsertUrl()
+                  }
+                }}
                 placeholder={
                   activeTab === "video"
                     ? "https://www.youtube.com/watch?v=... or .mp4 link"

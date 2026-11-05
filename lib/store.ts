@@ -38,6 +38,7 @@ import {
   setActiveDocumentId,
   getActiveDocumentId,
 } from "./storage/documents"
+import { isSafeMediaUrl } from "./media/media-validation"
 import { useShellStore } from "./shell-store"
 import { useAuthStore } from "./auth-store"
 import { isExcalidrawDocument, excalidrawToSquigNodes, squigNodesToExcalidraw } from "./canvas-core/index"
@@ -189,7 +190,7 @@ interface SquigState {
   notice: { id: number; text: string } | null
   viewerDoc: DocumentNode | null
   pdfToCanvasDialog: { open: boolean; node?: DocumentNode | null; file?: File | null } | null
-  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null
+  insertMediaDialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number]; replaceNodeId?: string } | null
   searchOpen: boolean
   statsOpen: boolean
   chartDialogOpen: boolean
@@ -228,7 +229,7 @@ interface SquigState {
   setShareOpen: (on: boolean) => void
   setHistoryOpen: (on: boolean) => void
   setSearchOpen: (open: boolean) => void
-  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number] } | null) => void
+  setInsertMediaDialog: (dialog: { open: boolean; initialTab?: "video" | "audio" | "embed"; at?: [number, number]; replaceNodeId?: string } | null) => void
   setStatsOpen: (open: boolean) => void
   setChartDialogOpen: (open: boolean) => void
   setMermaidDialogOpen: (open: boolean) => void
@@ -367,9 +368,16 @@ function sanitize(
     // a document requires valid name, mimeType, and asset identity
     if (node.type === "document" && (!node.name || !node.mimeType || (!node.assetId && !node.src))) continue
     // media requires name, kind, and source
-    if (node.type === "media" && (!node.name || !node.mediaKind || !node.source)) continue
-    // embed requires a valid url
-    if (node.type === "embed" && !node.url) continue
+    if (node.type === "media") {
+      if (!node.name || !node.mediaKind || !node.source) continue
+      if (node.source.kind === "direct-url" && !isSafeMediaUrl(node.source.url)) continue
+      if (node.source.kind === "local" && !/^[\w-]{1,128}$/.test(node.source.assetId)) continue
+    }
+    // embed requires a safe and valid url
+    if (node.type === "embed") {
+      if (!node.url || !isSafeMediaUrl(node.url)) continue
+      if (node.embedUrl && !isSafeMediaUrl(node.embedUrl)) continue
+    }
     clean[id] = node
   }
   const seen = new Set<string>()

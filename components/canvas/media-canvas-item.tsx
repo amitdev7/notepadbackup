@@ -15,6 +15,7 @@ import {
   getMediaObjectUrl,
   downloadMediaAsset,
   saveMediaAsset,
+  releaseMediaObjectUrl,
 } from "@/lib/media/media-assets"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
 import {
@@ -103,8 +104,18 @@ export function MediaCanvasItem({
 
     return () => {
       cancelled = true
+      if (node.source.kind === "local") {
+        releaseMediaObjectUrl(node.source.assetId)
+      }
     }
   }, [node.source])
+
+  // Ensure coordinator is updated on unmount
+  useEffect(() => {
+    return () => {
+      playbackCoordinator.notifyPause(node.id)
+    }
+  }, [node.id])
 
   // 2. Playback coordinator listener (pause if another player plays in solo mode)
   useEffect(() => {
@@ -215,22 +226,20 @@ export function MediaCanvasItem({
   )
 
   const handleFullscreen = useCallback(() => {
-    if (videoRef.current) {
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch(() => {})
-      } else {
-        videoRef.current.requestFullscreen().catch(() => {})
-      }
+    if (typeof document === "undefined" || !videoRef.current) return
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {})
+    } else {
+      videoRef.current.requestFullscreen().catch(() => {})
     }
   }, [])
 
   const handlePictureInPicture = useCallback(() => {
-    if (videoRef.current && "requestPictureInPicture" in videoRef.current) {
-      if (document.pictureInPictureElement) {
-        document.exitPictureInPicture().catch(() => {})
-      } else {
-        videoRef.current.requestPictureInPicture().catch(() => {})
-      }
+    if (typeof document === "undefined" || !videoRef.current || !("requestPictureInPicture" in videoRef.current)) return
+    if (document.pictureInPictureElement) {
+      document.exitPictureInPicture().catch(() => {})
+    } else {
+      videoRef.current.requestPictureInPicture().catch(() => {})
     }
   }, [])
 
@@ -417,6 +426,14 @@ export function MediaCanvasItem({
               muted={isMuted}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false)
+                playbackCoordinator.notifyPause(node.id)
+              }}
+              onError={() => {
+                setLoadError(true)
+                setIsLoading(false)
+              }}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               className="max-w-full max-h-full object-contain cursor-pointer"
@@ -508,7 +525,7 @@ export function MediaCanvasItem({
                     </button>
 
                     {/* PiP */}
-                    {"pictureInPictureEnabled" in document && (
+                    {typeof document !== "undefined" && "pictureInPictureEnabled" in document && (
                       <button type="button" onClick={handlePictureInPicture} className="hover:text-orange-400 p-1" title="Picture in Picture">
                         <PictureInPicture size={16} />
                       </button>
@@ -535,6 +552,14 @@ export function MediaCanvasItem({
               muted={isMuted}
               onPlay={() => setIsPlaying(true)}
               onPause={() => setIsPlaying(false)}
+              onEnded={() => {
+                setIsPlaying(false)
+                playbackCoordinator.notifyPause(node.id)
+              }}
+              onError={() => {
+                setLoadError(true)
+                setIsLoading(false)
+              }}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               className="hidden"

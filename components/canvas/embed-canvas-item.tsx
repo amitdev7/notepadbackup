@@ -156,6 +156,14 @@ export function EmbedCanvasItem({
         <div className="flex items-center gap-1 shrink-0">
           <button
             type="button"
+            onClick={() => setIsBlocked((b) => !b)}
+            className={cn("p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]", isBlocked && "text-amber-500")}
+            title={isBlocked ? "Show embedded iframe" : "Switch to fallback preview card"}
+          >
+            <Lock size={12} weight={isBlocked ? "bold" : "regular"} />
+          </button>
+          <button
+            type="button"
             onClick={handleReload}
             className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
             title="Reload embed"
@@ -211,6 +219,7 @@ export function EmbedCanvasItem({
             className="w-full h-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
+            onError={() => setIsBlocked(true)}
             {...iframeAttrs}
           />
         )}

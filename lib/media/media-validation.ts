@@ -154,9 +154,29 @@ export async function validateMediaMagicBytes(
     return { valid: false }
   }
 
+  // Reject known executable, script, and HTML signatures immediately
+  if (bytes[0] === 0x4d && bytes[1] === 0x5a) {
+    // Windows PE / EXE / DLL ("MZ")
+    return { valid: false }
+  }
+  if (bytes[0] === 0x7f && bytes[1] === 0x45 && bytes[2] === 0x4c && bytes[3] === 0x46) {
+    // Linux ELF binary
+    return { valid: false }
+  }
+  if (bytes[0] === 0x23 && bytes[1] === 0x21) {
+    // Shebang script ("#!")
+    return { valid: false }
+  }
+  if (
+    (bytes[0] === 0x3c && bytes[1] === 0x21) || // "<!" (<!DOCTYPE / <!--)
+    (bytes[0] === 0x3c && bytes[1] === 0x3f) || // "<?" (<?xml / <?php)
+    (bytes[0] === 0x3c && (bytes[1] === 0x68 || bytes[1] === 0x48)) // "<h" / "<H" (<html)
+  ) {
+    return { valid: false }
+  }
+
   // 1. EBML / WebM / MKV (1A 45 DF A3)
   if (bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3) {
-    // Check if webm audio or video
     const str = new TextDecoder().decode(bytes)
     const isAudio = str.includes("webm") && blob.type.includes("audio")
     return {
@@ -224,7 +244,21 @@ export async function validateMediaMagicBytes(
     return { valid: true, detectedMime: "audio/flac", kind: "audio" }
   }
 
-  // Fallback: If browser declared valid video or audio MIME type and file is non-empty
+  // If declared as standard media type (mp4, webm, wav, mp3, ogg, flac) but didn't match signatures above, reject as spoofed
+  if (
+    blob.type === "video/mp4" ||
+    blob.type === "video/webm" ||
+    blob.type === "audio/wav" ||
+    blob.type === "audio/x-wav" ||
+    blob.type === "audio/mpeg" ||
+    blob.type === "audio/mp3" ||
+    blob.type === "audio/ogg" ||
+    blob.type === "audio/flac"
+  ) {
+    return { valid: false }
+  }
+
+  // Fallback only for uncommon browser-supported audio/video streams (e.g. m4a/aac without ftyp, amr)
   if (blob.type.startsWith("video/")) {
     return { valid: true, detectedMime: blob.type, kind: "video" }
   }

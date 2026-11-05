@@ -69,6 +69,7 @@ import {
 } from "@/lib/canvas/expiration-manager"
 import { downloadDocument } from "@/lib/storage/document-assets"
 import { downloadMediaAsset } from "@/lib/media/media-assets"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { exportExcalidrawDoc } from "@/lib/file-io"
 import type { DocumentNode, MediaNode, EmbedNode } from "@/lib/types"
 
@@ -192,7 +193,11 @@ export function CanvasContextMenu() {
               label: "Replace media…",
               icon: ArrowsClockwise,
               run: () => {
-                st().setInsertMediaDialog({ open: true, initialTab: (one as MediaNode).mediaKind })
+                st().setInsertMediaDialog({
+                  open: true,
+                  initialTab: (one as MediaNode).mediaKind,
+                  replaceNodeId: one.id,
+                })
               },
             } as Entry,
           ]
@@ -212,8 +217,26 @@ export function CanvasContextMenu() {
               run: () => {
                 const newUrl = window.prompt("Enter new embed URL:", (one as EmbedNode).url)
                 if (newUrl && newUrl.trim()) {
-                  st().checkpoint()
-                  st().updateNodes({ [one.id]: { url: newUrl.trim(), embedUrl: newUrl.trim() } })
+                  const parsed = parseMediaUrl(newUrl.trim())
+                  if (parsed) {
+                    st().checkpoint()
+                    st().updateNodes({
+                      [one.id]: {
+                        url: parsed.originalUrl,
+                        embedUrl: parsed.embedUrl,
+                        title: parsed.title,
+                        provider: parsed.provider as EmbedNode["provider"],
+                        mediaCategory: parsed.mediaCategory,
+                        aspectRatio: parsed.aspectRatio,
+                        thumbnailUrl: parsed.thumbnailUrl,
+                        authorName: parsed.authorName,
+                        providerData: parsed.providerData,
+                      },
+                    })
+                    st().setNotice(`Updated embed to "${parsed.title || parsed.originalUrl}"`)
+                  } else {
+                    st().setNotice("Invalid or restricted URL. Please enter a valid HTTP/HTTPS URL.")
+                  }
                 }
               },
             } as Entry,
