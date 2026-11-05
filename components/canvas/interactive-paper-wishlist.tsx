@@ -3,14 +3,20 @@
 // ---------------------------------------------------------------------------
 // Zenithsui Interactive Component — 1:1 Aesthetic Paper Wishlist
 //
-// Bulletproof Stationery Wishlist with:
-// - 100% 1:1 visual match to the original paper checklist
-// - Live image pasting (Ctrl+V / Cmd+V) with global window listener & dropzone
-// - Native file picker & drag-and-drop image upload
-// - Zero popover collisions: inline text editing directly in place
-// - Smart popover positioning (auto-flips upwards near bottom to prevent clipping)
-// - 1:1 photo cutouts (Matcha, Girls, Shopping, Coffee)
-// - Clickable square checkboxes with tactile feedback & sound
+// 100% 1:1 stationery paper wishlist matching the reference design:
+// - Physical ivory stationery sheet with photo-extracted torn deckle bottom edge
+// - Metallic silver paperclip with drop shadow hanging over top-left margin
+// - Tilted vibrant orange stars (#FC883F) flanking display typography
+// - Bold, rounded lowercase title ("bank holiday wishlist")
+// - 4 fine dashed divider lines across the sheet
+// - Clean square checkboxes (34×34px) with fine pen outline & tactile check
+// - Real photo sticker cutouts (Matcha, Girls Day Out, Shopping Bags, Coffee)
+// - LIVE IMAGE COPY-PASTE (Ctrl+V / Cmd+V) directly onto any sticker slot
+// - Async Clipboard API button + Drag-and-drop + Native file picker
+// - Elevated floating popover rendered OUTSIDE clip-path (zero clipping)
+// - Soft backdrop preventing dual-modal / click-through collisions
+// - Smooth inline text editing in place (zero clunky floating popups)
+// - Native canvas drag handles (data-node-drag-handle="true")
 // - Immediate persistence to IndexedDB and real-time collaboration sync
 // ---------------------------------------------------------------------------
 
@@ -33,6 +39,8 @@ import {
   ArrowCounterClockwise,
   X,
   Camera,
+  Sparkle,
+  Image as ImageIcon,
 } from "@phosphor-icons/react"
 
 interface InteractivePaperWishlistProps {
@@ -94,10 +102,11 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
 
   // Inline item text editing (mutually exclusive with sticker popup)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
-  const [editField, setEditField] = useState<"text" | "subtext" | null>(null)
 
   // Sticker popover menu state
   const [activeStickerRow, setActiveStickerRow] = useState<string | null>(null)
+  const [pasteNotice, setPasteNotice] = useState<string | null>(null)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const targetStickerItemRef = useRef<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -135,40 +144,95 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           : it
       )
       commitProps({ items: updated })
-      setActiveStickerRow(null)
+      setPasteNotice("Image applied! ✨")
+      setTimeout(() => {
+        setPasteNotice(null)
+        setActiveStickerRow(null)
+      }, 600)
     },
     [items, commitProps]
   )
 
-  // ── Global Paste Listener for Active Sticker Slot ─────────────────────────
+  // ── Bulletproof Global Keyboard Paste Listener (Ctrl+V / Cmd+V) ──────────
   useEffect(() => {
     if (!activeStickerRow) return
 
     const handleGlobalPaste = (e: ClipboardEvent) => {
-      const clipboardItems = e.clipboardData?.items
-      if (!clipboardItems) return
+      // 1. Process clipboard items
+      const clipItems = e.clipboardData?.items
+      if (clipItems && clipItems.length > 0) {
+        for (let i = 0; i < clipItems.length; i++) {
+          const item = clipItems[i]
+          if (item.type.startsWith("image/")) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            const file = item.getAsFile()
+            if (!file) continue
+            const reader = new FileReader()
+            reader.onload = (ev) => {
+              const dataUrl = ev.target?.result as string
+              if (dataUrl) applyImageToItem(activeStickerRow, dataUrl)
+            }
+            reader.readAsDataURL(file)
+            return
+          }
+        }
+      }
 
-      for (let i = 0; i < clipboardItems.length; i++) {
-        const item = clipboardItems[i]
-        if (item.type.startsWith("image/")) {
+      // 2. Process clipboard files
+      const files = e.clipboardData?.files
+      if (files && files.length > 0) {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          if (file.type.startsWith("image/")) {
+            e.preventDefault()
+            e.stopPropagation()
+            e.stopImmediatePropagation()
+            const reader = new FileReader()
+            reader.onload = (ev) => {
+              const dataUrl = ev.target?.result as string
+              if (dataUrl) applyImageToItem(activeStickerRow, dataUrl)
+            }
+            reader.readAsDataURL(file)
+            return
+          }
+        }
+      }
+
+      // 3. Process clipboard text (image URL or data URL)
+      const text = e.clipboardData?.getData("text")?.trim()
+      if (text) {
+        if (
+          text.startsWith("data:image/") ||
+          /^https?:\/\/.*\.(png|jpe?g|webp|svg|gif)(\?.*)?$/i.test(text)
+        ) {
           e.preventDefault()
           e.stopPropagation()
-          const file = item.getAsFile()
-          if (!file) continue
-          const reader = new FileReader()
-          reader.onload = (ev) => {
-            const dataUrl = ev.target?.result as string
-            if (dataUrl) applyImageToItem(activeStickerRow, dataUrl)
-          }
-          reader.readAsDataURL(file)
+          e.stopImmediatePropagation()
+          applyImageToItem(activeStickerRow, text)
           return
         }
       }
     }
 
+    // Capture phase intercepts before canvas listener
     window.addEventListener("paste", handleGlobalPaste, true)
     return () => window.removeEventListener("paste", handleGlobalPaste, true)
   }, [activeStickerRow, applyImageToItem])
+
+  // ── Keyboard Escape Closes Modals ─────────────────────────────────────────
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActiveStickerRow(null)
+        setEditingItemId(null)
+        setEditingTitle(false)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [])
 
   // ── Clipboard API Button Handler ──────────────────────────────────────────
   const handlePasteFromClipboardBtn = async (itemId: string, e: React.MouseEvent) => {
@@ -190,9 +254,21 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           }
         }
       }
+
+      if (typeof navigator !== "undefined" && navigator.clipboard?.readText) {
+        const text = (await navigator.clipboard.readText()).trim()
+        if (
+          text.startsWith("data:image/") ||
+          /^https?:\/\/.*\.(png|jpe?g|webp|svg|gif)(\?.*)?$/i.test(text)
+        ) {
+          applyImageToItem(itemId, text)
+          return
+        }
+      }
     } catch {
-      // Browser permissions or prompt: trigger file input as seamless fallback
+      // Permission denied or prompt: fallback cleanly to native file picker
     }
+
     targetStickerItemRef.current = itemId
     fileInputRef.current?.click()
   }
@@ -288,6 +364,10 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
     commitProps({ items: updated })
   }
 
+  // Active item reference for sticker customization
+  const activeItem = items.find((it) => it.id === activeStickerRow)
+  const activeItemIndex = items.findIndex((it) => it.id === activeStickerRow)
+
   return (
     <div
       ref={containerRef}
@@ -304,7 +384,7 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
         setEditingItemId(null)
       }}
     >
-      {/* Hidden File Picker */}
+      {/* Hidden Native File Picker */}
       <input
         ref={fileInputRef}
         type="file"
@@ -313,16 +393,18 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
         onChange={handleFileInputChange}
       />
 
-      {/* ── 1:1 Silver Metal Paperclip ── */}
+      {/* ── 1:1 Silver Metal Paperclip (Canvas Drag Handle) ── */}
       {showPaperclip && (
         <div
-          className="absolute -top-4 left-[11%] z-30 pointer-events-none"
+          data-node-drag-handle="true"
+          className="absolute -top-4 left-[11%] z-30 cursor-grab active:cursor-grabbing"
           style={{ width: "38px", height: "92px" }}
+          title="Drag paper wishlist"
         >
           <img
             src="/wishlist-stickers/paperclip_transparent.png"
             alt="Paperclip"
-            className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.22)]"
+            className="w-full h-full object-contain filter drop-shadow-[0_2px_4px_rgba(0,0,0,0.22)] pointer-events-none"
             onError={(e) => {
               e.currentTarget.style.display = "none"
             }}
@@ -337,7 +419,7 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           borderTopLeftRadius: "3px",
           borderTopRightRadius: "3px",
           clipPath: TORN_BOTTOM_CLIP_PATH,
-          fontFamily: "'Poppins', 'Century Gothic', -apple-system, sans-serif",
+          fontFamily: "'Poppins', 'Century Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         }}
       >
         {/* Subtle Paper Fiber Texture */}
@@ -349,8 +431,11 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           }}
         />
 
-        {/* ── Header: Stars & 1:1 Title ── */}
-        <div className="relative flex items-center justify-center mt-1 mb-4">
+        {/* ── Header: Stars & 1:1 Title (Canvas Drag Area) ── */}
+        <div
+          data-node-drag-handle="true"
+          className="relative flex items-center justify-center mt-1 mb-4 cursor-grab active:cursor-grabbing"
+        >
           {/* Left Star (tilted -14deg, #FC883F) */}
           {showStars && (
             <svg
@@ -359,6 +444,10 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
               viewBox="0 0 24 24"
               className="absolute left-6 top-1 -rotate-[14deg] transition-transform duration-200 hover:scale-125 cursor-pointer drop-shadow-xs"
               style={{ fill: accentHex, color: accentHex }}
+              onClick={(e) => {
+                e.stopPropagation()
+                audioFx.playReactionPop()
+              }}
             >
               <polygon points="12,2.2 15.2,8.8 22.5,9.4 17,14.2 18.7,21.4 12,17.6 5.3,21.4 7,14.2 1.5,9.4 8.8,8.8" />
             </svg>
@@ -369,6 +458,7 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
             onClick={(e) => {
               e.stopPropagation()
               setActiveStickerRow(null)
+              setEditingItemId(null)
               setEditingTitle(true)
             }}
             className="flex flex-col items-center justify-center text-center cursor-pointer group px-4 py-0.5 rounded-lg hover:bg-stone-200/40 transition-colors"
@@ -391,6 +481,8 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                     if (e.key === "Enter") {
                       setEditingTitle(false)
                       commitProps({ titleLine1: t1.trim() || "bank holiday", titleLine2: t2.trim() || "wishlist" })
+                    } else if (e.key === "Escape") {
+                      setEditingTitle(false)
                     }
                   }}
                   className="text-[28px] sm:text-[32px] font-[800] leading-[1.05] tracking-[-0.025em] lowercase text-center bg-transparent border-b border-dashed border-orange-400 focus:outline-none w-56"
@@ -409,6 +501,8 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                     if (e.key === "Enter") {
                       setEditingTitle(false)
                       commitProps({ titleLine1: t1.trim() || "bank holiday", titleLine2: t2.trim() || "wishlist" })
+                    } else if (e.key === "Escape") {
+                      setEditingTitle(false)
                     }
                   }}
                   className="text-[28px] sm:text-[32px] font-[800] leading-[1.05] tracking-[-0.025em] lowercase text-center bg-transparent border-b border-dashed border-orange-400 focus:outline-none w-56 mt-0.5"
@@ -441,6 +535,10 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
               viewBox="0 0 24 24"
               className="absolute right-6 top-1 rotate-[14deg] transition-transform duration-200 hover:scale-125 cursor-pointer drop-shadow-xs"
               style={{ fill: accentHex, color: accentHex }}
+              onClick={(e) => {
+                e.stopPropagation()
+                audioFx.playReactionPop()
+              }}
             >
               <polygon points="12,2.2 15.2,8.8 22.5,9.4 17,14.2 18.7,21.4 12,17.6 5.3,21.4 7,14.2 1.5,9.4 8.8,8.8" />
             </svg>
@@ -453,7 +551,8 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
         {/* ── Wishlist Rows ── */}
         <div className="flex-1 flex flex-col justify-around py-1">
           {items.map((item, idx) => {
-            const isBottomHalf = idx >= Math.max(1, items.length - 2)
+            const isEditingThisItem = editingItemId === item.id
+            const isActiveSticker = activeStickerRow === item.id
 
             return (
               <div key={item.id} className="relative group/row flex flex-col">
@@ -470,15 +569,17 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                         e.stopPropagation()
                         setEditingItemId(null)
                         setEditingTitle(false)
-                        setActiveStickerRow(activeStickerRow === item.id ? null : item.id)
+                        setActiveStickerRow(isActiveSticker ? null : item.id)
                       }}
                       className={cn(
                         "relative w-16 h-16 sm:w-[72px] sm:h-[72px] flex items-center justify-center rounded-xl",
                         "cursor-pointer outline-none transition-all duration-150",
                         "hover:ring-2 hover:ring-orange-400/50 hover:scale-[1.03] active:scale-95",
-                        activeStickerRow === item.id && "ring-2 ring-orange-500 shadow-md bg-white/70"
+                        isActiveSticker
+                          ? "ring-2 ring-orange-500 shadow-md bg-white/80"
+                          : "hover:bg-white/40"
                       )}
-                      title="Click to paste (Ctrl+V) or change image"
+                      title="Click to paste (Ctrl+V) or customize sticker"
                     >
                       {/* Sticker Graphic */}
                       {renderStickerImage(item, idx)}
@@ -489,111 +590,9 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                         <span>Change</span>
                       </div>
                     </div>
-
-                    {/* ── Clean Popover (Auto-positions Upwards on Bottom Rows to Prevent Clipping) ── */}
-                    {activeStickerRow === item.id && (
-                      <div
-                        onClick={(e) => e.stopPropagation()}
-                        className={cn(
-                          "absolute left-0 z-50 p-3.5 bg-white rounded-2xl shadow-2xl border border-stone-200 w-72 animate-in fade-in zoom-in-95 duration-150 text-stone-900",
-                          isBottomHalf ? "bottom-full mb-3" : "top-full mt-2"
-                        )}
-                        style={{
-                          boxShadow: "0 20px 45px -10px rgba(0,0,0,0.25), 0 8px 18px rgba(0,0,0,0.12)",
-                        }}
-                      >
-                        {/* Header */}
-                        <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2.5">
-                          <span className="text-[11px] font-extrabold text-stone-500 uppercase tracking-wider">
-                            Customize Sticker
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setActiveStickerRow(null)}
-                            className="p-1 rounded-md text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-
-                        {/* Paste Action Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => handlePasteFromClipboardBtn(item.id, e)}
-                          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-700 text-xs font-bold border border-orange-200 transition-all shadow-xs cursor-pointer mb-2"
-                        >
-                          <Clipboard size={15} weight="bold" />
-                          <span>Paste copied image (Ctrl+V)</span>
-                        </button>
-
-                        {/* Upload File Button */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            targetStickerItemRef.current = item.id
-                            fileInputRef.current?.click()
-                          }}
-                          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-700 text-xs font-semibold transition-all cursor-pointer mb-3"
-                        >
-                          <UploadSimple size={15} weight="bold" />
-                          <span>Upload from device…</span>
-                        </button>
-
-                        {/* Drag and Drop Zone Hint */}
-                        <div
-                          onDragOver={(e) => {
-                            e.preventDefault()
-                            e.dataTransfer.dropEffect = "copy"
-                          }}
-                          onDrop={(e) => handleDropImage(e, item.id)}
-                          className="border border-dashed border-stone-300 rounded-xl py-2 px-2 text-center text-[10px] text-stone-400 mb-3 bg-stone-50/50"
-                        >
-                          Drag & drop image here or press <span className="font-mono font-bold text-stone-600">Ctrl+V</span>
-                        </div>
-
-                        {/* Original Presets */}
-                        <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">
-                          Original Presets
-                        </div>
-                        <div className="grid grid-cols-4 gap-1.5 mb-2.5">
-                          {ORIGINAL_PRESETS.map((stk) => (
-                            <button
-                              key={stk.id}
-                              type="button"
-                              onClick={() => handleSelectPreset(item.id, stk.id)}
-                              className={cn(
-                                "flex flex-col items-center justify-center p-1.5 rounded-xl transition-all cursor-pointer border",
-                                item.icon === stk.id
-                                  ? "bg-orange-50 border-orange-300 text-orange-700"
-                                  : "border-stone-100 hover:bg-stone-100 text-stone-700"
-                              )}
-                              title={stk.label}
-                            >
-                              <span className="text-lg">{stk.emoji}</span>
-                              <span className="text-[8px] font-bold truncate max-w-full mt-0.5">
-                                {stk.id}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-
-                        {/* Reset Button */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const defPreset = DEFAULT_WISHLIST_ITEMS[idx]?.icon || "matcha"
-                            handleSelectPreset(item.id, defPreset)
-                          }}
-                          className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium text-stone-500 hover:text-stone-800 border-t border-stone-100 cursor-pointer transition-colors"
-                        >
-                          <ArrowCounterClockwise size={13} />
-                          <span>Reset to original photo cutout</span>
-                        </button>
-                      </div>
-                    )}
                   </div>
 
-                  {/* 2. Middle Text (Direct Inline Editing Without Clunky Overlays) */}
+                  {/* 2. Middle Text (Direct In-Place Editing Without Overlays) */}
                   <div
                     onClick={(e) => {
                       e.stopPropagation()
@@ -601,56 +600,63 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                       setEditingItemId(item.id)
                     }}
                     className="flex-1 flex flex-col justify-center cursor-text min-w-0 pr-1"
-                    title="Click to edit text"
+                    title="Click to edit details"
                   >
-                    {/* Line 1: Main Title */}
-                    <input
-                      type="text"
-                      value={item.text}
-                      onChange={(e) => handleUpdateItemField(item.id, "text", e.target.value)}
-                      onFocus={() => {
-                        setActiveStickerRow(null)
-                        setEditingItemId(item.id)
-                        setEditField("text")
-                      }}
-                      onBlur={() => {
-                        setEditingItemId(null)
-                        setEditField(null)
-                      }}
-                      className={cn(
-                        "w-full bg-transparent px-1 py-0.5 rounded transition-all focus:outline-none",
-                        "text-[14px] sm:text-[15px] font-[400] text-[#1C1917] leading-[1.25] tracking-normal",
-                        editingItemId === item.id && editField === "text"
-                          ? "bg-white/80 ring-1 ring-orange-400 shadow-xs"
-                          : "hover:bg-stone-200/40",
-                        item.done && "line-through text-stone-400 opacity-60"
-                      )}
-                    />
-
-                    {/* Line 2: Subtext / Notes */}
-                    <input
-                      type="text"
-                      value={item.subtext || ""}
-                      placeholder="Add subtext…"
-                      onChange={(e) => handleUpdateItemField(item.id, "subtext", e.target.value)}
-                      onFocus={() => {
-                        setActiveStickerRow(null)
-                        setEditingItemId(item.id)
-                        setEditField("subtext")
-                      }}
-                      onBlur={() => {
-                        setEditingItemId(null)
-                        setEditField(null)
-                      }}
-                      className={cn(
-                        "w-full bg-transparent px-1 py-0.5 rounded transition-all focus:outline-none mt-0.5",
-                        "text-[13px] sm:text-[14px] font-[400] text-[#1C1917] leading-[1.25] tracking-normal",
-                        editingItemId === item.id && editField === "subtext"
-                          ? "bg-white/80 ring-1 ring-orange-400 shadow-xs"
-                          : "hover:bg-stone-200/40",
-                        item.done && "line-through text-stone-400 opacity-50"
-                      )}
-                    />
+                    {isEditingThisItem ? (
+                      <div
+                        className="flex flex-col gap-1 w-full"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {/* Title input */}
+                        <input
+                          type="text"
+                          value={item.text}
+                          onChange={(e) => handleUpdateItemField(item.id, "text", e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === "Escape") {
+                              setEditingItemId(null)
+                            }
+                          }}
+                          placeholder="Item title…"
+                          autoFocus
+                          className="w-full bg-white/90 ring-1 ring-orange-400 rounded px-1.5 py-0.5 text-[14px] sm:text-[15px] font-[500] text-[#1C1917] leading-[1.25] focus:outline-none shadow-2xs"
+                        />
+                        {/* Subtext input */}
+                        <input
+                          type="text"
+                          value={item.subtext || ""}
+                          placeholder="Details / notes (optional)…"
+                          onChange={(e) => handleUpdateItemField(item.id, "subtext", e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === "Escape") {
+                              setEditingItemId(null)
+                            }
+                          }}
+                          className="w-full bg-white/90 ring-1 ring-orange-400 rounded px-1.5 py-0.5 text-[13px] sm:text-[14px] font-[400] text-[#1C1917] leading-[1.25] focus:outline-none shadow-2xs"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex flex-col py-0.5 px-1 rounded hover:bg-stone-200/40 transition-colors">
+                        <span
+                          className={cn(
+                            "text-[14.5px] sm:text-[15.5px] font-[400] text-[#1C1917] leading-[1.25] tracking-normal",
+                            item.done && "line-through text-stone-400 opacity-60"
+                          )}
+                        >
+                          {item.text}
+                        </span>
+                        {item.subtext && (
+                          <span
+                            className={cn(
+                              "text-[13.5px] sm:text-[14.5px] font-[400] text-[#1C1917] leading-[1.25] tracking-normal mt-0.5",
+                              item.done && "line-through text-stone-400 opacity-50"
+                            )}
+                          >
+                            {item.subtext}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* 3. 1:1 Large Square Checkbox */}
@@ -710,6 +716,152 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           </div>
         )}
       </div>
+
+      {/* ── 4. Elevated Sticker Customization Modal (Rendered OUTSIDE clipPath to PREVENT clipping) ── */}
+      {activeStickerRow && activeItem && (
+        <>
+          {/* Backdrop overlay to prevent click-through and dismiss cleanly */}
+          <div
+            className="absolute inset-0 z-40 bg-black/15 backdrop-blur-[1px] rounded-xl transition-opacity animate-in fade-in duration-100"
+            onClick={(e) => {
+              e.stopPropagation()
+              setActiveStickerRow(null)
+            }}
+          />
+
+          {/* Elevated Floating Popover Card */}
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className={cn(
+              "absolute z-50 left-3.5 right-3.5 p-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-200 text-stone-900 animate-in fade-in zoom-in-95 duration-150",
+              activeItemIndex === 0
+                ? "top-[125px]"
+                : activeItemIndex === 1
+                ? "top-[160px]"
+                : "top-[190px]"
+            )}
+            style={{
+              boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.12)",
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-stone-100 pb-2.5 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-1 rounded-md bg-orange-100 text-orange-600">
+                  <Sparkle size={14} weight="fill" />
+                </span>
+                <span className="text-[12px] font-extrabold text-stone-700 uppercase tracking-wider">
+                  Customize Sticker
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveStickerRow(null)}
+                className="p-1 rounded-md text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition-colors"
+                title="Close"
+              >
+                <X size={15} weight="bold" />
+              </button>
+            </div>
+
+            {/* Notification Toast */}
+            {pasteNotice && (
+              <div className="mb-2 py-1.5 px-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold rounded-lg text-center animate-in fade-in duration-150">
+                {pasteNotice}
+              </div>
+            )}
+
+            {/* Sticker Preview & Current Slot Info */}
+            <div className="flex items-center gap-3 p-2 rounded-xl bg-stone-50 border border-stone-100 mb-3">
+              <div className="w-12 h-12 rounded-lg bg-white shadow-2xs border border-stone-200 flex items-center justify-center p-1 shrink-0">
+                {renderStickerImage(activeItem, activeItemIndex)}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs font-bold text-stone-800 truncate">
+                  {activeItem.text}
+                </span>
+                <span className="text-[11px] text-stone-400">
+                  {activeItem.customIconUrl ? "Custom pasted image" : "Preset sticker"}
+                </span>
+              </div>
+            </div>
+
+            {/* Primary Action 1: Paste Copied Image (Ctrl+V) */}
+            <button
+              type="button"
+              onClick={(e) => handlePasteFromClipboardBtn(activeItem.id, e)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#FC883F] hover:bg-[#F37525] active:bg-[#D96014] text-white text-xs font-bold transition-all shadow-xs cursor-pointer mb-2 active:scale-98"
+            >
+              <Clipboard size={16} weight="bold" />
+              <span>Paste copied image (Ctrl+V)</span>
+            </button>
+
+            {/* Primary Action 2: Upload File */}
+            <button
+              type="button"
+              onClick={() => {
+                targetStickerItemRef.current = activeItem.id
+                fileInputRef.current?.click()
+              }}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-stone-300 text-stone-700 text-xs font-semibold transition-all cursor-pointer mb-2.5 active:scale-98"
+            >
+              <UploadSimple size={15} weight="bold" />
+              <span>Upload image from device…</span>
+            </button>
+
+            {/* Drag & Drop Hint */}
+            <div
+              onDragOver={(e) => {
+                e.preventDefault()
+                e.dataTransfer.dropEffect = "copy"
+              }}
+              onDrop={(e) => handleDropImage(e, activeItem.id)}
+              className="border border-dashed border-stone-300 rounded-xl py-2 px-2 text-center text-[10px] text-stone-500 mb-3 bg-stone-50/60"
+            >
+              Or copy any image and press <kbd className="font-mono font-bold text-stone-800 bg-white px-1.5 py-0.5 rounded border border-stone-200 shadow-2xs">Ctrl+V</kbd>
+            </div>
+
+            {/* Original Presets */}
+            <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">
+              Original Photo Cutouts
+            </div>
+            <div className="grid grid-cols-4 gap-1.5 mb-2.5">
+              {ORIGINAL_PRESETS.map((stk) => (
+                <button
+                  key={stk.id}
+                  type="button"
+                  onClick={() => handleSelectPreset(activeItem.id, stk.id)}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-1.5 rounded-xl transition-all cursor-pointer border",
+                    activeItem.icon === stk.id
+                      ? "bg-orange-50 border-orange-300 text-orange-700 shadow-xs"
+                      : "border-stone-100 hover:bg-stone-100 text-stone-700"
+                  )}
+                  title={stk.label}
+                >
+                  <span className="text-xl">{stk.emoji}</span>
+                  <span className="text-[8px] font-bold truncate max-w-full mt-0.5">
+                    {stk.id}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Reset Button */}
+            <button
+              type="button"
+              onClick={() => {
+                const defPreset = DEFAULT_WISHLIST_ITEMS[activeItemIndex]?.icon || "matcha"
+                handleSelectPreset(activeItem.id, defPreset)
+              }}
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] font-medium text-stone-500 hover:text-stone-800 border-t border-stone-100 cursor-pointer transition-colors"
+            >
+              <ArrowCounterClockwise size={13} />
+              <span>Reset to default photo sticker</span>
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 })
@@ -722,7 +874,7 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
       <img
         src={item.customIconUrl}
         alt={item.text}
-        className="w-full h-full object-contain filter drop-shadow-sm rounded-md"
+        className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.18)] rounded-md"
       />
     )
   }
@@ -733,7 +885,7 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
       <img
         src="/wishlist-stickers/matcha_transparent.png"
         alt="Matcha drinks"
-        className="w-full h-full object-contain filter drop-shadow-sm"
+        className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
       />
     )
   }
@@ -743,7 +895,7 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
       <img
         src="/wishlist-stickers/girls_transparent.png"
         alt="Day out with the girls"
-        className="w-full h-full object-contain filter drop-shadow-sm"
+        className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
       />
     )
   }
@@ -753,7 +905,7 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
       <img
         src="/wishlist-stickers/shopping_transparent.png"
         alt="Shopping bags"
-        className="w-full h-full object-contain filter drop-shadow-sm"
+        className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
       />
     )
   }
@@ -762,7 +914,7 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
     <img
       src="/wishlist-stickers/coffee_transparent.png"
       alt="Iced coffee"
-      className="w-full h-full object-contain filter drop-shadow-sm"
+      className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
     />
   )
 }
