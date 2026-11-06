@@ -49,6 +49,7 @@ import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
 import { InteractivePaperWishlist } from "./interactive-paper-wishlist"
+import { InteractiveMathStudyTracker } from "./interactive-math-study-tracker"
 import { DocumentCanvasItem } from "./document-canvas-item"
 import { DocumentViewerModal } from "./document-viewer-modal"
 import { MediaCanvasItem } from "./media-canvas-item"
@@ -66,6 +67,7 @@ import { useCollabStore } from "@/lib/collaboration/collab-store"
 const INTERACTIVE_COMPONENTS: Record<string, React.ComponentType<{ node: any; selected: boolean; zoom: number }>> = {
   "functional-calendar": FunctionalCalendar,
   "paper-wishlist": InteractivePaperWishlist,
+  "math-study-tracker": InteractiveMathStudyTracker,
 }
 
 const MIN_ZOOM = 0.1

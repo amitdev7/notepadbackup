@@ -169,6 +169,32 @@ class AudioHapticsSynthesizer {
     osc.stop(now + 0.05)
   }
 
+  /** Crisp tactile click when checking boxes or toggling buttons */
+  playClick(): void {
+    if (!this.isEnabled()) return
+    const ctx = this.getContext()
+    if (!ctx) return
+
+    const now = ctx.currentTime
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+
+    osc.type = "sine"
+    osc.frequency.setValueAtTime(820, now)
+    osc.frequency.exponentialRampToValueAtTime(380, now + 0.018)
+
+    const vol = this.getMasterVolume() * 0.22
+    gain.gain.setValueAtTime(0, now)
+    gain.gain.linearRampToValueAtTime(vol, now + 0.002)
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02)
+
+    osc.connect(gain)
+    gain.connect(ctx.destination)
+
+    osc.start(now)
+    osc.stop(now + 0.022)
+  }
+
   /** Bouncy bubble pop when sending or receiving live emoji reactions */
   playReactionPop(): void {
     if (!this.isEnabled()) return
