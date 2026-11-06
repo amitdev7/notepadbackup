@@ -44,12 +44,13 @@ export async function enqueueMutation(
         const existingUpsert = existingList.find((m) => m.type === "upsert_document")
 
         if (type === "upsert_document" && existingUpsert) {
-          // Collapse into existing mutation: preserve initial baseRevision, update payload & timestamp
+          // Collapse into existing mutation: preserve initial baseRevision & idempotencyKey, update payload & timestamp
           existingUpsert.payload = {
             ...existingUpsert.payload,
             ...payload,
             documentJson: payload.documentJson || existingUpsert.payload.documentJson,
           }
+          existingUpsert.idempotencyKey = existingUpsert.idempotencyKey || `idem_${docId}_${existingUpsert.createdAt}`
           existingUpsert.retryCount = 0
           existingUpsert.nextRetryAt = Date.now()
           store.put(existingUpsert)
@@ -60,6 +61,7 @@ export async function enqueueMutation(
             docId,
             type,
             baseRevision,
+            idempotencyKey: `idem_${docId}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
             payload,
             retryCount: 0,
             nextRetryAt: Date.now(),

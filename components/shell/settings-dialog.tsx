@@ -12,7 +12,7 @@
 //   Advanced, About, and Future / Coming Soon.
 // ---------------------------------------------------------------------------
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import {
   useShellStore,
   syncThemeToDOM,
@@ -1119,7 +1119,7 @@ function StorageSection() {
     }
   }
 
-  const refreshStorageAndSnapshots = async () => {
+  const refreshStorageAndSnapshots = useCallback(async () => {
     try {
       const quota = await getStorageQuotaEstimate()
       setQuotaInfo(quota)
@@ -1131,11 +1131,11 @@ function StorageSection() {
     } catch {} finally {
       setLoadingSnapshots(false)
     }
-  }
+  }, [currentDocId])
 
   useEffect(() => {
     refreshStorageAndSnapshots()
-  }, [currentDocId])
+  }, [refreshStorageAndSnapshots])
 
   const handleRequestPersistence = async () => {
     setPersisting(true)

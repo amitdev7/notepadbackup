@@ -811,7 +811,7 @@ export function EmbedCanvasItem({
               ref={iframeRef}
               src={computedEmbedUrl}
               title={node.title || "Embedded Content"}
-              className="w-full h-full border-0"
+              className={cn("w-full h-full border-0", isVideoProvider && isCleanMode && "pointer-events-none")}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               onLoad={handleIframeLoad}

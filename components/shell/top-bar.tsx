@@ -22,6 +22,7 @@ import { useSyncStore } from "@/lib/sync/engine"
 import { SyncStatusPill } from "@/components/shell/sync-status-pill"
 import { PencilSimple, Check } from "@phosphor-icons/react"
 import { useTranslation } from "@/lib/i18n/use-translation"
+import { cn } from "@/lib/utils"
 
 export function TopBar() {
   // Automatically detects same Wi-Fi network and keeps canvas in sync across all devices

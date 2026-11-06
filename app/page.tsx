@@ -73,6 +73,15 @@ export default function Home() {
     useAuthStore.getState().initialize()
     migrateLocalStorageToIndexedDB()
 
+    // Check URL ?doc= parameter and open requested document if specified
+    try {
+      const urlParams = new URLSearchParams(window.location.search)
+      const requestedDocId = urlParams.get("doc")
+      if (requestedDocId && requestedDocId !== useSquig.getState().docId) {
+        useSquig.getState().openFile(requestedDocId)
+      }
+    } catch {}
+
     const onExit = () => {
       useSquig.getState().saveNow()
     }

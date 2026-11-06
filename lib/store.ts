@@ -565,8 +565,6 @@ function flushSave(get: () => SquigState, force = false) {
         order: s.order,
       },
       viewState: s.viewState,
-      baseRevision: 1,
-      serverRevision: 1,
       syncStatus: "saved-locally",
       createdAt: Date.now(),
       updatedAt: Date.now(),
@@ -602,22 +600,28 @@ function flushSave(get: () => SquigState, force = false) {
         if (!s.cloudDocId) {
           useSquig.setState({ cloudDocId: cloudId })
         }
-        import("./sync/queue").then(({ enqueueMutation }) => {
-          enqueueMutation(cloudId, "upsert_document", 1, {
-            name: s.fileName,
-            documentJson: {
-              nodes: s.nodes,
-              order: s.order,
-              look: lookOf(s),
-            },
-          }).then(() => {
-            import("./sync/engine").then(({ runSyncWorker }) => {
-              runSyncWorker()
+        Promise.all([
+          import("./sync/queue"),
+          import("./storage/documents"),
+        ]).then(([{ enqueueMutation }, { getLocalDocument }]) => {
+          getLocalDocument(cloudId).then((rec) => {
+            const baseRev = rec?.baseRevision ?? 1
+            enqueueMutation(cloudId, "upsert_document", baseRev, {
+              name: s.fileName,
+              documentJson: {
+                nodes: s.nodes,
+                order: s.order,
+                look: lookOf(s),
+              },
+            }).then(() => {
+              import("./sync/engine").then(({ runSyncWorker }) => {
+                runSyncWorker()
+              })
+            }).catch((err) => {
+              console.warn("[sync] enqueueMutation error:", err)
             })
-          }).catch((err) => {
-            console.warn("[sync] enqueueMutation error:", err)
-          })
-        }).catch(() => { })
+          }).catch(() => {})
+        }).catch(() => {})
       }
     } catch {
       // Safe fallback
@@ -1193,17 +1197,25 @@ export const useSquig = create<SquigState>((set, get) => ({
     const prefs = loadPrefs()
     const files = listFiles()
 
-    let activeIdCandidate = prefs.activeId
+    let urlDocId: string | null = null
+    if (typeof window !== "undefined") {
+      try {
+        const urlParams = new URLSearchParams(window.location.search)
+        urlDocId = urlParams.get("doc")
+      } catch {}
+    }
+
+    let activeIdCandidate = urlDocId || prefs.activeId
     if (!activeIdCandidate && typeof window !== "undefined") {
       try {
         activeIdCandidate = localStorage.getItem("zenithsui:active_doc_id")
       } catch {}
     }
 
-    // last file open wins; failing that, active candidate or the most recent one in drawer
-    const wanted = activeIdCandidate && files.some((f) => f.id === activeIdCandidate)
+    // Explicit URL doc parameter wins first; failing that, active candidate or most recent
+    const wanted = urlDocId || (activeIdCandidate && files.some((f) => f.id === activeIdCandidate)
       ? activeIdCandidate
-      : (activeIdCandidate || files[0]?.id)
+      : (activeIdCandidate || files[0]?.id))
 
     let doc = wanted ? readFile(wanted) : null
     let clean = sanitize(doc?.nodes, doc?.order)
@@ -1275,7 +1287,7 @@ export const useSquig = create<SquigState>((set, get) => ({
         getActiveDocumentId(),
         listLocalDocuments(),
       ]).then(async ([idbActiveId, idbDocs]) => {
-        const idbTargetId = idbActiveId || wanted || activeIdCandidate || idbDocs[0]?.id
+        const idbTargetId = urlDocId || idbActiveId || wanted || activeIdCandidate || idbDocs[0]?.id
         const idbRecord = idbTargetId
           ? (await getLocalDocument(idbTargetId)) || idbDocs[0]
           : idbDocs[0]

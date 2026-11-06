@@ -19,7 +19,8 @@ export function VersionHistoryPanel({ isOpen, onClose, cloudDocId }: VersionHist
   const loadDoc = useSquig((s) => s.loadDoc)
   const fileName = useSquig((s) => s.fileName)
 
-  const effectiveDocId = cloudDocId || useSquig((s) => s.cloudDocId || s.docId)
+  const currentCloudDocId = useSquig((s) => s.cloudDocId || s.docId)
+  const effectiveDocId = cloudDocId || currentCloudDocId
 
   useEffect(() => {
     let active = true

@@ -341,6 +341,10 @@ export async function exportCompleteBackup(docIds?: string[]): Promise<void> {
                 processed++
                 if (processed === assetHashes.size) resolve()
               }
+              reader.onerror = () => {
+                processed++
+                if (processed === assetHashes.size) resolve()
+              }
               reader.readAsDataURL(record.blob)
             } else {
               processed++
@@ -412,13 +416,13 @@ export async function restoreFromBackupPackage(
         const store = tx.objectStore(STORES.ASSET_BLOBS)
         for (const [hash, assetData] of Object.entries(pkg.assets)) {
           if (assetData.dataBase64) {
-            // Convert Base64 back to Blob
+            // Convert Base64 back to Blob via single Uint8Array allocation
             const byteChars = atob(assetData.dataBase64)
-            const byteNumbers = new Array(byteChars.length)
-            for (let i = 0; i < byteChars.length; i++) {
-              byteNumbers[i] = byteChars.charCodeAt(i)
+            const len = byteChars.length
+            const byteArray = new Uint8Array(len)
+            for (let i = 0; i < len; i++) {
+              byteArray[i] = byteChars.charCodeAt(i)
             }
-            const byteArray = new Uint8Array(byteNumbers)
             const blob = new Blob([byteArray], { type: assetData.mimeType })
 
             store.put({

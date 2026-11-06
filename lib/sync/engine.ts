@@ -323,7 +323,7 @@ async function processMutation(mutation: QueuedMutation): Promise<{
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          "X-Idempotency-Key": mutation.id,
+          "X-Idempotency-Key": mutation.idempotencyKey || mutation.id,
         },
         body: JSON.stringify({
           baseRevision: mutation.baseRevision,

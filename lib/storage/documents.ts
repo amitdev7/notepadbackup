@@ -17,8 +17,8 @@ export interface StoredLocalDoc {
   name: string
   doc: SquigDoc
   cloudId?: string | null
-  baseRevision: number
-  serverRevision: number
+  baseRevision?: number
+  serverRevision?: number
   syncStatus: LocalSyncStatus
   createdAt: number
   updatedAt: number
