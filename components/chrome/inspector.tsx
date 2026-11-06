@@ -140,53 +140,9 @@ const STROKE_OPTIONS: readonly SegmentOption<StrokeWeight>[] = [
 // ---------------------------------------------------------------------------
 
 export function Inspector() {
-  const nodes = useSquig((s) => s.nodes)
-  const selection = useSquig((s) => s.selection)
-  const selectNone = useSquig((s) => s.selectNone)
-
-  const selected = useMemo(
-    () => selection.map((id) => nodes[id]).filter(Boolean) as SquigNode[],
-    [selection, nodes]
-  )
-  const empty = selected.length === 0
-
-  // When nothing is selected, don't pin page settings over the canvas.
-  // Page settings are available via the Page button in the dock.
-  if (empty) return null
-
-  const heading =
-    selected.length > 1
-      ? `${selected.length} selected`
-      : selected[0].type === "component"
-        ? (getDef((selected[0] as ComponentNode).kind)?.name ?? (selected[0] as ComponentNode).kind)
-        : selected[0].type
-
-  const subtitle = selected.length > 1 ? selectionSummary(selected) : undefined
-
-  return (
-    <Panel className="absolute top-16 right-2 sm:right-4 z-30 max-h-[calc(100vh-5rem)] w-[calc(100vw-1rem)] max-w-[272px] animate-popover-enter">
-      <div className="flex items-center justify-between">
-        <PanelHeader title={heading} subtitle={subtitle} />
-        <button
-          type="button"
-          onClick={selectNone}
-          className="tactile-btn mr-2 p-1 rounded-md text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 sm:hidden cursor-pointer"
-          title="Close inspector"
-          aria-label="Close inspector"
-        >
-          <X size={14} />
-        </button>
-      </div>
-
-      <ScrollArea className="min-h-0">
-        <div key={selection.join(",")} className="flex flex-col">
-          <SelectionEditor selected={selected} />
-        </div>
-      </ScrollArea>
-
-      <Footer selected={selected} />
-    </Panel>
-  )
+  // Permanently visible oversized right-side properties inspector replaced by
+  // the compact, context-aware FloatingContextToolbar anchored to the selection.
+  return null
 }
 
 // ---------------------------------------------------------------------------

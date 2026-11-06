@@ -44,7 +44,7 @@ import { NodeSketch, SketchPrims } from "./sketch"
 import { getDef, renderComponent } from "@/lib/library/registry"
 import { exportDoc } from "@/lib/file-io"
 import { copyAsPngWithNotice } from "@/lib/export-image"
-import { ContextRow } from "./context-row"
+import { FloatingContextToolbar } from "./floating-context-toolbar"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
 import { FunctionalCalendar } from "@/components/calendar/functional-calendar"
@@ -2463,8 +2463,8 @@ export function Canvas() {
       {/* inline text editing */}
       {editingNode && editing && <TextEditOverlay key={editingNode.id} node={editingNode} target={editing} />}
 
-      {/* context row */}
-      <ContextRow selectedNodes={selectedNodes} viewport={v} busy={!!gestureKind} />
+      {/* floating contextual editing toolbar */}
+      <FloatingContextToolbar selectedNodes={selectedNodes} viewport={v} busy={!!gestureKind} />
 
       {/* empty-canvas nudge */}
       {order.length === 0 && !placing && <EmptyCanvas />}

@@ -8,7 +8,6 @@ import { BottomDock } from "@/components/shell/bottom-dock"
 import { PagePopover } from "@/components/shell/page-popover"
 import { SettingsDialog } from "@/components/shell/settings-dialog"
 import { LibraryPanel } from "@/components/chrome/library-panel"
-import { Inspector } from "@/components/chrome/inspector"
 import { CommandPalette } from "@/components/chrome/command-palette"
 import { CanvasContextMenu } from "@/components/chrome/context-menu"
 import { ShortcutsSheet } from "@/components/chrome/shortcuts-sheet"
@@ -129,7 +128,6 @@ export default function Home() {
           <PagePopover />
           {settingsOpen && <SettingsDialog />}
           <LibraryPanel />
-          <Inspector />
         </>
       )}
 
