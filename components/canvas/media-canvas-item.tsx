@@ -399,6 +399,19 @@ export function MediaCanvasItem({
         <div className="flex items-center gap-1 shrink-0">
           {isVideo && (
             <>
+              {/* Rewind 10s */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSeek(Math.max(0, currentTime - 10))
+                }}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title="Rewind 10s (Left Arrow)"
+              >
+                <Rewind size={13} weight="bold" />
+              </button>
+
               {/* Play / Pause in Header Bar */}
               <button
                 type="button"
@@ -410,6 +423,19 @@ export function MediaCanvasItem({
                 title={isPlaying ? "Pause (Space)" : "Play (Space)"}
               >
                 {isPlaying ? <Pause size={13} weight="fill" /> : <Play size={13} weight="fill" />}
+              </button>
+
+              {/* Fast Forward 10s */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSeek(Math.min(duration, currentTime + 10))
+                }}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title="Forward 10s (Right Arrow)"
+              >
+                <FastForward size={13} weight="bold" />
               </button>
 
               {/* Mute / Unmute in Header Bar */}
@@ -476,6 +502,28 @@ export function MediaCanvasItem({
           </button>
         </div>
       </div>
+
+      {/* Sleek Scrubber Progress Line (between header bar and video) */}
+      {isVideo && (
+        <div
+          className="relative w-full h-[3px] hover:h-[6px] bg-[var(--sq-border)]/50 cursor-pointer transition-all flex items-center z-20 group/scrub select-none shrink-0"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+            handleSeek(pos * duration)
+          }}
+          title={duration > 0 ? `Seek (${formatTime(currentTime)} / ${formatTime(duration)})` : "Seek video"}
+        >
+          <div
+            className="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-r-full transition-all"
+            style={{ width: `${progressPercent}%` }}
+          />
+          <div
+            className="absolute size-2 bg-red-500 border border-white rounded-full shadow -translate-x-1/2 scale-0 group-hover/scrub:scale-100 transition-transform"
+            style={{ left: `${progressPercent}%` }}
+          />
+        </div>
+      )}
 
       {/* 2. Media Player Stage */}
       <div className="relative flex-1 min-h-0 bg-black/90 flex items-center justify-center overflow-hidden">

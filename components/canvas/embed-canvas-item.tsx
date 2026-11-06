@@ -74,7 +74,6 @@ export function EmbedCanvasItem({
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const hideTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   const [iframeKey, setIframeKey] = useState(0)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -89,7 +88,6 @@ export function EmbedCanvasItem({
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-  const [showOverlay, setShowOverlay] = useState(true)
   const [qualityFeedback, setQualityFeedback] = useState<string | null>(null)
 
   const provider = node.provider || "generic"
@@ -254,31 +252,6 @@ export function EmbedCanvasItem({
     document.addEventListener("fullscreenchange", onFsChange)
     return () => document.removeEventListener("fullscreenchange", onFsChange)
   }, [])
-
-  // 6. Auto-hiding overlay timer on mouse movement
-  const handleMouseMove = useCallback(() => {
-    setShowOverlay(true)
-    if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    if (isPlaying) {
-      hideTimerRef.current = setTimeout(() => {
-        setShowOverlay(false)
-      }, 2800)
-    }
-  }, [isPlaying])
-
-  useEffect(() => {
-    if (!isPlaying) {
-      setShowOverlay(true)
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    } else {
-      hideTimerRef.current = setTimeout(() => {
-        setShowOverlay(false)
-      }, 2800)
-    }
-    return () => {
-      if (hideTimerRef.current) clearTimeout(hideTimerRef.current)
-    }
-  }, [isPlaying])
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const handleReload = useCallback(() => {
@@ -530,7 +503,6 @@ export function EmbedCanvasItem({
   return (
     <div
       ref={containerRef}
-      onMouseMove={handleMouseMove}
       className={cn(
         "group relative flex flex-col w-full h-full select-none rounded-lg overflow-hidden border border-[var(--sq-border)] bg-[var(--sq-paper)] shadow-md transition-shadow",
         selected && "ring-2 ring-[var(--sq-ink)] ring-offset-1 shadow-lg"
@@ -546,8 +518,8 @@ export function EmbedCanvasItem({
         data-node-drag-handle="true"
         className="h-8 px-2 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/70 text-xs cursor-grab active:cursor-grabbing shrink-0 z-30 gap-1.5"
       >
-        {/* Left: Provider Icon + Title + Always-On HD Badge */}
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[45%]">
+        {/* Left: Provider Icon + Title + Timestamp + Always-On HD Badge */}
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[48%]">
           {getProviderIcon(provider)}
 
           {isEditingTitle ? (
@@ -579,6 +551,13 @@ export function EmbedCanvasItem({
             </span>
           )}
 
+          {/* Time Counter in Header */}
+          {duration > 0 && (
+            <span className="font-mono text-[10px] text-[var(--sq-ink)]/70 shrink-0 select-none hidden sm:inline">
+              ({formatTime(currentTime)} / {formatTime(duration)})
+            </span>
+          )}
+
           {/* Always On: Highest Quality Badge (1080p HD) */}
           {isVideoProvider && (
             <button
@@ -599,11 +578,21 @@ export function EmbedCanvasItem({
           )}
         </div>
 
-        {/* Right: Shifted Video Controls (Play, Mute, CC, Clean Mode, Fullscreen) + Utilities */}
+        {/* Right: Shifted Video Controls (Rewind, Play, FastForward, Mute, CC, Clean Mode, Fullscreen) + Utilities */}
         <div className="flex items-center gap-0.5 shrink-0">
           {/* Shifted Video Controls for YouTube/Vimeo */}
           {isVideoProvider && (
             <>
+              {/* Rewind 10s */}
+              <button
+                type="button"
+                onClick={() => handleSkip(-10)}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title="Rewind 10s (Left Arrow / J)"
+              >
+                <Rewind size={13} weight="bold" />
+              </button>
+
               {/* Play / Pause Toggle */}
               <button
                 type="button"
@@ -612,6 +601,16 @@ export function EmbedCanvasItem({
                 title={isPlaying ? "Pause video (Space)" : "Play video (Space)"}
               >
                 {isPlaying ? <Pause size={13} weight="fill" /> : <Play size={13} weight="fill" />}
+              </button>
+
+              {/* Fast Forward 10s */}
+              <button
+                type="button"
+                onClick={() => handleSkip(10)}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title="Forward 10s (Right Arrow / L)"
+              >
+                <FastForward size={13} weight="bold" />
               </button>
 
               {/* Mute / Unmute Toggle */}
@@ -711,7 +710,36 @@ export function EmbedCanvasItem({
         </div>
       </div>
 
-      {/* 2. Live Embed IFrame Container with Sleek Floating Glass Scrubber */}
+      {/* 2. Sleek Scrubber Progress Line (between header bar and video) */}
+      {isVideoProvider && (
+        <div
+          className="relative w-full h-[3px] hover:h-[6px] bg-[var(--sq-border)]/50 cursor-pointer transition-all flex items-center z-20 group/scrub select-none shrink-0"
+          onClick={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect()
+            const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+            const target = Math.floor(pos * (duration || 100))
+            setCurrentTime(target)
+            if (provider === "youtube") {
+              iframeRef.current?.contentWindow?.postMessage(
+                JSON.stringify({ event: "command", func: "seekTo", args: [target, true] }),
+                "*"
+              )
+            }
+          }}
+          title={duration > 0 ? `Seek (${formatTime(currentTime)} / ${formatTime(duration)})` : "Seek video"}
+        >
+          <div
+            className="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-r-full transition-all"
+            style={{ width: `${progressPercent}%` }}
+          />
+          <div
+            className="absolute size-2 bg-red-500 border border-white rounded-full shadow -translate-x-1/2 scale-0 group-hover/scrub:scale-100 transition-transform"
+            style={{ left: `${progressPercent}%` }}
+          />
+        </div>
+      )}
+
+      {/* 3. Live Embed IFrame Container (Clean Mode Guard Prevents Hover Controls) */}
       <div className="relative flex-1 min-h-0 bg-neutral-900 w-full h-full overflow-hidden">
         {isBlocked ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] z-10">
@@ -744,140 +772,22 @@ export function EmbedCanvasItem({
               {...iframeAttrs}
             />
 
-            {/* Center Play Button Watermark on Pause (Clean Mode) */}
-            {isVideoProvider && !isPlaying && isCleanMode && (
-              <div
-                onClick={handlePlayPause}
-                className="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-[0.5px] cursor-pointer transition-opacity z-10"
-              >
-                <div className="size-14 sm:size-16 rounded-full bg-black/55 backdrop-blur-md border border-white/25 flex items-center justify-center text-white shadow-2xl hover:scale-110 active:scale-95 transition-transform">
-                  <Play size={26} weight="fill" className="translate-x-0.5 text-white" />
-                </div>
-              </div>
-            )}
-
-            {/* Floating Glass Control Bar Overlay (Clean Mode) */}
+            {/* Clean Mode Hover & Click Guard: Completely prevents YouTube from detecting mouse hover! */}
             {isVideoProvider && isCleanMode && (
               <div
-                className={cn(
-                  "absolute inset-x-0 bottom-0 p-3 flex flex-col gap-2 transition-all duration-300 pointer-events-none z-20",
-                  showOverlay ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-                )}
-                style={{
-                  background: "linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.45) 65%, transparent 100%)",
-                }}
+                onClick={handlePlayPause}
+                onDoubleClick={handleFullscreen}
+                className="absolute inset-0 z-10 cursor-pointer bg-transparent"
+                title={isPlaying ? "Click to Pause • Double-click for Fullscreen" : "Click to Play • Double-click for Fullscreen"}
               >
-                {/* Scrubber Progress Bar */}
-                <div
-                  className="relative w-full h-1.5 hover:h-2.5 bg-white/25 rounded-full cursor-pointer transition-all flex items-center pointer-events-auto group/scrub"
-                  onClick={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect()
-                    const pos = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
-                    const target = Math.floor(pos * (duration || 100))
-                    setCurrentTime(target)
-                    if (provider === "youtube") {
-                      iframeRef.current?.contentWindow?.postMessage(
-                        JSON.stringify({ event: "command", func: "seekTo", args: [target, true] }),
-                        "*"
-                      )
-                    }
-                  }}
-                  title="Seek video"
-                >
-                  <div
-                    className="h-full bg-gradient-to-r from-red-500 to-orange-500 rounded-full transition-all"
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                  <div
-                    className="absolute size-3.5 bg-white rounded-full shadow-md -translate-x-1/2 scale-0 group-hover/scrub:scale-100 transition-transform"
-                    style={{ left: `${progressPercent}%` }}
-                  />
-                </div>
-
-                {/* Bottom Controls Row */}
-                <div className="flex items-center justify-between text-white text-xs pointer-events-auto">
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={handlePlayPause}
-                      className="p-1 rounded-full hover:bg-white/20 transition-colors cursor-pointer"
-                      title={isPlaying ? "Pause (Space)" : "Play (Space)"}
-                    >
-                      {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSkip(-10)}
-                      className="p-1 rounded-full hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
-                      title="Rewind 10s (Left Arrow / J)"
-                    >
-                      <Rewind size={15} weight="bold" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleSkip(10)}
-                      className="p-1 rounded-full hover:bg-white/20 text-white/80 hover:text-white transition-colors cursor-pointer"
-                      title="Forward 10s (Right Arrow / L)"
-                    >
-                      <FastForward size={15} weight="bold" />
-                    </button>
-
-                    {/* Mute */}
-                    <button
-                      type="button"
-                      onClick={handleToggleMute}
-                      className="p-1 rounded-full hover:bg-white/20 transition-colors cursor-pointer ml-1"
-                      title={isMuted ? "Unmute (M)" : "Mute (M)"}
-                    >
-                      {isMuted ? <SpeakerSimpleX size={16} /> : <SpeakerHigh size={16} />}
-                    </button>
-
-                    {/* Timestamp */}
-                    <span className="font-mono text-[11px] text-white/90 font-medium ml-1 select-none">
-                      {formatTime(currentTime)} {duration > 0 && `/ ${formatTime(duration)}`}
-                    </span>
+                {/* Subtle center play icon only when paused */}
+                {!isPlaying && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/15 pointer-events-none transition-opacity">
+                    <div className="size-14 sm:size-16 rounded-full bg-black/55 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-2xl hover:scale-110 active:scale-95 transition-transform">
+                      <Play size={26} weight="fill" className="translate-x-0.5 text-white" />
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    {/* Closed Captions */}
-                    <button
-                      type="button"
-                      onClick={handleToggleCaptions}
-                      className={cn(
-                        "px-1.5 py-0.5 rounded text-[10px] font-mono font-extrabold border transition-all cursor-pointer shadow-2xs",
-                        isCaptionsOn
-                          ? "bg-red-500 text-white border-red-500 shadow-xs"
-                          : "border-white/30 text-white/80 hover:text-white hover:bg-white/20"
-                      )}
-                      title={isCaptionsOn ? "Captions (CC) ON — click to turn OFF (C)" : "Captions (CC) OFF — click to turn ON (C)"}
-                    >
-                      CC
-                    </button>
-
-                    {/* HD Quality indicator */}
-                    <button
-                      type="button"
-                      onClick={handleEnforceHighQuality}
-                      className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all cursor-pointer shadow-2xs"
-                      title="Highest Quality (1080p / 4K) Always On"
-                    >
-                      <Sparkle size={10} weight="fill" className="text-emerald-400" />
-                      <span>HD 1080p</span>
-                    </button>
-
-                    {/* Fullscreen */}
-                    <button
-                      type="button"
-                      onClick={handleFullscreen}
-                      className="p-1 rounded-full hover:bg-white/20 transition-colors cursor-pointer"
-                      title={isFullscreen ? "Exit Fullscreen (F)" : "Full Screen (F)"}
-                    >
-                      {isFullscreen ? <CornersIn size={16} weight="bold" /> : <CornersOut size={16} weight="bold" />}
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </>
