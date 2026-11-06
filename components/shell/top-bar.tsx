@@ -36,6 +36,8 @@ export function TopBar() {
   const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
   const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
   const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
+  const showStatusIndicators = useShellStore((s) => s.preferences.showStatusIndicators ?? true)
+  const showCollabStatus = useShellStore((s) => s.preferences.showCollabStatus ?? true)
   const toggleToolbar = useShellStore((s) => s.toggleToolbar)
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
@@ -133,18 +135,26 @@ export function TopBar() {
           </button>
         )}
 
-        <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
-
-        {/* Live Status Indicator Pill & Interactive Details Popover (with animate-lottie-check and animate-ios-save-halo dynamics) */}
-        <SyncStatusPill
-          className={cn(justSaved && "animate-lottie-check animate-ios-save-halo")}
-        />
+        {/* Live Status Indicator Pill & Interactive Details Popover (e.g. Server unavailable · Changes saved locally) */}
+        {showStatusIndicators && (
+          <>
+            <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
+            <SyncStatusPill
+              className={cn(justSaved && "animate-lottie-check animate-ios-save-halo")}
+            />
+          </>
+        )}
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />
 
-        <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
-        <PresenceAvatars />
+        {/* Live Collaboration Status Pill (e.g. Collab Off / Peer Avatars) */}
+        {showCollabStatus && (
+          <>
+            <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
+            <PresenceAvatars />
+          </>
+        )}
 
         {/* Real-Time Clock & Location Detection */}
         {showTimeInTopBar && (

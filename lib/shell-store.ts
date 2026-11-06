@@ -348,6 +348,7 @@ export interface ShellPreferences {
   showDockViewMenu: boolean
   showZoomControls: boolean
   showStatusIndicators: boolean
+  showCollabStatus: boolean
   highContrast: boolean
   largeText: boolean
   screenReaderHints: boolean
@@ -397,6 +398,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   showDockViewMenu: false,
   showZoomControls: true,
   showStatusIndicators: true,
+  showCollabStatus: true,
   highContrast: false,
   largeText: false,
   screenReaderHints: false,
@@ -441,6 +443,8 @@ function loadInitialPreferences(): ShellPreferences {
         showDock: parsed.showDock !== undefined ? Boolean(parsed.showDock) : true,
         showToolbarViewMenu: parsed.showToolbarViewMenu !== undefined ? Boolean(parsed.showToolbarViewMenu) : true,
         showDockViewMenu: parsed.showDockViewMenu !== undefined ? Boolean(parsed.showDockViewMenu) : Boolean(parsed.dockControls?.viewMenu ?? false),
+        showStatusIndicators: parsed.showStatusIndicators !== undefined ? Boolean(parsed.showStatusIndicators) : true,
+        showCollabStatus: parsed.showCollabStatus !== undefined ? Boolean(parsed.showCollabStatus) : true,
         laserSettings: {
           ...DEFAULT_LASER_SETTINGS,
           ...(parsed.laserSettings || {}),
@@ -611,6 +615,10 @@ interface ShellState {
   toggleZoomControls: () => void
   toggleTimeInTopBar: () => void
   toggleTimeInDock: () => void
+  setShowStatusIndicators: (show: boolean) => void
+  toggleStatusIndicators: () => void
+  setShowCollabStatus: (show: boolean) => void
+  toggleCollabStatus: () => void
   updateLaserSettings: (updates: Partial<LaserSettings>) => void
   updateDrawSettings: (updates: Partial<DrawSettings>) => void
   updateTextSettings: (updates: Partial<TextSettings>) => void
@@ -1035,6 +1043,40 @@ export const useShellStore = create<ShellState>((set, get) => ({
     })
   },
 
+  setShowStatusIndicators: (show) => {
+    set((state) => {
+      const next = { ...state.preferences, showStatusIndicators: show }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleStatusIndicators: () => {
+    set((state) => {
+      const nextVal = !(state.preferences.showStatusIndicators ?? true)
+      const next = { ...state.preferences, showStatusIndicators: nextVal }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setShowCollabStatus: (show) => {
+    set((state) => {
+      const next = { ...state.preferences, showCollabStatus: show }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  toggleCollabStatus: () => {
+    set((state) => {
+      const nextVal = !(state.preferences.showCollabStatus ?? true)
+      const next = { ...state.preferences, showCollabStatus: nextVal }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
   updateClockPreferences: (updates) => {
     set((state) => {
       const nextClock = { ...state.preferences.clockSettings, ...updates }
@@ -1196,6 +1238,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
         showDockViewMenu: visible,
         showZoomControls: visible,
         showStatusIndicators: visible,
+        showCollabStatus: visible,
         showMiniMap: visible,
         dockControls: nextDockControls,
         mediaSettings: nextMedia,

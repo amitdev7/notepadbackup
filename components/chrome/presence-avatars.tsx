@@ -87,6 +87,20 @@ export function PresenceAvatars() {
             <PlayCircle size={15} weight="bold" />
             Start Live Collaboration
           </Button>
+
+          <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+            <span className="text-[11px] text-muted-foreground">Show in Top Toolbar</span>
+            <button
+              type="button"
+              onClick={() => {
+                useShellStore.getState().setShowCollabStatus(false)
+                setIsOpen(false)
+              }}
+              className="text-[11px] font-medium text-[#007AFF] hover:underline cursor-pointer"
+            >
+              Hide Badge
+            </button>
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
     )

@@ -2215,6 +2215,7 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
         (prefs.showDock ?? true) &&
         (prefs.showZoomControls ?? true) &&
         (prefs.showStatusIndicators ?? true) &&
+        (prefs.showCollabStatus ?? true) &&
         (prefs.showMiniMap ?? true) &&
         contextRow &&
         grid &&
@@ -2414,12 +2415,27 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
 
               <div className="flex items-center justify-between pt-2.5">
                 <div>
-                  <span className="font-semibold text-xs text-foreground block">Network & Sync Status Badges</span>
-                  <span className="text-[11px] text-muted-foreground">Display online/offline status and cloud synchronization states</span>
+                  <span className="font-semibold text-xs text-foreground block">Sync & Network Status Pill</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Display server connection & local saving state (e.g. &ldquo;Server unavailable · Changes saved locally&rdquo;, &ldquo;Synced&rdquo;, &ldquo;Offline&rdquo;)
+                  </span>
                 </div>
                 <Switch
                   checked={prefs.showStatusIndicators ?? true}
                   onCheckedChange={(checked) => updatePrefs({ showStatusIndicators: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Live Collaboration Status Pill</span>
+                  <span className="text-[11px] text-muted-foreground">
+                    Display real-time peer presence capsule in the toolbar (e.g. &ldquo;Collab Off&rdquo;, &ldquo;Collab On&rdquo;, active user avatars)
+                  </span>
+                </div>
+                <Switch
+                  checked={prefs.showCollabStatus ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showCollabStatus: checked })}
                 />
               </div>
 

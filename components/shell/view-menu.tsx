@@ -64,6 +64,8 @@ export function ViewMenu({
   const showZoomControls = useShellStore((s) => s.preferences.dockControls?.zoomControls ?? true)
   const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
   const showDockClock = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInDock ?? s.preferences.dockControls?.timeClock ?? false))
+  const showStatusIndicators = useShellStore((s) => s.preferences.showStatusIndicators ?? true)
+  const showCollabStatus = useShellStore((s) => s.preferences.showCollabStatus ?? true)
   const toggleToolbar = useShellStore((s) => s.toggleToolbar)
   const toggleDock = useShellStore((s) => s.toggleDock)
   const toggleToolbarViewMenu = useShellStore((s) => s.toggleToolbarViewMenu)
@@ -71,6 +73,8 @@ export function ViewMenu({
   const toggleZoomControls = useShellStore((s) => s.toggleZoomControls)
   const toggleTimeInTopBar = useShellStore((s) => s.toggleTimeInTopBar)
   const toggleTimeInDock = useShellStore((s) => s.toggleTimeInDock)
+  const toggleStatusIndicators = useShellStore((s) => s.toggleStatusIndicators)
+  const toggleCollabStatus = useShellStore((s) => s.toggleCollabStatus)
 
   const zoomPercent = Math.round(viewport.zoom * 100)
   const hasHomeView = Boolean(viewState?.homeView)
@@ -326,6 +330,22 @@ export function ViewMenu({
           >
             <span className="font-medium text-xs">Clock in Bottom Dock</span>
             {showDockClock && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleStatusIndicators}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Sync & Network Status Pill</span>
+            {showStatusIndicators && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
+          </DropdownMenuItem>
+
+          <DropdownMenuItem
+            onClick={toggleCollabStatus}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <span className="font-medium text-xs">Collaboration Status Pill</span>
+            {showCollabStatus && <Check size={14} className="text-[#007AFF] shrink-0" weight="bold" />}
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

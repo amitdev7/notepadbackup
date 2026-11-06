@@ -268,12 +268,26 @@ export function SyncStatusPill({ className }: { className?: string } = {}) {
               onClick={() => {
                 setIsOpen(false)
                 useShellStore.getState().setSettingsOpen(true)
-                useShellStore.getState().setSettingsSection("storage")
+                useShellStore.getState().setSettingsSection("visibility")
               }}
               className="p-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition cursor-pointer"
-              title="Open Storage & Backup Settings"
+              title="Open Display & Visibility Settings"
             >
               <Gear size={15} />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between pt-2 border-t border-stone-200/60 dark:border-stone-800/60">
+            <span className="text-[11px] text-muted-foreground">Show in Top Toolbar</span>
+            <button
+              type="button"
+              onClick={() => {
+                useShellStore.getState().setShowStatusIndicators(false)
+                setIsOpen(false)
+              }}
+              className="text-[11px] font-medium text-[#007AFF] hover:underline cursor-pointer"
+            >
+              Hide Pill
             </button>
           </div>
         </div>

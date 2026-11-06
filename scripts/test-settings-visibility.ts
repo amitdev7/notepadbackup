@@ -40,6 +40,7 @@ async function run() {
   assert(stateHidden.preferences.showMiniMap === false, "showMiniMap is false")
   assert(stateHidden.preferences.showZoomControls === false, "showZoomControls is false")
   assert(stateHidden.preferences.showStatusIndicators === false, "showStatusIndicators is false")
+  assert(stateHidden.preferences.showCollabStatus === false, "showCollabStatus is false")
   assert(stateHidden.preferences.clockSettings.showInTopBar === false, "top bar clock is false")
   assert(stateHidden.preferences.clockSettings.showInDock === false, "dock clock is false")
   assert(stateHidden.preferences.mediaSettings.showHeaderControls === false, "media header controls is false")
@@ -59,6 +60,7 @@ async function run() {
   assert(stateVisible.preferences.showMiniMap === true, "showMiniMap is true")
   assert(stateVisible.preferences.showZoomControls === true, "showZoomControls is true")
   assert(stateVisible.preferences.showStatusIndicators === true, "showStatusIndicators is true")
+  assert(stateVisible.preferences.showCollabStatus === true, "showCollabStatus is true")
   assert(stateVisible.preferences.clockSettings.showInTopBar === true, "top bar clock is true")
   assert(stateVisible.preferences.clockSettings.showInDock === true, "dock clock is true")
   assert(stateVisible.preferences.mediaSettings.showHeaderControls === true, "media header controls is true")
@@ -69,6 +71,18 @@ async function run() {
     assert(val === true, `dockControl ${key} should be true when showing all`)
   }
   console.log("✅ Master 'Show Everything' (setAllVisibility(true)) successfully enables all interface chrome.")
+
+  // 5. Individual Toggles: showStatusIndicators & showCollabStatus
+  useShellStore.getState().setShowStatusIndicators(false)
+  assert(useShellStore.getState().preferences.showStatusIndicators === false, "setShowStatusIndicators(false) works")
+  useShellStore.getState().toggleStatusIndicators()
+  assert(useShellStore.getState().preferences.showStatusIndicators === true, "toggleStatusIndicators() works")
+
+  useShellStore.getState().setShowCollabStatus(false)
+  assert(useShellStore.getState().preferences.showCollabStatus === false, "setShowCollabStatus(false) works")
+  useShellStore.getState().toggleCollabStatus()
+  assert(useShellStore.getState().preferences.showCollabStatus === true, "toggleCollabStatus() works")
+  console.log("✅ Individual status indicator & collaboration visibility toggles verified.")
 
   console.log("\n🎉 ALL SETTINGS VISIBILITY AND MEDIA PREFERENCE TESTS PASSED!")
 }
