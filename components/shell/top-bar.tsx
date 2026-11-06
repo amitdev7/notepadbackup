@@ -19,6 +19,7 @@ import { PresenceAvatars } from "@/components/chrome/presence-avatars"
 import { ViewMenu } from "@/components/shell/view-menu"
 import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { useSyncStore } from "@/lib/sync/engine"
+import { SyncStatusPill } from "@/components/shell/sync-status-pill"
 import { PencilSimple, Check } from "@phosphor-icons/react"
 import { useTranslation } from "@/lib/i18n/use-translation"
 
@@ -133,48 +134,10 @@ export function TopBar() {
 
         <div className="h-3 w-px bg-border/80 mx-0.5 shrink-0" />
 
-        {/* Live Status Indicator Pill */}
-        <div
-          className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono select-none px-1"
-          title={
-            syncStatus === "syncing"
-              ? t("status_syncing")
-              : syncStatus === "synced"
-                ? t("status_saved")
-                : syncStatus === "conflict"
-                  ? t("status_conflict")
-                  : syncStatus === "error"
-                    ? t("status_error")
-                    : t("status_saved_locally")
-          }
-          aria-live="polite"
-        >
-          {syncStatus === "syncing" ? (
-            <>
-              <span className="size-1.5 rounded-full bg-[var(--ui-accent,#007AFF)] animate-ios-pulse-halo shadow-[0_0_8px_rgba(37,99,235,0.85)]" aria-hidden="true" />
-              <span className="hidden sm:inline text-[var(--ui-accent,#007AFF)]">{t("status_syncing")}</span>
-            </>
-          ) : syncStatus === "conflict" ? (
-            <>
-              <span className="size-1.5 rounded-full bg-amber-500" aria-hidden="true" />
-              <span className="text-amber-600 dark:text-amber-400 hidden sm:inline">{t("status_conflict")}</span>
-            </>
-          ) : syncStatus === "error" ? (
-            <>
-              <span className="size-1.5 rounded-full bg-destructive" aria-hidden="true" />
-              <span className="text-destructive hidden sm:inline">{t("status_error")}</span>
-            </>
-          ) : justSaved ? (
-            <>
-              <span className="size-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.85)] animate-ios-save-halo" aria-hidden="true" />
-              <span className="text-emerald-600 dark:text-emerald-400 hidden sm:inline-flex items-center gap-0.5">
-                <Check size={10} weight="bold" className="animate-lottie-check" /> {t("status_saved")}
-              </span>
-            </>
-          ) : (
-            <span className="size-1.5 rounded-full bg-muted-foreground/40" aria-hidden="true" />
-          )}
-        </div>
+        {/* Live Status Indicator Pill & Interactive Details Popover (with animate-lottie-check and animate-ios-save-halo dynamics) */}
+        <SyncStatusPill
+          className={cn(justSaved && "animate-lottie-check animate-ios-save-halo")}
+        />
 
         {/* Files Dropdown & Canvas Manager */}
         <FilesPopover />

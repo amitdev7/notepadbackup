@@ -19,6 +19,7 @@ import type { EmbedNode } from "@/lib/types"
 import { useSquig } from "@/lib/store"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
 import { parseMediaUrl } from "@/lib/media/provider-registry"
+import { useNetworkStore } from "@/lib/sync/network"
 import {
   YoutubeLogo,
   SpotifyLogo,
@@ -39,6 +40,7 @@ import {
   Eye,
   Rewind,
   FastForward,
+  WifiSlash,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -90,6 +92,7 @@ export function EmbedCanvasItem({
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
   const [qualityFeedback, setQualityFeedback] = useState<string | null>(null)
+  const networkState = useNetworkStore((s) => s.state)
 
   const provider = useMemo(() => {
     if (node.provider && node.provider !== "generic") return node.provider
@@ -778,6 +781,27 @@ export function EmbedCanvasItem({
             >
               <span>Open in New Tab</span>
               <ArrowSquareOut size={13} />
+            </button>
+          </div>
+        ) : networkState === "offline" ? (
+          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] select-none">
+            <div className="size-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-3 border border-amber-500/20">
+              <WifiSlash size={24} weight="bold" />
+            </div>
+            <h4 className="font-semibold text-sm">Offline — Content Unavailable</h4>
+            <p className="text-xs text-stone-500 max-w-xs mt-1.5 mb-4 leading-relaxed">
+              External content from {node.provider || "the web"} cannot be streamed without an internet connection. Your canvas drawings, notes, and local audio memos remain completely safe.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                handleReload()
+                useNetworkStore.getState().checkReachability()
+              }}
+              className="px-4 py-1.5 bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 rounded-full text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 cursor-pointer"
+            >
+              <ArrowsClockwise size={13} weight="bold" />
+              <span>Retry Connection</span>
             </button>
           </div>
         ) : (

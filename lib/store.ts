@@ -553,7 +553,7 @@ function flushSave(get: () => SquigState, force = false) {
   })
   useSquig.setState({ files })
 
-  // Synchronize durably to IndexedDB (zenithsui-db v1)
+  // Synchronize durably to IndexedDB (zenithsui-db v3)
   if (typeof window !== "undefined") {
     setActiveDocumentId(s.docId).catch(() => {})
     saveLocalDocument({
@@ -571,9 +571,23 @@ function flushSave(get: () => SquigState, force = false) {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       deletedAt: null,
-    }).catch((err) => {
-      console.warn("[storage] IndexedDB save error:", err)
     })
+      .then(() => {
+        // Automatic backup snapshot on meaningful changes
+        import("./storage/backup").then(({ scheduleAutoBackup }) => {
+          scheduleAutoBackup(s.docId, s.fileName, {
+            fileName: s.fileName,
+            nodes: s.nodes,
+            order: s.order,
+          })
+        }).catch(() => {})
+      })
+      .catch((err) => {
+        console.warn("[storage] IndexedDB save error:", err)
+        import("./sync/engine").then(({ useSyncStore }) => {
+          useSyncStore.getState().setStatus("save-failed")
+        }).catch(() => {})
+      })
 
     // Cloud database synchronization if enabled and not local-only
     try {

@@ -2,6 +2,13 @@
 
 // ---------------------------------------------------------------------------
 // Zenithsui Background Sync Engine & Finite State Machine
+//
+// Key Principles:
+// 1. Local persistence always succeeds first before cloud synchronization.
+// 2. Intelligent connectivity awareness (online, offline, server-unavailable).
+// 3. Durable queue with coalescing, exponential backoff, and idempotency.
+// 4. Web Locks API & BroadcastChannel to prevent multi-tab concurrency races.
+// 5. Authentic conflict resolution without silent data loss.
 // ---------------------------------------------------------------------------
 
 import { create } from "zustand"
@@ -10,12 +17,15 @@ import {
   removeMutation,
   updateMutationRetry,
   getPendingMutationCount,
+  getFailedMutationCount,
+  resetFailedMutations,
   type QueuedMutation,
 } from "./queue"
 import { getLocalDocument, saveLocalDocument, type LocalSyncStatus } from "../storage/documents"
 import { syncPendingDocumentAssets } from "../storage/document-assets"
 import { useAuthStore } from "../auth-store"
 import { useShellStore } from "../shell-store"
+import { useNetworkStore } from "./network"
 import type { CanvasDocumentJson } from "../db/types"
 
 export interface ConflictInfo {
@@ -30,32 +40,61 @@ export interface ConflictInfo {
 interface SyncEngineStore {
   status: LocalSyncStatus
   pendingCount: number
+  failedCount: number
   lastSyncedAt: number | null
+  lastSyncError: string | null
   conflictInfo: ConflictInfo | null
 
   // Actions
   setStatus: (status: LocalSyncStatus) => void
   setConflict: (info: ConflictInfo | null) => void
-  triggerSync: () => void
+  triggerSync: (forceRetryFailed?: boolean) => void
+  retryFailed: () => Promise<void>
+  refreshCounts: () => Promise<void>
   resolveConflict: (resolution: "save_as_copy" | "keep_mine" | "use_cloud") => Promise<void>
 }
 
 export const useSyncStore = create<SyncEngineStore>((set, get) => ({
   status: "saved-locally",
   pendingCount: 0,
+  failedCount: 0,
   lastSyncedAt: null,
+  lastSyncError: null,
   conflictInfo: null,
 
   setStatus: (status) => set({ status }),
-  setConflict: (conflictInfo) => set({ conflictInfo, status: conflictInfo ? "conflict" : "synced" }),
+  setConflict: (conflictInfo) =>
+    set({
+      conflictInfo,
+      status: conflictInfo ? "conflict" : "synced",
+    }),
 
-  triggerSync: () => {
+  refreshCounts: async () => {
+    try {
+      const pending = await getPendingMutationCount()
+      const failed = await getFailedMutationCount()
+      set({ pendingCount: pending, failedCount: failed })
+    } catch {}
+  },
+
+  retryFailed: async () => {
+    await resetFailedMutations()
+    set({ lastSyncError: null })
+    get().triggerSync(true)
+  },
+
+  triggerSync: (forceRetryFailed = false) => {
     const dbSettings = useShellStore.getState().preferences?.databaseSettings
     if (dbSettings && (!dbSettings.enabled || dbSettings.storageMode === "local")) {
-      useSyncStore.getState().setStatus("local-only")
+      set({ status: "local-only" })
       return
     }
-    runSyncWorker()
+
+    if (forceRetryFailed) {
+      void resetFailedMutations()
+    }
+
+    void runSyncWorker()
   },
 
   resolveConflict: async (resolution) => {
@@ -121,7 +160,7 @@ export const useSyncStore = create<SyncEngineStore>((set, get) => ({
     }
 
     set({ conflictInfo: null, status: "synced" })
-    runSyncWorker()
+    void runSyncWorker()
   },
 }))
 
@@ -135,36 +174,79 @@ function calculateBackoff(retryCount: number): number {
   return exponential + jitter
 }
 
+/**
+ * Executes synchronization with cross-tab Web Locks API concurrency protection.
+ */
 export async function runSyncWorker(): Promise<void> {
+  if (typeof window === "undefined" || isWorkerRunning) return
+
+  if (typeof navigator !== "undefined" && "locks" in navigator) {
+    try {
+      await navigator.locks.request("zenithsui_sync_lock", { ifAvailable: true }, async (lock) => {
+        if (!lock) return // Another browser tab is currently syncing the queue
+        await runInternalSyncWorker()
+      })
+    } catch {
+      await runInternalSyncWorker()
+    }
+  } else {
+    await runInternalSyncWorker()
+  }
+}
+
+async function runInternalSyncWorker(): Promise<void> {
   if (isWorkerRunning || typeof window === "undefined") return
   isWorkerRunning = true
 
   const syncStore = useSyncStore.getState()
   const authStore = useAuthStore.getState()
+  const network = useNetworkStore.getState()
 
-  // Only run sync if online and authenticated
-  if (typeof navigator !== "undefined" && !navigator.onLine) {
+  // 1. Offline status check
+  if (network.state === "offline" || (typeof navigator !== "undefined" && !navigator.onLine)) {
     syncStore.setStatus("offline")
+    await syncStore.refreshCounts()
     isWorkerRunning = false
     return
   }
 
+  // 2. Auth status check
   if (authStore.state !== "authenticated") {
     syncStore.setStatus("local-only")
+    await syncStore.refreshCounts()
     isWorkerRunning = false
     return
   }
 
+  // 3. Database configuration check
   const dbSettings = useShellStore.getState().preferences?.databaseSettings
   if (dbSettings && (!dbSettings.enabled || dbSettings.storageMode === "local")) {
     syncStore.setStatus("local-only")
+    await syncStore.refreshCounts()
     isWorkerRunning = false
     return
   }
 
   try {
     let pendingCount = await getPendingMutationCount()
-    useSyncStore.setState({ pendingCount })
+    let failedCount = await getFailedMutationCount()
+    useSyncStore.setState({ pendingCount, failedCount })
+
+    if (pendingCount === 0) {
+      if (!syncStore.conflictInfo) {
+        syncStore.setStatus("synced")
+      }
+      isWorkerRunning = false
+      return
+    }
+
+    // 4. Verify backend reachability before opening stream
+    const isReachable = await network.checkReachability()
+    if (!isReachable) {
+      syncStore.setStatus("server-unavailable")
+      isWorkerRunning = false
+      return
+    }
 
     let mutation = await getNextPendingMutation()
 
@@ -175,9 +257,12 @@ export async function runSyncWorker(): Promise<void> {
 
       if (result.success) {
         await removeMutation(mutation.id)
-        useSyncStore.setState({ lastSyncedAt: Date.now() })
+        useSyncStore.setState({
+          lastSyncedAt: Date.now(),
+          lastSyncError: null,
+        })
       } else if (result.conflict) {
-        // Halt processing for this document and display conflict resolution
+        // Revision mismatch: halt and prompt user via conflict resolution UI
         syncStore.setConflict({
           docId: mutation.docId,
           docName: mutation.payload.name || "Untitled Drawing",
@@ -188,23 +273,38 @@ export async function runSyncWorker(): Promise<void> {
         })
         break
       } else {
-        // Transient error: update backoff retry
+        // Transient network or server failure: increment retry backoff
         const nextRetry = mutation.retryCount + 1
         const delay = calculateBackoff(nextRetry)
         await updateMutationRetry(mutation.id, nextRetry, delay, result.error || "Sync failed")
-        syncStore.setStatus("error")
+        useSyncStore.setState({
+          lastSyncError: result.error || "Sync failed",
+        })
+
+        if (result.isServerDown) {
+          syncStore.setStatus("server-unavailable")
+        } else {
+          syncStore.setStatus("error")
+        }
         break
       }
 
       pendingCount = await getPendingMutationCount()
-      useSyncStore.setState({ pendingCount })
+      failedCount = await getFailedMutationCount()
+      useSyncStore.setState({ pendingCount, failedCount })
       mutation = await getNextPendingMutation()
     }
 
-    if (!syncStore.conflictInfo) {
+    pendingCount = await getPendingMutationCount()
+    failedCount = await getFailedMutationCount()
+    useSyncStore.setState({ pendingCount, failedCount })
+
+    if (!syncStore.conflictInfo && syncStore.status !== "error" && syncStore.status !== "server-unavailable") {
       syncStore.setStatus(pendingCount > 0 ? "saved-locally" : "synced")
     }
-  } catch {
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : "Sync worker exception"
+    useSyncStore.setState({ lastSyncError: errorMsg })
     syncStore.setStatus("error")
   } finally {
     isWorkerRunning = false
@@ -215,12 +315,16 @@ async function processMutation(mutation: QueuedMutation): Promise<{
   success: boolean
   conflict?: { serverRevision: number; serverDocument: CanvasDocumentJson }
   error?: string
+  isServerDown?: boolean
 }> {
   try {
     if (mutation.type === "upsert_document") {
       const response = await fetch(`/api/documents/${mutation.docId}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": mutation.id,
+        },
         body: JSON.stringify({
           baseRevision: mutation.baseRevision,
           documentJson: mutation.payload.documentJson,
@@ -240,16 +344,31 @@ async function processMutation(mutation: QueuedMutation): Promise<{
       }
 
       if (!response.ok) {
+        useNetworkStore.getState().reportRequestFailure(response.status)
         const data = await response.json().catch(() => ({}))
-        return { success: false, error: data.error?.message || response.statusText }
+        const isServerDown = response.status >= 500 || response.status === 408
+        return {
+          success: false,
+          error: data.error?.message || response.statusText,
+          isServerDown,
+        }
       }
 
+      useNetworkStore.getState().reportRequestSuccess()
       return { success: true }
     } else if (mutation.type === "delete_document") {
       const response = await fetch(`/api/documents/${mutation.docId}`, {
         method: "DELETE",
+        headers: {
+          "X-Idempotency-Key": mutation.id,
+        },
       })
-      return { success: response.ok }
+      if (!response.ok) {
+        useNetworkStore.getState().reportRequestFailure(response.status)
+        return { success: false, error: response.statusText }
+      }
+      useNetworkStore.getState().reportRequestSuccess()
+      return { success: true }
     } else if (mutation.type === "upload_asset") {
       await syncPendingDocumentAssets()
       return { success: true }
@@ -258,16 +377,17 @@ async function processMutation(mutation: QueuedMutation): Promise<{
     return { success: true }
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : "Network error"
-    return { success: false, error: errorMsg }
+    useNetworkStore.getState().reportRequestFailure()
+    return { success: false, error: errorMsg, isServerDown: true }
   }
 }
 
-// Window event listeners for online and visibility
+// Global lifecycle listeners
 if (typeof window !== "undefined") {
   window.addEventListener("online", () => {
     useSyncStore.getState().setStatus("saved-locally")
     void syncPendingDocumentAssets()
-    runSyncWorker()
+    void runSyncWorker()
   })
 
   window.addEventListener("offline", () => {
@@ -276,8 +396,11 @@ if (typeof window !== "undefined") {
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
-      runSyncWorker()
+      void runSyncWorker()
     }
   })
-}
 
+  window.addEventListener("focus", () => {
+    void runSyncWorker()
+  })
+}

@@ -7,8 +7,10 @@ export type LocalSyncStatus =
   | "syncing"
   | "synced"
   | "offline"
+  | "server-unavailable"
   | "conflict"
   | "error"
+  | "save-failed"
 
 export interface StoredLocalDoc {
   id: string
@@ -46,9 +48,29 @@ export function onCrossTabDocChange(
 }
 
 export async function saveLocalDocument(docRecord: StoredLocalDoc): Promise<void> {
-  await withTransaction(STORES.DOCUMENTS, "readwrite", (tx) => {
+  await withTransaction(STORES.DOCUMENTS, "readwrite", async (tx) => {
     const store = tx.objectStore(STORES.DOCUMENTS)
-    store.put(docRecord)
+    const existingReq = store.get(docRecord.id)
+    await new Promise<void>((resolve, reject) => {
+      existingReq.onsuccess = () => {
+        const existing = existingReq.result as StoredLocalDoc | undefined
+        const finalDoc: StoredLocalDoc = {
+          ...docRecord,
+          createdAt: existing?.createdAt || docRecord.createdAt || Date.now(),
+          baseRevision: docRecord.baseRevision ?? existing?.baseRevision ?? 1,
+          serverRevision: docRecord.serverRevision ?? existing?.serverRevision ?? 1,
+          updatedAt: docRecord.updatedAt || Date.now(),
+        }
+        const putReq = store.put(finalDoc)
+        putReq.onsuccess = () => resolve()
+        putReq.onerror = () => reject(putReq.error || new Error("Failed to write document to IndexedDB"))
+      }
+      existingReq.onerror = () => {
+        const putReq = store.put(docRecord)
+        putReq.onsuccess = () => resolve()
+        putReq.onerror = () => reject(putReq.error || new Error("Failed to write document to IndexedDB"))
+      }
+    })
   })
   notifyDocChanged(docRecord.id, "save")
 }

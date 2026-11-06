@@ -1,9 +1,9 @@
 // ---------------------------------------------------------------------------
-// Zenithsui IndexedDB Storage Engine (zenithsui-db v2)
+// Zenithsui IndexedDB Storage Engine (zenithsui-db v3)
 // ---------------------------------------------------------------------------
 
 export const DB_NAME = "zenithsui-db"
-export const DB_VERSION = 2
+export const DB_VERSION = 3
 
 export const STORES = {
   DOCUMENTS: "documents",
@@ -11,6 +11,7 @@ export const STORES = {
   ASSET_BLOBS: "asset_blobs",
   APP_STATE: "app_state",
   EXPIRED_ELEMENTS: "expired_elements",
+  BACKUPS: "backups",
 } as const
 
 let dbInstance: IDBDatabase | null = null
@@ -62,6 +63,14 @@ export function openZenithsuiDb(): Promise<IDBDatabase> {
         archiveStore.createIndex("by_documentId", "documentId", { unique: false })
         archiveStore.createIndex("by_archivedAt", "archivedAt", { unique: false })
         archiveStore.createIndex("by_expiresAt", "expiresAt", { unique: false })
+      }
+
+      // 6. Automatic and manual backup snapshots store (v3)
+      if (!db.objectStoreNames.contains(STORES.BACKUPS)) {
+        const backupStore = db.createObjectStore(STORES.BACKUPS, { keyPath: "backupId" })
+        backupStore.createIndex("by_docId", "docId", { unique: false })
+        backupStore.createIndex("by_createdAt", "createdAt", { unique: false })
+        backupStore.createIndex("by_type", "type", { unique: false })
       }
     }
 

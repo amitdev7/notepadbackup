@@ -53,12 +53,26 @@ export interface DatabaseSettings {
   allowTelemetry: boolean
 }
 
+export interface BackupSettings {
+  enabled: boolean
+  frequencyMinutes: number
+  maxSnapshotsPerDoc: number
+  autoBackupOnMilestone: boolean
+}
+
 export const DEFAULT_DATABASE_SETTINGS: DatabaseSettings = {
   enabled: true,
   storageMode: "hybrid",
   autoSync: true,
   syncIntervalMs: 5000,
   allowTelemetry: false,
+}
+
+export const DEFAULT_BACKUP_SETTINGS: BackupSettings = {
+  enabled: true,
+  frequencyMinutes: 5,
+  maxSnapshotsPerDoc: 10,
+  autoBackupOnMilestone: true,
 }
 
 export type PerformanceProfile = "balanced" | "quality" | "performance"
@@ -339,6 +353,7 @@ export interface ShellPreferences {
   libraryPosition?: LibraryPosition
   librarySize?: LibrarySize
   liveCollaborationEnabled?: boolean
+  backupSettings?: BackupSettings
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -368,6 +383,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   performanceSettings: DEFAULT_PERFORMANCE_SETTINGS,
   dockControls: DEFAULT_DOCK_CONTROLS,
   databaseSettings: DEFAULT_DATABASE_SETTINGS,
+  backupSettings: DEFAULT_BACKUP_SETTINGS,
   wifiAutoSync: false,
   clockSettings: DEFAULT_CLOCK_PREFERENCES,
   temporarySettings: DEFAULT_TEMPORARY_PREFERENCES,
@@ -572,6 +588,7 @@ interface ShellState {
   updateTextSettings: (updates: Partial<TextSettings>) => void
   updatePerformanceSettings: (updates: Partial<PerformanceSettings>) => void
   updateDatabaseSettings: (updates: Partial<DatabaseSettings>) => void
+  updateBackupSettings: (updates: Partial<BackupSettings>) => void
   setStorageMode: (mode: StorageMode) => void
   toggleDatabase: (enabled?: boolean) => void
   updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
@@ -1097,6 +1114,16 @@ export const useShellStore = create<ShellState>((set, get) => ({
     set((state) => {
       const nextDb = { ...state.preferences.databaseSettings, ...updates }
       const next = { ...state.preferences, databaseSettings: nextDb }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updateBackupSettings: (updates) => {
+    set((state) => {
+      const currentBackup = state.preferences.backupSettings || DEFAULT_BACKUP_SETTINGS
+      const nextBackup = { ...currentBackup, ...updates }
+      const next = { ...state.preferences, backupSettings: nextBackup }
       savePreferences(next)
       return { preferences: next }
     })

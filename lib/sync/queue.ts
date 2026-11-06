@@ -12,6 +12,7 @@ export interface QueuedMutation {
   docId: string
   type: MutationType
   baseRevision: number
+  idempotencyKey?: string
   payload: {
     name?: string
     documentJson?: CanvasDocumentJson
@@ -154,6 +155,44 @@ export async function getPendingMutationCount(): Promise<number> {
     const req = store.count()
     req.onsuccess = () => resolve(req.result || 0)
     req.onerror = () => resolve(0)
+  })
+}
+
+export async function getAllPendingMutations(limit = 50): Promise<QueuedMutation[]> {
+  const db = await openZenithsuiDb()
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORES.SYNC_QUEUE, "readonly")
+    const store = tx.objectStore(STORES.SYNC_QUEUE)
+    const index = store.index("by_createdAt")
+    const req = index.getAll(undefined, limit)
+    req.onsuccess = () => resolve((req.result as QueuedMutation[]) || [])
+    req.onerror = () => resolve([])
+  })
+}
+
+export async function getFailedMutationCount(): Promise<number> {
+  const all = await getAllPendingMutations(200)
+  return all.filter((m) => m.retryCount > 0 || Boolean(m.lastError)).length
+}
+
+export async function resetFailedMutations(): Promise<void> {
+  await withTransaction(STORES.SYNC_QUEUE, "readwrite", async (tx) => {
+    const store = tx.objectStore(STORES.SYNC_QUEUE)
+    const req = store.getAll()
+    await new Promise<void>((resolve) => {
+      req.onsuccess = () => {
+        const items = (req.result as QueuedMutation[]) || []
+        for (const item of items) {
+          if (item.retryCount > 0 || item.lastError) {
+            item.retryCount = 0
+            item.nextRetryAt = Date.now()
+            delete item.lastError
+            store.put(item)
+          }
+        }
+        resolve()
+      }
+    })
   })
 }
 

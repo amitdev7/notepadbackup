@@ -21,6 +21,7 @@ import {
   DEFAULT_DRAW_SETTINGS,
   DEFAULT_TEXT_SETTINGS,
   DEFAULT_PERFORMANCE_SETTINGS,
+  DEFAULT_BACKUP_SETTINGS,
   type SettingsSectionId,
   type ThemeMode,
   type UIDensity,
@@ -111,7 +112,20 @@ import {
   MapPin,
   Globe,
   EyeSlash,
+  DownloadSimple,
+  UploadSimple,
+  HardDrive,
 } from "@phosphor-icons/react"
+import {
+  createBackupSnapshot,
+  listBackupSnapshots,
+  deleteBackupSnapshot,
+  restoreBackupSnapshot,
+  exportCompleteBackup,
+  restoreFromBackupPackage,
+  type BackupSnapshot,
+} from "@/lib/storage/backup"
+import { getStorageQuotaEstimate, requestPersistentStorage, type StorageQuotaInfo } from "@/lib/storage/storage-quota"
 import { kbd, eventToKeybindSpec, ZEN_MODE_PRESETS, HIDE_MOUSE_PRESETS } from "@/lib/shortcuts"
 
 interface SectionItem {
@@ -968,11 +982,20 @@ function KeyboardSettingsSection() {
 function StorageSection() {
   const prefs = useShellStore((s) => s.preferences)
   const dbSettings = prefs.databaseSettings
+  const backupSettings = prefs.backupSettings || DEFAULT_BACKUP_SETTINGS
   const updateDbSettings = useShellStore((s) => s.updateDatabaseSettings)
+  const updateBackupSettings = useShellStore((s) => s.updateBackupSettings)
   const setStorageMode = useShellStore((s) => s.setStorageMode)
   const toggleDatabase = useShellStore((s) => s.toggleDatabase)
   const resetPrefs = useShellStore((s) => s.resetPreferences)
   const user = useAuthStore((s) => s.user)
+
+  // Current canvas document bindings
+  const currentDocId = useSquig((s) => s.docId)
+  const currentFileName = useSquig((s) => s.fileName)
+  const currentNodes = useSquig((s) => s.nodes)
+  const currentOrder = useSquig((s) => s.order)
+  const openFile = useSquig((s) => s.openFile)
 
   // DB Diagnostic & Health state
   const [testing, setTesting] = useState(false)
@@ -998,6 +1021,17 @@ function StorageSection() {
     failedCount: number
     message?: string
   } | null>(null)
+
+  // Backup & Storage Quota state
+  const [quotaInfo, setQuotaInfo] = useState<StorageQuotaInfo | null>(null)
+  const [snapshots, setSnapshots] = useState<BackupSnapshot[]>([])
+  const [loadingSnapshots, setLoadingSnapshots] = useState(false)
+  const [takingSnapshot, setTakingSnapshot] = useState(false)
+  const [exportingBackup, setExportingBackup] = useState(false)
+  const [restoringBackup, setRestoringBackup] = useState(false)
+  const [persisting, setPersisting] = useState(false)
+  const [backupNotice, setBackupNotice] = useState<{ text: string; type: "success" | "error" | "info" } | null>(null)
+  const restoreFileRef = useRef<HTMLInputElement | null>(null)
 
   // Proactively check DB connection on mount
   useEffect(() => {
@@ -1082,6 +1116,130 @@ function StorageSection() {
       })
     } finally {
       setMigrating(false)
+    }
+  }
+
+  const refreshStorageAndSnapshots = async () => {
+    try {
+      const quota = await getStorageQuotaEstimate()
+      setQuotaInfo(quota)
+    } catch {}
+    try {
+      setLoadingSnapshots(true)
+      const list = await listBackupSnapshots(currentDocId)
+      setSnapshots(list)
+    } catch {} finally {
+      setLoadingSnapshots(false)
+    }
+  }
+
+  useEffect(() => {
+    refreshStorageAndSnapshots()
+  }, [currentDocId])
+
+  const handleRequestPersistence = async () => {
+    setPersisting(true)
+    try {
+      const ok = await requestPersistentStorage()
+      const quota = await getStorageQuotaEstimate()
+      setQuotaInfo(quota)
+      if (ok) {
+        setBackupNotice({ text: "Persistent storage granted! Browser will not clear Zenithsui data under disk pressure.", type: "success" })
+      } else {
+        setBackupNotice({ text: "Browser denied persistent storage or does not support navigator.storage.persist().", type: "info" })
+      }
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Failed to request persistent storage", type: "error" })
+    } finally {
+      setPersisting(false)
+    }
+  }
+
+  const handleTakeSnapshot = async () => {
+    setTakingSnapshot(true)
+    try {
+      await createBackupSnapshot(
+        currentDocId,
+        currentFileName,
+        { fileName: currentFileName, nodes: currentNodes, order: currentOrder },
+        "manual"
+      )
+      setBackupNotice({ text: "New local backup snapshot created successfully.", type: "success" })
+      await refreshStorageAndSnapshots()
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Failed to create snapshot", type: "error" })
+    } finally {
+      setTakingSnapshot(false)
+    }
+  }
+
+  const handleRestoreSnapshot = async (snapshot: BackupSnapshot) => {
+    if (!window.confirm(`Restore canvas to snapshot from ${new Date(snapshot.createdAt).toLocaleString()}? A pre-restore safety checkpoint will be saved automatically.`)) {
+      return
+    }
+    setRestoringBackup(true)
+    try {
+      const ok = await restoreBackupSnapshot(snapshot.backupId)
+      if (ok) {
+        setBackupNotice({
+          text: `Restored snapshot "${snapshot.docName}" (${snapshot.doc.order.length} elements). Pre-restore safety checkpoint saved.`,
+          type: "success",
+        })
+        openFile(snapshot.docId)
+        await refreshStorageAndSnapshots()
+      } else {
+        setBackupNotice({ text: "Failed to restore snapshot.", type: "error" })
+      }
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Restore failed", type: "error" })
+    } finally {
+      setRestoringBackup(false)
+    }
+  }
+
+  const handleDeleteSnapshot = async (backupId: string) => {
+    try {
+      await deleteBackupSnapshot(backupId)
+      setSnapshots((prev) => prev.filter((s) => s.backupId !== backupId))
+      setBackupNotice({ text: "Snapshot deleted.", type: "info" })
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Failed to delete snapshot", type: "error" })
+    }
+  }
+
+  const handleExportBackup = async () => {
+    setExportingBackup(true)
+    try {
+      await exportCompleteBackup()
+      setBackupNotice({ text: "Exported portable backup package (.zenithsui-backup) with all canvases and media assets.", type: "success" })
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Export failed", type: "error" })
+    } finally {
+      setExportingBackup(false)
+    }
+  }
+
+  const handleRestoreFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setRestoringBackup(true)
+    try {
+      const text = await file.text()
+      const result = await restoreFromBackupPackage(text, "add")
+      if (result.success) {
+        setBackupNotice({
+          text: `Restored ${result.documentCount} canvas(es) and ${result.assetCount} media asset(s) successfully!`,
+          type: "success",
+        })
+        await refreshStorageAndSnapshots()
+      } else {
+        setBackupNotice({ text: result.error || "Failed to restore backup package.", type: "error" })
+      }
+    } catch (err: any) {
+      setBackupNotice({ text: err?.message || "Error reading backup file.", type: "error" })
+    } finally {
+      setRestoringBackup(false)
+      if (e.target) e.target.value = ""
     }
   }
 
@@ -1399,6 +1557,321 @@ function StorageSection() {
           <option value={15000}>15 seconds</option>
           <option value={30000}>30 seconds (Power Saver)</option>
         </select>
+      </div>
+
+      {backupNotice && (
+        <div
+          className={cn(
+            "p-3 rounded-xl text-xs border flex items-center justify-between transition-all",
+            backupNotice.type === "error"
+              ? "border-rose-500/30 bg-rose-500/10 text-rose-800 dark:text-rose-200"
+              : backupNotice.type === "success"
+                ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
+                : "border-blue-500/30 bg-blue-500/10 text-blue-800 dark:text-blue-200"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            {backupNotice.type === "error" ? (
+              <WarningCircle size={16} weight="fill" className="text-rose-500 shrink-0" />
+            ) : backupNotice.type === "success" ? (
+              <CheckCircle size={16} weight="fill" className="text-emerald-500 shrink-0" />
+            ) : (
+              <HardDrive size={16} weight="fill" className="text-blue-500 shrink-0" />
+            )}
+            <span>{backupNotice.text}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setBackupNotice(null)}
+            className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 cursor-pointer ml-2"
+          >
+            <X size={13} />
+          </button>
+        </div>
+      )}
+
+      {/* 6. Local Storage Quota & Browser Persistence */}
+      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-900/40 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="size-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <HardDrives size={18} weight="duotone" />
+            </div>
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+                Local Storage Quota & Durability (IndexedDB)
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Guarantees full offline operation and durable local persistence
+              </span>
+            </div>
+          </div>
+          <span
+            className={cn(
+              "px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide border",
+              quotaInfo?.isPersisted
+                ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+                : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+            )}
+          >
+            {quotaInfo?.isPersisted ? "Eviction Protected" : "Best-Effort Storage"}
+          </span>
+        </div>
+
+        {quotaInfo && (
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400">
+              <span>Disk Usage</span>
+              <span className="font-mono font-medium text-stone-700 dark:text-stone-300">
+                {quotaInfo.usageFormatted} / {quotaInfo.quotaFormatted} ({quotaInfo.percentUsed}%)
+              </span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-stone-200 dark:bg-stone-800 overflow-hidden">
+              <div
+                className="h-full bg-indigo-500 transition-all rounded-full"
+                style={{ width: `${Math.min(Math.max(quotaInfo.percentUsed, 1), 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {!quotaInfo?.isPersisted && (
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[11px] text-stone-500">
+              Request browser permission to prevent eviction during device low-disk cleanup
+            </span>
+            <button
+              type="button"
+              onClick={handleRequestPersistence}
+              disabled={persisting}
+              className="px-2.5 py-1 rounded-lg text-xs font-medium border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {persisting ? "Requesting..." : "Protect Storage"}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* 7. Automatic Local Backup Engine */}
+      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-900/40 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="size-8 rounded-lg bg-teal-500/10 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+              <ClockCounterClockwise size={18} weight="duotone" />
+            </div>
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+                Automatic Local Backup Engine
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Periodic snapshots stored securely inside your browser&apos;s IndexedDB
+              </span>
+            </div>
+          </div>
+          <Switch
+            checked={backupSettings.enabled}
+            onCheckedChange={(checked) => updateBackupSettings({ enabled: checked })}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-stone-200/60 dark:border-stone-800/60">
+          <div>
+            <label className="text-[11px] font-medium text-stone-700 dark:text-stone-300 block mb-1">
+              Backup Frequency
+            </label>
+            <select
+              value={backupSettings.frequencyMinutes}
+              onChange={(e) => updateBackupSettings({ frequencyMinutes: Number(e.target.value) })}
+              disabled={!backupSettings.enabled}
+              className="w-full px-2.5 py-1 text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 disabled:opacity-50"
+            >
+              <option value={1}>Every 1 minute (High safety)</option>
+              <option value={5}>Every 5 minutes (Recommended)</option>
+              <option value={15}>Every 15 minutes</option>
+              <option value={30}>Every 30 minutes</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[11px] font-medium text-stone-700 dark:text-stone-300 block mb-1">
+              Snapshot Retention Limit
+            </label>
+            <select
+              value={backupSettings.maxSnapshotsPerDoc}
+              onChange={(e) => updateBackupSettings({ maxSnapshotsPerDoc: Number(e.target.value) })}
+              disabled={!backupSettings.enabled}
+              className="w-full px-2.5 py-1 text-xs rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-stone-100 disabled:opacity-50"
+            >
+              <option value={5}>Keep 5 snapshots</option>
+              <option value={10}>Keep 10 snapshots (Default)</option>
+              <option value={20}>Keep 20 snapshots</option>
+              <option value={50}>Keep 50 snapshots</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between pt-2">
+          <span className="text-[11px] text-stone-500">
+            Current Document: <strong className="text-stone-700 dark:text-stone-300">{currentFileName}</strong> ({currentOrder.length} elements)
+          </span>
+          <button
+            type="button"
+            onClick={handleTakeSnapshot}
+            disabled={takingSnapshot}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-medium text-xs transition-colors cursor-pointer disabled:opacity-50 shadow-2xs"
+          >
+            {takingSnapshot ? (
+              <CircleNotch size={13} className="animate-spin" />
+            ) : (
+              <ClockCounterClockwise size={13} weight="bold" />
+            )}
+            <span>Snapshot Canvas Now</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 8. Recent Local Snapshots List */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+              Canvas Snapshot History ({snapshots.length})
+            </span>
+            <span className="text-[11px] text-stone-500">
+              Recover previous canvas versions with automatic pre-restore checkpoints
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={refreshStorageAndSnapshots}
+            className="text-[11px] text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 flex items-center gap-1 cursor-pointer"
+          >
+            <ArrowsClockwise size={12} className={loadingSnapshots ? "animate-spin" : ""} />
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        {snapshots.length === 0 ? (
+          <div className="p-4 rounded-xl border border-stone-200/80 dark:border-stone-800/80 bg-stone-50/50 dark:bg-stone-900/20 text-center text-xs text-stone-500">
+            No snapshots recorded yet for this canvas. Snapshots are created automatically every {backupSettings.frequencyMinutes} min or by clicking &quot;Snapshot Canvas Now&quot;.
+          </div>
+        ) : (
+          <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+            {snapshots.map((snap) => (
+              <div
+                key={snap.backupId}
+                className="p-2.5 rounded-lg border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-800/80 flex items-center justify-between hover:border-stone-300 dark:hover:border-stone-700 transition-colors text-xs"
+              >
+                <div className="space-y-0.5">
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "px-1.5 py-0.5 rounded text-[9px] font-semibold uppercase tracking-wider",
+                        snap.type === "pre-restore" || snap.type === "milestone"
+                          ? "bg-purple-500/10 text-purple-600 dark:text-purple-400"
+                          : snap.type === "manual"
+                            ? "bg-teal-500/10 text-teal-600 dark:text-teal-400"
+                            : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                      )}
+                    >
+                      {snap.type}
+                    </span>
+                    <span className="font-medium text-stone-800 dark:text-stone-200">
+                      {new Date(snap.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+                    </span>
+                    <span className="text-stone-400 dark:text-stone-500">·</span>
+                    <span className="text-stone-500 text-[11px]">
+                      {new Date(snap.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })}
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-stone-500">
+                    {snap.doc?.order?.length ?? 0} elements · {(snap.sizeBytes / 1024).toFixed(1)} KB
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => handleRestoreSnapshot(snap)}
+                    disabled={restoringBackup}
+                    className="px-2 py-1 rounded-md text-[11px] font-medium bg-stone-100 hover:bg-stone-200 dark:bg-stone-700 dark:hover:bg-stone-600 text-stone-800 dark:text-stone-100 transition-colors cursor-pointer"
+                  >
+                    Restore
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteSnapshot(snap.backupId)}
+                    className="p-1 rounded-md text-stone-400 hover:text-rose-500 dark:hover:text-rose-400 transition-colors cursor-pointer"
+                    title="Delete snapshot"
+                  >
+                    <Trash size={13} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* 9. Complete Portable Backup Archive (.zenithsui-backup) */}
+      <div className="p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50/70 dark:bg-stone-900/40 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="size-8 rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <HardDrive size={18} weight="duotone" />
+            </div>
+            <div>
+              <span className="font-semibold text-stone-900 dark:text-stone-100 block text-xs">
+                Complete Portable Backup & Restore (.zenithsui-backup)
+              </span>
+              <span className="text-[11px] text-stone-500">
+                Self-contained bundle of all canvases and binary media assets (audio, images, recordings)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-[11px] text-stone-500 leading-relaxed">
+          Create a complete offline archive of your Zenithsui library. Exports all documents along with embedded voice recordings and images encoded directly into the file. Transfer between devices without cloud reliance.
+        </p>
+
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <button
+            type="button"
+            onClick={handleExportBackup}
+            disabled={exportingBackup}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 font-medium text-xs transition-colors cursor-pointer disabled:opacity-50"
+          >
+            {exportingBackup ? (
+              <CircleNotch size={13} className="animate-spin" />
+            ) : (
+              <DownloadSimple size={14} weight="bold" />
+            )}
+            <span>Export Complete Backup</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => restoreFileRef.current?.click()}
+            disabled={restoringBackup}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 font-medium text-xs transition-colors cursor-pointer disabled:opacity-50"
+          >
+            {restoringBackup ? (
+              <CircleNotch size={13} className="animate-spin" />
+            ) : (
+              <UploadSimple size={14} weight="bold" />
+            )}
+            <span>Restore From File (.zenithsui-backup)</span>
+          </button>
+
+          <input
+            ref={restoreFileRef}
+            type="file"
+            accept=".zenithsui-backup,.json"
+            onChange={handleRestoreFileInput}
+            className="hidden"
+          />
+        </div>
       </div>
 
       {/* 6. Reset UI Preferences */}
