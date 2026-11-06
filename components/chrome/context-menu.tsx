@@ -152,7 +152,19 @@ export function CanvasContextMenu() {
         ? [{ label: "Link text…", hint: kbd("mod+k"), icon: LinkSimpleIcon, run: () => st().setLinkOpen(true) } as Entry]
         : []),
       ...(one && hasEditableText(one)
-        ? [{ label: "Edit text", hint: kbd("enter"), icon: TextTIcon, run: () => st().setEditing(one.id) } as Entry]
+        ? [
+            {
+              label: one.locked ? "Text is locked" : "Edit text",
+              hint: one.locked ? undefined : kbd("enter"),
+              icon: one.locked ? LockSimpleIcon : TextTIcon,
+              disabled: !!one.locked,
+              run: () => {
+                if (one.locked) return
+                if (!st().selection.includes(one.id)) st().setSelection([one.id])
+                st().setEditing(one.id)
+              },
+            } as Entry,
+          ]
         : []),
       ...(one && one.type === "document"
         ? [

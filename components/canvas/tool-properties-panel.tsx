@@ -37,6 +37,7 @@ import {
   Clock,
   Archive,
   Check,
+  PencilSimple,
 } from "@phosphor-icons/react"
 import type { StrokeWeight, TextNode } from "@/lib/types"
 
@@ -565,6 +566,18 @@ export function ToolPropertiesPanel() {
       {/* ── 8. Text Options (Font, Size, Align, Styles) ────────────────────── */}
       {showTextOptions && (
         <>
+          {isSelectionActive && selectedNodes.length === 1 && (selectedNodes[0].type === "text" || selectedNodes[0].type === "sticky") && !selectedNodes[0].locked && (
+            <button
+              type="button"
+              onClick={() => useSquig.getState().setEditing(selectedNodes[0].id)}
+              className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 font-semibold text-xs border border-blue-500/20 shadow-2xs transition-all cursor-pointer"
+              title="Edit text inline (Double-Click, Enter, or F2)"
+            >
+              <PencilSimple size={14} weight="bold" />
+              <span>Edit Text on Canvas</span>
+              <kbd className="text-[10px] font-mono px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700">↵ / F2</kbd>
+            </button>
+          )}
           <div>
             <div className="text-[11px] font-medium text-stone-700 dark:text-stone-300 mb-1.5">
               Font family

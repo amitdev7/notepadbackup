@@ -15,7 +15,7 @@ import { wrapText } from "@/lib/canvas/text-metrics"
 import { nodePrims } from "@/lib/sketch/node-prims"
 import { textAnchorX, textBaseline } from "@/lib/sketch/text-layout"
 import { getDef } from "@/lib/library/registry"
-import type { ComponentNode, SquigNode, TextAlign, TextNode } from "@/lib/types"
+import type { ComponentNode, SquigNode, StickyNoteNode, TextAlign, TextNode } from "@/lib/types"
 
 type TextPrim = Extract<Prim, { t: "text" }>
 
@@ -62,6 +62,7 @@ export function textControlKey(node: ComponentNode): string | null {
  */
 export function hasEditableText(node: SquigNode): boolean {
   if (node.type === "text") return true
+  if (node.type === "sticky") return true
   return node.type === "component" && textControlKey(node) !== null
 }
 
@@ -129,9 +130,27 @@ function textNodeTarget(node: TextNode): EditTarget {
   }
 }
 
+function stickyNoteTarget(node: StickyNoteNode): EditTarget {
+  const fontSize = node.fontSize || 13
+  return {
+    value: node.text || "",
+    x: 9,
+    baseline: textBaseline(0, fontSize) + 10,
+    fontSize,
+    align: "left",
+    bold: false,
+    italic: false,
+    underline: false,
+    color: INK.ink,
+    multiline: true,
+    hidden: "all",
+  }
+}
+
 /** Where — and how — a node's text should be edited, or null if it has none. */
 export function editTarget(node: SquigNode): EditTarget | null {
   if (node.type === "text") return textNodeTarget(node)
+  if (node.type === "sticky") return stickyNoteTarget(node as StickyNoteNode)
   if (node.type !== "component") return null
 
   const key = textControlKey(node)

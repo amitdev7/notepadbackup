@@ -17,7 +17,7 @@
 import { useMemo, useRef, useState, useEffect } from "react"
 import { useSquig } from "@/lib/store"
 import { cn } from "@/lib/utils"
-import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, DocumentNode, ImageNode, ImageBorder, MediaNode, EmbedNode } from "@/lib/types"
+import type { ArrowNode, ComponentNode, FillTone, ShapeNode, SquigNode, StrokeWeight, TextNode, StickyNoteNode, DocumentNode, ImageNode, ImageBorder, MediaNode, EmbedNode } from "@/lib/types"
 import { normalizeFill, DEFAULT_IMAGE_BORDER } from "@/lib/types"
 import { getDef } from "@/lib/library/registry"
 import { selectionSummary, shared, sharedControls, sharedNumber, unionBounds } from "@/lib/selection"
@@ -53,6 +53,7 @@ import {
   ChatCenteredText,
   Timer,
   Plus,
+  PencilSimple,
 } from "@phosphor-icons/react"
 import { formatRemainingTime, expireNodeNow } from "@/lib/canvas/expiration-manager"
 import { SmartHoverCardContent } from "@/components/canvas/smart-hover-note"
@@ -289,6 +290,164 @@ function PageFooter() {
   )
 }
 
+function InspectorTextEditor({ node }: { node: TextNode }) {
+  const st = useSquig.getState
+  const [draft, setDraft] = useState(node.text)
+  const isLocked = !!node.locked
+
+  useEffect(() => {
+    setDraft(node.text)
+  }, [node.text])
+
+  const commit = (nextText: string) => {
+    if (nextText === node.text) return
+    st().checkpoint()
+    st().updateNode(node.id, fitTextBox(node, nextText, node.fontSize) as Partial<SquigNode>)
+    st().saveNow()
+  }
+
+  if (isLocked) {
+    return (
+      <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 w-full">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Lock size={14} weight="bold" />
+          <span>Text is locked</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => st().updateNode(node.id, { locked: false } as Partial<SquigNode>)}
+          className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 hover:bg-amber-500/30 transition-colors cursor-pointer"
+        >
+          Unlock
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-1.5 w-full">
+      <div className="flex items-center justify-between text-[11px]">
+        <span className="font-semibold text-stone-600 dark:text-stone-300">Content</span>
+        <button
+          type="button"
+          onClick={() => st().setEditing(node.id)}
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"
+          title="Open inline canvas editor (Enter or Double-Click)"
+        >
+          <PencilSimple size={11} weight="bold" />
+          <span>Inline Edit</span>
+          <kbd className="text-[9px] font-mono px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700">↵</kbd>
+        </button>
+      </div>
+
+      <textarea
+        value={draft}
+        onChange={(e) => {
+          setDraft(e.target.value)
+          st().updateNode(node.id, fitTextBox(node, e.target.value, node.fontSize) as Partial<SquigNode>)
+        }}
+        onBlur={() => commit(draft)}
+        onKeyDown={(e) => {
+          e.stopPropagation()
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault()
+            commit(draft)
+            e.currentTarget.blur()
+          }
+          if (e.key === "Escape") {
+            e.preventDefault()
+            setDraft(node.text)
+            st().updateNode(node.id, fitTextBox(node, node.text, node.fontSize) as Partial<SquigNode>)
+            e.currentTarget.blur()
+          }
+        }}
+        rows={Math.min(8, Math.max(2, (draft || "").split("\n").length))}
+        placeholder="Type text here…"
+        className="w-full text-xs font-sans rounded-md border border-[var(--sq-border)] bg-[var(--sq-paper)] p-2 text-[var(--sq-ink)] resize-y focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all min-h-[56px] max-h-[220px]"
+      />
+    </div>
+  )
+}
+
+function InspectorStickyEditor({ node }: { node: StickyNoteNode }) {
+  const st = useSquig.getState
+  const [draft, setDraft] = useState(node.text || "")
+  const isLocked = !!node.locked
+
+  useEffect(() => {
+    setDraft(node.text || "")
+  }, [node.text])
+
+  const commit = (nextText: string) => {
+    if (nextText === node.text) return
+    st().checkpoint()
+    st().updateNode(node.id, { text: nextText } as Partial<SquigNode>)
+    st().saveNow()
+  }
+
+  if (isLocked) {
+    return (
+      <div className="flex items-center justify-between p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 w-full">
+        <div className="flex items-center gap-1.5 font-medium">
+          <Lock size={14} weight="bold" />
+          <span>Sticky note is locked</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => st().updateNode(node.id, { locked: false } as Partial<SquigNode>)}
+          className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-500/20 hover:bg-amber-500/30 transition-colors cursor-pointer"
+        >
+          Unlock
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-1.5 w-full">
+      <div className="flex items-center justify-between text-[11px]">
+        <span className="font-semibold text-stone-600 dark:text-stone-300">Note Content</span>
+        <button
+          type="button"
+          onClick={() => st().setEditing(node.id)}
+          className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 transition-colors cursor-pointer"
+          title="Open inline canvas editor (Enter or Double-Click)"
+        >
+          <PencilSimple size={11} weight="bold" />
+          <span>Inline Edit</span>
+          <kbd className="text-[9px] font-mono px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded border border-stone-200 dark:border-stone-700">↵</kbd>
+        </button>
+      </div>
+
+      <textarea
+        value={draft}
+        onChange={(e) => {
+          setDraft(e.target.value)
+          st().updateNode(node.id, { text: e.target.value } as Partial<SquigNode>)
+        }}
+        onBlur={() => commit(draft)}
+        onKeyDown={(e) => {
+          e.stopPropagation()
+          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+            e.preventDefault()
+            commit(draft)
+            e.currentTarget.blur()
+          }
+          if (e.key === "Escape") {
+            e.preventDefault()
+            setDraft(node.text || "")
+            st().updateNode(node.id, { text: node.text || "" } as Partial<SquigNode>)
+            e.currentTarget.blur()
+          }
+        }}
+        rows={Math.min(8, Math.max(2, (draft || "").split("\n").length))}
+        placeholder="Write note here…"
+        className="w-full text-xs font-sans rounded-md border border-[var(--sq-border)] bg-[var(--sq-paper)] p-2 text-[var(--sq-ink)] resize-y focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all min-h-[56px] max-h-[220px]"
+      />
+    </div>
+  )
+}
+
 // ---------------------------------------------------------------------------
 
 function SelectionEditor({ selected }: { selected: SquigNode[] }) {
@@ -318,6 +477,7 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
   const shapes = selected.filter((n): n is ShapeNode => n.type === "shape")
   const arrows = selected.filter((n): n is ArrowNode => n.type === "arrow")
   const texts = selected.filter((n): n is TextNode => n.type === "text")
+  const stickies = selected.filter((n): n is StickyNoteNode => n.type === "sticky")
   const documents = selected.filter((n): n is DocumentNode => n.type === "document")
   const mediaNodes = selected.filter((n): n is MediaNode => n.type === "media")
   const embedNodes = selected.filter((n): n is EmbedNode => n.type === "embed")
@@ -420,13 +580,20 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
       {/* --- contextual: text ------------------------------------------- */}
       {texts.length > 0 && (
         <PanelSection id="text" title="Text" count={partial(texts.length)}>
-          <StackRow>
-            <MixedTextField
-              ariaLabel="Text"
-              shared={shared(texts.map((n) => n.text))}
-              onCommit={(v) => patch((n) => (n.type === "text" ? (fitTextBox(n, v) as Partial<SquigNode>) : null))}
-            />
-          </StackRow>
+          {texts.length === 1 ? (
+            <StackRow>
+              <InspectorTextEditor node={texts[0]} />
+            </StackRow>
+          ) : (
+            <div className="p-2.5 rounded-lg bg-stone-100 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/60 text-xs text-stone-500 dark:text-stone-400">
+              <div className="font-semibold text-stone-700 dark:text-stone-300">
+                {texts.length} text objects selected
+              </div>
+              <div className="text-[11px] mt-0.5 leading-relaxed">
+                Select a single text object to edit its words directly, or use formatting controls below to style all {texts.length} together.
+              </div>
+            </div>
+          )}
 
           <Row label="Align">
             <Segmented
@@ -512,6 +679,26 @@ function SelectionEditor({ selected }: { selected: SquigNode[] }) {
               }
             />
           </Row>
+        </PanelSection>
+      )}
+
+      {/* --- contextual: sticky note ------------------------------------ */}
+      {stickies.length > 0 && (
+        <PanelSection id="sticky" title="Sticky Note" count={partial(stickies.length)}>
+          {stickies.length === 1 ? (
+            <StackRow>
+              <InspectorStickyEditor node={stickies[0]} />
+            </StackRow>
+          ) : (
+            <div className="p-2.5 rounded-lg bg-stone-100 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700/60 text-xs text-stone-500 dark:text-stone-400">
+              <div className="font-semibold text-stone-700 dark:text-stone-300">
+                {stickies.length} sticky notes selected
+              </div>
+              <div className="text-[11px] mt-0.5 leading-relaxed">
+                Select a single sticky note to edit its content directly.
+              </div>
+            </div>
+          )}
         </PanelSection>
       )}
 

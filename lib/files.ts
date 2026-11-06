@@ -200,7 +200,7 @@ export function loadPrefs(): Prefs {
   return {
     // prefs used to keep the look's fields flat, so read them either way
     look: knownLook(p.look ?? p, DEFAULT_LOOK),
-    contextRow: p.contextRow === true,
+    contextRow: p.contextRow !== false,
     activeId: typeof p.activeId === "string" ? p.activeId : null,
   }
 }

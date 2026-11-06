@@ -21,6 +21,7 @@ import { AlignRow } from "@/components/chrome/align-row"
 import { TextAlignMenu, TextStyleToggles } from "@/components/chrome/text-controls"
 import { Segmented, type SegmentOption } from "@/components/ui/segmented"
 import { Panel } from "@/components/ui/panel"
+import { PencilSimple } from "@phosphor-icons/react"
 
 /** Fill tones, as chips — the same four the inspector offers, drawn smaller. */
 const FILL_OPTIONS: readonly SegmentOption<FillTone>[] = (
@@ -122,8 +123,9 @@ export const ContextRow = memo(function ContextRow({
   const showFill = shapes.length === selectedNodes.length && shapes.length > 0
   const showHead = arrows.length === selectedNodes.length && arrows.length > 0
   const showText = texts.length === selectedNodes.length && texts.length > 0
+  const showSticky = selectedNodes.length === 1 && selectedNodes[0].type === "sticky"
 
-  if (!quick.length && !showFill && !showHead && !showText && !multi) return null
+  if (!quick.length && !showFill && !showHead && !showText && !showSticky && !multi) return null
 
   const patch = (make: (n: SquigNode) => Partial<SquigNode> | null, checkpoint = true) => {
     const patches: Record<string, Partial<SquigNode>> = {}
@@ -140,16 +142,30 @@ export const ContextRow = memo(function ContextRow({
   return (
     <Panel ref={measure} className="absolute z-20 flex-row items-center gap-3 px-2.5 py-2 animate-popover-enter shadow-lg gpu-accelerated" style={style}>
       {multi && <AlignRow count={selectedNodes.length} />}
-      {multi && (quick.length > 0 || showFill || showHead || showText) && <span className="h-4 w-px bg-border" />}
+      {multi && (quick.length > 0 || showFill || showHead || showText || showSticky) && <span className="h-4 w-px bg-border" />}
 
       {quick.map((c) => (
         <VariantControl key={c.key} nodes={components} control={c} compact />
       ))}
 
-      {/* Text: the size you retype most, the three styles, and alignment folded
-          behind one button — the row has no room for a fourth track. */}
+      {/* Text: Quick Edit action + size + styles + alignment */}
       {showText && (
         <div className="flex items-center gap-1.5">
+          {texts.length === 1 && !texts[0].locked && (
+            <>
+              <button
+                type="button"
+                onClick={() => st().setEditing(texts[0].id)}
+                className="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                title="Edit text (Enter / Double-Click)"
+              >
+                <PencilSimple size={13} weight="bold" />
+                <span>Edit</span>
+                <span className="text-[10px] font-mono opacity-60">↵</span>
+              </button>
+              <span className="h-4 w-px bg-border" />
+            </>
+          )}
           <MixedNumberField
             label=""
             min={4}
@@ -168,6 +184,21 @@ export const ContextRow = memo(function ContextRow({
           <span className="h-4 w-px bg-border" />
           <TextStyleToggles texts={texts} compact />
           <TextAlignMenu texts={texts} />
+        </div>
+      )}
+
+      {showSticky && (
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => st().setEditing(selectedNodes[0].id)}
+            className="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-semibold bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500/20 active:scale-95 transition-all cursor-pointer shadow-2xs"
+            title="Edit sticky note (Enter / Double-Click)"
+          >
+            <PencilSimple size={13} weight="bold" />
+            <span>Edit Note</span>
+            <span className="text-[10px] font-mono opacity-60">↵</span>
+          </button>
         </div>
       )}
 

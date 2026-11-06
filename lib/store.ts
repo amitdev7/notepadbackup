@@ -675,7 +675,7 @@ export const useSquig = create<SquigState>((set, get) => ({
   placingDrag: false,
   editingId: null,
   quickNoteNodeId: null,
-  contextRow: false,
+  contextRow: true,
   ...DEFAULT_LOOK,
   showPage: true,
   hydrated: false,

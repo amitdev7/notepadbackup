@@ -37,37 +37,54 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
   const st = useSquig.getState
 
   const isText = node.type === "text"
+  const isSticky = node.type === "sticky"
   const [value, setValue] = useState(target.value)
   const taRef = useRef<HTMLTextAreaElement>(null)
+  const cancelledRef = useRef(false)
 
-  const commit = () => {
+  const cancel = () => {
+    cancelledRef.current = true
     const s = st()
     if (s.editingId !== node.id) return
-    // an empty text node draws nothing and can never be clicked again, so it
-    // goes even when the draft is unchanged — that's the just-placed-then-
-    // dismissed case
-    if (isText && !value.trim()) {
+    // An empty text node that was just placed and had no prior text goes on cancel
+    if (isText && !target.value.trim()) {
+      s.removeNodes([node.id])
+    }
+    s.setEditing(null)
+  }
+
+  const commit = () => {
+    if (cancelledRef.current) return
+    const s = st()
+    if (s.editingId !== node.id) return
+
+    // An empty text node with no prior text draws nothing and goes
+    if (isText && !value.trim() && !target.value.trim()) {
       s.removeNodes([node.id])
       s.setEditing(null)
       s.saveNow()
       return
     }
+
     if (value === target.value) {
-      // nothing changed — don't spend an undo step saying so
+      // Nothing changed — don't create unnecessary undo step
       s.setEditing(null)
       s.saveNow()
       return
     }
+
     s.checkpoint()
     if (isText) {
       const trimmed = value.replace(/\s+$/, "")
-      if (!trimmed) {
+      if (!trimmed && !target.value.trim()) {
         s.removeNodes([node.id], { checkpoint: false })
       } else {
         const textNode = node as TextNode
         const activeSize = textNode.fontSize || target.fontSize
         s.updateNode(node.id, fitTextBox(textNode, trimmed, activeSize) as Partial<SquigNode>)
       }
+    } else if (isSticky) {
+      s.updateNode(node.id, { text: value } as Partial<SquigNode>)
     } else if (target.propKey) {
       s.updateNode(node.id, {
         props: { ...(node as ComponentNode).props, [target.propKey]: value },
@@ -77,32 +94,39 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
     s.saveNow()
   }
 
-  // kept current so the outside-press listener always calls the latest commit
-  // without being rebuilt on every keystroke
+  // Kept current so outside-press listener always commits latest value
   const commitRef = useRef(commit)
   useEffect(() => {
     commitRef.current = commit
   })
 
-  // the press that opens the editor is still unwinding while we mount, and its
-  // default action puts focus back on the canvas. Blurs before the editor has
-  // settled are that, not the user leaving — committing on one would delete a
-  // text node the instant it was placed.
+  // Safe commit on unmount (e.g. navigation or switching objects without cancel)
+  useEffect(() => {
+    return () => {
+      if (!cancelledRef.current && st().editingId === node.id) {
+        commitRef.current()
+      }
+    }
+  }, [node.id, st])
+
   const settled = useRef(false)
 
   useEffect(() => {
     taRef.current?.focus()
-    taRef.current?.select()
+    if (!target.value) {
+      taRef.current?.select()
+    } else {
+      // Position caret at end of text so typing can continue naturally
+      const len = target.value.length
+      taRef.current?.setSelectionRange(len, len)
+    }
     const raf = requestAnimationFrame(() => {
       settled.current = true
     })
     return () => cancelAnimationFrame(raf)
-  }, [])
+  }, [target.value])
 
   useEffect(() => {
-    // a press anywhere else commits in the capture phase, *before* the canvas
-    // reacts — so the click that dismisses the editor also lands where it was
-    // aimed instead of costing a second click
     const onDown = (e: PointerEvent) => {
       if ((e.target as HTMLElement)?.closest?.("textarea") === taRef.current) return
       commitRef.current()
@@ -111,7 +135,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
     return () => window.removeEventListener("pointerdown", onDown, true)
   }, [])
 
-  const placeholder = isText ? "say something" : "label"
+  const placeholder = isText ? "say something" : isSticky ? "Write a note…" : "label"
 
   /**
    * Put the textarea's first baseline on the renderer's.
@@ -155,8 +179,8 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
     return {
       left: fixed ? node.x * v.zoom + v.x - CARET_PAD : anchorX - CARET_PAD - anchorFactor(currentAlign) * run,
       top: baselineY - ((lineHeight - (ascent + descent)) / 2 + ascent) - padY,
-      width: run + CARET_PAD * 2,
-      height: lineCount * lineHeight + padY * 2,
+      width: Math.max(64, run + CARET_PAD * 2),
+      height: Math.max(lineHeight + padY * 2, lineCount * lineHeight + padY * 2),
       padding: `${padY}px ${CARET_PAD}px`,
       fontSize: size,
       lineHeight: `${lineHeight}px`,
@@ -186,18 +210,18 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
       onKeyDown={(e) => {
         e.stopPropagation()
         if (e.key === "Escape") {
-          // stop editing, keep the words — Escape here means "I'm done",
-          // not "undo what I typed"
+          // Escape cancels the edit and restores original value
           e.preventDefault()
-          commit()
+          cancel()
           return
         }
         if (e.key === "Enter" && (e.metaKey || e.ctrlKey || !target.multiline)) {
+          // Ctrl/Cmd+Enter commits multiline text; Enter commits single-line
           e.preventDefault()
           commit()
         }
       }}
-      className="absolute resize-none overflow-hidden border-0 outline-none"
+      className="absolute resize-none overflow-hidden outline-none z-40 rounded-xs ring-1 ring-blue-500/70 shadow-xs"
       style={{
         left: box.left,
         top: box.top,
@@ -221,6 +245,7 @@ export function TextEditOverlay({ node, target }: { node: SquigNode; target: Edi
         // the one tell that this run is live: a wash the width of the words,
         // rather than a field the words have been moved into
         background: "color-mix(in srgb, var(--sq-select) 12%, transparent)",
+        boxShadow: "0 0 0 1px rgba(59, 130, 246, 0.4), 0 2px 4px rgba(0,0,0,0.06)",
         borderRadius: 2,
       }}
       placeholder={placeholder}

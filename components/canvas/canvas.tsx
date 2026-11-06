@@ -1585,6 +1585,10 @@ export function Canvas() {
         s.setViewerDoc(n as DocumentNode)
         return
       }
+      if (n.locked) {
+        s.setNotice("Object is locked. Unlock to edit text.")
+        return
+      }
       if (hasEditableText(n)) {
         s.setEditing(hitId)
       }
@@ -1594,8 +1598,11 @@ export function Canvas() {
 
   const onContextMenu = useCallback(
     (e: React.MouseEvent) => {
-      e.preventDefault()
       const s = st()
+      // Allow native context menu inside active inline text editor textarea
+      if (s.editingId && (e.target as HTMLElement).closest?.("textarea")) return
+
+      e.preventDefault()
       // a ctrl+click has already toggled the selection under the select tool;
       // don't stack a menu on top of the thing it just did
       if (e.ctrlKey && tool === "select" && !s.placing) return
@@ -2059,8 +2066,9 @@ export function Canvas() {
             containerRef.current?.blur()
           }
           break
+        case "F2":
         case "Enter": {
-          // Return steps into the words of whatever is selected — the same
+          // Return or F2 steps into the words of whatever is selected — the same
           // edit a double-click opens, without having to aim at the glyphs.
           // Only on a lone node: with several selected there's no "the" text.
           if (e.shiftKey || s.selection.length !== 1) break
@@ -2069,6 +2077,10 @@ export function Canvas() {
           if (n.type === "document") {
             e.preventDefault()
             s.setViewerDoc(n as DocumentNode)
+            break
+          }
+          if (n.locked) {
+            s.setNotice("Object is locked. Unlock to edit text.")
             break
           }
           if (!hasEditableText(n)) break
