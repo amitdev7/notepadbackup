@@ -441,7 +441,12 @@ export async function downloadMediaAsset(node: MediaNode): Promise<void> {
   const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
-  a.download = node.name || (node.mediaKind === "video" ? "video.mp4" : "audio.mp3")
+  let downloadName = node.name || (node.mediaKind === "video" ? "video" : "audio")
+  if (!/\.[a-zA-Z0-9]{2,5}$/.test(downloadName)) {
+    const ext = (blob.type.includes("webm") ? "webm" : blob.type.includes("mp4") || blob.type.includes("m4a") ? "m4a" : blob.type.includes("ogg") ? "ogg" : blob.type.includes("wav") ? "wav" : node.mediaKind === "video" ? "mp4" : "mp3")
+    downloadName = `${downloadName}.${ext}`
+  }
+  a.download = downloadName
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)

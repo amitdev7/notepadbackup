@@ -177,8 +177,7 @@ export async function validateMediaMagicBytes(
 
   // 1. EBML / WebM / MKV (1A 45 DF A3)
   if (bytes[0] === 0x1a && bytes[1] === 0x45 && bytes[2] === 0xdf && bytes[3] === 0xa3) {
-    const str = new TextDecoder().decode(bytes)
-    const isAudio = str.includes("webm") && blob.type.includes("audio")
+    const isAudio = blob.type.includes("audio")
     return {
       valid: true,
       detectedMime: isAudio ? "audio/webm" : "video/webm",

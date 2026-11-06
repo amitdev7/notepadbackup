@@ -193,6 +193,7 @@ export interface DockControlsVisibility {
   actionPresenter?: boolean
   actionMiniMap?: boolean
   actionReactions?: boolean
+  actionRecordAudio?: boolean
 
   // Dock Modules
   brandMenu: boolean
@@ -235,6 +236,7 @@ export const DEFAULT_DOCK_CONTROLS: DockControlsVisibility = {
   actionPresenter: true,
   actionMiniMap: true,
   actionReactions: true,
+  actionRecordAudio: true,
 
   brandMenu: true,
   zoomControls: true,

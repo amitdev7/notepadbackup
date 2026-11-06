@@ -36,6 +36,7 @@ import {
   Sparkle,
   Rewind,
   FastForward,
+  Microphone,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -345,8 +346,16 @@ export function MediaCanvasItem({
         <div className="flex items-center gap-1.5 min-w-0 max-w-[65%]">
           {isVideo ? (
             <VideoCamera size={14} className="shrink-0 text-[var(--sq-ink)]" weight="bold" />
+          ) : Boolean(node.metadata?.isVoiceMemo) ? (
+            <Microphone size={14} className="shrink-0 text-red-500" weight="fill" />
           ) : (
             <MusicNotes size={14} className="shrink-0 text-[var(--sq-ink)]" weight="bold" />
+          )}
+
+          {Boolean(node.metadata?.isVoiceMemo) && (
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 shrink-0 select-none">
+              Voice Memo
+            </span>
           )}
 
           {isEditingTitle ? (

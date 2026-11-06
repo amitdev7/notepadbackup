@@ -18,6 +18,7 @@ import { useState, useRef, useMemo, useCallback, useEffect } from "react"
 import type { EmbedNode } from "@/lib/types"
 import { useSquig } from "@/lib/store"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
+import { parseMediaUrl } from "@/lib/media/provider-registry"
 import {
   YoutubeLogo,
   SpotifyLogo,
@@ -90,21 +91,43 @@ export function EmbedCanvasItem({
   const [duration, setDuration] = useState(0)
   const [qualityFeedback, setQualityFeedback] = useState<string | null>(null)
 
-  const provider = node.provider || "generic"
+  const provider = useMemo(() => {
+    if (node.provider && node.provider !== "generic") return node.provider
+    // Fallback: auto-detect from URL or registry
+    const parsed = parseMediaUrl(node.url || node.embedUrl || "")
+    if (parsed?.provider && parsed.provider !== "generic") return parsed.provider
+    const raw = (node.url || node.embedUrl || "").toLowerCase()
+    if (raw.includes("youtube.com") || raw.includes("youtu.be")) return "youtube"
+    if (raw.includes("vimeo.com")) return "vimeo"
+    if (raw.includes("spotify.com")) return "spotify"
+    if (raw.includes("soundcloud.com")) return "soundcloud"
+    return node.provider || "generic"
+  }, [node.provider, node.url, node.embedUrl])
+
   const isVideoProvider = provider === "youtube" || provider === "vimeo"
   const progressPercent = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0
 
   // 1. Computed embed URL enforcing High Quality & Clean Video Mode
   const computedEmbedUrl = useMemo(() => {
-    const raw = node.embedUrl || node.url
+    let raw = node.embedUrl || node.url
     if (provider === "youtube") {
       try {
+        // Ensure proper embed endpoint instead of watch URL
+        const ytMatch = raw.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+        if (ytMatch && ytMatch[1]) {
+          raw = `https://www.youtube-nocookie.com/embed/${ytMatch[1]}`
+        } else if (!raw.includes("/embed/")) {
+          const parsed = parseMediaUrl(raw)
+          if (parsed?.embedUrl) raw = parsed.embedUrl
+        }
+
         const u = new URL(raw)
         u.searchParams.set("enablejsapi", "1")
         u.searchParams.set("rel", "0")
         u.searchParams.set("modestbranding", "1")
         u.searchParams.set("iv_load_policy", "3")
         u.searchParams.set("playsinline", "1")
+        u.searchParams.set("disablekb", "1")
         // Always force highest quality (1080p / highres)
         u.searchParams.set("vq", "hd1080")
         u.searchParams.set("highres", "1")

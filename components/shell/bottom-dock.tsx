@@ -59,8 +59,11 @@ import {
   Presentation,
   Compass,
   Smiley,
+  Microphone,
 } from "@phosphor-icons/react"
 import { audioFx } from "@/lib/canvas/audio-fx"
+import { useVoiceRecorder } from "@/lib/media/voice-recorder"
+import { RecordingToolbarCapsule } from "@/components/shell/recording-toolbar-capsule"
 import { ViewMenu } from "@/components/shell/view-menu"
 import { TopBarClock } from "@/components/shell/top-bar-clock"
 import { exportExcalidrawDoc, importDoc } from "@/lib/file-io"
@@ -271,6 +274,33 @@ export function BottomDock() {
   const reactionsBarOpen = useShellStore((s) => s.reactionsBarOpen)
   const toggleReactionsBar = useShellStore((s) => s.toggleReactionsBar)
 
+  // Quick Voice Memos & Canvas Audio Recorder
+  const voiceRecordingStatus = useVoiceRecorder((s) => s.status)
+  const startRecording = useVoiceRecorder((s) => s.startRecording)
+  const stopRecording = useVoiceRecorder((s) => s.stopRecording)
+  const resumeRecording = useVoiceRecorder((s) => s.resumeRecording)
+  const isRecordingActive = voiceRecordingStatus === "recording" || voiceRecordingStatus === "paused"
+
+  // Shortcut ⌥R / Alt+R to toggle voice recording
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return
+
+      if (e.altKey && (e.key === "r" || e.key === "R" || e.code === "KeyR")) {
+        e.preventDefault()
+        const currentStatus = useVoiceRecorder.getState().status
+        if (currentStatus === "recording") {
+          void useVoiceRecorder.getState().stopRecording()
+        } else if (currentStatus === "idle") {
+          void useVoiceRecorder.getState().startRecording()
+        }
+      }
+    }
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [])
+
   // Cursor proximity tracking for macOS magnification
   const [mouseX, setMouseX] = useState<number | null>(null)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
@@ -400,6 +430,9 @@ export function BottomDock() {
         </div>
       )}
 
+      {/* ── Quick Voice Memos & Audio Recorder Capsule ── */}
+      <RecordingToolbarCapsule />
+
       {/* ── Main macOS Floating Dock Container ── */}
       <div className="pointer-events-none fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-0 z-40 flex items-center justify-center px-2 animate-dock-enter">
         <nav
@@ -442,6 +475,16 @@ export function BottomDock() {
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => useSquig.getState().setInsertMediaDialog({ open: true })}>
                 <VideoCamera size={14} className="mr-2 text-orange-500" aria-hidden="true" /> Insert Media (Video, Audio, Embed)…
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const currentStatus = useVoiceRecorder.getState().status
+                if (currentStatus === "idle") {
+                  void useVoiceRecorder.getState().startRecording()
+                } else if (currentStatus === "recording") {
+                  void useVoiceRecorder.getState().stopRecording()
+                }
+              }}>
+                <Microphone size={14} className="mr-2 text-red-500" aria-hidden="true" /> Record Voice Memo (⌥R)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setChartDialogOpen(true)}>
                 <ChartBar size={14} className="mr-2" aria-hidden="true" /> {t("menu_insert_chart")}
@@ -667,6 +710,45 @@ export function BottomDock() {
             >
               <VideoCamera size={16} aria-hidden="true" />
             </MagnifiedDockItem>
+
+            {/* Quick Voice Memos / Record Audio (⌥R) */}
+            {dockControls.actionRecordAudio !== false && (
+              <MagnifiedDockItem
+                onClick={() => {
+                  const currentStatus = useVoiceRecorder.getState().status
+                  if (currentStatus === "idle") {
+                    void startRecording()
+                  } else if (currentStatus === "recording") {
+                    void stopRecording()
+                  } else if (currentStatus === "paused") {
+                    resumeRecording()
+                  }
+                }}
+                title={
+                  voiceRecordingStatus === "recording"
+                    ? "Recording Voice Memo… (Click to Finish & Save)"
+                    : voiceRecordingStatus === "paused"
+                    ? "Recording Paused (Click to Resume)"
+                    : "Record Voice Memo (⌥R)"
+                }
+                shortcut="⌥R"
+                ariaLabel="Record Voice Memo"
+                active={isRecordingActive}
+                mouseX={mouseX}
+                reducedMotion={reducedMotion}
+                showIndicatorDot={isRecordingActive}
+                className={cn(
+                  voiceRecordingStatus === "recording" && "text-red-500 bg-red-500/15 border-red-500/30"
+                )}
+              >
+                <Microphone
+                  size={16}
+                  weight={isRecordingActive ? "fill" : "regular"}
+                  className={cn(voiceRecordingStatus === "recording" && "animate-pulse text-red-500")}
+                  aria-hidden="true"
+                />
+              </MagnifiedDockItem>
+            )}
 
             {/* Canvas Stats (⌘/) */}
             {dockControls.actionStats && (
