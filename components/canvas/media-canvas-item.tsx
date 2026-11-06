@@ -34,6 +34,8 @@ import {
   WarningCircle,
   CircleNotch,
   Sparkle,
+  Rewind,
+  FastForward,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -283,6 +285,36 @@ export function MediaCanvasItem({
     }
   }
 
+  // Keyboard Hotkeys when Selected (Space, K, M, F, Left, Right)
+  useEffect(() => {
+    if (!selected) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName
+      if (tag === "INPUT" || tag === "TEXTAREA" || (e.target as HTMLElement)?.isContentEditable) return
+
+      if (e.code === "Space" || e.key === "k" || e.key === "K") {
+        e.preventDefault()
+        handlePlayPause()
+      } else if (e.key === "m" || e.key === "M") {
+        e.preventDefault()
+        handleToggleMute()
+      } else if (e.key === "f" || e.key === "F") {
+        e.preventDefault()
+        handleFullscreen()
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault()
+        handleSeek(Math.max(0, currentTime - 10))
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault()
+        handleSeek(Math.min(duration, currentTime + 10))
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selected, handlePlayPause, handleToggleMute, handleFullscreen, handleSeek, currentTime, duration])
+
   // Waveform bars
   const waveformBars = useMemo(() => {
     if (node.waveform && node.waveform.length > 0) return node.waveform
@@ -366,17 +398,48 @@ export function MediaCanvasItem({
         {/* Action icons */}
         <div className="flex items-center gap-1 shrink-0">
           {isVideo && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleFullscreen()
-              }}
-              className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)]"
-              title="Full Screen"
-            >
-              <CornersOut size={12} weight="bold" />
-            </button>
+            <>
+              {/* Play / Pause in Header Bar */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handlePlayPause()
+                }}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title={isPlaying ? "Pause (Space)" : "Play (Space)"}
+              >
+                {isPlaying ? <Pause size={13} weight="fill" /> : <Play size={13} weight="fill" />}
+              </button>
+
+              {/* Mute / Unmute in Header Bar */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleToggleMute()
+                }}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title={isMuted ? "Unmute (M)" : "Mute (M)"}
+              >
+                {isMuted ? <SpeakerSimpleX size={13} /> : <SpeakerHigh size={13} />}
+              </button>
+
+              {/* Fullscreen Button in Header Bar */}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleFullscreen()
+                }}
+                className="p-1 rounded hover:bg-[var(--sq-shade)] text-[var(--sq-ink)] transition-colors cursor-pointer"
+                title="Full Screen (F)"
+              >
+                <CornersOut size={13} weight="bold" />
+              </button>
+
+              <div className="h-3.5 w-px bg-[var(--sq-border)] mx-0.5" />
+            </>
           )}
           <button
             type="button"
@@ -498,11 +561,27 @@ export function MediaCanvasItem({
 
                 {/* Controls Row */}
                 <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <button type="button" onClick={handlePlayPause} className="hover:text-orange-400 p-1">
+                  <div className="flex items-center gap-1.5">
+                    <button type="button" onClick={handlePlayPause} className="hover:text-orange-400 p-1 cursor-pointer">
                       {isPlaying ? <Pause size={16} weight="fill" /> : <Play size={16} weight="fill" />}
                     </button>
-                    <span className="font-mono text-[10px] text-white/80">
+                    <button
+                      type="button"
+                      onClick={() => handleSeek(Math.max(0, currentTime - 10))}
+                      className="hover:text-orange-400 p-1 text-white/80 hover:text-white cursor-pointer"
+                      title="Rewind 10s (Left Arrow)"
+                    >
+                      <Rewind size={14} weight="bold" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleSeek(Math.min(duration, currentTime + 10))}
+                      className="hover:text-orange-400 p-1 text-white/80 hover:text-white cursor-pointer"
+                      title="Forward 10s (Right Arrow)"
+                    >
+                      <FastForward size={14} weight="bold" />
+                    </button>
+                    <span className="font-mono text-[10px] text-white/80 ml-1 select-none">
                       {formatTime(currentTime)} / {formatTime(duration)}
                     </span>
                   </div>

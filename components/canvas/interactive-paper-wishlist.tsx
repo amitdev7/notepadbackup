@@ -41,6 +41,11 @@ import {
   Camera,
   Sparkle,
   Image as ImageIcon,
+  Sun,
+  Heart,
+  AirplaneTilt,
+  Books,
+  Cake,
 } from "@phosphor-icons/react"
 
 interface InteractivePaperWishlistProps {
@@ -70,11 +75,19 @@ const TORN_BOTTOM_CLIP_PATH = `polygon(
   2.17% calc(100% - 1.0px), 0.0% calc(100% - 4.0px)
 )`
 
-const ORIGINAL_PRESETS: { id: WishlistItemDef["icon"]; label: string; url: string; emoji: string }[] = [
+const ORIGINAL_PRESETS: { id: WishlistItemDef["icon"]; label: string; url?: string; emoji: string }[] = [
   { id: "matcha", label: "Matcha Drinks", url: "/wishlist-stickers/matcha_transparent.png", emoji: "🍵" },
   { id: "girls", label: "Girls Day Out", url: "/wishlist-stickers/girls_transparent.png", emoji: "👯" },
   { id: "shopping", label: "Shopping Bags", url: "/wishlist-stickers/shopping_transparent.png", emoji: "🛍️" },
   { id: "coffee", label: "Iced Latte", url: "/wishlist-stickers/coffee_transparent.png", emoji: "☕" },
+]
+
+const CUTE_STICKERS: { id: WishlistItemDef["icon"]; label: string; emoji: string }[] = [
+  { id: "sun", label: "Sunny Day", emoji: "☀️" },
+  { id: "heart", label: "Favorites", emoji: "💖" },
+  { id: "travel", label: "Getaway", emoji: "✈️" },
+  { id: "books", label: "Reading", emoji: "📚" },
+  { id: "cake", label: "Celebration", emoji: "🎂" },
 ]
 
 export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
@@ -350,13 +363,14 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
   }
 
   const handleSelectPreset = (itemId: string, preset: WishlistItemDef["icon"]) => {
+    audioFx.playReactionPop()
     const p = ORIGINAL_PRESETS.find((x) => x.id === preset)
     const updated = items.map((it) =>
       it.id === itemId
         ? {
             ...it,
             icon: preset,
-            customIconUrl: p?.url || undefined,
+            customIconUrl: p?.url,
           }
         : it
     )
@@ -732,14 +746,7 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
           {/* Elevated Floating Popover Card */}
           <div
             onClick={(e) => e.stopPropagation()}
-            className={cn(
-              "absolute z-50 left-3.5 right-3.5 p-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-200 text-stone-900 animate-in fade-in zoom-in-95 duration-150",
-              activeItemIndex === 0
-                ? "top-[125px]"
-                : activeItemIndex === 1
-                ? "top-[160px]"
-                : "top-[190px]"
-            )}
+            className="absolute z-50 left-3 sm:left-4 right-3 sm:right-4 top-1/2 -translate-y-1/2 max-h-[92%] overflow-y-auto p-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-stone-200 text-stone-900 animate-in fade-in zoom-in-95 duration-150"
             style={{
               boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.28), 0 8px 24px rgba(0, 0, 0, 0.12)",
             }}
@@ -781,7 +788,7 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                   {activeItem.text}
                 </span>
                 <span className="text-[11px] text-stone-400">
-                  {activeItem.customIconUrl ? "Custom pasted image" : "Preset sticker"}
+                  {activeItem.customIconUrl ? "Custom pasted image" : "Stationery sticker"}
                 </span>
               </div>
             </div>
@@ -821,11 +828,11 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
               Or copy any image and press <kbd className="font-mono font-bold text-stone-800 bg-white px-1.5 py-0.5 rounded border border-stone-200 shadow-2xs">Ctrl+V</kbd>
             </div>
 
-            {/* Original Presets */}
+            {/* Original Photo Presets */}
             <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">
               Original Photo Cutouts
             </div>
-            <div className="grid grid-cols-4 gap-1.5 mb-2.5">
+            <div className="grid grid-cols-4 gap-1.5 mb-3">
               {ORIGINAL_PRESETS.map((stk) => (
                 <button
                   key={stk.id}
@@ -840,6 +847,32 @@ export const InteractivePaperWishlist = memo(function InteractivePaperWishlist({
                   title={stk.label}
                 >
                   <span className="text-xl">{stk.emoji}</span>
+                  <span className="text-[8px] font-bold truncate max-w-full mt-0.5">
+                    {stk.id}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            {/* Cute Vinyl Stickers */}
+            <div className="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-1.5">
+              Cute Vinyl Stickers
+            </div>
+            <div className="grid grid-cols-5 gap-1.5 mb-2.5">
+              {CUTE_STICKERS.map((stk) => (
+                <button
+                  key={stk.id}
+                  type="button"
+                  onClick={() => handleSelectPreset(activeItem.id, stk.id)}
+                  className={cn(
+                    "flex flex-col items-center justify-center p-1.5 rounded-xl transition-all cursor-pointer border",
+                    activeItem.icon === stk.id
+                      ? "bg-orange-50 border-orange-300 text-orange-700 shadow-xs"
+                      : "border-stone-100 hover:bg-stone-100 text-stone-700"
+                  )}
+                  title={stk.label}
+                >
+                  <span className="text-lg">{stk.emoji}</span>
                   <span className="text-[8px] font-bold truncate max-w-full mt-0.5">
                     {stk.id}
                   </span>
@@ -910,10 +943,61 @@ function renderStickerImage(item: WishlistItemDef, idx: number) {
     )
   }
 
+  if (item.icon === "coffee" || idx === 3) {
+    return (
+      <img
+        src="/wishlist-stickers/coffee_transparent.png"
+        alt="Iced coffee"
+        className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
+      />
+    )
+  }
+
+  // 3. Cute Physical Die-Cut Stationery Vinyl Stickers
+  if (item.icon === "sun") {
+    return (
+      <div className="size-11 sm:size-12 rounded-full bg-gradient-to-tr from-amber-400 to-orange-400 p-2 flex items-center justify-center text-white shadow-[0_3px_8px_rgba(251,146,60,0.45)] border-2 border-white ring-1 ring-orange-200">
+        <Sun size={24} weight="fill" className="text-white drop-shadow-xs" />
+      </div>
+    )
+  }
+
+  if (item.icon === "heart") {
+    return (
+      <div className="size-11 sm:size-12 rounded-full bg-gradient-to-tr from-rose-400 to-pink-500 p-2 flex items-center justify-center text-white shadow-[0_3px_8px_rgba(244,63,94,0.45)] border-2 border-white ring-1 ring-pink-200">
+        <Heart size={24} weight="fill" className="text-white drop-shadow-xs" />
+      </div>
+    )
+  }
+
+  if (item.icon === "travel") {
+    return (
+      <div className="size-11 sm:size-12 rounded-full bg-gradient-to-tr from-sky-400 to-blue-500 p-2 flex items-center justify-center text-white shadow-[0_3px_8px_rgba(14,165,233,0.45)] border-2 border-white ring-1 ring-sky-200">
+        <AirplaneTilt size={24} weight="fill" className="text-white drop-shadow-xs" />
+      </div>
+    )
+  }
+
+  if (item.icon === "books") {
+    return (
+      <div className="size-11 sm:size-12 rounded-full bg-gradient-to-tr from-indigo-400 to-violet-500 p-2 flex items-center justify-center text-white shadow-[0_3px_8px_rgba(99,102,241,0.45)] border-2 border-white ring-1 ring-indigo-200">
+        <Books size={24} weight="fill" className="text-white drop-shadow-xs" />
+      </div>
+    )
+  }
+
+  if (item.icon === "cake") {
+    return (
+      <div className="size-11 sm:size-12 rounded-full bg-gradient-to-tr from-pink-400 to-rose-400 p-2 flex items-center justify-center text-white shadow-[0_3px_8px_rgba(244,63,94,0.45)] border-2 border-white ring-1 ring-pink-200">
+        <Cake size={24} weight="fill" className="text-white drop-shadow-xs" />
+      </div>
+    )
+  }
+
   return (
     <img
-      src="/wishlist-stickers/coffee_transparent.png"
-      alt="Iced coffee"
+      src="/wishlist-stickers/matcha_transparent.png"
+      alt="Wishlist item"
       className="w-full h-full object-contain filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.16)]"
     />
   )
