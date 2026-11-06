@@ -353,7 +353,7 @@ export interface MediaNode extends BaseNode {
   metadata?: Record<string, unknown>
 }
 
-export type EmbedProvider = "youtube" | "vimeo" | "spotify" | "soundcloud" | "generic"
+export type EmbedProvider = "youtube" | "vimeo" | "spotify" | "soundcloud" | "instagram" | "generic"
 export type EmbedMediaCategory = "video" | "audio" | "web"
 
 export interface EmbedNode extends BaseNode {

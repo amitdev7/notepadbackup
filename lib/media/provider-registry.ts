@@ -8,6 +8,7 @@ import { youtubeAdapter } from "./providers/youtube"
 import { vimeoAdapter } from "./providers/vimeo"
 import { spotifyAdapter } from "./providers/spotify"
 import { soundcloudAdapter } from "./providers/soundcloud"
+import { instagramAdapter } from "./providers/instagram"
 import { genericAdapter } from "./providers/generic"
 
 const KNOWN_PROVIDERS: MediaProviderAdapter[] = [
@@ -15,6 +16,7 @@ const KNOWN_PROVIDERS: MediaProviderAdapter[] = [
   vimeoAdapter,
   spotifyAdapter,
   soundcloudAdapter,
+  instagramAdapter,
 ]
 
 const DIRECT_VIDEO_EXTS = new Set(["mp4", "webm", "mov", "m4v", "ogv", "mkv"])

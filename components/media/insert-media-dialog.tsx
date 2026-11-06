@@ -188,6 +188,9 @@ export function InsertMediaDialog() {
       } else if (parsedMedia.provider === "soundcloud") {
         w = 400
         h = 166
+      } else if (parsedMedia.provider === "instagram") {
+        w = 420
+        h = 440
       }
 
       const node: Omit<EmbedNode, "id" | "seed"> = {

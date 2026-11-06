@@ -23,9 +23,11 @@ import { useShellStore, DEFAULT_MEDIA_PREFERENCES } from "@/lib/shell-store"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
 import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { useNetworkStore } from "@/lib/sync/network"
+import { checkFrameRestriction } from "@/lib/media/frame-security"
 import {
   YoutubeLogo,
   SpotifyLogo,
+  InstagramLogo,
   Globe,
   ArrowSquareOut,
   ArrowsClockwise,
@@ -44,6 +46,9 @@ import {
   Rewind,
   FastForward,
   WifiSlash,
+  Copy,
+  Check,
+  ShieldCheck,
 } from "@phosphor-icons/react"
 import { cn } from "@/lib/utils"
 
@@ -64,6 +69,8 @@ function getProviderIcon(provider?: string) {
       return <Play size={14} weight="fill" className="text-sky-400 shrink-0" />
     case "soundcloud":
       return <Play size={14} weight="fill" className="text-orange-500 shrink-0" />
+    case "instagram":
+      return <InstagramLogo size={15} weight="bold" className="text-pink-500 shrink-0" />
     default:
       return <Globe size={14} weight="bold" className="text-[var(--sq-ink)] shrink-0" />
   }
@@ -85,7 +92,17 @@ export function EmbedCanvasItem({
   const [iframeKey, setIframeKey] = useState(0)
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [titleDraft, setTitleDraft] = useState(node.title || node.url)
-  const [isBlocked, setIsBlocked] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  // Frame security & restriction check
+  const frameRestriction = useMemo(() => {
+    return checkFrameRestriction(node.url || node.embedUrl || "")
+  }, [node.url, node.embedUrl])
+
+  // Automatically initialize blocked state for known restricted sites (like instagram.com, x.com, github.com)
+  const [isBlocked, setIsBlocked] = useState<boolean>(() => {
+    return frameRestriction.isRestricted || Boolean(node.providerData?.isRestricted)
+  })
 
   // Player control states
   const mediaSettings = useShellStore((s) => s.preferences.mediaSettings ?? DEFAULT_MEDIA_PREFERENCES)
@@ -115,8 +132,38 @@ export function EmbedCanvasItem({
     if (raw.includes("vimeo.com")) return "vimeo"
     if (raw.includes("spotify.com")) return "spotify"
     if (raw.includes("soundcloud.com")) return "soundcloud"
+    if (raw.includes("instagram.com") || raw.includes("instagr.am")) return "instagram"
     return node.provider || "generic"
   }, [node.provider, node.url, node.embedUrl])
+
+  const isInstagram = useMemo(() => {
+    if (provider === "instagram") return true
+    const raw = (node.url || node.embedUrl || "").toLowerCase()
+    return raw.includes("instagram.com") || raw.includes("instagr.am")
+  }, [provider, node.url, node.embedUrl])
+
+  // Automatic background preflight check for unknown web embeds
+  useEffect(() => {
+    if (provider === "youtube" || provider === "vimeo" || provider === "spotify" || provider === "soundcloud") return
+    if (isBlocked) return
+
+    const rawUrl = node.embedUrl || node.url
+    if (!rawUrl) return
+
+    let cancelled = false
+    fetch(`/api/embed/check?url=${encodeURIComponent(rawUrl)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data && data.canEmbed === false) {
+          setIsBlocked(true)
+        }
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [node.url, node.embedUrl, provider, isBlocked])
 
   const youtubeVideoId = useMemo(() => {
     if (provider !== "youtube") return null
@@ -138,19 +185,22 @@ export function EmbedCanvasItem({
   const isVideoProvider = provider === "youtube" || provider === "vimeo"
   const progressPercent = duration > 0 ? Math.min(100, Math.max(0, (currentTime / duration) * 100)) : 0
 
-  // Precision viewport clipping math:
-  // YouTube title bar is ~52px at top, bottom logo/shelf is ~44px
-  // In a 16:9 container, scaling iframe vertically pushes native title & logo completely out of sight
-  // without letterboxing or cutting off video content
-  const nodeH = node.h || 315
-  const topCrop = Math.max(48, Math.min(64, Math.round(nodeH * 0.16)))
-  const bottomCrop = Math.max(44, Math.min(60, Math.round(nodeH * 0.14)))
-  const totalCrop = topCrop + bottomCrop
-
   // 1. Computed embed URL enforcing High Quality & Clean Video Mode
   // Note: Dependencies strictly exclude isCaptionsOn and currentTime so toggling them NEVER reloads the iframe!
   const computedEmbedUrl = useMemo(() => {
     let raw = node.embedUrl || node.url
+    if (provider === "instagram") {
+      try {
+        const match = raw.match(/\/(?:p|reel|tv)\/([a-zA-Z0-9_-]+)/)
+        if (match && match[1]) {
+          return `https://www.instagram.com/p/${match[1]}/embed/captioned/`
+        }
+        return raw
+      } catch {
+        return raw
+      }
+    }
+
     if (provider === "youtube") {
       try {
         const ytMatch = raw.match(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
@@ -338,6 +388,16 @@ export function EmbedCanvasItem({
   const handleOpenExternal = useCallback(() => {
     window.open(node.url, "_blank", "noopener,noreferrer")
   }, [node.url])
+
+  const handleCopyLink = useCallback(() => {
+    const raw = node.url || node.embedUrl || ""
+    if (!raw) return
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(raw).catch(() => {})
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }, [node.url, node.embedUrl])
 
   const commitTitle = () => {
     setIsEditingTitle(false)
@@ -970,23 +1030,88 @@ export function EmbedCanvasItem({
         </div>
       )}
 
-      {/* 3. Live Embed IFrame Container (Clean Mode Viewport Clipping & Zero-Hover Guard) */}
-      <div className="relative flex-1 min-h-0 bg-neutral-950 w-full h-full overflow-hidden">
+      {/* 3. Live Embed IFrame Container (Clean Zero-Scrollbar, Zero-Hover Guard & Smart Security Card) */}
+      <div className="relative flex-1 min-h-0 bg-neutral-950 w-full h-full overflow-hidden select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {isBlocked ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] z-10">
-            <Lock size={32} className="text-amber-500 mb-2" />
-            <h4 className="font-bold text-sm">Embedding Restricted by Site</h4>
-            <p className="text-xs text-stone-500 max-w-xs mt-1 mb-3">
-              This website restricts embedded iframe playback due to its security headers (X-Frame-Options or CSP).
-            </p>
-            <button
-              type="button"
-              onClick={handleOpenExternal}
-              className="px-4 py-1.5 bg-[var(--sq-ink)] text-[var(--sq-paper)] rounded-full text-xs font-semibold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition"
-            >
-              <span>Open in New Tab</span>
-              <ArrowSquareOut size={13} />
-            </button>
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] z-10 select-none overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {isInstagram ? (
+              <div className="flex flex-col items-center max-w-sm animate-in zoom-in-95 duration-150">
+                <div className="size-16 rounded-2xl bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center text-white shadow-xl shadow-pink-500/20 mb-3">
+                  <InstagramLogo size={36} weight="bold" />
+                </div>
+                <h4 className="font-extrabold text-base tracking-tight text-[var(--sq-ink)]">
+                  {node.title || "Instagram"}
+                </h4>
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 mt-1.5 mb-2.5 rounded-full bg-pink-500/10 text-pink-600 dark:text-pink-400 border border-pink-500/20 text-[11px] font-semibold">
+                  <Lock size={12} weight="bold" />
+                  <span>Direct Framing Restricted</span>
+                </div>
+                <p className="text-xs text-stone-500 dark:text-stone-400 max-w-xs mb-4 leading-relaxed">
+                  Instagram security policy requires viewing accounts, feeds, and profiles in a dedicated window.
+                </p>
+                <div className="flex items-center gap-2 mb-3.5">
+                  <button
+                    type="button"
+                    onClick={handleOpenExternal}
+                    className="px-4 py-2 bg-gradient-to-r from-[#833ab4] via-[#dc2743] to-[#fcb045] text-white rounded-full text-xs font-bold flex items-center gap-1.5 shadow-md hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <span>Open on Instagram</span>
+                    <ArrowSquareOut size={14} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="px-3.5 py-2 bg-[var(--sq-shade)] hover:bg-[var(--sq-border)] text-[var(--sq-ink)] rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  >
+                    {copied ? <Check size={14} weight="bold" className="text-emerald-500" /> : <Copy size={14} />}
+                    <span>{copied ? "Copied!" : "Copy Link"}</span>
+                  </button>
+                </div>
+                <div className="px-3 py-1.5 rounded-lg bg-[var(--sq-shade)]/80 border border-[var(--sq-border)]/50 text-[10px] text-stone-500 dark:text-stone-400 max-w-xs flex items-center gap-1.5">
+                  <span>💡</span>
+                  <span>Tip: Paste individual post or reel links (<code>/p/...</code>) to embed interactive media.</span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center max-w-sm animate-in zoom-in-95 duration-150">
+                <div className="size-14 rounded-2xl bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-500 mb-3 shadow-xs">
+                  <Lock size={28} weight="bold" />
+                </div>
+                <h4 className="font-bold text-sm text-[var(--sq-ink)]">
+                  {node.title || frameRestriction.siteName || "Web Link"}
+                </h4>
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 mt-1.5 mb-2 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold">
+                  <ShieldCheck size={12} weight="bold" />
+                  <span>X-Frame-Options Protected</span>
+                </div>
+                <p className="text-xs text-stone-500 dark:text-stone-400 max-w-xs mb-4 leading-relaxed">
+                  {frameRestriction.reason || "This website restricts embedded iframe playback due to security headers (X-Frame-Options or CSP)."}
+                </p>
+                <div className="flex items-center gap-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={handleOpenExternal}
+                    className="px-4 py-2 bg-[var(--sq-ink)] text-[var(--sq-paper)] rounded-full text-xs font-bold flex items-center gap-1.5 hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  >
+                    <span>Open in New Tab</span>
+                    <ArrowSquareOut size={13} weight="bold" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="px-3.5 py-2 bg-[var(--sq-shade)] hover:bg-[var(--sq-border)] text-[var(--sq-ink)] rounded-full text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                  >
+                    {copied ? <Check size={14} weight="bold" className="text-emerald-500" /> : <Copy size={14} />}
+                    <span>{copied ? "Copied!" : "Copy Link"}</span>
+                  </button>
+                </div>
+                {frameRestriction.helpTip && (
+                  <p className="text-[10px] text-stone-400 max-w-xs">
+                    💡 {frameRestriction.helpTip}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         ) : networkState === "offline" ? (
           <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] select-none">
@@ -1011,30 +1136,23 @@ export function EmbedCanvasItem({
           </div>
         ) : (
           <>
-            {/* Embedded IFrame with Precision Vertical Viewport Crop */}
+            {/* Embedded IFrame — Zero-Scrollbar, Aspect-Ratio Preserving, Zero-Hover Clutter */}
             <iframe
               key={iframeKey}
               ref={iframeRef}
               src={computedEmbedUrl}
               title={node.title || "Embedded Content"}
-              className="border-0"
-              style={
-                isVideoProvider && isCleanMode
-                  ? {
-                      position: "absolute",
-                      top: `-${topCrop}px`,
-                      left: "0",
-                      width: "100%",
-                      height: `calc(100% + ${totalCrop}px)`,
-                      pointerEvents: "none",
-                    }
-                  : {
-                      position: "relative",
-                      width: "100%",
-                      height: "100%",
-                      pointerEvents: "auto",
-                    }
-              }
+              scrolling="no"
+              className="border-0 w-full h-full overflow-hidden select-none"
+              style={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                border: 0,
+                overflow: "hidden",
+                pointerEvents: isVideoProvider && isCleanMode ? "none" : "auto",
+              }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               onLoad={handleIframeLoad}
