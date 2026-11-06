@@ -13,6 +13,8 @@ import { type SupportedLanguage } from "@/lib/i18n"
 
 export type SettingsSectionId =
   | "general"
+  | "visibility"
+  | "media"
   | "time"
   | "appearance"
   | "laser"
@@ -308,6 +310,26 @@ export type MiniMapPosition = "bottom-right" | "bottom-left" | "top-right" | "to
 export type LibraryPosition = "center" | "right" | "left"
 export type LibrarySize = "standard" | "wide"
 
+export interface MediaPreferences {
+  cleanModeDefault: boolean
+  alwaysEnforce1080p: boolean
+  showHeaderControls: boolean
+  showScrubberLine: boolean
+  showHoverControls: boolean
+  showCenterPlayButton: boolean
+  autoSoloPlayback: boolean
+}
+
+export const DEFAULT_MEDIA_PREFERENCES: MediaPreferences = {
+  cleanModeDefault: true,
+  alwaysEnforce1080p: true,
+  showHeaderControls: true,
+  showScrubberLine: true,
+  showHoverControls: true,
+  showCenterPlayButton: true,
+  autoSoloPlayback: true,
+}
+
 export interface ShellPreferences {
   themeMode: ThemeMode
   uiDensity: UIDensity
@@ -354,6 +376,7 @@ export interface ShellPreferences {
   librarySize?: LibrarySize
   liveCollaborationEnabled?: boolean
   backupSettings?: BackupSettings
+  mediaSettings: MediaPreferences
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -402,6 +425,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   libraryPosition: "center",
   librarySize: "standard",
   liveCollaborationEnabled: true,
+  mediaSettings: DEFAULT_MEDIA_PREFERENCES,
 }
 
 function loadInitialPreferences(): ShellPreferences {
@@ -489,6 +513,10 @@ function loadInitialPreferences(): ShellPreferences {
             : "standard",
         liveCollaborationEnabled:
           parsed.liveCollaborationEnabled !== undefined ? Boolean(parsed.liveCollaborationEnabled) : true,
+        mediaSettings: {
+          ...DEFAULT_MEDIA_PREFERENCES,
+          ...(parsed.mediaSettings || {}),
+        },
       }
     }
   } catch { }
@@ -589,6 +617,8 @@ interface ShellState {
   updatePerformanceSettings: (updates: Partial<PerformanceSettings>) => void
   updateDatabaseSettings: (updates: Partial<DatabaseSettings>) => void
   updateBackupSettings: (updates: Partial<BackupSettings>) => void
+  updateMediaSettings: (updates: Partial<MediaPreferences>) => void
+  setAllVisibility: (visible: boolean) => void
   setStorageMode: (mode: StorageMode) => void
   toggleDatabase: (enabled?: boolean) => void
   updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
@@ -1124,6 +1154,53 @@ export const useShellStore = create<ShellState>((set, get) => ({
       const currentBackup = state.preferences.backupSettings || DEFAULT_BACKUP_SETTINGS
       const nextBackup = { ...currentBackup, ...updates }
       const next = { ...state.preferences, backupSettings: nextBackup }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  updateMediaSettings: (updates) => {
+    set((state) => {
+      const currentMedia = state.preferences.mediaSettings || DEFAULT_MEDIA_PREFERENCES
+      const nextMedia = { ...currentMedia, ...updates }
+      const next = { ...state.preferences, mediaSettings: nextMedia }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  setAllVisibility: (visible) => {
+    set((state) => {
+      const nextDockControls = { ...state.preferences.dockControls }
+      for (const k of Object.keys(nextDockControls) as (keyof DockControlsVisibility)[]) {
+        nextDockControls[k] = visible
+      }
+      const nextMedia = {
+        ...(state.preferences.mediaSettings || DEFAULT_MEDIA_PREFERENCES),
+        showHeaderControls: visible,
+        showScrubberLine: visible,
+        showHoverControls: visible,
+        showCenterPlayButton: visible,
+      }
+      const nextClock = {
+        ...state.preferences.clockSettings,
+        showInTopBar: visible,
+        showInDock: visible,
+      }
+      const next: ShellPreferences = {
+        ...state.preferences,
+        showCanvasUI: visible,
+        showToolbar: visible,
+        showDock: visible,
+        showToolbarViewMenu: visible,
+        showDockViewMenu: visible,
+        showZoomControls: visible,
+        showStatusIndicators: visible,
+        showMiniMap: visible,
+        dockControls: nextDockControls,
+        mediaSettings: nextMedia,
+        clockSettings: nextClock,
+      }
       savePreferences(next)
       return { preferences: next }
     })

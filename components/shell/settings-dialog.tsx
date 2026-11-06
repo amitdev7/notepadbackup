@@ -22,6 +22,7 @@ import {
   DEFAULT_TEXT_SETTINGS,
   DEFAULT_PERFORMANCE_SETTINGS,
   DEFAULT_BACKUP_SETTINGS,
+  DEFAULT_MEDIA_PREFERENCES,
   type SettingsSectionId,
   type ThemeMode,
   type UIDensity,
@@ -112,6 +113,7 @@ import {
   MapPin,
   Globe,
   EyeSlash,
+  YoutubeLogo,
   DownloadSimple,
   UploadSimple,
   HardDrive,
@@ -137,6 +139,8 @@ interface SectionItem {
 
 const SECTIONS: SectionItem[] = [
   { id: "general", label: "General", description: "Language, start page and application defaults", icon: Sliders },
+  { id: "visibility", label: "Display & Visibility", description: "Master toggles to show or hide all interface elements, toolbars, and canvas overlays", icon: Eye },
+  { id: "media", label: "Media & Video Players", description: "Clean video playback, YouTube controls, 1080p HD enforcing, and clutter filters", icon: YoutubeLogo },
   { id: "time", label: "Time & Location", description: "Real-time clock, automatic timezone, IP geolocation and calibration", icon: Clock },
   { id: "temporary", label: "Temporary Elements", description: "Auto-expiration timers, canvas countdown badges, and expired archive", icon: Timer },
   { id: "appearance", label: "Appearance & Themes", description: "Website theme modes, UI accents, density, radius and translucency", icon: Palette },
@@ -1985,6 +1989,9 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
   const updateDrawSettings = useShellStore((s) => s.updateDrawSettings)
   const updateTextSettings = useShellStore((s) => s.updateTextSettings)
   const updatePerformanceSettings = useShellStore((s) => s.updatePerformanceSettings)
+  const updateMediaSettings = useShellStore((s) => s.updateMediaSettings)
+  const setAllVisibility = useShellStore((s) => s.setAllVisibility)
+  const mediaSettings = prefs.mediaSettings ?? DEFAULT_MEDIA_PREFERENCES
   const dockControls = useShellStore((s) => s.preferences.dockControls)
   const updateDockControl = useShellStore((s) => s.updateDockControl)
   const setAllDockControls = useShellStore((s) => s.setAllDockControls)
@@ -2201,6 +2208,451 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
           </div>
         </div>
       )
+
+    case "visibility": {
+      const allEnabled =
+        (prefs.showToolbar ?? true) &&
+        (prefs.showDock ?? true) &&
+        (prefs.showZoomControls ?? true) &&
+        (prefs.showStatusIndicators ?? true) &&
+        (prefs.showMiniMap ?? true) &&
+        contextRow &&
+        grid &&
+        showPage
+
+      return (
+        <div className="space-y-6">
+          {/* Master 1-Click Action Card */}
+          <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-violet-500/10 border border-blue-500/25 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="size-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                  <Eye size={20} weight="bold" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-foreground">Master Interface Visibility</h4>
+                  <p className="text-[11px] text-muted-foreground">
+                    Instantly toggle all canvas UI chrome, floating dock, toolbars, and overlays on or off with 1 click.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setAllVisibility(true)
+                  useSquig.getState().setUiHidden(false)
+                  useSquig.getState().setContextRow(true)
+                  useSquig.getState().setGrid(true)
+                  useSquig.getState().setShowPage(true)
+                  useSquig.getState().setNotice("All interface elements & toolbars visible! ✨")
+                }}
+                className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-101 active:scale-98"
+              >
+                <Eye size={16} weight="bold" />
+                <span>Show Everything (All UI On)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setAllVisibility(false)
+                  useSquig.getState().setUiHidden(true)
+                  useSquig.getState().setContextRow(false)
+                  useSquig.getState().setGrid(false)
+                  useSquig.getState().setShowPage(false)
+                  useSquig.getState().setNotice("Pure Canvas Mode: All interface elements hidden! 🧘")
+                }}
+                className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-stone-500/15 hover:bg-stone-500/25 text-stone-700 dark:text-stone-300 border border-stone-500/30 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-101 active:scale-98"
+              >
+                <EyeSlash size={16} weight="bold" />
+                <span>Hide Everything (Zen Mode)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Section 1: Canvas Interface Chrome */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Canvas Interface & Navigation Chrome
+              </h5>
+              <span className="text-[10px] text-muted-foreground font-mono">
+                {allEnabled ? "All Enabled" : "Custom Visibility"}
+              </span>
+            </div>
+
+            <div className="space-y-2 divide-y divide-border/60">
+              <div className="flex items-center justify-between pt-1">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Top Navigation Bar</span>
+                  <span className="text-[11px] text-muted-foreground">Document title, cloud sync status, and primary file actions</span>
+                </div>
+                <Switch
+                  checked={prefs.showToolbar ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showToolbar: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Floating Bottom Dock</span>
+                  <span className="text-[11px] text-muted-foreground">Global tool tray and action dock anchored at the bottom</span>
+                </div>
+                <Switch
+                  checked={prefs.showDock ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showDock: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Selection Context Toolbar</span>
+                  <span className="text-[11px] text-muted-foreground">Floating quick-action toolbar attached above selected objects</span>
+                </div>
+                <Switch
+                  checked={contextRow}
+                  onCheckedChange={setContextRow}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">MiniMap Radar Navigator</span>
+                  <span className="text-[11px] text-muted-foreground">Corner radar overview of the infinite canvas workspace</span>
+                </div>
+                <Switch
+                  checked={prefs.showMiniMap ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showMiniMap: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Canvas Dot Grid</span>
+                  <span className="text-[11px] text-muted-foreground">Dot matrix background pattern for spatial alignment</span>
+                </div>
+                <Switch
+                  checked={grid}
+                  onCheckedChange={setGrid}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Page Boundary Frame</span>
+                  <span className="text-[11px] text-muted-foreground">Visual document frame guide for pagination and exports</span>
+                </div>
+                <Switch
+                  checked={showPage}
+                  onCheckedChange={setShowPage}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Zoom Stepper & Controls</span>
+                  <span className="text-[11px] text-muted-foreground">Zoom in/out buttons and percentage readout</span>
+                </div>
+                <Switch
+                  checked={prefs.showZoomControls ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showZoomControls: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Top Bar View Menu (🧭)</span>
+                  <span className="text-[11px] text-muted-foreground">Compass view menu pill in the top navigation bar</span>
+                </div>
+                <Switch
+                  checked={prefs.showToolbarViewMenu ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showToolbarViewMenu: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Bottom Dock View Menu (🧭)</span>
+                  <span className="text-[11px] text-muted-foreground">Compass view menu pill in the floating dock</span>
+                </div>
+                <Switch
+                  checked={prefs.showDockViewMenu ?? dockControls.viewMenu ?? false}
+                  onCheckedChange={(checked) => {
+                    updatePrefs({ showDockViewMenu: checked })
+                    updateDockControl("viewMenu", checked)
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Top Bar Real-Time Clock (🕒)</span>
+                  <span className="text-[11px] text-muted-foreground">Live time and location badge in the top navigation bar</span>
+                </div>
+                <Switch
+                  checked={prefs.clockSettings?.showInTopBar ?? true}
+                  onCheckedChange={(checked) => useShellStore.getState().updateClockPreferences({ showInTopBar: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Bottom Dock Real-Time Clock (🕒)</span>
+                  <span className="text-[11px] text-muted-foreground">Live time badge in the floating bottom dock</span>
+                </div>
+                <Switch
+                  checked={prefs.clockSettings?.showInDock ?? dockControls.timeClock ?? false}
+                  onCheckedChange={(checked) => {
+                    useShellStore.getState().updateClockPreferences({ showInDock: checked })
+                    updateDockControl("timeClock", checked)
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Network & Sync Status Badges</span>
+                  <span className="text-[11px] text-muted-foreground">Display online/offline status and cloud synchronization states</span>
+                </div>
+                <Switch
+                  checked={prefs.showStatusIndicators ?? true}
+                  onCheckedChange={(checked) => updatePrefs({ showStatusIndicators: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Temporary Elements Countdown</span>
+                  <span className="text-[11px] text-muted-foreground">Show live countdown badges above temporary expiring canvas notes</span>
+                </div>
+                <Switch
+                  checked={prefs.temporarySettings?.showCountdown ?? true}
+                  onCheckedChange={(checked) => useShellStore.getState().updateTemporarySettings({ showCountdown: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Performance & FPS HUD</span>
+                  <span className="text-[11px] text-muted-foreground">Live frame rate, draw call statistics, and memory telemetry HUD</span>
+                </div>
+                <Switch
+                  checked={prefs.performanceSettings?.showFpsHud ?? false}
+                  onCheckedChange={(checked) => useShellStore.getState().updatePerformanceSettings({ showFpsHud: checked })}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Media & Video Embeds Visibility */}
+          <div className="space-y-3 pt-3 border-t border-border/60">
+            <div className="flex items-center justify-between">
+              <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Media & Video Players Controls (YouTube & Vimeo)
+              </h5>
+              <button
+                type="button"
+                onClick={() => setSettingsSection("media")}
+                className="text-[11px] text-blue-500 hover:underline font-medium cursor-pointer"
+              >
+                Media Settings →
+              </button>
+            </div>
+
+            <div className="space-y-2 divide-y divide-border/60">
+              <div className="flex items-center justify-between pt-1">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Clean Studio Mode by Default</span>
+                  <span className="text-[11px] text-muted-foreground">Hide in-video YouTube controls, title bars, and annotations automatically</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.cleanModeDefault}
+                  onCheckedChange={(checked) => updateMediaSettings({ cleanModeDefault: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Video Card Header Controls Bar</span>
+                  <span className="text-[11px] text-muted-foreground">Display shifted controls (Play, Mute, CC, HD, Speed, Fullscreen) in card header</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.showHeaderControls}
+                  onCheckedChange={(checked) => updateMediaSettings({ showHeaderControls: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Video Scrubber Line</span>
+                  <span className="text-[11px] text-muted-foreground">Progress scrubber line between header and video viewport</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.showScrubberLine}
+                  onCheckedChange={(checked) => updateMediaSettings({ showScrubberLine: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Floating Hover Controls Pill</span>
+                  <span className="text-[11px] text-muted-foreground">Frosted-glass floating scrubber bar that fades in on mouse hover</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.showHoverControls}
+                  onCheckedChange={(checked) => updateMediaSettings({ showHoverControls: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Center Frosted Glass Play Button</span>
+                  <span className="text-[11px] text-muted-foreground">Large Apple-style centered play button when video is paused</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.showCenterPlayButton}
+                  onCheckedChange={(checked) => updateMediaSettings({ showCenterPlayButton: checked })}
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5">
+                <div>
+                  <span className="font-semibold text-xs text-foreground block">Always Enforce 1080p HD Quality</span>
+                  <span className="text-[11px] text-muted-foreground">Automatically lock YouTube and video streams to highest available resolution</span>
+                </div>
+                <Switch
+                  checked={mediaSettings.alwaysEnforce1080p}
+                  onCheckedChange={(checked) => updateMediaSettings({ alwaysEnforce1080p: checked })}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    case "media": {
+      return (
+        <div className="space-y-6">
+          <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="size-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                <YoutubeLogo size={18} weight="fill" />
+              </div>
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Studio-Grade Clean Video Players</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Enjoy distraction-free YouTube & Vimeo playback with shifted controls and zero native clutter.
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => updateMediaSettings(DEFAULT_MEDIA_PREFERENCES)}
+              className="px-2.5 py-1 rounded-lg border border-border/60 hover:bg-muted text-[11px] font-medium text-foreground transition-colors cursor-pointer shrink-0"
+            >
+              Reset Defaults
+            </button>
+          </div>
+
+          <div className="space-y-2.5 divide-y divide-border/60">
+            <div className="flex items-center justify-between pt-1">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Clean Studio Mode by Default</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Hides YouTube channel avatar, video title bar, share buttons, watermark logo, and recommendations.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.cleanModeDefault}
+                onCheckedChange={(checked) => updateMediaSettings({ cleanModeDefault: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Always Enforce 1080p HD / 4K Quality</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Sets vq=hd1080, highres=1, and continuously sends quality postMessages to lock highest resolution.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.alwaysEnforce1080p}
+                onCheckedChange={(checked) => updateMediaSettings({ alwaysEnforce1080p: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Show Shifted Card Header Controls</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Places Rewind, Play/Pause, Forward, Mute, Volume Slider, CC, Speed, and Fullscreen in top card bar.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.showHeaderControls}
+                onCheckedChange={(checked) => updateMediaSettings({ showHeaderControls: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Show Gradient Scrubber Line</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Interactive red-to-orange progress bar between the card header and video viewport for instant seeking.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.showScrubberLine}
+                onCheckedChange={(checked) => updateMediaSettings({ showScrubberLine: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Show Floating Hover Controls Pill</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Apple TV style frosted-glass pill at the bottom of the video that auto-hides after 2.5s of no mouse movement.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.showHoverControls}
+                onCheckedChange={(checked) => updateMediaSettings({ showHoverControls: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Show Center Glass Play Button</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Displays a sleek frosted-glass circular play button in the center of the video frame when paused.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.showCenterPlayButton}
+                onCheckedChange={(checked) => updateMediaSettings({ showCenterPlayButton: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between pt-2.5">
+              <div>
+                <span className="font-semibold text-xs text-foreground block">Auto-Solo Media Playback</span>
+                <span className="text-[11px] text-muted-foreground">
+                  Automatically pauses other playing videos, audio recordings, or voice memos when this video starts.
+                </span>
+              </div>
+              <Switch
+                checked={mediaSettings.autoSoloPlayback}
+                onCheckedChange={(checked) => updateMediaSettings({ autoSoloPlayback: checked })}
+              />
+            </div>
+          </div>
+        </div>
+      )
+    }
 
     case "appearance": {
       const currentAccent = prefs.uiAccent || "blue"

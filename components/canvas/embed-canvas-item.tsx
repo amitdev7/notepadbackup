@@ -19,6 +19,7 @@
 import { useState, useRef, useMemo, useCallback, useEffect } from "react"
 import type { EmbedNode } from "@/lib/types"
 import { useSquig } from "@/lib/store"
+import { useShellStore, DEFAULT_MEDIA_PREFERENCES } from "@/lib/shell-store"
 import { playbackCoordinator } from "@/lib/media/playback-coordinator"
 import { parseMediaUrl } from "@/lib/media/provider-registry"
 import { useNetworkStore } from "@/lib/sync/network"
@@ -87,13 +88,14 @@ export function EmbedCanvasItem({
   const [isBlocked, setIsBlocked] = useState(false)
 
   // Player control states
+  const mediaSettings = useShellStore((s) => s.preferences.mediaSettings ?? DEFAULT_MEDIA_PREFERENCES)
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasStarted, setHasStarted] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(100)
   const [showVolumePopup, setShowVolumePopup] = useState(false)
   const [isCaptionsOn, setIsCaptionsOn] = useState(false)
-  const [isCleanMode, setIsCleanMode] = useState(true) // 100% clean studio mode by default
+  const [isCleanMode, setIsCleanMode] = useState(mediaSettings.cleanModeDefault ?? true)
   const [playbackRate, setPlaybackRate] = useState(1)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -706,10 +708,11 @@ export function EmbedCanvasItem({
       }}
     >
       {/* 1. Header Bar with Drag Handle & Shifted Video Controls (Matches Image 2 exactly) */}
-      <div
-        data-node-drag-handle="true"
-        className="h-8 px-2 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/75 text-xs cursor-grab active:cursor-grabbing shrink-0 z-30 gap-1.5 backdrop-blur-xs select-none"
-      >
+      {(mediaSettings.showHeaderControls ?? true) ? (
+        <div
+          data-node-drag-handle="true"
+          className="h-8 px-2 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/75 text-xs cursor-grab active:cursor-grabbing shrink-0 z-30 gap-1.5 backdrop-blur-xs select-none"
+        >
         {/* Left: Provider Icon + Title + Timestamp + Always-On HD Badge */}
         <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
           {getProviderIcon(provider)}
@@ -933,9 +936,20 @@ export function EmbedCanvasItem({
           </button>
         </div>
       </div>
+      ) : (
+        <div
+          data-node-drag-handle="true"
+          className="h-1.5 bg-[var(--sq-border)]/40 hover:h-6 hover:bg-[var(--sq-shade)] cursor-grab active:cursor-grabbing shrink-0 z-30 transition-all flex items-center px-2 select-none group/drag"
+          title="Drag node handle (Header bar hidden via Settings)"
+        >
+          <span className="text-[10px] text-muted-foreground opacity-0 group-hover/drag:opacity-100 transition-opacity font-medium">
+            {node.title || "Video Card"} (Drag)
+          </span>
+        </div>
+      )}
 
       {/* 2. Sleek Scrubber Progress Line (between header bar and video) */}
-      {isVideoProvider && (
+      {isVideoProvider && (mediaSettings.showScrubberLine ?? true) && (
         <div
           className="relative w-full h-[3px] hover:h-[6px] bg-[var(--sq-border)]/50 cursor-pointer transition-all flex items-center z-20 group/scrub select-none shrink-0"
           onClick={(e) => {
@@ -1059,7 +1073,7 @@ export function EmbedCanvasItem({
                 title={isPlaying ? "Click to Pause • Double-click for Fullscreen" : "Click to Play • Double-click for Fullscreen"}
               >
                 {/* Center play icon when paused during active session */}
-                {hasStarted && !isPlaying && (
+                {hasStarted && !isPlaying && (mediaSettings.showCenterPlayButton ?? true) && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none transition-opacity">
                     <div className="size-14 sm:size-16 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow-2xl hover:scale-110 active:scale-95 transition-transform">
                       <Play size={26} weight="fill" className="translate-x-0.5 text-white" />
@@ -1068,7 +1082,7 @@ export function EmbedCanvasItem({
                 )}
 
                 {/* Floating Bottom Frosted Glass Control Pill on Hover */}
-                {hasStarted && (isHovered || !isPlaying) && (
+                {hasStarted && (mediaSettings.showHoverControls ?? true) && (isHovered || !isPlaying) && (
                   <div
                     onClick={(e) => e.stopPropagation()}
                     className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-full bg-black/65 backdrop-blur-md border border-white/20 text-white flex items-center gap-2.5 shadow-2xl animate-in fade-in slide-in-from-bottom-2 duration-150 z-20 cursor-default select-none pointer-events-auto"
