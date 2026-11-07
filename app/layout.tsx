@@ -33,11 +33,13 @@ const caveat = Caveat({
 
 const defaultSiteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+  (process.env.URL
+    ? process.env.URL
+    : process.env.VERCEL_PROJECT_PRODUCTION_URL
     ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
     : process.env.VERCEL_URL
     ? `https://${process.env.VERCEL_URL}`
-    : "https://zenithsui.vercel.app");
+    : "https://zenithsui.netlify.app");
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultSiteUrl),
