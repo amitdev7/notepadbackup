@@ -1,0 +1,11 @@
+# ---------------------------------------------------------------------------
+# Netlify Configuration for Zenithsui (Next.js 16 App Router)
+# ---------------------------------------------------------------------------
+
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NETLIFY_NEXT_PLUGIN_SKIP = "false"
