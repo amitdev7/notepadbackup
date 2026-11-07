@@ -399,6 +399,7 @@ export interface ShellPreferences {
   showMarqueeBox?: boolean
   dockMagnification?: boolean
   showEmptyCanvasNudge?: boolean
+  miniMapCollapsed?: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -459,6 +460,7 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   smartDrawing: DEFAULT_SMART_DRAWING,
   presenterSettings: DEFAULT_PRESENTER_PREFERENCES,
   showMiniMap: true,
+  miniMapCollapsed: false,
   miniMapPosition: "bottom-right",
   libraryPosition: "center",
   librarySize: "standard",
@@ -539,6 +541,12 @@ function loadInitialPreferences(): ShellPreferences {
           ...(parsed.presenterSettings || {}),
         },
         showMiniMap: parsed.showMiniMap !== undefined ? Boolean(parsed.showMiniMap) : true,
+        miniMapCollapsed: parsed.miniMapCollapsed !== undefined ? Boolean(parsed.miniMapCollapsed) : false,
+        showCanvasUI: parsed.showCanvasUI !== undefined ? Boolean(parsed.showCanvasUI) : true,
+        showSelectionHandles: parsed.showSelectionHandles !== undefined ? Boolean(parsed.showSelectionHandles) : true,
+        showMarqueeBox: parsed.showMarqueeBox !== undefined ? Boolean(parsed.showMarqueeBox) : true,
+        dockMagnification: parsed.dockMagnification !== undefined ? Boolean(parsed.dockMagnification) : true,
+        showEmptyCanvasNudge: parsed.showEmptyCanvasNudge !== undefined ? Boolean(parsed.showEmptyCanvasNudge) : true,
         miniMapPosition:
           parsed.miniMapPosition && ["bottom-right", "bottom-left", "top-right", "top-left"].includes(parsed.miniMapPosition)
             ? (parsed.miniMapPosition as MiniMapPosition)
@@ -628,6 +636,7 @@ interface ShellState {
   setExpiredArchiveOpen: (open: boolean) => void
   toggleMiniMap: () => void
   setMiniMapOpen: (open: boolean) => void
+  setMiniMapCollapsed: (collapsed: boolean) => void
   togglePresenter: () => void
   setPresenterActive: (active: boolean) => void
   setPresenterSlideIndex: (idx: number) => void
@@ -774,7 +783,9 @@ export function syncThemeToDOM(mode: ThemeMode = "system") {
   }
 }
 
-export const useShellStore = create<ShellState>((set, get) => ({
+export const useShellStore = create<ShellState>((set, get) => {
+  const initialPreferences = loadInitialPreferences()
+  return {
   activeSurface: "canvas",
   pagePopoverOpen: false,
   settingsOpen: false,
@@ -790,14 +801,14 @@ export const useShellStore = create<ShellState>((set, get) => ({
   globalSearchOpen: false,
   expiredArchiveOpen: false,
 
-  miniMapOpen: true,
+  miniMapOpen: initialPreferences.showMiniMap !== undefined ? initialPreferences.showMiniMap : true,
   presenterActive: false,
   presenterSlideIndex: 0,
   spotlightActive: false,
   spotlightRadius: 150,
   reactionsBarOpen: false,
 
-  preferences: loadInitialPreferences(),
+  preferences: initialPreferences,
 
   setActiveSurface: (activeSurface) => set({ activeSurface }),
   setPagePopoverOpen: (pagePopoverOpen) => set({ pagePopoverOpen }),
@@ -814,8 +825,25 @@ export const useShellStore = create<ShellState>((set, get) => ({
   setGlobalSearchOpen: (globalSearchOpen) => set({ globalSearchOpen }),
   setExpiredArchiveOpen: (expiredArchiveOpen) => set({ expiredArchiveOpen }),
 
-  toggleMiniMap: () => set((s) => ({ miniMapOpen: !s.miniMapOpen })),
-  setMiniMapOpen: (miniMapOpen) => set({ miniMapOpen }),
+  toggleMiniMap: () =>
+    set((s) => {
+      const nextOpen = !s.miniMapOpen
+      const next = { ...s.preferences, showMiniMap: nextOpen }
+      savePreferences(next)
+      return { miniMapOpen: nextOpen, preferences: next }
+    }),
+  setMiniMapOpen: (miniMapOpen) =>
+    set((s) => {
+      const next = { ...s.preferences, showMiniMap: miniMapOpen }
+      savePreferences(next)
+      return { miniMapOpen, preferences: next }
+    }),
+  setMiniMapCollapsed: (collapsed) =>
+    set((s) => {
+      const next = { ...s.preferences, miniMapCollapsed: collapsed }
+      savePreferences(next)
+      return { preferences: next }
+    }),
   togglePresenter: () => set((s) => ({ presenterActive: !s.presenterActive })),
   setPresenterActive: (presenterActive) => set({ presenterActive }),
   setPresenterSlideIndex: (presenterSlideIndex) => set({ presenterSlideIndex }),
@@ -866,6 +894,10 @@ export const useShellStore = create<ShellState>((set, get) => ({
   updatePreferences: (updates) => {
     set((state) => {
       const next: ShellPreferences = { ...state.preferences, ...updates }
+      let nextMiniMapOpen = state.miniMapOpen
+      if (updates.showMiniMap !== undefined) {
+        nextMiniMapOpen = updates.showMiniMap
+      }
       if (updates.showDockViewMenu !== undefined) {
         next.dockControls = {
           ...next.dockControls,
@@ -906,7 +938,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
       if (updates.animationMode !== undefined) {
         syncMotionToDOM(updates.animationMode)
       }
-      return { preferences: next }
+      return { preferences: next, miniMapOpen: nextMiniMapOpen }
     })
   },
 
@@ -1313,7 +1345,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
         clockSettings: nextClock,
       }
       savePreferences(next)
-      return { preferences: next }
+      return { preferences: next, miniMapOpen: visible }
     })
   },
 
@@ -1491,7 +1523,7 @@ export const useShellStore = create<ShellState>((set, get) => ({
       }
 
       savePreferences(next)
-      return { preferences: next }
+      return { preferences: next, miniMapOpen: next.showMiniMap ?? true }
     })
   },
 
@@ -1648,10 +1680,14 @@ export const useShellStore = create<ShellState>((set, get) => ({
   },
 
   resetPreferences: () => {
-    set({ preferences: DEFAULT_PREFERENCES })
+    set({
+      preferences: DEFAULT_PREFERENCES,
+      miniMapOpen: DEFAULT_PREFERENCES.showMiniMap ?? true,
+    })
     savePreferences(DEFAULT_PREFERENCES)
     syncThemeToDOM(DEFAULT_PREFERENCES.themeMode)
     applyAccentToDOM(DEFAULT_PREFERENCES.uiAccent, DEFAULT_PREFERENCES.customAccentColor)
     syncMotionToDOM(DEFAULT_PREFERENCES.animationMode)
   },
-}))
+}
+})

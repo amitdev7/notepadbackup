@@ -803,23 +803,28 @@ export const useSquig = create<SquigState>((set, get) => ({
   setQuickNoteNodeId: (id) => set({ quickNoteNodeId: id }),
   setContextRow: (on) => {
     set({ contextRow: on })
+    savePrefs({ contextRow: on })
     scheduleSave(get)
   },
   // each of these edits the open document, so each schedules a save
   setTheme: (t) => {
     wearLook(set, { ...lookOf(get()), theme: t })
+    savePrefs({ look: { ...lookOf(get()), theme: t } })
     scheduleSave(get)
   },
   setFont: (f) => {
     wearLook(set, { ...lookOf(get()), font: f })
+    savePrefs({ look: { ...lookOf(get()), font: f } })
     scheduleSave(get)
   },
   setPaper: (p) => {
     wearLook(set, { ...lookOf(get()), paper: p })
+    savePrefs({ look: { ...lookOf(get()), paper: p } })
     scheduleSave(get)
   },
   setGrid: (on) => {
     wearLook(set, { ...lookOf(get()), grid: on })
+    savePrefs({ look: { ...lookOf(get()), grid: on } })
     scheduleSave(get)
   },
   setShowPage: (on) => {

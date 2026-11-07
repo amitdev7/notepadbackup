@@ -2319,12 +2319,14 @@ export function Canvas() {
                   height: n.h,
                 }}
               >
-                <DocumentCanvasItem
-                  node={n as DocumentNode}
-                  selected={selection.includes(id)}
-                  zoom={v.zoom}
-                  onOpenViewer={(doc) => setViewerDoc(doc)}
-                />
+                <CanvasErrorBoundary name="Document Item" fallback={null}>
+                  <DocumentCanvasItem
+                    node={n as DocumentNode}
+                    selected={selection.includes(id)}
+                    zoom={v.zoom}
+                    onOpenViewer={(doc) => setViewerDoc(doc)}
+                  />
+                </CanvasErrorBoundary>
               </div>
             )
           }
@@ -2342,11 +2344,13 @@ export function Canvas() {
                   height: n.h,
                 }}
               >
-                <MediaCanvasItem
-                  node={n as MediaNode}
-                  selected={selection.includes(id)}
-                  zoom={v.zoom}
-                />
+                <CanvasErrorBoundary name="Media Item" fallback={null}>
+                  <MediaCanvasItem
+                    node={n as MediaNode}
+                    selected={selection.includes(id)}
+                    zoom={v.zoom}
+                  />
+                </CanvasErrorBoundary>
               </div>
             )
           }

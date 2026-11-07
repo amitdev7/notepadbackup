@@ -39,6 +39,7 @@ import { migrateLocalStorageToIndexedDB } from "@/lib/storage/migration"
 import { kbd } from "@/lib/shortcuts"
 import { useTranslation } from "@/lib/i18n/use-translation"
 import { X } from "@phosphor-icons/react"
+import { CanvasErrorBoundary } from "@/components/canvas/canvas-error-boundary"
 
 export default function Home() {
   useCollabTransport()
@@ -118,7 +119,9 @@ export default function Home() {
 
   return (
     <main className="relative h-full overflow-hidden select-none">
-      <Canvas />
+      <CanvasErrorBoundary name="Workspace Canvas">
+        <Canvas />
+      </CanvasErrorBoundary>
 
       {/* ⌘\ clears the room — canvas and what you've selected, nothing else */}
       {!uiHidden && (
@@ -173,14 +176,32 @@ export default function Home() {
       {!uiHidden && pdfToCanvasOpen && <PdfToCanvasDialog />}
       {!uiHidden && searchOpen && <CanvasSearch />}
       {!uiHidden && statsOpen && <CanvasStats />}
-      <LaserOverlay />
-      <MiniMapOverlay />
-      <PresenterMode />
-      <SpotlightOverlay />
-      <CursorReactions />
-      <RemoteCursors />
-      <FollowModeIndicator />
-      {!uiHidden && <ToolPropertiesPanel />}
+      <CanvasErrorBoundary name="Laser Overlay" fallback={null}>
+        <LaserOverlay />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="MiniMap Overlay" fallback={null}>
+        <MiniMapOverlay />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="Presenter Mode" fallback={null}>
+        <PresenterMode />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="Spotlight Overlay" fallback={null}>
+        <SpotlightOverlay />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="Cursor Reactions" fallback={null}>
+        <CursorReactions />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="Remote Cursors" fallback={null}>
+        <RemoteCursors />
+      </CanvasErrorBoundary>
+      <CanvasErrorBoundary name="Follow Mode Indicator" fallback={null}>
+        <FollowModeIndicator />
+      </CanvasErrorBoundary>
+      {!uiHidden && (
+        <CanvasErrorBoundary name="Tool Properties Panel" fallback={null}>
+          <ToolPropertiesPanel />
+        </CanvasErrorBoundary>
+      )}
     </main>
   )
 }

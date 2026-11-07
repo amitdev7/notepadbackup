@@ -18,7 +18,7 @@ import { useSquig } from "@/lib/store"
 import { useShellStore, type MiniMapPosition } from "@/lib/shell-store"
 import { audioFx } from "@/lib/canvas/audio-fx"
 import { cn } from "@/lib/utils"
-import { Compass, CaretDown, CaretUp, CornersOut, SquaresFour, Check } from "@phosphor-icons/react"
+import { Compass, CaretDown, CaretUp, CornersOut, SquaresFour, Check, X } from "@phosphor-icons/react"
 import { kbd } from "@/lib/shortcuts"
 
 const MAP_WIDTH = 190
@@ -50,14 +50,15 @@ export function MiniMapOverlay() {
   const viewport = useSquig((s) => s.viewport)
   const setViewport = useSquig((s) => s.setViewport)
   const resetViewport = useSquig((s) => s.resetViewport)
-  const showMiniMap = useShellStore((s) => s.miniMapOpen)
+  const showMiniMap = useShellStore((s) => s.miniMapOpen && s.preferences.showMiniMap !== false)
   const toggleMiniMap = useShellStore((s) => s.toggleMiniMap)
   const miniMapPosition = useShellStore((s) => s.preferences.miniMapPosition || "bottom-right")
   const setMiniMapPosition = useShellStore((s) => s.setMiniMapPosition)
   const cycleMiniMapPosition = useShellStore((s) => s.cycleMiniMapPosition)
+  const isCollapsed = useShellStore((s) => s.preferences.miniMapCollapsed ?? false)
+  const setMiniMapCollapsed = useShellStore((s) => s.setMiniMapCollapsed)
   const uiHidden = useSquig((s) => s.uiHidden)
 
-  const [isCollapsed, setIsCollapsed] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const [showPositionPicker, setShowPositionPicker] = useState(false)
   const [dragOffset, setDragOffset] = useState<{ x: number; y: number } | null>(null)
@@ -387,13 +388,28 @@ export function MiniMapOverlay() {
           <button
             type="button"
             onClick={() => {
-              setIsCollapsed(!isCollapsed)
+              setMiniMapCollapsed(!isCollapsed)
               audioFx.playToolSwitch()
             }}
             title={isCollapsed ? "Expand Mini-Map" : "Collapse Mini-Map"}
+            aria-label={isCollapsed ? "Expand Mini-Map" : "Collapse Mini-Map"}
             className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer"
           >
             {isCollapsed ? <CaretUp size={12} /> : <CaretDown size={12} />}
+          </button>
+
+          {/* Close Mini-Map */}
+          <button
+            type="button"
+            onClick={() => {
+              toggleMiniMap()
+              audioFx.playToolSwitch()
+            }}
+            title="Close Mini-Map"
+            aria-label="Close Mini-Map"
+            className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/10 text-stone-500 dark:text-stone-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+          >
+            <X size={12} weight="bold" />
           </button>
         </div>
       </div>
