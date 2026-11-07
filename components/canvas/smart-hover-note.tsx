@@ -17,6 +17,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
+import { useShellStore } from "@/lib/shell-store"
 import type { HoverNote, SquigNode } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { LiquidGlassCardIcon } from "./liquid-glass-icons"
@@ -41,6 +42,7 @@ export function SmartHoverNote({
   isBusy = false,
   delayMs = 300,
 }: SmartHoverNoteProps) {
+  const showHoverNotes = useShellStore((s) => s.preferences.showHoverNotes ?? true)
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
   const [activeNode, setActiveNode] = useState<SquigNode | null>(null)
@@ -113,7 +115,7 @@ export function SmartHoverNote({
     }
   }, [visible])
 
-  if (!mounted || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
+  if (!mounted || !showHoverNotes || !visible || !activeNode?.hoverNote || typeof document === "undefined") {
     return null
   }
 

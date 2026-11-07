@@ -34,6 +34,8 @@ export function TopBar() {
   const effectiveRole = useSquig((s) => s.effectiveRole)
   const isViewer = effectiveRole === "viewer"
   const showToolbar = useShellStore((s) => s.preferences.showToolbar ?? true)
+  const showDocTitle = useShellStore((s) => s.preferences.showDocTitle ?? true)
+  const showFilesPopover = useShellStore((s) => s.preferences.showFilesPopover ?? true)
   const showToolbarViewMenu = useShellStore((s) => s.preferences.showToolbarViewMenu ?? true)
   const showTimeInTopBar = useShellStore((s) => (s.preferences.clockSettings?.enabled ?? true) && (s.preferences.clockSettings?.showInTopBar ?? true))
   const showStatusIndicators = useShellStore((s) => s.preferences.showStatusIndicators ?? true)
@@ -101,38 +103,40 @@ export function TopBar() {
     <header className="pointer-events-none fixed top-[max(0.75rem,env(safe-area-inset-top))] inset-x-0 z-30 flex items-center justify-center px-2 sm:px-6 animate-topbar-enter">
       {/* Center: Frosted Glass Capsule */}
       <div className="pointer-events-auto relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 rounded-full apple-glass-pill min-w-0 max-w-[calc(100vw-1rem)] transition-[background-color,border-color,box-shadow,opacity] duration-200 select-none shadow-xl">
-        {isEditingTitle ? (
-          <input
-            ref={inputRef}
-            type="text"
-            value={titleDraft}
-            onChange={(e) => setTitleDraft(e.target.value)}
-            onBlur={commitTitle}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") commitTitle()
-              if (e.key === "Escape") {
-                setTitleDraft(fileName)
-                setIsEditingTitle(false)
-              }
-            }}
-            aria-label="Document title"
-            className="text-xs font-semibold text-foreground bg-background/95 backdrop-blur-md ring-2 ring-[var(--ui-accent,#007AFF)]/50 border border-[var(--ui-accent,#007AFF)]/60 rounded-xl px-2.5 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setIsEditingTitle(true)}
-            className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-foreground/90 hover:text-foreground transition-colors truncate cursor-pointer outline-none"
-            title={t("rename_document")}
-            aria-label={`${t("rename_document")}: ${fileName}`}
-          >
-            <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
-            <PencilSimple
-              size={11}
-              className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
-              aria-hidden="true"
+        {showDocTitle && (
+          isEditingTitle ? (
+            <input
+              ref={inputRef}
+              type="text"
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              onBlur={commitTitle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitTitle()
+                if (e.key === "Escape") {
+                  setTitleDraft(fileName)
+                  setIsEditingTitle(false)
+                }
+              }}
+              aria-label="Document title"
+              className="text-xs font-semibold text-foreground bg-background/95 backdrop-blur-md ring-2 ring-[var(--ui-accent,#007AFF)]/50 border border-[var(--ui-accent,#007AFF)]/60 rounded-xl px-2.5 py-0.5 min-w-[80px] max-w-[130px] sm:max-w-[260px] text-center transition-all duration-150 animate-popover-enter shadow-inner outline-none"
             />
-          </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsEditingTitle(true)}
+              className="group tactile-press flex items-center gap-1.5 text-xs font-semibold text-foreground/90 hover:text-foreground transition-colors truncate cursor-pointer outline-none"
+              title={t("rename_document")}
+              aria-label={`${t("rename_document")}: ${fileName}`}
+            >
+              <span className="truncate max-w-[95px] xs:max-w-[140px] sm:max-w-[240px] md:max-w-[320px]">{fileName}</span>
+              <PencilSimple
+                size={11}
+                className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 group-hover:scale-110"
+                aria-hidden="true"
+              />
+            </button>
+          )
         )}
 
         {/* Live Status Indicator Pill & Interactive Details Popover (e.g. Server unavailable · Changes saved locally) */}
@@ -146,7 +150,7 @@ export function TopBar() {
         )}
 
         {/* Files Dropdown & Canvas Manager */}
-        <FilesPopover />
+        {showFilesPopover && <FilesPopover />}
 
         {/* Live Collaboration Status Pill (e.g. Collab Off / Peer Avatars) */}
         {showCollabStatus && (

@@ -14,11 +14,13 @@
 
 import { useEffect, useState } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import { cn } from "@/lib/utils"
 
 const LINGER_MS = 2200
 
 export function Notice() {
+  const showNoticeToasts = useShellStore((s) => s.preferences.showNoticeToasts ?? true)
   const [text, setText] = useState("")
   const [shown, setShown] = useState(false)
 
@@ -38,6 +40,8 @@ export function Notice() {
       if (timer) clearTimeout(timer)
     }
   }, [])
+
+  if (!showNoticeToasts) return null
 
   return (
     <div

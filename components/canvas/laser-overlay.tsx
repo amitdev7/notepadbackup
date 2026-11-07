@@ -13,6 +13,7 @@ import { renderLaserTrail, type LaserPoint } from "@/lib/canvas/laser-ribbon"
 
 export function LaserOverlay() {
   const tool = useSquig((s) => s.tool)
+  const showLaserRibbon = useShellStore((s) => s.preferences.showLaserRibbon ?? true)
   const laserSettings = useShellStore((s) => s.preferences.laserSettings ?? DEFAULT_LASER_SETTINGS)
   const laserRef = useRef(laserSettings)
   useEffect(() => {
@@ -26,7 +27,7 @@ export function LaserOverlay() {
   const animFrameRef = useRef<number | null>(null)
 
   useEffect(() => {
-    if (tool !== "laser") {
+    if (tool !== "laser" || !showLaserRibbon) {
       pointsRef.current = []
       pointerPosRef.current = null
       const canvas = canvasRef.current
@@ -138,9 +139,9 @@ export function LaserOverlay() {
         cancelAnimationFrame(animFrameRef.current)
       }
     }
-  }, [tool])
+  }, [tool, showLaserRibbon])
 
-  if (tool !== "laser") return null
+  if (tool !== "laser" || !showLaserRibbon) return null
 
   return (
     <canvas

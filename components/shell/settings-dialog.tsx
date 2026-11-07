@@ -12,7 +12,7 @@
 //   Advanced, About, and Future / Coming Soon.
 // ---------------------------------------------------------------------------
 
-import { useEffect, useRef, useState, useCallback } from "react"
+import { useEffect, useRef, useState, useCallback, useMemo } from "react"
 import {
   useShellStore,
   syncThemeToDOM,
@@ -39,6 +39,7 @@ import { UI_ACCENTS, COLOR_SWATCHES } from "@/lib/design-tokens"
 import { THEMES, THEME_NAMES, PAPER_SHADES, type ThemeName, type FontMode, type PaperShade } from "@/lib/theme"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { WebsiteCustomizerTab } from "@/components/shell/website-customizer-tab"
 import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
 import { AboutUpdatesTab } from "@/components/shell/about-updates-tab"
@@ -138,8 +139,8 @@ interface SectionItem {
 }
 
 const SECTIONS: SectionItem[] = [
+  { id: "visibility", label: "Website Customizer", description: "Master control center to customize and toggle showing each and every element on/off", icon: Sliders },
   { id: "general", label: "General", description: "Language, start page and application defaults", icon: Sliders },
-  { id: "visibility", label: "Display & Visibility", description: "Master toggles to show or hide all interface elements, toolbars, and canvas overlays", icon: Eye },
   { id: "media", label: "Media & Video Players", description: "Clean video playback, YouTube controls, 1080p HD enforcing, and clutter filters", icon: YoutubeLogo },
   { id: "time", label: "Time & Location", description: "Real-time clock, automatic timezone, IP geolocation and calibration", icon: Clock },
   { id: "temporary", label: "Temporary Elements", description: "Auto-expiration timers, canvas countdown badges, and expired archive", icon: Timer },
@@ -169,6 +170,7 @@ export function SettingsDialog() {
   const activeSection = useShellStore((s) => s.settingsSection)
   const setActiveSection = useShellStore((s) => s.setSettingsSection)
   const dialogRef = useRef<HTMLDivElement>(null)
+  const [searchQuery, setSearchQuery] = useState("")
 
   // Close on Escape & lock body scroll
   useEffect(() => {
@@ -184,6 +186,54 @@ export function SettingsDialog() {
       window.removeEventListener("keydown", onKeyDown)
     }
   }, [isOpen, setIsOpen])
+
+  const filteredSections = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
+    if (!q) return SECTIONS
+    return SECTIONS.filter(
+      (s) =>
+        s.label.toLowerCase().includes(q) ||
+        s.description.toLowerCase().includes(q) ||
+        s.id.toLowerCase().includes(q)
+    )
+  }, [searchQuery])
+
+  const handleExportSettings = () => {
+    const json = useShellStore.getState().exportPreferencesJson()
+    const blob = new Blob([json], { type: "application/json" })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url
+    a.download = `zenithsui-settings-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    useSquig.getState().setNotice("Settings exported to JSON! 📤")
+  }
+
+  const handleImportSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      if (!content) return
+      const res = useShellStore.getState().importPreferencesJson(content)
+      if (res.success) {
+        useSquig.getState().setNotice("Settings imported and applied successfully! ✨")
+      } else {
+        alert("Failed to import settings: " + (res.error || "Invalid file"))
+      }
+    }
+    reader.readAsText(file)
+    e.target.value = ""
+  }
+
+  const handleResetAll = () => {
+    if (window.confirm("Reset all settings across all categories to factory defaults?")) {
+      useShellStore.getState().resetPreferences()
+      useSquig.getState().setNotice("All settings restored to factory defaults! ↺")
+    }
+  }
 
   if (!isOpen) return null
 
@@ -203,73 +253,171 @@ export function SettingsDialog() {
         role="dialog"
         aria-label="Settings"
         className={cn(
-          "macos-window relative flex flex-col md:flex-row w-[820px] max-w-[calc(100vw-2rem)] h-[580px] max-h-[calc(100vh-4rem)]",
+          "macos-window relative flex flex-col md:flex-row w-[920px] max-w-[calc(100vw-2rem)] h-[620px] max-h-[calc(100vh-3rem)]",
           "rounded-2xl border border-border/80 apple-glass-panel shadow-2xl",
           "overflow-hidden font-sans animate-scale-fade select-none"
         )}
       >
-        {/* ── Left Sidebar: Category List ── */}
-        <aside className="w-full md:w-[220px] shrink-0 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 py-3 px-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar">
-          <div className="hidden md:flex items-center gap-2.5 px-2.5 mb-3 pt-0.5">
-            <div className="flex items-center gap-1.5 group">
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                aria-label="Close"
-                className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
-              />
-              <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
-              <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+        {/* ── Left Sidebar: Search & Category List ── */}
+        <aside className="w-full md:w-[235px] shrink-0 border-b md:border-b-0 md:border-r border-border/60 bg-muted/20 py-3 px-2 flex flex-row md:flex-col overflow-x-auto md:overflow-y-auto no-scrollbar justify-between">
+          <div className="flex flex-col w-full">
+            <div className="hidden md:flex items-center gap-2.5 px-2.5 mb-2.5 pt-0.5">
+              <div className="flex items-center gap-1.5 group">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  aria-label="Close"
+                  className="size-3 rounded-full bg-[#FF5F56] border border-[#E0443E] hover:opacity-80 transition-opacity cursor-pointer"
+                />
+                <div className="size-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]" />
+                <div className="size-3 rounded-full bg-[#27C93F] border border-[#1AAB29]" />
+              </div>
+              <span className="ml-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Settings
+              </span>
             </div>
-            <span className="ml-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-              Settings
-            </span>
+
+            {/* Sidebar Search Bar */}
+            <div className="hidden md:block px-1 mb-2 relative">
+              <MagnifyingGlass size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search settings..."
+                className="w-full pl-7 pr-6 py-1 text-xs rounded-lg border border-border/70 bg-background/50 placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-blue-500/50"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground hover:text-foreground cursor-pointer"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+
+            <nav className="flex md:flex-col gap-0.5 w-full">
+              {filteredSections.map((section: SectionItem) => {
+                const Icon = section.icon
+                const isActive = activeSection === section.id
+                const isCustomizer = section.id === "visibility"
+                return (
+                  <button
+                    key={section.id}
+                    type="button"
+                    onClick={() => setActiveSection(section.id)}
+                    className={cn(
+                      "tactile-press flex shrink-0 md:w-full items-center justify-between px-2.5 py-1.5 rounded-lg text-xs font-medium text-left cursor-pointer transition-all duration-150 hover:translate-x-0.5",
+                      isActive
+                        ? "bg-[var(--ui-accent,#007AFF)] text-white shadow-xs font-semibold scale-102"
+                        : "text-muted-foreground hover:bg-muted/80 hover:text-foreground",
+                      isCustomizer && !isActive && "text-blue-600 dark:text-blue-400 font-bold bg-blue-500/10 hover:bg-blue-500/15"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <Icon size={15} weight={isActive ? "fill" : "regular"} className="shrink-0" />
+                      <span className="truncate">{section.label}</span>
+                    </div>
+                    {isCustomizer && (
+                      <span className={cn(
+                        "text-[9px] px-1.5 py-0.2 rounded-full font-bold uppercase tracking-wider shrink-0",
+                        isActive ? "bg-white/20 text-white" : "bg-blue-500/20 text-blue-600 dark:text-blue-400"
+                      )}>
+                        Hub
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </nav>
           </div>
 
-          <nav className="flex md:flex-col gap-0.5 w-full">
-            {SECTIONS.map((section) => {
-              const Icon = section.icon
-              const isActive = activeSection === section.id
-              return (
-                <button
-                  key={section.id}
-                  type="button"
-                  onClick={() => setActiveSection(section.id)}
-                  className={cn(
-                    "tactile-press flex shrink-0 md:w-full items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left cursor-pointer transition-all duration-150 hover:translate-x-0.5",
-                    isActive
-                      ? "bg-[var(--ui-accent,#007AFF)] text-white shadow-xs font-semibold scale-102"
-                      : "text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-                  )}
-                >
-                  <Icon size={15} weight={isActive ? "fill" : "regular"} className="shrink-0" />
-                  <span className="truncate">{section.label}</span>
-                </button>
-              )
-            })}
-          </nav>
+          {/* Sidebar Footer with Export/Import & Reset */}
+          <div className="hidden md:flex flex-col gap-1.5 pt-3 mt-3 border-t border-border/50 px-1">
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={handleExportSettings}
+                className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer border border-border/60"
+                title="Download preferences as JSON backup"
+              >
+                <DownloadSimple size={12} />
+                <span>Export</span>
+              </button>
+              <label
+                className="flex-1 flex items-center justify-center gap-1 py-1 px-1.5 rounded-md text-[10px] font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer border border-border/60"
+                title="Import preferences from JSON backup"
+              >
+                <UploadSimple size={12} />
+                <span>Import</span>
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  className="hidden"
+                  onChange={handleImportSettings}
+                />
+              </label>
+            </div>
+            <button
+              type="button"
+              onClick={handleResetAll}
+              className="w-full flex items-center justify-center gap-1 py-1 px-1.5 rounded-md text-[10px] font-semibold text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+            >
+              <ArrowCounterClockwise size={11} />
+              <span>Reset All to Defaults</span>
+            </button>
+          </div>
         </aside>
 
         {/* ── Right Content: Active Category Settings ── */}
         <section className="flex-1 flex flex-col overflow-hidden bg-background/30">
           {/* Header */}
-          <header className="flex items-center justify-between px-6 py-4 border-b border-border/60 shrink-0">
-            <div>
-              <h3 className="text-base font-bold text-foreground tracking-tight">
-                {currentSection.label}
-              </h3>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5">
+          <header className="flex items-center justify-between px-6 py-3.5 border-b border-border/60 shrink-0">
+            <div className="min-w-0 pr-3">
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-foreground tracking-tight truncate">
+                  {currentSection.label}
+                </h3>
+                {activeSection === "visibility" && (
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                    Live Customizer
+                  </span>
+                )}
+                <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Live Sync</span>
+                </span>
+              </div>
+              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
                 {currentSection.description}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              className="tactile-btn rounded-lg p-1.5 text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
-              title="Close (Esc)"
-            >
-              <X size={16} />
-            </button>
+
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  useShellStore.getState().resetSectionPreferences(activeSection)
+                  useSquig.getState().setNotice(`Reset ${currentSection.label} to default settings! ✨`)
+                }}
+                className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60 transition-colors cursor-pointer"
+                title={`Reset ${currentSection.label} settings to defaults`}
+              >
+                <ArrowCounterClockwise size={12} />
+                <span>Reset Section</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="tactile-btn rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                title="Close (Esc)"
+              >
+                <X size={16} />
+              </button>
+            </div>
           </header>
 
           {/* Section Body */}
@@ -2209,346 +2357,8 @@ function SectionBody({ section }: { section: SettingsSectionId }) {
         </div>
       )
 
-    case "visibility": {
-      const allEnabled =
-        (prefs.showToolbar ?? true) &&
-        (prefs.showDock ?? true) &&
-        (prefs.showZoomControls ?? true) &&
-        (prefs.showStatusIndicators ?? true) &&
-        (prefs.showCollabStatus ?? true) &&
-        (prefs.showMiniMap ?? true) &&
-        contextRow &&
-        grid &&
-        showPage
-
-      return (
-        <div className="space-y-6">
-          {/* Master 1-Click Action Card */}
-          <div className="p-4 rounded-xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-violet-500/10 border border-blue-500/25 shadow-xs space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-xs">
-                  <Eye size={20} weight="bold" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-sm text-foreground">Master Interface Visibility</h4>
-                  <p className="text-[11px] text-muted-foreground">
-                    Instantly toggle all canvas UI chrome, floating dock, toolbars, and overlays on or off with 1 click.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  setAllVisibility(true)
-                  useSquig.getState().setUiHidden(false)
-                  useSquig.getState().setContextRow(true)
-                  useSquig.getState().setGrid(true)
-                  useSquig.getState().setShowPage(true)
-                  useSquig.getState().setNotice("All interface elements & toolbars visible! ✨")
-                }}
-                className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-101 active:scale-98"
-              >
-                <Eye size={16} weight="bold" />
-                <span>Show Everything (All UI On)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setAllVisibility(false)
-                  useSquig.getState().setUiHidden(true)
-                  useSquig.getState().setContextRow(false)
-                  useSquig.getState().setGrid(false)
-                  useSquig.getState().setShowPage(false)
-                  useSquig.getState().setNotice("Pure Canvas Mode: All interface elements hidden! 🧘")
-                }}
-                className="flex items-center justify-center gap-2 px-3.5 py-2 rounded-lg bg-stone-500/15 hover:bg-stone-500/25 text-stone-700 dark:text-stone-300 border border-stone-500/30 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-101 active:scale-98"
-              >
-                <EyeSlash size={16} weight="bold" />
-                <span>Hide Everything (Zen Mode)</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Section 1: Canvas Interface Chrome */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                Canvas Interface & Navigation Chrome
-              </h5>
-              <span className="text-[10px] text-muted-foreground font-mono">
-                {allEnabled ? "All Enabled" : "Custom Visibility"}
-              </span>
-            </div>
-
-            <div className="space-y-2 divide-y divide-border/60">
-              <div className="flex items-center justify-between pt-1">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Top Navigation Bar</span>
-                  <span className="text-[11px] text-muted-foreground">Document title, cloud sync status, and primary file actions</span>
-                </div>
-                <Switch
-                  checked={prefs.showToolbar ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showToolbar: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Floating Bottom Dock</span>
-                  <span className="text-[11px] text-muted-foreground">Global tool tray and action dock anchored at the bottom</span>
-                </div>
-                <Switch
-                  checked={prefs.showDock ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showDock: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Selection Context Toolbar</span>
-                  <span className="text-[11px] text-muted-foreground">Floating quick-action toolbar attached above selected objects</span>
-                </div>
-                <Switch
-                  checked={contextRow}
-                  onCheckedChange={setContextRow}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">MiniMap Radar Navigator</span>
-                  <span className="text-[11px] text-muted-foreground">Corner radar overview of the infinite canvas workspace</span>
-                </div>
-                <Switch
-                  checked={prefs.showMiniMap ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showMiniMap: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Canvas Dot Grid</span>
-                  <span className="text-[11px] text-muted-foreground">Dot matrix background pattern for spatial alignment</span>
-                </div>
-                <Switch
-                  checked={grid}
-                  onCheckedChange={setGrid}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Page Boundary Frame</span>
-                  <span className="text-[11px] text-muted-foreground">Visual document frame guide for pagination and exports</span>
-                </div>
-                <Switch
-                  checked={showPage}
-                  onCheckedChange={setShowPage}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Zoom Stepper & Controls</span>
-                  <span className="text-[11px] text-muted-foreground">Zoom in/out buttons and percentage readout</span>
-                </div>
-                <Switch
-                  checked={prefs.showZoomControls ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showZoomControls: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Top Bar View Menu (🧭)</span>
-                  <span className="text-[11px] text-muted-foreground">Compass view menu pill in the top navigation bar</span>
-                </div>
-                <Switch
-                  checked={prefs.showToolbarViewMenu ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showToolbarViewMenu: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Bottom Dock View Menu (🧭)</span>
-                  <span className="text-[11px] text-muted-foreground">Compass view menu pill in the floating dock</span>
-                </div>
-                <Switch
-                  checked={prefs.showDockViewMenu ?? dockControls.viewMenu ?? false}
-                  onCheckedChange={(checked) => {
-                    updatePrefs({ showDockViewMenu: checked })
-                    updateDockControl("viewMenu", checked)
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Top Bar Real-Time Clock (🕒)</span>
-                  <span className="text-[11px] text-muted-foreground">Live time and location badge in the top navigation bar</span>
-                </div>
-                <Switch
-                  checked={prefs.clockSettings?.showInTopBar ?? true}
-                  onCheckedChange={(checked) => useShellStore.getState().updateClockPreferences({ showInTopBar: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Bottom Dock Real-Time Clock (🕒)</span>
-                  <span className="text-[11px] text-muted-foreground">Live time badge in the floating bottom dock</span>
-                </div>
-                <Switch
-                  checked={prefs.clockSettings?.showInDock ?? dockControls.timeClock ?? false}
-                  onCheckedChange={(checked) => {
-                    useShellStore.getState().updateClockPreferences({ showInDock: checked })
-                    updateDockControl("timeClock", checked)
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Sync & Network Status Pill</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    Display server connection & local saving state (e.g. &ldquo;Server unavailable · Changes saved locally&rdquo;, &ldquo;Synced&rdquo;, &ldquo;Offline&rdquo;)
-                  </span>
-                </div>
-                <Switch
-                  checked={prefs.showStatusIndicators ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showStatusIndicators: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Live Collaboration Status Pill</span>
-                  <span className="text-[11px] text-muted-foreground">
-                    Display real-time peer presence capsule in the toolbar (e.g. &ldquo;Collab Off&rdquo;, &ldquo;Collab On&rdquo;, active user avatars)
-                  </span>
-                </div>
-                <Switch
-                  checked={prefs.showCollabStatus ?? true}
-                  onCheckedChange={(checked) => updatePrefs({ showCollabStatus: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Temporary Elements Countdown</span>
-                  <span className="text-[11px] text-muted-foreground">Show live countdown badges above temporary expiring canvas notes</span>
-                </div>
-                <Switch
-                  checked={prefs.temporarySettings?.showCountdown ?? true}
-                  onCheckedChange={(checked) => useShellStore.getState().updateTemporarySettings({ showCountdown: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Performance & FPS HUD</span>
-                  <span className="text-[11px] text-muted-foreground">Live frame rate, draw call statistics, and memory telemetry HUD</span>
-                </div>
-                <Switch
-                  checked={prefs.performanceSettings?.showFpsHud ?? false}
-                  onCheckedChange={(checked) => useShellStore.getState().updatePerformanceSettings({ showFpsHud: checked })}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2: Media & Video Embeds Visibility */}
-          <div className="space-y-3 pt-3 border-t border-border/60">
-            <div className="flex items-center justify-between">
-              <h5 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                Media & Video Players Controls (YouTube & Vimeo)
-              </h5>
-              <button
-                type="button"
-                onClick={() => setSettingsSection("media")}
-                className="text-[11px] text-blue-500 hover:underline font-medium cursor-pointer"
-              >
-                Media Settings →
-              </button>
-            </div>
-
-            <div className="space-y-2 divide-y divide-border/60">
-              <div className="flex items-center justify-between pt-1">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Clean Studio Mode by Default</span>
-                  <span className="text-[11px] text-muted-foreground">Hide in-video YouTube controls, title bars, and annotations automatically</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.cleanModeDefault}
-                  onCheckedChange={(checked) => updateMediaSettings({ cleanModeDefault: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Video Card Header Controls Bar</span>
-                  <span className="text-[11px] text-muted-foreground">Display shifted controls (Play, Mute, CC, HD, Speed, Fullscreen) in card header</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.showHeaderControls}
-                  onCheckedChange={(checked) => updateMediaSettings({ showHeaderControls: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Video Scrubber Line</span>
-                  <span className="text-[11px] text-muted-foreground">Progress scrubber line between header and video viewport</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.showScrubberLine}
-                  onCheckedChange={(checked) => updateMediaSettings({ showScrubberLine: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Floating Hover Controls Pill</span>
-                  <span className="text-[11px] text-muted-foreground">Frosted-glass floating scrubber bar that fades in on mouse hover</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.showHoverControls}
-                  onCheckedChange={(checked) => updateMediaSettings({ showHoverControls: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Center Frosted Glass Play Button</span>
-                  <span className="text-[11px] text-muted-foreground">Large Apple-style centered play button when video is paused</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.showCenterPlayButton}
-                  onCheckedChange={(checked) => updateMediaSettings({ showCenterPlayButton: checked })}
-                />
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5">
-                <div>
-                  <span className="font-semibold text-xs text-foreground block">Always Enforce 1080p HD Quality</span>
-                  <span className="text-[11px] text-muted-foreground">Automatically lock YouTube and video streams to highest available resolution</span>
-                </div>
-                <Switch
-                  checked={mediaSettings.alwaysEnforce1080p}
-                  onCheckedChange={(checked) => updateMediaSettings({ alwaysEnforce1080p: checked })}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    }
+    case "visibility":
+      return <WebsiteCustomizerTab />
 
     case "media": {
       return (

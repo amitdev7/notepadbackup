@@ -22,6 +22,7 @@
 
 import { useState, useRef, useEffect, useCallback, memo, useMemo } from "react"
 import { useSquig } from "@/lib/store"
+import { useShellStore } from "@/lib/shell-store"
 import type {
   SquigNode,
   Viewport,
@@ -159,6 +160,8 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
   busy = false,
 }: FloatingContextToolbarProps) {
   const uiHidden = useSquig((s) => s.uiHidden)
+  const contextRow = useSquig((s) => s.contextRow)
+  const showContextToolbar = useShellStore((s) => s.preferences.showContextToolbar ?? true)
   const editingId = useSquig((s) => s.editingId)
   const st = useSquig.getState
 
@@ -216,7 +219,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
   }
 
   const bounds = unionBounds(selectedNodes)
-  if (selectedNodes.length === 0 || uiHidden || editingId || busy || !bounds) {
+  if (selectedNodes.length === 0 || uiHidden || !contextRow || !showContextToolbar || editingId || busy || !bounds) {
     return null
   }
 

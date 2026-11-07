@@ -318,6 +318,8 @@ export interface MediaPreferences {
   showHoverControls: boolean
   showCenterPlayButton: boolean
   autoSoloPlayback: boolean
+  showEmbedHeader?: boolean
+  showFallbackCards?: boolean
 }
 
 export const DEFAULT_MEDIA_PREFERENCES: MediaPreferences = {
@@ -328,6 +330,8 @@ export const DEFAULT_MEDIA_PREFERENCES: MediaPreferences = {
   showHoverControls: true,
   showCenterPlayButton: true,
   autoSoloPlayback: true,
+  showEmbedHeader: true,
+  showFallbackCards: true,
 }
 
 export interface ShellPreferences {
@@ -378,6 +382,17 @@ export interface ShellPreferences {
   liveCollaborationEnabled?: boolean
   backupSettings?: BackupSettings
   mediaSettings: MediaPreferences
+  showDocTitle?: boolean
+  showFilesPopover?: boolean
+  showContextToolbar?: boolean
+  showHoverNotes?: boolean
+  showSnapGuides?: boolean
+  showLaserRibbon?: boolean
+  showPeerCursors?: boolean
+  showPeerChat?: boolean
+  showNoticeToasts?: boolean
+  showEmbedHeader?: boolean
+  showFallbackCards?: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -399,6 +414,17 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   showZoomControls: true,
   showStatusIndicators: true,
   showCollabStatus: true,
+  showDocTitle: true,
+  showFilesPopover: true,
+  showContextToolbar: true,
+  showHoverNotes: true,
+  showSnapGuides: true,
+  showLaserRibbon: true,
+  showPeerCursors: true,
+  showPeerChat: true,
+  showNoticeToasts: true,
+  showEmbedHeader: true,
+  showFallbackCards: true,
   highContrast: false,
   largeText: false,
   screenReaderHints: false,
@@ -521,6 +547,17 @@ function loadInitialPreferences(): ShellPreferences {
           ...DEFAULT_MEDIA_PREFERENCES,
           ...(parsed.mediaSettings || {}),
         },
+        showDocTitle: parsed.showDocTitle !== undefined ? Boolean(parsed.showDocTitle) : true,
+        showFilesPopover: parsed.showFilesPopover !== undefined ? Boolean(parsed.showFilesPopover) : true,
+        showContextToolbar: parsed.showContextToolbar !== undefined ? Boolean(parsed.showContextToolbar) : true,
+        showHoverNotes: parsed.showHoverNotes !== undefined ? Boolean(parsed.showHoverNotes) : true,
+        showSnapGuides: parsed.showSnapGuides !== undefined ? Boolean(parsed.showSnapGuides) : true,
+        showLaserRibbon: parsed.showLaserRibbon !== undefined ? Boolean(parsed.showLaserRibbon) : true,
+        showPeerCursors: parsed.showPeerCursors !== undefined ? Boolean(parsed.showPeerCursors) : true,
+        showPeerChat: parsed.showPeerChat !== undefined ? Boolean(parsed.showPeerChat) : true,
+        showNoticeToasts: parsed.showNoticeToasts !== undefined ? Boolean(parsed.showNoticeToasts) : true,
+        showEmbedHeader: parsed.showEmbedHeader !== undefined ? Boolean(parsed.showEmbedHeader) : true,
+        showFallbackCards: parsed.showFallbackCards !== undefined ? Boolean(parsed.showFallbackCards) : true,
       }
     }
   } catch { }
@@ -627,6 +664,10 @@ interface ShellState {
   updateBackupSettings: (updates: Partial<BackupSettings>) => void
   updateMediaSettings: (updates: Partial<MediaPreferences>) => void
   setAllVisibility: (visible: boolean) => void
+  applyVisibilityPreset: (preset: "studio" | "zen" | "balanced" | "presenter" | "sketcher") => void
+  exportPreferencesJson: () => string
+  importPreferencesJson: (json: string) => { success: boolean; error?: string }
+  resetSectionPreferences: (section: SettingsSectionId) => void
   setStorageMode: (mode: StorageMode) => void
   toggleDatabase: (enabled?: boolean) => void
   updateDockControl: (key: keyof DockControlsVisibility, visible: boolean) => void
@@ -1223,6 +1264,8 @@ export const useShellStore = create<ShellState>((set, get) => ({
         showScrubberLine: visible,
         showHoverControls: visible,
         showCenterPlayButton: visible,
+        showEmbedHeader: visible,
+        showFallbackCards: visible,
       }
       const nextClock = {
         ...state.preferences.clockSettings,
@@ -1240,9 +1283,318 @@ export const useShellStore = create<ShellState>((set, get) => ({
         showStatusIndicators: visible,
         showCollabStatus: visible,
         showMiniMap: visible,
+        showDocTitle: visible,
+        showFilesPopover: visible,
+        showContextToolbar: visible,
+        showHoverNotes: visible,
+        showSnapGuides: visible,
+        showLaserRibbon: visible,
+        showPeerCursors: visible,
+        showPeerChat: visible,
+        showNoticeToasts: visible,
+        showEmbedHeader: visible,
+        showFallbackCards: visible,
         dockControls: nextDockControls,
         mediaSettings: nextMedia,
         clockSettings: nextClock,
+      }
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  applyVisibilityPreset: (preset) => {
+    set((state) => {
+      const nextDockControls = { ...state.preferences.dockControls }
+      let next: ShellPreferences = { ...state.preferences }
+
+      if (preset === "studio") {
+        for (const k of Object.keys(nextDockControls) as (keyof DockControlsVisibility)[]) {
+          nextDockControls[k] = true
+        }
+        next = {
+          ...next,
+          showCanvasUI: true,
+          showToolbar: true,
+          showDock: true,
+          showToolbarViewMenu: true,
+          showDockViewMenu: true,
+          showZoomControls: true,
+          showStatusIndicators: true,
+          showCollabStatus: true,
+          showMiniMap: true,
+          showDocTitle: true,
+          showFilesPopover: true,
+          showContextToolbar: true,
+          showHoverNotes: true,
+          showSnapGuides: true,
+          showLaserRibbon: true,
+          showPeerCursors: true,
+          showPeerChat: true,
+          showNoticeToasts: true,
+          showEmbedHeader: true,
+          showFallbackCards: true,
+          dockControls: nextDockControls,
+          clockSettings: { ...next.clockSettings, showInTopBar: true, showInDock: true },
+          mediaSettings: {
+            ...next.mediaSettings,
+            showHeaderControls: true,
+            showScrubberLine: true,
+            showHoverControls: true,
+            showCenterPlayButton: true,
+            showEmbedHeader: true,
+            showFallbackCards: true,
+          },
+          performanceSettings: {
+            ...next.performanceSettings,
+            showFpsHud: true,
+          },
+        }
+      } else if (preset === "zen") {
+        for (const k of Object.keys(nextDockControls) as (keyof DockControlsVisibility)[]) {
+          nextDockControls[k] = false
+        }
+        next = {
+          ...next,
+          showCanvasUI: false,
+          showToolbar: false,
+          showDock: false,
+          showMiniMap: false,
+          showToolbarViewMenu: false,
+          showDockViewMenu: false,
+          showZoomControls: false,
+          showStatusIndicators: false,
+          showCollabStatus: false,
+          showDocTitle: false,
+          showFilesPopover: false,
+          showContextToolbar: true,
+          showHoverNotes: true,
+          showSnapGuides: true,
+          showLaserRibbon: false,
+          showPeerCursors: false,
+          showPeerChat: false,
+          showNoticeToasts: false,
+          dockControls: nextDockControls,
+          clockSettings: { ...next.clockSettings, showInTopBar: false, showInDock: false },
+        }
+      } else if (preset === "balanced") {
+        next = {
+          ...next,
+          showCanvasUI: true,
+          showToolbar: true,
+          showDock: true,
+          showMiniMap: true,
+          showToolbarViewMenu: true,
+          showDockViewMenu: false,
+          showZoomControls: true,
+          showStatusIndicators: true,
+          showCollabStatus: true,
+          showDocTitle: true,
+          showFilesPopover: true,
+          showContextToolbar: true,
+          showHoverNotes: true,
+          showSnapGuides: true,
+          showLaserRibbon: true,
+          showPeerCursors: true,
+          showPeerChat: true,
+          showNoticeToasts: true,
+          showEmbedHeader: true,
+          showFallbackCards: true,
+          dockControls: DEFAULT_DOCK_CONTROLS,
+          clockSettings: DEFAULT_CLOCK_PREFERENCES,
+          mediaSettings: DEFAULT_MEDIA_PREFERENCES,
+          performanceSettings: { ...next.performanceSettings, showFpsHud: false },
+        }
+      } else if (preset === "presenter") {
+        for (const k of Object.keys(nextDockControls) as (keyof DockControlsVisibility)[]) {
+          nextDockControls[k] = false
+        }
+        next = {
+          ...next,
+          showCanvasUI: false,
+          showToolbar: false,
+          showDock: false,
+          showMiniMap: false,
+          showContextToolbar: false,
+          showLaserRibbon: true,
+          showPeerCursors: true,
+          showPeerChat: true,
+          showNoticeToasts: false,
+          dockControls: nextDockControls,
+        }
+      } else if (preset === "sketcher") {
+        const sketcherControls: DockControlsVisibility = {
+          ...DEFAULT_DOCK_CONTROLS,
+          toolSelect: true,
+          toolHand: true,
+          toolDraw: true,
+          toolHighlighter: true,
+          toolEraser: true,
+          toolShape: true,
+          toolLaser: true,
+          toolText: false,
+          toolSticky: false,
+          toolFrame: false,
+          toolArrow: true,
+          toolLibrary: false,
+          actionRecordAudio: false,
+          actionSearch: false,
+          actionStats: false,
+          actionPresenter: false,
+          actionReactions: false,
+          actionMiniMap: false,
+          brandMenu: false,
+          zoomControls: true,
+          viewMenu: false,
+          timeClock: false,
+        }
+        next = {
+          ...next,
+          showCanvasUI: true,
+          showToolbar: false,
+          showDock: true,
+          showMiniMap: false,
+          showDocTitle: false,
+          showFilesPopover: false,
+          showContextToolbar: true,
+          showHoverNotes: true,
+          showSnapGuides: true,
+          showLaserRibbon: true,
+          dockControls: sketcherControls,
+        }
+      }
+
+      savePreferences(next)
+      return { preferences: next }
+    })
+  },
+
+  exportPreferencesJson: () => {
+    return JSON.stringify(get().preferences, null, 2)
+  },
+
+  importPreferencesJson: (json: string) => {
+    try {
+      const parsed = JSON.parse(json)
+      if (!parsed || typeof parsed !== "object") {
+        return { success: false, error: "Invalid JSON format" }
+      }
+      const next: ShellPreferences = {
+        ...DEFAULT_PREFERENCES,
+        ...parsed,
+        dockControls: {
+          ...DEFAULT_DOCK_CONTROLS,
+          ...(parsed.dockControls || {}),
+        },
+        clockSettings: {
+          ...DEFAULT_CLOCK_PREFERENCES,
+          ...(parsed.clockSettings || {}),
+        },
+        mediaSettings: {
+          ...DEFAULT_MEDIA_PREFERENCES,
+          ...(parsed.mediaSettings || {}),
+        },
+        performanceSettings: {
+          ...DEFAULT_PERFORMANCE_SETTINGS,
+          ...(parsed.performanceSettings || {}),
+        },
+        laserSettings: {
+          ...DEFAULT_LASER_SETTINGS,
+          ...(parsed.laserSettings || {}),
+        },
+        drawSettings: {
+          ...DEFAULT_DRAW_SETTINGS,
+          ...(parsed.drawSettings || {}),
+        },
+        textSettings: {
+          ...DEFAULT_TEXT_SETTINGS,
+          ...(parsed.textSettings || {}),
+        },
+      }
+      set({ preferences: next })
+      savePreferences(next)
+      syncThemeToDOM(next.themeMode)
+      applyAccentToDOM(next.uiAccent, next.customAccentColor)
+      syncMotionToDOM(next.animationMode)
+      return { success: true }
+    } catch (e: any) {
+      return { success: false, error: e?.message || "Failed to parse preferences JSON" }
+    }
+  },
+
+  resetSectionPreferences: (section) => {
+    set((state) => {
+      let next: ShellPreferences = { ...state.preferences }
+      switch (section) {
+        case "visibility":
+          next = {
+            ...next,
+            showToolbar: true,
+            showDock: true,
+            showMiniMap: true,
+            showToolbarViewMenu: true,
+            showDockViewMenu: false,
+            showZoomControls: true,
+            showStatusIndicators: true,
+            showCollabStatus: true,
+            showDocTitle: true,
+            showFilesPopover: true,
+            showContextToolbar: true,
+            showHoverNotes: true,
+            showSnapGuides: true,
+            showLaserRibbon: true,
+            showPeerCursors: true,
+            showPeerChat: true,
+            showNoticeToasts: true,
+            showEmbedHeader: true,
+            showFallbackCards: true,
+            dockControls: DEFAULT_DOCK_CONTROLS,
+            mediaSettings: DEFAULT_MEDIA_PREFERENCES,
+            clockSettings: DEFAULT_CLOCK_PREFERENCES,
+          }
+          break
+        case "media":
+          next.mediaSettings = DEFAULT_MEDIA_PREFERENCES
+          break
+        case "laser":
+          next.laserSettings = DEFAULT_LASER_SETTINGS
+          break
+        case "drawing":
+          next.drawSettings = DEFAULT_DRAW_SETTINGS
+          break
+        case "text":
+          next.textSettings = DEFAULT_TEXT_SETTINGS
+          break
+        case "performance":
+          next.performanceSettings = DEFAULT_PERFORMANCE_SETTINGS
+          break
+        case "canvas":
+          next.dockControls = DEFAULT_DOCK_CONTROLS
+          break
+        case "time":
+          next.clockSettings = DEFAULT_CLOCK_PREFERENCES
+          break
+        case "temporary":
+          next.temporarySettings = DEFAULT_TEMPORARY_PREFERENCES
+          break
+        case "storage":
+          next.databaseSettings = DEFAULT_DATABASE_SETTINGS
+          next.backupSettings = DEFAULT_BACKUP_SETTINGS
+          break
+        case "appearance":
+          next.themeMode = DEFAULT_PREFERENCES.themeMode
+          next.uiAccent = DEFAULT_PREFERENCES.uiAccent
+          next.customAccentColor = DEFAULT_PREFERENCES.customAccentColor
+          next.uiDensity = DEFAULT_PREFERENCES.uiDensity
+          next.uiRadius = DEFAULT_PREFERENCES.uiRadius
+          next.uiBlur = DEFAULT_PREFERENCES.uiBlur
+          next.animationMode = DEFAULT_PREFERENCES.animationMode
+          syncThemeToDOM(DEFAULT_PREFERENCES.themeMode)
+          applyAccentToDOM(DEFAULT_PREFERENCES.uiAccent, DEFAULT_PREFERENCES.customAccentColor)
+          syncMotionToDOM(DEFAULT_PREFERENCES.animationMode)
+          break
+        default:
+          break
       }
       savePreferences(next)
       return { preferences: next }
