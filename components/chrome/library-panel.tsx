@@ -83,8 +83,9 @@ const CATEGORIES: CategoryMeta[] = [
   { id: "Display", label: "Display & Media", icon: Image },
 ]
 
-// 6 Essential Starter Components for 1-Click Canvas Insertion
+// 7 Essential Starter Components for 1-Click Canvas Insertion
 const QUICK_STARTER_IDS = [
+  "math-study-tracker",
   "button",
   "input",
   "study-flashcard",

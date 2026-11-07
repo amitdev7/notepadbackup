@@ -305,7 +305,7 @@ export const InteractiveMathStudyTracker = memo(function InteractiveMathStudyTra
         className="relative w-full h-full flex flex-col pt-6 pb-6 px-6 sm:px-7 bg-[#FAF7F2] text-stone-900 overflow-hidden"
         style={{
           clipPath: MATH_TRACKER_DECKLE_CLIP_PATH,
-          fontFamily: "'Caveat', 'Comic Sans MS', 'Chalkboard SE', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: "var(--font-caveat), var(--font-sketch), 'Caveat', 'Comic Sans MS', 'Chalkboard SE', -apple-system, BlinkMacSystemFont, sans-serif",
         }}
       >
         {/* Subtle Paper Fiber Texture Overlay */}

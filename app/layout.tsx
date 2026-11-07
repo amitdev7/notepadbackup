@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Patrick_Hand, Source_Serif_4 } from "next/font/google";
+import { Geist, Patrick_Hand, Source_Serif_4, Caveat } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/pwa/sw-register";
 import "./globals.css";
 
@@ -23,6 +23,12 @@ const patrickHand = Patrick_Hand({
 const sourceSerif = Source_Serif_4({
   variable: "--font-serif",
   subsets: ["latin"],
+});
+
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 const defaultSiteUrl =
@@ -89,7 +95,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${patrickHand.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${patrickHand.variable} ${sourceSerif.variable} ${caveat.variable} h-full antialiased`}
     >
       <head>
         <script

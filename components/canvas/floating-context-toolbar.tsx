@@ -211,12 +211,10 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
   }, [activePopover])
 
   // Clear active popover when selection changes
-  const prevSelectionKey = useRef("")
   const currentSelectionKey = selectedNodes.map((n) => n.id).join(",")
-  if (prevSelectionKey.current !== currentSelectionKey) {
-    prevSelectionKey.current = currentSelectionKey
-    if (activePopover) setActivePopover(null)
-  }
+  useEffect(() => {
+    setActivePopover(null)
+  }, [currentSelectionKey])
 
   const bounds = unionBounds(selectedNodes)
   if (selectedNodes.length === 0 || uiHidden || !contextRow || !showContextToolbar || editingId || busy || !bounds) {
@@ -1023,7 +1021,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
                     <span className="text-xs font-semibold text-stone-300">Enabled</span>
                     <MixedSwitch
                       ariaLabel="Hover note active"
-                      shared={shared([single.hoverNote.enabled !== false])}
+                      shared={shared([single?.hoverNote?.enabled !== false])}
                       onChange={(checked) => {
                         patch((n) => ({
                           hoverNote: {
@@ -1041,7 +1039,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
                     <input
                       type="text"
                       maxLength={120}
-                      value={single.hoverNote.title || ""}
+                      value={single?.hoverNote?.title || ""}
                       placeholder="e.g. Important Study Tip"
                       onChange={(e) => {
                         const val = e.target.value
@@ -1063,7 +1061,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
                     <textarea
                       rows={3}
                       maxLength={2000}
-                      value={single.hoverNote.body || ""}
+                      value={single?.hoverNote?.body || ""}
                       placeholder="Explain this component, formula, or study note..."
                       onChange={(e) => {
                         const val = e.target.value
@@ -1084,7 +1082,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
                     <label className="text-[11px] font-medium text-stone-400">Card Design</label>
                     <div className="grid grid-cols-5 gap-1.5 bg-white/5 p-1.5 rounded-xl border border-white/10">
                       {HOVER_THEMES.map((t) => {
-                        const currentTheme = single.hoverNote?.theme || "yellow-slate"
+                        const currentTheme = single?.hoverNote?.theme || "yellow-slate"
                         const isSelected = currentTheme === t.id
                         return (
                           <button
@@ -1113,7 +1111,7 @@ export const FloatingContextToolbar = memo(function FloatingContextToolbar({
                   </div>
 
                   {/* Live Preview Card */}
-                  {(single.hoverNote.title?.trim() || single.hoverNote.body?.trim()) && (
+                  {(single?.hoverNote?.title?.trim() || single?.hoverNote?.body?.trim()) && single?.hoverNote && (
                     <div className="mt-1 flex flex-col gap-1">
                       <span className="text-[10px] font-semibold tracking-wider uppercase text-stone-400">
                         Live Preview

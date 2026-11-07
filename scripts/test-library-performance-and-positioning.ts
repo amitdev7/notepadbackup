@@ -48,6 +48,7 @@ console.log(`  ✓ Cold render: ${dur1.toFixed(3)}ms, Warm cached render: ${dur2
 // 3. Test Quick Starters Availability
 console.log("\n3. Testing Quick Starters Integrity:")
 const QUICK_STARTER_IDS = [
+  "math-study-tracker",
   "button",
   "input",
   "study-flashcard",

@@ -44,6 +44,7 @@ import { NodeSketch, SketchPrims } from "./sketch"
 import { getDef, renderComponent } from "@/lib/library/registry"
 import { exportDoc } from "@/lib/file-io"
 import { copyAsPngWithNotice } from "@/lib/export-image"
+import { CanvasErrorBoundary } from "./canvas-error-boundary"
 import { FloatingContextToolbar } from "./floating-context-toolbar"
 import { EmptyCanvas } from "./empty-canvas"
 import { TextEditOverlay } from "./text-edit-overlay"
@@ -2363,11 +2364,13 @@ export function Canvas() {
                   height: n.h,
                 }}
               >
-                <EmbedCanvasItem
-                  node={n as EmbedNode}
-                  selected={selection.includes(id)}
-                  zoom={v.zoom}
-                />
+                <CanvasErrorBoundary name="Embed Viewer">
+                  <EmbedCanvasItem
+                    node={n as EmbedNode}
+                    selected={selection.includes(id)}
+                    zoom={v.zoom}
+                  />
+                </CanvasErrorBoundary>
               </div>
             )
           }
@@ -2388,11 +2391,13 @@ export function Canvas() {
                   height: n.h,
                 }}
               >
-                <Component
-                  node={n}
-                  selected={selection.includes(id)}
-                  zoom={v.zoom}
-                />
+                <CanvasErrorBoundary name={`Interactive Component (${n.kind})`}>
+                  <Component
+                    node={n}
+                    selected={selection.includes(id)}
+                    zoom={v.zoom}
+                  />
+                </CanvasErrorBoundary>
               </div>
             )
           }
@@ -2469,7 +2474,9 @@ export function Canvas() {
       {editingNode && editing && <TextEditOverlay key={editingNode.id} node={editingNode} target={editing} />}
 
       {/* floating contextual editing toolbar */}
-      <FloatingContextToolbar selectedNodes={selectedNodes} viewport={v} busy={!!gestureKind} />
+      <CanvasErrorBoundary name="Floating Context Toolbar" fallback={null}>
+        <FloatingContextToolbar selectedNodes={selectedNodes} viewport={v} busy={!!gestureKind} />
+      </CanvasErrorBoundary>
 
       {/* empty-canvas nudge */}
       {order.length === 0 && !placing && <EmptyCanvas />}
