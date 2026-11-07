@@ -26,6 +26,9 @@ Designed for product thinkers, systems engineers, and students who think by draw
 <br />
 
 <p align="center">
+  <a href="https://zenithsui.onrender.com/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/🚀_LAUNCH_ON_RENDER-zenithsui.onrender.com-46E3B7?style=for-the-badge&logo=render&logoColor=black" alt="Launch on Render" />
+  </a>&nbsp;&nbsp;
   <a href="https://zenithsui.netlify.app/" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/🚀_LAUNCH_ON_NETLIFY-zenithsui.netlify.app-00C7B7?style=for-the-badge&logo=netlify&logoColor=white" alt="Launch on Netlify" />
   </a>&nbsp;&nbsp;
@@ -35,8 +38,8 @@ Designed for product thinkers, systems engineers, and students who think by draw
   <a href="https://github.com/amitdev7/notepadbackup/releases">
     <img src="https://img.shields.io/badge/⬇️_DOWNLOAD_DESKTOP-Windows_x64-059669?style=for-the-badge&logo=windows&logoColor=white" alt="Download Windows Desktop" />
   </a>&nbsp;&nbsp;
-  <a href="docs/README.md">
-    <img src="https://img.shields.io/badge/📖_DOCUMENTATION-docs%2FREADME.md-4F46E5?style=for-the-badge" alt="Technical Documentation" />
+  <a href="https://render.com/deploy?repo=https://github.com/amitdev7/notepadbackup">
+    <img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" height="32" />
   </a>&nbsp;&nbsp;
   <a href="https://app.netlify.com/start/deploy?repository=https://github.com/amitdev7/notepadbackup">
     <img src="https://www.netlify.com/img/deploy/button.svg" alt="Deploy to Netlify" height="32" />
