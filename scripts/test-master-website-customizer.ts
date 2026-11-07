@@ -23,6 +23,10 @@ async function run() {
   assert(s1.showNoticeToasts === true, "showNoticeToasts should default to true")
   assert(s1.mediaSettings.showEmbedHeader === true, "showEmbedHeader should default to true")
   assert(s1.mediaSettings.showFallbackCards === true, "showFallbackCards should default to true")
+  assert(s1.mediaSettings.hideEmbedScrollbars === true, "hideEmbedScrollbars should default to true")
+  assert(s1.showSelectionHandles === true, "showSelectionHandles should default to true")
+  assert(s1.showMarqueeBox === true, "showMarqueeBox should default to true")
+  assert(s1.dockMagnification === true, "dockMagnification should default to true")
   console.log("✅ 1. Granular visibility defaults verified.")
 
   // 2. Testing Master Hide Everything

@@ -16,6 +16,7 @@ import {
   type DockControlsVisibility,
 } from "@/lib/shell-store"
 import { useSquig } from "@/lib/store"
+import { audioFx } from "@/lib/canvas/audio-fx"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import {
@@ -318,10 +319,23 @@ export function WebsiteCustomizerTab() {
         group: "dock",
         checked: (prefs.clockSettings?.enabled ?? true) && (prefs.clockSettings?.showInDock ?? false),
         onChange: (checked) => {
+          audioFx.playClick()
           useShellStore.getState().updateClockPreferences({ showInDock: checked })
           updateDockControl("timeClock", checked)
         },
         icon: Clock,
+      },
+      {
+        id: "dock-magnification",
+        name: "Dock Icon Magnification & Physics",
+        description: "Apple-style icon scale-up and spring bounce on mouse hover",
+        group: "dock",
+        checked: prefs.dockMagnification ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ dockMagnification: checked })
+        },
+        icon: Sliders,
       },
 
       // ── 3. Selected Object Floating Context Toolbar ──
@@ -481,8 +495,60 @@ export function WebsiteCustomizerTab() {
         description: "Transient save confirmations and action feedback toasts at bottom center",
         group: "canvas",
         checked: prefs.showNoticeToasts ?? true,
-        onChange: (checked) => updatePrefs({ showNoticeToasts: checked }),
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ showNoticeToasts: checked })
+        },
         icon: Note,
+      },
+      {
+        id: "canvas-selection-handles",
+        name: "Node Selection Rings & Resize Handles",
+        description: "Purple accent boundary ring with 8 square corner and edge drag handles",
+        group: "canvas",
+        checked: prefs.showSelectionHandles ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ showSelectionHandles: checked })
+        },
+        icon: Crop,
+        badge: "Selection",
+      },
+      {
+        id: "canvas-marquee-box",
+        name: "Selection Marquee Dashed Drag Box",
+        description: "Dashed bounding box when clicking and dragging across the canvas to multi-select",
+        group: "canvas",
+        checked: prefs.showMarqueeBox ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ showMarqueeBox: checked })
+        },
+        icon: Rectangle,
+      },
+      {
+        id: "canvas-zen-exit",
+        name: "Zen Mode Floating Exit Hint Capsule",
+        description: "Subtle floating pill in bottom screen corner to exit Zen Mode with 1 click",
+        group: "canvas",
+        checked: prefs.zenModeExitHint ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ zenModeExitHint: checked })
+        },
+        icon: Eye,
+      },
+      {
+        id: "canvas-empty-nudge",
+        name: "Empty Canvas Quick-Start Guide Nudge",
+        description: "Introductory shortcut tips and template suggestions when canvas is empty",
+        group: "canvas",
+        checked: prefs.showEmptyCanvasNudge ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updatePrefs({ showEmptyCanvasNudge: checked })
+        },
+        icon: Sparkle,
       },
 
       // ── 5. Media & Embedded Players ──
@@ -556,8 +622,24 @@ export function WebsiteCustomizerTab() {
         description: "Safe interactive card with direct-open link for X-Frame restricted domains",
         group: "media",
         checked: mediaSettings.showFallbackCards ?? true,
-        onChange: (checked) => updateMediaSettings({ showFallbackCards: checked }),
+        onChange: (checked) => {
+          audioFx.playClick()
+          updateMediaSettings({ showFallbackCards: checked })
+        },
         icon: ShieldCheck,
+      },
+      {
+        id: "media-hide-scrollbars",
+        name: "Seamless Zero-Scrollbar Embed Viewport",
+        description: "Eradicates unsightly browser scrollbars inside YouTube and external web iframe cards",
+        group: "media",
+        checked: mediaSettings.hideEmbedScrollbars ?? true,
+        onChange: (checked) => {
+          audioFx.playClick()
+          updateMediaSettings({ hideEmbedScrollbars: checked })
+        },
+        icon: CornersOut,
+        badge: "Clean",
       },
     ]
   }, [prefs, dockControls, mediaSettings, grid, showPage, contextRow, updatePrefs, updateDockControl, updateMediaSettings, setGrid, setShowPage, setContextRow])
@@ -615,6 +697,7 @@ export function WebsiteCustomizerTab() {
 
   // Master Action handlers
   const handleShowAll = useCallback(() => {
+    audioFx.playReactionPop()
     setAllVisibility(true)
     setUiHidden(false)
     setContextRow(true)
@@ -625,6 +708,7 @@ export function WebsiteCustomizerTab() {
   }, [setAllVisibility, setUiHidden, setContextRow, setGrid, setShowPage, setNotice])
 
   const handleHideAll = useCallback(() => {
+    audioFx.playReactionPop()
     setAllVisibility(false)
     setUiHidden(true)
     setContextRow(false)
@@ -635,6 +719,7 @@ export function WebsiteCustomizerTab() {
   }, [setAllVisibility, setUiHidden, setContextRow, setGrid, setShowPage, setNotice])
 
   const handleApplyPreset = useCallback((preset: "studio" | "zen" | "balanced" | "presenter" | "sketcher") => {
+    audioFx.playClick()
     applyPreset(preset)
     setActivePreset(preset)
     if (preset === "studio") {
@@ -763,6 +848,297 @@ export function WebsiteCustomizerTab() {
                 </button>
               )
             })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Live Interactive Mini-Canvas Preview Mockup ── */}
+      <div className="p-4 rounded-2xl bg-gradient-to-b from-card/90 via-muted/20 to-card/60 border border-blue-500/20 shadow-md space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <h5 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <span>Live Interactive Schematic Preview</span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-500 border border-emerald-500/25 lowercase font-semibold">
+                realtime
+              </span>
+            </h5>
+          </div>
+          <span className="text-[10px] text-muted-foreground font-mono hidden sm:inline">
+            Click elements in preview to toggle on/off directly!
+          </span>
+        </div>
+
+        {/* Miniature Canvas Screen Frame */}
+        <div
+          className={cn(
+            "relative w-full h-56 rounded-xl border border-border/80 overflow-hidden shadow-inner flex flex-col justify-between p-2 select-none transition-all duration-300",
+            grid
+              ? "bg-[radial-gradient(#94a3b8_1px,transparent_1px)] dark:bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:12px_12px]"
+              : "bg-card"
+          )}
+        >
+          {/* Page Boundary Guide (if showPage is on) */}
+          {showPage && (
+            <div className="absolute inset-4 rounded-lg border border-dashed border-border/70 pointer-events-none opacity-60" />
+          )}
+
+          {/* Top Bar Preview */}
+          <div className="relative z-20 flex justify-center w-full min-h-[28px]">
+            {prefs.showToolbar ? (
+              <div
+                onClick={() => {
+                  audioFx.playClick()
+                  updatePrefs({ showToolbar: !prefs.showToolbar })
+                }}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-background/90 dark:bg-stone-900/90 border border-border shadow-sm backdrop-blur-md cursor-pointer hover:border-blue-500/60 transition-all text-[10px]"
+                title="Click to toggle Top Bar container"
+              >
+                {prefs.showDocTitle && (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      audioFx.playClick()
+                      updatePrefs({ showDocTitle: !prefs.showDocTitle })
+                    }}
+                    className="font-bold text-foreground hover:text-blue-500 transition-colors"
+                    title="Click to toggle Document Title"
+                  >
+                    Math Study Tracker
+                  </span>
+                )}
+
+                {prefs.showStatusIndicators && (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      audioFx.playClick()
+                      updatePrefs({ showStatusIndicators: !prefs.showStatusIndicators })
+                    }}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 font-mono text-[8px] font-bold border border-amber-500/30 hover:scale-105 transition-transform"
+                    title="Click to toggle Sync / Server Unavailable Pill"
+                  >
+                    <span className="size-1.5 rounded-full bg-amber-500" />
+                    <span>Saved locally</span>
+                  </span>
+                )}
+
+                {prefs.showCollabStatus && (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      audioFx.playClick()
+                      updatePrefs({ showCollabStatus: !prefs.showCollabStatus })
+                    }}
+                    className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-stone-500/15 text-stone-700 dark:text-stone-300 font-mono text-[8px] font-bold border border-stone-500/30 hover:scale-105 transition-transform"
+                    title="Click to toggle Collab Off Pill"
+                  >
+                    <span className="size-1.5 rounded-full border border-orange-500 flex items-center justify-center text-[7px] text-orange-500 font-bold">⏸</span>
+                    <span>Collab Off</span>
+                  </span>
+                )}
+
+                {prefs.showFilesPopover && (
+                  <span className="text-[10px] text-muted-foreground" title="Files popover">📁</span>
+                )}
+
+                {(prefs.clockSettings?.enabled ?? true) && (prefs.clockSettings?.showInTopBar ?? true) && (
+                  <span className="font-mono text-[9px] text-muted-foreground ml-1">12:00</span>
+                )}
+              </div>
+            ) : (
+              <div
+                onClick={() => {
+                  audioFx.playClick()
+                  updatePrefs({ showToolbar: true })
+                }}
+                className="px-2.5 py-0.5 rounded-full border border-dashed border-border/80 text-[9px] text-muted-foreground bg-background/40 cursor-pointer hover:border-blue-500/50"
+                title="Top Bar is hidden — click to show"
+              >
+                Top Bar Hidden (click to show)
+              </div>
+            )}
+          </div>
+
+          {/* Center Workspace Schematic Area */}
+          <div className="relative flex-1 flex items-center justify-center my-1">
+            {/* Smart Snapping Guide Line (if showSnapGuides is on) */}
+            {prefs.showSnapGuides && (
+              <div className="absolute top-0 bottom-0 left-1/2 w-px bg-cyan-400/60 pointer-events-none" />
+            )}
+
+            {/* Laser Pointer Ribbon Glow (if showLaserRibbon is on) */}
+            {prefs.showLaserRibbon && (
+              <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                <path
+                  d="M 20 120 Q 80 40 160 90 T 260 50"
+                  fill="none"
+                  stroke="#ec4899"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  className="filter drop-shadow-[0_0_6px_#ec4899]"
+                />
+              </svg>
+            )}
+
+            {/* Collaborator Cursor (if showPeerCursors is on) */}
+            {prefs.showPeerCursors && (
+              <div className="absolute top-2 left-6 pointer-events-none flex items-center gap-1 animate-pulse">
+                <Cursor size={12} weight="fill" className="text-amber-500" />
+                <span className="px-1 py-0.2 rounded text-[7px] font-bold bg-amber-500 text-white">Alex</span>
+                {prefs.showPeerChat && (
+                  <span className="px-1.5 py-0.5 rounded-md bg-stone-900 text-white text-[7px] border border-white/20">
+                    reviewing tracker!
+                  </span>
+                )}
+              </div>
+            )}
+
+            {/* Mini Selected Canvas Item (Media Embed / Tracker Node) */}
+            <div className="relative flex flex-col items-center">
+              {/* Floating Context Toolbar (if showContextToolbar is on) */}
+              {prefs.showContextToolbar && contextRow ? (
+                <div
+                  onClick={() => {
+                    audioFx.playClick()
+                    updatePrefs({ showContextToolbar: !prefs.showContextToolbar })
+                  }}
+                  className="mb-1.5 px-2 py-0.5 rounded-lg bg-stone-900 text-white border border-stone-700/80 shadow-md flex items-center gap-1.5 text-[8px] font-mono cursor-pointer hover:border-blue-400 transition-all"
+                  title="Floating Context Toolbar — click to toggle"
+                >
+                  <span>✏️ Edit</span>
+                  <span className="text-stone-500">|</span>
+                  <span>14px</span>
+                  <span className="font-bold">B</span>
+                  <span className="italic">I</span>
+                  <span>⚙️</span>
+                </div>
+              ) : null}
+
+              {/* Selected Card Item */}
+              <div
+                className={cn(
+                  "relative w-44 rounded-lg bg-background border shadow-md overflow-hidden transition-all",
+                  prefs.showSelectionHandles
+                    ? "border-2 border-purple-500 shadow-purple-500/20"
+                    : "border border-border"
+                )}
+              >
+                {/* Header Bar */}
+                {mediaSettings.showHeaderControls && (
+                  <div className="h-5 px-1.5 flex items-center justify-between border-b border-border bg-muted/40 text-[8px]">
+                    <div className="flex items-center gap-1">
+                      <YoutubeLogo size={10} weight="fill" className="text-red-500" />
+                      <span className="font-bold text-foreground truncate max-w-[80px]">YouTube Video</span>
+                      <span className="px-1 rounded text-[6px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">HD</span>
+                    </div>
+                    <div className="flex items-center gap-0.5 text-muted-foreground">
+                      <span>◀</span>
+                      <span>▶</span>
+                      <span>CC</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Scrubber Line */}
+                {mediaSettings.showScrubberLine && (
+                  <div className="h-0.5 w-full bg-border">
+                    <div className="h-full bg-red-500 w-2/5" />
+                  </div>
+                )}
+
+                {/* Body */}
+                <div className="h-14 flex items-center justify-center bg-stone-950 text-white text-[9px] relative overflow-hidden">
+                  <span className="text-[18px]">📺</span>
+                  {mediaSettings.showCenterPlayButton && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/25">
+                      <div className="size-5 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center">
+                        <span className="text-[8px] translate-x-0.2">▶</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* 8 Selection Resize Handles (when showSelectionHandles is on) */}
+                {prefs.showSelectionHandles && (
+                  <>
+                    <div className="absolute -top-1 -left-1 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute -top-1 left-1/2 -translate-x-1/2 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute -top-1 -right-1 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute top-1/2 -left-1 -translate-y-1/2 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute top-1/2 -right-1 -translate-y-1/2 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute -bottom-1 -left-1 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                    <div className="absolute -bottom-1 -right-1 size-2 rounded-xs bg-white border border-purple-600 shadow-2xs" />
+                  </>
+                )}
+              </div>
+
+              {/* Hover Note Card Preview (if showHoverNotes is on) */}
+              {prefs.showHoverNotes && (
+                <div className="absolute -right-16 top-6 px-1.5 py-1 rounded bg-stone-900/90 text-white text-[7px] border border-white/20 shadow-md backdrop-blur-md max-w-[65px] animate-in fade-in">
+                  📝 Note: Study Ch 13
+                </div>
+              )}
+            </div>
+
+            {/* MiniMap Navigator (if showMiniMap is on) */}
+            {prefs.showMiniMap && (
+              <div
+                onClick={() => {
+                  audioFx.playClick()
+                  updatePrefs({ showMiniMap: !prefs.showMiniMap })
+                }}
+                className="absolute right-2 bottom-2 size-8 rounded border border-border bg-background/80 flex items-center justify-center text-[7px] font-mono shadow-xs cursor-pointer hover:border-blue-400"
+                title="MiniMap Radar Navigator — click to toggle"
+              >
+                <div className="size-4 border border-blue-500 rounded-2xs bg-blue-500/20" />
+              </div>
+            )}
+
+            {/* Toast Notification (if showNoticeToasts is on) */}
+            {prefs.showNoticeToasts && (
+              <div className="absolute bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-stone-900/90 text-white text-[7px] border border-white/10 shadow-xs">
+                Changes saved locally ✨
+              </div>
+            )}
+          </div>
+
+          {/* Bottom Dock Preview */}
+          <div className="relative z-20 flex justify-center w-full min-h-[26px]">
+            {prefs.showDock ? (
+              <div
+                onClick={() => {
+                  audioFx.playClick()
+                  updatePrefs({ showDock: !prefs.showDock })
+                }}
+                className="flex items-center gap-1 px-3 py-1 rounded-full bg-background/90 dark:bg-stone-900/90 border border-border shadow-sm backdrop-blur-md cursor-pointer hover:border-blue-500/60 transition-all text-[9px]"
+                title="Click to toggle Bottom Dock container"
+              >
+                <span className="text-blue-500 font-bold">↖</span>
+                <span>✋</span>
+                <span>✏️</span>
+                <span>▱</span>
+                <span>T</span>
+                <span>🗒</span>
+                <span>📚</span>
+                {prefs.showZoomControls && <span className="font-mono text-[8px] text-muted-foreground ml-1">100%</span>}
+              </div>
+            ) : (
+              <div
+                onClick={() => {
+                  audioFx.playClick()
+                  updatePrefs({ showDock: true })
+                }}
+                className="px-2.5 py-0.5 rounded-full border border-dashed border-border/80 text-[9px] text-muted-foreground bg-background/40 cursor-pointer hover:border-blue-500/50"
+                title="Bottom Dock is hidden — click to show"
+              >
+                Bottom Dock Hidden (click to show)
+              </div>
+            )}
           </div>
         </div>
       </div>

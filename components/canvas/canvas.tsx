@@ -240,6 +240,9 @@ export function Canvas() {
   const isViewer = effectiveRole === "viewer"
 
   const perfSettings = useShellStore((s) => s.preferences.performanceSettings)
+  const showSnapGuides = useShellStore((s) => s.preferences.showSnapGuides ?? true)
+  const showSelectionHandles = useShellStore((s) => s.preferences.showSelectionHandles ?? true)
+  const showMarqueeBox = useShellStore((s) => s.preferences.showMarqueeBox ?? true)
   const cursorHidden = useSquig((s) => s.cursorHidden)
   const revealMouseOnMove = useShellStore((s) => s.preferences.revealMouseOnMove ?? true)
   const [temporarilyRevealed, setTemporarilyRevealed] = useState(false)
@@ -2413,14 +2416,16 @@ export function Canvas() {
       )}
 
       {/* selection rings + handles (screen space) */}
-      <SelectionOverlay
-        selectedNodes={selectedNodes}
-        viewport={v}
-        onStartResize={startResize}
-        editing={!!editingId}
-        gestureKind={gestureKind}
-        readOnly={isViewer}
-      />
+      {showSelectionHandles && (
+        <SelectionOverlay
+          selectedNodes={selectedNodes}
+          viewport={v}
+          onStartResize={startResize}
+          editing={!!editingId}
+          gestureKind={gestureKind}
+          readOnly={isViewer}
+        />
+      )}
 
       {/* Temporary Element Expiration Countdowns (screen space) */}
       <TemporaryCountdownOverlay viewport={v} />
@@ -2433,7 +2438,7 @@ export function Canvas() {
       />
 
       {/* smart guides */}
-      {guides.length > 0 && (
+      {guides.length > 0 && showSnapGuides && (
         <svg className="pointer-events-none absolute inset-0 h-full w-full">
           {guides.map((g, i) =>
             g.axis === "x" ? (
@@ -2446,7 +2451,7 @@ export function Canvas() {
       )}
 
       {/* marquee */}
-      {marquee && (
+      {marquee && showMarqueeBox && (
         <div
           className="pointer-events-none absolute border border-dashed"
           style={{

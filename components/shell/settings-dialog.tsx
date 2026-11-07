@@ -23,6 +23,7 @@ import {
   DEFAULT_PERFORMANCE_SETTINGS,
   DEFAULT_BACKUP_SETTINGS,
   DEFAULT_MEDIA_PREFERENCES,
+  DEFAULT_DOCK_CONTROLS,
   type SettingsSectionId,
   type ThemeMode,
   type UIDensity,
@@ -39,6 +40,7 @@ import { UI_ACCENTS, COLOR_SWATCHES } from "@/lib/design-tokens"
 import { THEMES, THEME_NAMES, PAPER_SHADES, type ThemeName, type FontMode, type PaperShade } from "@/lib/theme"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
+import { audioFx } from "@/lib/canvas/audio-fx"
 import { WebsiteCustomizerTab } from "@/components/shell/website-customizer-tab"
 import { TimeSettingsTab } from "@/components/shell/time-settings-tab"
 import { TemporarySettingsTab } from "@/components/shell/temporary-settings-tab"
@@ -118,6 +120,11 @@ import {
   DownloadSimple,
   UploadSimple,
   HardDrive,
+  Users,
+  Smiley,
+  Video,
+  CornersOut,
+  Microphone,
 } from "@phosphor-icons/react"
 import {
   createBackupSnapshot,
@@ -170,13 +177,29 @@ export function SettingsDialog() {
   const activeSection = useShellStore((s) => s.settingsSection)
   const setActiveSection = useShellStore((s) => s.setSettingsSection)
   const dialogRef = useRef<HTMLDivElement>(null)
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [matchingCount, setMatchingCount] = useState(0)
 
-  // Close on Escape & lock body scroll
+  // Close on Escape & lock body scroll, plus Cmd+F / "/" to focus search
   useEffect(() => {
     if (!isOpen) return
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false)
+      if (e.key === "Escape") {
+        if (searchQuery) {
+          setSearchQuery("")
+        } else {
+          setIsOpen(false)
+        }
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      } else if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault()
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      }
     }
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
@@ -185,7 +208,7 @@ export function SettingsDialog() {
       document.body.style.overflow = prevOverflow
       window.removeEventListener("keydown", onKeyDown)
     }
-  }, [isOpen, setIsOpen])
+  }, [isOpen, setIsOpen, searchQuery])
 
   const filteredSections = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -371,43 +394,59 @@ export function SettingsDialog() {
           </div>
         </aside>
 
-        {/* ── Right Content: Active Category Settings ── */}
+        {/* ── Right Content: Active Category Settings or Global Search Results ── */}
         <section className="flex-1 flex flex-col overflow-hidden bg-background/30">
           {/* Header */}
           <header className="flex items-center justify-between px-6 py-3.5 border-b border-border/60 shrink-0">
             <div className="min-w-0 pr-3">
               <div className="flex items-center gap-2">
                 <h3 className="text-base font-bold text-foreground tracking-tight truncate">
-                  {currentSection.label}
+                  {searchQuery.trim() ? "Search Results" : currentSection.label}
                 </h3>
-                {activeSection === "visibility" && (
+                {searchQuery.trim() ? (
                   <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
-                    Live Customizer
+                    {matchingCount} {matchingCount === 1 ? "Result" : "Results"}
                   </span>
-                )}
+                ) : activeSection === "visibility" ? (
+                  <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/25">
+                    Master Hub
+                  </span>
+                ) : null}
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Live Sync</span>
                 </span>
               </div>
               <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">
-                {currentSection.description}
+                {searchQuery.trim()
+                  ? `Instant interactive toggles matching "${searchQuery.trim()}" across all 23 settings categories`
+                  : currentSection.description}
               </p>
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => {
-                  useShellStore.getState().resetSectionPreferences(activeSection)
-                  useSquig.getState().setNotice(`Reset ${currentSection.label} to default settings! ✨`)
-                }}
-                className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60 transition-colors cursor-pointer"
-                title={`Reset ${currentSection.label} settings to defaults`}
-              >
-                <ArrowCounterClockwise size={12} />
-                <span>Reset Section</span>
-              </button>
+              {searchQuery.trim() ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60 transition-colors cursor-pointer"
+                >
+                  <span>Clear Search</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    useShellStore.getState().resetSectionPreferences(activeSection)
+                    useSquig.getState().setNotice(`Reset ${currentSection.label} to default settings! ✨`)
+                  }}
+                  className="hidden sm:flex items-center gap-1 px-2.5 py-1 text-[11px] font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border/60 transition-colors cursor-pointer"
+                  title={`Reset ${currentSection.label} settings to defaults`}
+                >
+                  <ArrowCounterClockwise size={12} />
+                  <span>Reset Section</span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -421,8 +460,19 @@ export function SettingsDialog() {
           </header>
 
           {/* Section Body */}
-          <div key={activeSection} className="flex-1 overflow-y-auto px-6 py-5 text-xs text-stone-800 dark:text-stone-200 animate-card-fade">
-            <SectionBody section={activeSection} />
+          <div key={searchQuery.trim() ? "search-results" : activeSection} className="flex-1 overflow-y-auto px-6 py-5 text-xs text-stone-800 dark:text-stone-200 animate-card-fade">
+            {searchQuery.trim() ? (
+              <GlobalSearchResultsView
+                query={searchQuery.trim()}
+                onSelectSection={(secId) => {
+                  setActiveSection(secId)
+                  setSearchQuery("")
+                }}
+                onCountChange={setMatchingCount}
+              />
+            ) : (
+              <SectionBody section={activeSection} />
+            )}
           </div>
         </section>
       </div>
@@ -2120,6 +2170,742 @@ function CloudSection() {
           <Database size={13} />
           <span>Configure Database</span>
         </button>
+      </div>
+    </div>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Global Settings Instant Interactive Search Engine
+// ---------------------------------------------------------------------------
+
+interface SearchableSettingItem {
+  id: string
+  name: string
+  description: string
+  sectionId: SettingsSectionId
+  sectionName: string
+  keywords: string[]
+  icon: React.ElementType
+  renderControl: () => React.ReactNode
+}
+
+function GlobalSearchResultsView({
+  query,
+  onSelectSection,
+  onCountChange,
+}: {
+  query: string
+  onSelectSection: (id: SettingsSectionId) => void
+  onCountChange: (count: number) => void
+}) {
+  const prefs = useShellStore((s) => s.preferences)
+  const updatePrefs = useShellStore((s) => s.updatePreferences)
+  const updateMediaSettings = useShellStore((s) => s.updateMediaSettings)
+  const updatePerformanceSettings = useShellStore((s) => s.updatePerformanceSettings)
+  const updateDockControl = useShellStore((s) => s.updateDockControl)
+  const mediaSettings = prefs.mediaSettings ?? DEFAULT_MEDIA_PREFERENCES
+  const dockControls = prefs.dockControls ?? DEFAULT_DOCK_CONTROLS
+
+  const grid = useSquig((s) => s.grid)
+  const setGrid = useSquig((s) => s.setGrid)
+  const showPage = useSquig((s) => s.showPage)
+  const setShowPage = useSquig((s) => s.setShowPage)
+  const contextRow = useSquig((s) => s.contextRow)
+  const setContextRow = useSquig((s) => s.setContextRow)
+
+  const items: SearchableSettingItem[] = useMemo(() => [
+    // ── Visibility & Website Customizer (Directly Addressing Attached Images) ──
+    {
+      id: "search-status-indicators",
+      name: "Sync & Server Status Pill",
+      description: "Shows 'Server unavailable • Changes saved locally' and cloud save sync states in top bar",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["sync", "server", "unavailable", "changes saved locally", "offline", "indicator", "pill", "status", "cloud"],
+      icon: Lightning,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showStatusIndicators ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showStatusIndicators: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-collab-status",
+      name: "Collaboration Presence Pill",
+      description: "Displays 'Collab Off' / 'Collab On' and peer avatar circles in top bar",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["collab", "collaboration", "collab off", "collab on", "peer", "avatars", "presence", "pause"],
+      icon: Users,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showCollabStatus ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showCollabStatus: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-doc-title",
+      name: "Document Title & Inline Rename",
+      description: "Interactive canvas title field in top bar with double-click inline editing",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["title", "document", "rename", "header", "name", "file name"],
+      icon: TextT,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showDocTitle ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showDocTitle: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-topbar",
+      name: "Top Navigation Bar Container",
+      description: "Master capsule header anchored at the top of the canvas",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["top bar", "toolbar", "header", "capsule", "navigation", "topbar"],
+      icon: Sliders,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showToolbar ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showToolbar: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-files-popover",
+      name: "Files & Document Switcher Dropdown (📁)",
+      description: "Quick canvas switcher, new document, and export options popover in top bar",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["files", "folder", "documents", "popover", "switcher", "export", "backup"],
+      icon: Folder,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showFilesPopover ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showFilesPopover: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-dock",
+      name: "Floating Bottom Dock Container",
+      description: "macOS-style magnified tool tray anchored at bottom of screen",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["dock", "bottom dock", "tools", "magnification", "tray"],
+      icon: Sliders,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showDock ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showDock: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-dock-magnification",
+      name: "Dock Icon Magnification & Physics",
+      description: "Apple-style icon scale-up and spring bounce when moving mouse over bottom dock",
+      sectionId: "canvas",
+      sectionName: "Toolbar & Dock",
+      keywords: ["magnification", "dock zoom", "bounce", "spring", "physics", "scale"],
+      icon: Sliders,
+      renderControl: () => (
+        <Switch
+          checked={prefs.dockMagnification ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ dockMagnification: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-context-toolbar",
+      name: "Floating Contextual Toolbar Container (~438px)",
+      description: "Compact horizontal toolbar floating directly above selected canvas items",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["floating toolbar", "context toolbar", "inspector", "edit", "font", "438px", "selected object"],
+      icon: Crop,
+      renderControl: () => (
+        <Switch
+          checked={(prefs.showContextToolbar ?? true) && contextRow}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showContextToolbar: val })
+            setContextRow(val)
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-selection-handles",
+      name: "Node Selection Rings & 8 Resize Handles",
+      description: "Purple accent boundary ring with 8 square corner and edge drag handles around selected objects",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["selection", "handles", "purple border", "resize", "scale handles", "outline", "box"],
+      icon: Crop,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showSelectionHandles ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showSelectionHandles: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-marquee-box",
+      name: "Selection Marquee Dashed Drag Box",
+      description: "Dashed bounding box when clicking and dragging across the canvas to multi-select items",
+      sectionId: "visibility",
+      sectionName: "Website Customizer",
+      keywords: ["marquee", "drag select", "box", "dashed box", "multi select"],
+      icon: Rectangle,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showMarqueeBox ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showMarqueeBox: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-grid",
+      name: "Canvas Dot Grid Background",
+      description: "Subtle dot-matrix background pattern across the infinite canvas for spatial alignment",
+      sectionId: "page",
+      sectionName: "Page & Paper",
+      keywords: ["grid", "dots", "dot grid", "canvas background", "matrix", "pattern"],
+      icon: Rectangle,
+      renderControl: () => (
+        <Switch
+          checked={grid}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            setGrid(val)
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-page-boundary",
+      name: "Page Boundary Guide Frame",
+      description: "Visual A4 paper / presentation frame for export boundary guidance",
+      sectionId: "page",
+      sectionName: "Page & Paper",
+      keywords: ["page", "a4", "boundary", "frame", "paper", "export boundary", "guidelines"],
+      icon: File,
+      renderControl: () => (
+        <Switch
+          checked={showPage}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            setShowPage(val)
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-snap-guides",
+      name: "Smart Snapping & Alignment Guide Lines",
+      description: "Dynamic blue guidelines that snap objects to center and edges during movement",
+      sectionId: "canvas",
+      sectionName: "Toolbar & Dock",
+      keywords: ["snap", "guidelines", "smart guides", "blue lines", "alignment", "center", "edges"],
+      icon: Crop,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showSnapGuides ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showSnapGuides: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-laser-ribbon",
+      name: "Laser Pointer Ribbon & Neon Glow",
+      description: "Continuous polygon ribbon trail with GPU-accelerated neon decay for presentations",
+      sectionId: "laser",
+      sectionName: "Laser Pointer",
+      keywords: ["laser", "laser ribbon", "neon glow", "trail", "presenter", "beam"],
+      icon: Flashlight,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showLaserRibbon ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showLaserRibbon: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-hover-notes",
+      name: "Smart Hover Note Floating Cards",
+      description: "Floating frosted glass note cards revealed when hovering over canvas objects",
+      sectionId: "canvas",
+      sectionName: "Toolbar & Dock",
+      keywords: ["hover note", "smart note", "tooltip", "cloud note", "annotations", "comment"],
+      icon: Sparkle,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showHoverNotes ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showHoverNotes: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-peer-cursors",
+      name: "Live Collaborator Remote Cursors",
+      description: "Display other users' live cursors and name labels on the canvas workspace",
+      sectionId: "sharing",
+      sectionName: "Sharing & Collab",
+      keywords: ["remote cursors", "peer cursors", "collaborator", "live mouse", "peer names", "presence"],
+      icon: Cursor,
+      renderControl: () => (
+        <Switch
+          checked={(prefs.liveCollaborationEnabled ?? true) && (prefs.showPeerCursors ?? true)}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showPeerCursors: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-peer-chat",
+      name: "Remote Cursor Chat Bubbles",
+      description: "Display floating chat messages typed directly above collaborator cursors",
+      sectionId: "sharing",
+      sectionName: "Sharing & Collab",
+      keywords: ["cursor chat", "chat bubbles", "collaborator chat", "floating messages", "bubble"],
+      icon: Smiley,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showPeerChat ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showPeerChat: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-fps-hud",
+      name: "Performance & FPS Telemetry HUD",
+      description: "Live frame rate, draw calls, and heap memory telemetry graph overlay",
+      sectionId: "performance",
+      sectionName: "Performance & Engine",
+      keywords: ["fps", "fps hud", "performance", "diagnostics", "telemetry", "frame rate", "heap", "gpu"],
+      icon: Lightning,
+      renderControl: () => (
+        <Switch
+          checked={prefs.performanceSettings?.showFpsHud ?? false}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePerformanceSettings({ showFpsHud: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-notice-toasts",
+      name: "Notification Banners & Toast Feedback",
+      description: "Transient save confirmations and action feedback toasts at bottom center",
+      sectionId: "notifications",
+      sectionName: "Notifications",
+      keywords: ["toasts", "notifications", "banners", "saved notice", "alerts", "feedback"],
+      icon: Bell,
+      renderControl: () => (
+        <Switch
+          checked={prefs.showNoticeToasts ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ showNoticeToasts: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-clean-video",
+      name: "Clean Video Mode by Default",
+      description: "Automatically strip native YouTube controls, title bars, and clutter annotations",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["clean mode", "youtube clean", "strip clutter", "video clean", "studio mode", "player"],
+      icon: YoutubeLogo,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.cleanModeDefault}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ cleanModeDefault: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-video-header",
+      name: "Video Card Header Controls Bar",
+      description: "Shifted controls bar (Play, Mute, CC, 1080p, Speed, Fullscreen) above video",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["video header", "youtube header", "media controls", "play pause", "hd 1080p", "controls"],
+      icon: Video,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.showHeaderControls}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ showHeaderControls: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-embed-header",
+      name: "Web Embed Favicon & Title Bar",
+      description: "Display external website domain and favicon header above iframes",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["embed header", "favicon", "domain header", "instagram header", "website embed", "iframe title"],
+      icon: Compass,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.showEmbedHeader ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ showEmbedHeader: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-1080p",
+      name: "Always Enforce 1080p HD Quality",
+      description: "Force high-definition playback streams without automatic downscaling",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["1080p", "hd", "high definition", "video quality", "4k", "highest quality"],
+      icon: Sparkle,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.alwaysEnforce1080p}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ alwaysEnforce1080p: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-video-scrubber",
+      name: "Video Progress Scrubber Line",
+      description: "Thin progress scrubber line positioned between header and player viewport",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["scrubber", "progress line", "video time", "timeline", "seek"],
+      icon: Sliders,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.showScrubberLine}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ showScrubberLine: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-fallback-cards",
+      name: "Instagram & Restricted Frame Fallback Cards",
+      description: "Safe interactive card with direct-open link for X-Frame restricted domains like instagram.com",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["instagram", "fallback card", "restricted", "x-frame-options", "blocked", "preview card"],
+      icon: ShieldCheck,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.showFallbackCards ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ showFallbackCards: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-hide-scrollbars",
+      name: "Seamless Zero-Scrollbar Embed Viewport",
+      description: "Eradicates unsightly browser scrollbars inside YouTube and external web iframe cards",
+      sectionId: "media",
+      sectionName: "Media & Video Players",
+      keywords: ["scrollbar", "embed scrollbar", "no scrollbar", "clean embed", "iframe scroll"],
+      icon: CornersOut,
+      renderControl: () => (
+        <Switch
+          checked={mediaSettings.hideEmbedScrollbars ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateMediaSettings({ hideEmbedScrollbars: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-library-tracker",
+      name: "Component Library & Math Study Tracker",
+      description: "Interactive study trackers, checklists, paper wishlists, and canvas widgets in dock",
+      sectionId: "canvas",
+      sectionName: "Toolbar & Dock",
+      keywords: ["math tracker", "study tracker", "library", "components", "tracker", "checklist", "wishlist"],
+      icon: Books,
+      renderControl: () => (
+        <Switch
+          checked={dockControls.toolLibrary ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateDockControl("toolLibrary", val)
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-voice-recorder",
+      name: "Voice Memo Audio Recorder (⌥R)",
+      description: "Record spoken thoughts and embed waveform audio clips directly onto canvas",
+      sectionId: "canvas",
+      sectionName: "Toolbar & Dock",
+      keywords: ["audio", "voice memo", "record", "microphone", "sound recorder", "waveform"],
+      icon: Microphone,
+      renderControl: () => (
+        <Switch
+          checked={dockControls.actionRecordAudio ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updateDockControl("actionRecordAudio", val)
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-audio-haptics",
+      name: "Audio Haptics & Acoustic Feedback",
+      description: "Procedural Apple-style tactile clicks, pops, and chimes on switch toggles and snaps",
+      sectionId: "accessibility",
+      sectionName: "Accessibility",
+      keywords: ["sound", "haptics", "audio feedback", "clicks", "chimes", "pops", "volume"],
+      icon: Bell,
+      renderControl: () => (
+        <Switch
+          checked={prefs.audioHaptics?.enabled ?? true}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({
+              audioHaptics: {
+                ...(prefs.audioHaptics ?? { enabled: true, volume: 0.25 }),
+                enabled: val,
+              },
+            })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-theme-mode",
+      name: "Website Theme Mode",
+      description: "Switch between Dark, Light, or System Appearance",
+      sectionId: "appearance",
+      sectionName: "Appearance & Themes",
+      keywords: ["dark mode", "light mode", "theme", "night mode", "appearance", "system"],
+      icon: Palette,
+      renderControl: () => (
+        <div className="flex items-center gap-1 bg-muted p-0.5 rounded-lg border border-border/60">
+          {(["system", "light", "dark"] as ThemeMode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => {
+                audioFx.playClick()
+                updatePrefs({ themeMode: m })
+                syncThemeToDOM(m)
+              }}
+              className={cn(
+                "px-2 py-0.5 rounded text-[10px] font-semibold capitalize transition-all cursor-pointer",
+                prefs.themeMode === m ? "bg-background text-foreground shadow-2xs font-bold" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      ),
+    },
+    {
+      id: "search-high-contrast",
+      name: "High Contrast Mode",
+      description: "Enhanced borders and ultra-sharp text contrast for maximum visibility",
+      sectionId: "accessibility",
+      sectionName: "Accessibility",
+      keywords: ["contrast", "high contrast", "accessibility", "sharp borders"],
+      icon: Eye,
+      renderControl: () => (
+        <Switch
+          checked={prefs.highContrast}
+          onCheckedChange={(val) => {
+            audioFx.playClick()
+            updatePrefs({ highContrast: val })
+          }}
+        />
+      ),
+    },
+    {
+      id: "search-zen-mode",
+      name: "Zen Mode Fullscreen Canvas Keybind",
+      description: "Distraction-free canvas mode toggled via customizable hotkey",
+      sectionId: "keyboard",
+      sectionName: "Keyboard",
+      keywords: ["zen mode", "zen", "minimal", "hide all", "fullscreen", "keybind"],
+      icon: Keyboard,
+      renderControl: () => (
+        <kbd className="px-2 py-0.5 rounded font-mono text-[10px] bg-muted border border-border font-bold">
+          {prefs.zenModeKeybind || "mod+\\"}
+        </kbd>
+      ),
+    },
+  ], [prefs, dockControls, mediaSettings, grid, showPage, contextRow, updatePrefs, updateMediaSettings, updatePerformanceSettings, updateDockControl, setGrid, setShowPage, setContextRow])
+
+  const filtered = useMemo(() => {
+    const q = query.toLowerCase().trim()
+    if (!q) return items
+    return items.filter(
+      (item) =>
+        item.name.toLowerCase().includes(q) ||
+        item.description.toLowerCase().includes(q) ||
+        item.sectionName.toLowerCase().includes(q) ||
+        item.keywords.some((k) => k.toLowerCase().includes(q))
+    )
+  }, [items, query])
+
+  useEffect(() => {
+    onCountChange(filtered.length)
+  }, [filtered.length, onCountChange])
+
+  if (filtered.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center space-y-3">
+        <div className="size-12 rounded-2xl bg-muted/60 flex items-center justify-center text-muted-foreground">
+          <MagnifyingGlass size={24} />
+        </div>
+        <div>
+          <h4 className="font-bold text-sm text-foreground">No settings found</h4>
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+            No settings match &ldquo;{query}&rdquo;. Try searching for &ldquo;sync&rdquo;, &ldquo;collab&rdquo;, &ldquo;youtube&rdquo;, &ldquo;dark mode&rdquo;, &ldquo;clock&rdquo;, &ldquo;grid&rdquo;, or &ldquo;dock&rdquo;.
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-1.5 pt-2 max-w-md">
+          {["collab", "sync", "youtube", "dark mode", "clock", "laser", "grid", "dock", "tracker"].map((keyword) => (
+            <button
+              key={keyword}
+              type="button"
+              onClick={() => onSelectSection("visibility")}
+              className="px-2 py-0.5 rounded-full text-[10px] font-medium bg-muted/80 hover:bg-muted text-muted-foreground hover:text-foreground border border-border/60 transition-colors cursor-pointer"
+            >
+              {keyword}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between pb-2 border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-xs text-foreground">
+            {filtered.length} matching {filtered.length === 1 ? "setting" : "settings"}
+          </span>
+          <span className="text-[10px] text-muted-foreground">
+            (Interactive controls can be toggled immediately)
+          </span>
+        </div>
+        <span className="text-[10px] text-muted-foreground font-mono">
+          Press Esc to clear
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-2.5">
+        {filtered.map((item) => {
+          const Icon = item.icon
+          return (
+            <div
+              key={item.id}
+              className="flex items-center justify-between p-3 rounded-xl border border-border/70 bg-card/60 hover:bg-card/90 hover:border-blue-500/40 transition-all shadow-2xs group"
+            >
+              <div className="flex items-start gap-3 min-w-0 pr-3">
+                <div className="size-8 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 mt-0.5">
+                  <Icon size={16} weight="bold" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-xs text-foreground truncate block">
+                      {item.name}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onSelectSection(item.sectionId)}
+                      className="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-muted hover:bg-blue-500/15 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer shrink-0"
+                      title={`Jump to ${item.sectionName} section`}
+                    >
+                      {item.sectionName} →
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="shrink-0 flex items-center">
+                {item.renderControl()}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

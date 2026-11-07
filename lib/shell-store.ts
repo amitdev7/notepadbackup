@@ -320,6 +320,7 @@ export interface MediaPreferences {
   autoSoloPlayback: boolean
   showEmbedHeader?: boolean
   showFallbackCards?: boolean
+  hideEmbedScrollbars?: boolean
 }
 
 export const DEFAULT_MEDIA_PREFERENCES: MediaPreferences = {
@@ -332,6 +333,7 @@ export const DEFAULT_MEDIA_PREFERENCES: MediaPreferences = {
   autoSoloPlayback: true,
   showEmbedHeader: true,
   showFallbackCards: true,
+  hideEmbedScrollbars: true,
 }
 
 export interface ShellPreferences {
@@ -393,6 +395,10 @@ export interface ShellPreferences {
   showNoticeToasts?: boolean
   showEmbedHeader?: boolean
   showFallbackCards?: boolean
+  showSelectionHandles?: boolean
+  showMarqueeBox?: boolean
+  dockMagnification?: boolean
+  showEmptyCanvasNudge?: boolean
 }
 
 export const DEFAULT_PREFERENCES: ShellPreferences = {
@@ -425,6 +431,10 @@ export const DEFAULT_PREFERENCES: ShellPreferences = {
   showNoticeToasts: true,
   showEmbedHeader: true,
   showFallbackCards: true,
+  showSelectionHandles: true,
+  showMarqueeBox: true,
+  dockMagnification: true,
+  showEmptyCanvasNudge: true,
   highContrast: false,
   largeText: false,
   screenReaderHints: false,
@@ -1294,6 +1304,10 @@ export const useShellStore = create<ShellState>((set, get) => ({
         showNoticeToasts: visible,
         showEmbedHeader: visible,
         showFallbackCards: visible,
+        showSelectionHandles: visible,
+        showMarqueeBox: visible,
+        dockMagnification: visible,
+        showEmptyCanvasNudge: visible,
         dockControls: nextDockControls,
         mediaSettings: nextMedia,
         clockSettings: nextClock,
@@ -1334,6 +1348,10 @@ export const useShellStore = create<ShellState>((set, get) => ({
           showNoticeToasts: true,
           showEmbedHeader: true,
           showFallbackCards: true,
+          showSelectionHandles: true,
+          showMarqueeBox: true,
+          dockMagnification: true,
+          showEmptyCanvasNudge: true,
           dockControls: nextDockControls,
           clockSettings: { ...next.clockSettings, showInTopBar: true, showInDock: true },
           mediaSettings: {
@@ -1374,6 +1392,10 @@ export const useShellStore = create<ShellState>((set, get) => ({
           showPeerCursors: false,
           showPeerChat: false,
           showNoticeToasts: false,
+          showSelectionHandles: false,
+          showMarqueeBox: false,
+          dockMagnification: false,
+          showEmptyCanvasNudge: false,
           dockControls: nextDockControls,
           clockSettings: { ...next.clockSettings, showInTopBar: false, showInDock: false },
         }
@@ -1420,6 +1442,10 @@ export const useShellStore = create<ShellState>((set, get) => ({
           showPeerCursors: true,
           showPeerChat: true,
           showNoticeToasts: false,
+          showSelectionHandles: false,
+          showMarqueeBox: false,
+          dockMagnification: false,
+          showEmptyCanvasNudge: false,
           dockControls: nextDockControls,
         }
       } else if (preset === "sketcher") {

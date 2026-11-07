@@ -767,8 +767,8 @@ export function EmbedCanvasItem({
           : "2px 2px 0px rgba(0,0,0,0.06)",
       }}
     >
-      {/* 1. Header Bar with Drag Handle & Shifted Video Controls (Matches Image 2 exactly) */}
-      {(mediaSettings.showHeaderControls ?? true) ? (
+      {/* 1. Header Bar with Drag Handle & Shifted Video Controls */}
+      {((isVideoProvider ? (mediaSettings.showHeaderControls ?? true) : (mediaSettings.showEmbedHeader ?? true))) ? (
         <div
           data-node-drag-handle="true"
           className="h-8 px-2 flex items-center justify-between border-b border-[var(--sq-border)] bg-[var(--sq-shade)]/75 text-xs cursor-grab active:cursor-grabbing shrink-0 z-30 gap-1.5 backdrop-blur-xs select-none"
@@ -1031,8 +1031,11 @@ export function EmbedCanvasItem({
       )}
 
       {/* 3. Live Embed IFrame Container (Clean Zero-Scrollbar, Zero-Hover Guard & Smart Security Card) */}
-      <div className="relative flex-1 min-h-0 bg-neutral-950 w-full h-full overflow-hidden select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {isBlocked ? (
+      <div
+        className="relative flex-1 min-h-0 bg-neutral-950 w-full overflow-hidden select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden [&_iframe]:[scrollbar-width:none] [&_iframe::-webkit-scrollbar]:hidden"
+        style={{ scrollbarWidth: "none", overflow: "hidden" }}
+      >
+        {isBlocked && (mediaSettings.showFallbackCards ?? true) ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-[var(--sq-paper)] text-[var(--sq-ink)] z-10 select-none overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {isInstagram ? (
               <div className="flex flex-col items-center max-w-sm animate-in zoom-in-95 duration-150">
@@ -1143,7 +1146,7 @@ export function EmbedCanvasItem({
               src={computedEmbedUrl}
               title={node.title || "Embedded Content"}
               scrolling="no"
-              className="border-0 w-full h-full overflow-hidden select-none"
+              className="border-0 w-full h-full overflow-hidden select-none [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               style={{
                 position: "absolute",
                 inset: 0,
@@ -1151,6 +1154,7 @@ export function EmbedCanvasItem({
                 height: "100%",
                 border: 0,
                 overflow: "hidden",
+                scrollbarWidth: "none",
                 pointerEvents: isVideoProvider && isCleanMode ? "none" : "auto",
               }}
               loading="lazy"
