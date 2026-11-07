@@ -24,7 +24,7 @@ import { screenToWorld } from "@/lib/types"
 import { flushPendingViewportSave } from "@/lib/canvas/viewport-memory"
 import { findSnapCandidateNode } from "@/lib/canvas/arrow-binding"
 import { smoothPoints, pointsToSmoothSvgPath } from "@/lib/canvas/stroke-smoothing"
-import { recognizeShape } from "@/lib/canvas/shape-recognizer"
+import { recognizeShape, type RecognizedShapeResult } from "@/lib/canvas/shape-recognizer"
 import { audioFx } from "@/lib/canvas/audio-fx"
 import { autoSizeTextBox, setTextWidth } from "@/lib/canvas/text-reflow"
 import { computeSnap, computeResizeSnap, makeSnapRect, type GuideLine, type SnapRect } from "@/lib/canvas/snap-engine"
@@ -228,6 +228,9 @@ export function Canvas() {
   const [guides, setGuides] = useState<GuideLine[]>([])
   const [cursor, setCursor] = useState<[number, number] | null>(null)
   const [livePoints, setLivePoints] = useState<[number, number][] | null>(null)
+  const [liveSnapPreview, setLiveSnapPreview] = useState<RecognizedShapeResult | null>(null)
+  const liveSnapPreviewRef = useRef<RecognizedShapeResult | null>(null)
+  const holdTimerRef = useRef<NodeJS.Timeout | null>(null)
   /** soft: the pointer is over a hollow shape's middle — a click would select
    *  it but a drag would marquee, so the outline shows without a move cursor */
   const [hover, setHover] = useState<{ id: string; soft: boolean } | null>(null)
@@ -834,6 +837,12 @@ export function Canvas() {
   // -- gesture lifecycle ----------------------------------------------------
 
   const teardownGesture = useCallback(() => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
+    liveSnapPreviewRef.current = null
+    setLiveSnapPreview(null)
     if (gestureRafRef.current !== null) {
       cancelAnimationFrame(gestureRafRef.current)
       gestureRafRef.current = null
@@ -860,6 +869,10 @@ export function Canvas() {
 
   /** Pointer up, or anything else that means "keep what they did". */
   const finishGesture = useCallback(() => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
     if (gestureRafRef.current !== null) {
       cancelAnimationFrame(gestureRafRef.current)
       gestureRafRef.current = null
@@ -874,18 +887,32 @@ export function Canvas() {
     stopAutoPan()
 
     if (g.kind === "draw") {
+      const snapPreview = liveSnapPreviewRef.current
+      liveSnapPreviewRef.current = null
+      setLiveSnapPreview(null)
+
       if (g.points.length > 2) {
         const isHighlighter = s.tool === "highlighter"
         const drawPrefs = useShellStore.getState().preferences.drawSettings
         const snapEnabled = useShellStore.getState().preferences.smartDrawing?.snapOnHold !== false
         const customColor = s.activeStyle.strokeColor || (drawPrefs?.colorMode === "custom" ? drawPrefs.customColor : undefined)
 
-        // Geometric shape recognition (Apple Notes / GoodNotes style)
-        const recognized = snapEnabled && !isHighlighter ? recognizeShape(g.points) : null
+        // Geometric shape recognition (Apple Notes / GoodNotes / Excalidraw style)
+        const recognized = snapPreview || (snapEnabled && !isHighlighter ? recognizeShape(g.points) : null)
 
         if (recognized) {
-          audioFx.playShapeSnap()
+          if (!snapPreview) {
+            audioFx.playShapeSnap()
+          }
           if (recognized.kind === "shape") {
+            const fillTone: FillTone =
+              s.activeStyle.fill === "none"
+                ? "none"
+                : s.activeStyle.fill === "solid"
+                  ? "strong"
+                  : s.activeStyle.fill === "hachure" || s.activeStyle.fill === "cross-hatch"
+                    ? "light"
+                    : "none"
             s.addNode(
               {
                 type: "shape",
@@ -895,7 +922,7 @@ export function Canvas() {
                 w: recognized.w,
                 h: recognized.h,
                 roundness: recognized.roundness,
-                fill: s.activeStyle.fill ?? "none",
+                fill: fillTone,
                 stroke: s.activeStyle.strokeWidth ?? drawPrefs?.strokeWeight ?? "regular",
                 dashed: s.activeStyle.strokeStyle === "dashed" || (drawPrefs?.dashed ?? false),
                 color: customColor,
@@ -1168,6 +1195,27 @@ export function Canvas() {
             g.points.push([wx, wy])
           }
         }
+
+        // Draw-and-hold timer for smart shape snapping (Apple Notes / GoodNotes style)
+        const snapEnabled = useShellStore.getState().preferences.smartDrawing?.snapOnHold !== false
+        const holdThreshold = useShellStore.getState().preferences.smartDrawing?.holdThresholdMs ?? 340
+        if (holdTimerRef.current) {
+          clearTimeout(holdTimerRef.current)
+          holdTimerRef.current = null
+        }
+        if (snapEnabled && st().tool !== "highlighter" && g.points.length >= 8) {
+          holdTimerRef.current = setTimeout(() => {
+            if (gestureRef.current?.kind === "draw" && gestureRef.current.points.length >= 8) {
+              const rec = recognizeShape(gestureRef.current.points)
+              if (rec) {
+                liveSnapPreviewRef.current = rec
+                setLiveSnapPreview(rec)
+                audioFx.playShapeSnap()
+              }
+            }
+          }, holdThreshold)
+        }
+
         if (gestureRafRef.current === null) {
           gestureRafRef.current = requestAnimationFrame(() => {
             gestureRafRef.current = null
@@ -1393,6 +1441,12 @@ export function Canvas() {
 
       if (tool === "draw" || tool === "highlighter") {
         s.checkpoint()
+        if (holdTimerRef.current) {
+          clearTimeout(holdTimerRef.current)
+          holdTimerRef.current = null
+        }
+        liveSnapPreviewRef.current = null
+        setLiveSnapPreview(null)
         beginGesture({ kind: "draw", ...common, points: [[wx, wy]] }, e)
         return
       }
@@ -2252,33 +2306,121 @@ export function Canvas() {
               </g>
             )
           })}
-          {livePoints && livePoints.length > 1 && (
-            <path
-              d={pointsToSmoothSvgPath(livePoints)}
-              fill="none"
-              stroke={
-                tool === "highlighter"
-                  ? (activeStyle.strokeColor || "#FACC15")
-                  : (activeStyle.strokeColor || "var(--sq-ink)")
-              }
-              strokeWidth={
-                tool === "highlighter"
-                  ? 20
-                  : activeStyle.strokeWidth === "heavy"
+          {liveSnapPreview ? (
+            liveSnapPreview.kind === "shape" ? (
+              liveSnapPreview.shape === "ellipse" ? (
+                <ellipse
+                  cx={liveSnapPreview.x + liveSnapPreview.w / 2}
+                  cy={liveSnapPreview.y + liveSnapPreview.h / 2}
+                  rx={liveSnapPreview.w / 2}
+                  ry={liveSnapPreview.h / 2}
+                  fill={
+                    activeStyle.fill === "solid"
+                      ? (activeStyle.backgroundColor || "var(--sq-faint)")
+                      : "none"
+                  }
+                  stroke={activeStyle.strokeColor || "var(--sq-ink)"}
+                  strokeWidth={
+                    activeStyle.strokeWidth === "heavy"
+                      ? 3.8
+                      : activeStyle.strokeWidth === "light"
+                        ? 1.4
+                        : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
+                  }
+                  strokeDasharray={activeStyle.strokeStyle === "dashed" ? "6 4" : undefined}
+                  className="transition-all duration-150 animate-pulse"
+                />
+              ) : liveSnapPreview.shape === "rect" ? (
+                <rect
+                  x={liveSnapPreview.x}
+                  y={liveSnapPreview.y}
+                  width={liveSnapPreview.w}
+                  height={liveSnapPreview.h}
+                  rx={6}
+                  fill={
+                    activeStyle.fill === "solid"
+                      ? (activeStyle.backgroundColor || "var(--sq-faint)")
+                      : "none"
+                  }
+                  stroke={activeStyle.strokeColor || "var(--sq-ink)"}
+                  strokeWidth={
+                    activeStyle.strokeWidth === "heavy"
+                      ? 3.8
+                      : activeStyle.strokeWidth === "light"
+                        ? 1.4
+                        : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
+                  }
+                  strokeDasharray={activeStyle.strokeStyle === "dashed" ? "6 4" : undefined}
+                  className="transition-all duration-150 animate-pulse"
+                />
+              ) : (
+                <polygon
+                  points={`${liveSnapPreview.x + liveSnapPreview.w / 2},${liveSnapPreview.y} ${liveSnapPreview.x + liveSnapPreview.w},${liveSnapPreview.y + liveSnapPreview.h / 2} ${liveSnapPreview.x + liveSnapPreview.w / 2},${liveSnapPreview.y + liveSnapPreview.h} ${liveSnapPreview.x},${liveSnapPreview.y + liveSnapPreview.h / 2}`}
+                  fill={
+                    activeStyle.fill === "solid"
+                      ? (activeStyle.backgroundColor || "var(--sq-faint)")
+                      : "none"
+                  }
+                  stroke={activeStyle.strokeColor || "var(--sq-ink)"}
+                  strokeWidth={
+                    activeStyle.strokeWidth === "heavy"
+                      ? 3.8
+                      : activeStyle.strokeWidth === "light"
+                        ? 1.4
+                        : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
+                  }
+                  strokeDasharray={activeStyle.strokeStyle === "dashed" ? "6 4" : undefined}
+                  className="transition-all duration-150 animate-pulse"
+                />
+              )
+            ) : (
+              <line
+                x1={liveSnapPreview.x + liveSnapPreview.points[0][0]}
+                y1={liveSnapPreview.y + liveSnapPreview.points[0][1]}
+                x2={liveSnapPreview.x + liveSnapPreview.points[1][0]}
+                y2={liveSnapPreview.y + liveSnapPreview.points[1][1]}
+                stroke={activeStyle.strokeColor || "var(--sq-ink)"}
+                strokeWidth={
+                  activeStyle.strokeWidth === "heavy"
                     ? 3.8
                     : activeStyle.strokeWidth === "light"
                       ? 1.4
                       : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
-              }
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              opacity={
-                tool === "highlighter"
-                  ? 0.45
-                  : (activeStyle.opacity !== undefined ? activeStyle.opacity / 100 : 1)
-              }
-              style={tool === "highlighter" ? { mixBlendMode: "multiply" } : undefined}
-            />
+                }
+                strokeDasharray={activeStyle.strokeStyle === "dashed" ? "6 4" : undefined}
+                strokeLinecap="round"
+                className="transition-all duration-150 animate-pulse"
+              />
+            )
+          ) : (
+            livePoints && livePoints.length > 1 && (
+              <path
+                d={pointsToSmoothSvgPath(livePoints)}
+                fill="none"
+                stroke={
+                  tool === "highlighter"
+                    ? (activeStyle.strokeColor || "#FACC15")
+                    : (activeStyle.strokeColor || "var(--sq-ink)")
+                }
+                strokeWidth={
+                  tool === "highlighter"
+                    ? 20
+                    : activeStyle.strokeWidth === "heavy"
+                      ? 3.8
+                      : activeStyle.strokeWidth === "light"
+                        ? 1.4
+                        : (2 / v.zoom < 2 ? 2 : 2 / v.zoom)
+                }
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity={
+                  tool === "highlighter"
+                    ? 0.45
+                    : (activeStyle.opacity !== undefined ? activeStyle.opacity / 100 : 1)
+                }
+                style={tool === "highlighter" ? { mixBlendMode: "multiply" } : undefined}
+              />
+            )
           )}
           {placingDef && cursor && !isCursorEffectivelyHidden && (
             <g
